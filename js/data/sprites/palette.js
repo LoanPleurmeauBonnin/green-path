@@ -1,0 +1,3 @@
+/* Palette commune des planches de sprites (40 couleurs, « . » = transparent). */
+window.GP = window.GP || {};
+GP.SPRITE_PAL = {"k":"#14182e","d":"#2b3a55","b":"#3b6ea5","n":"#2f5a8c","l":"#7fb3d5","f":"#d6eef5","w":"#f4f7f2","c":"#efe3bd","C":"#e0cf9c","t":"#d2b484","a":"#c9b27a","r":"#b5523b","o":"#e8873a","y":"#f4d35e","z":"#fff3a0","p":"#7a5c8e","e":"#6b7280","m":"#aab4c0","R":"#c9c0ae","S":"#8f8878","T":"#ece6d4","L":"#a6e04a","g":"#5cbf3f","G":"#2f8f45","H":"#1f6a3c","h":"#145a3a","V":"#2fbf71","P":"#8fbf6a","Q":"#7aad5a","D":"#8a5a3a","E":"#6b4230","F":"#a77348","W":"#b87a3e","X":"#7a4a28","Y":"#d9a35e"};

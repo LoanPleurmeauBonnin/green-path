@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Planche de contrôle — avatar</title>
+  <style>
+    body { margin: 16px; background: #14182e; color: #f4f7f2; font: 12px monospace; }
+    canvas { image-rendering: pixelated; display: block; }
+  </style>
+</head>
+<body>
+  <p>Planche de contrôle : 8 modèles (lignes) × 9 poses (colonnes), puis quelques options isolées. Généré par GP.Character.compose.</p>
+  <canvas id="c"></canvas>
+  <p>Photo pixélisée du Palmarium (48×32, 16 couleurs, ×8) et sa palette :</p>
+  <canvas id="photo"></canvas>
+  <script src="../js/config.js"></script>
+  <script src="../js/systems/PixelArt.js"></script>
+  <script src="../js/systems/CharacterSprite.js"></script>
+  <script src="../assets/locations/jardin-des-plantes.js"></script>
+  <script>
+    var C = GP.Character, poses = Object.keys(C.POSES), S = 4, cellW = 19, cellH = 22;
+    var extra = [
+      { hair: 'chauve', top: 'nu', bottom: 'slip', shoes: 'nus', skin: 'fonce' },
+      { hair: 'crete', hairColor: 'vert', top: 'debardeur', bottom: 'short', shoes: 'rouges' },
+      { hair: 'chignon', hairColor: 'roux', top: 'chemise', bottom: 'jupe', eyes: 'endormis' },
+      { hair: 'rase', hairColor: 'noir', top: 'tshirt', bottom: 'pantalon', eyes: 'fermes', skin: 'brun' },
+      { shoes: 'blanches', bottom: 'short' }, { shoes: 'rouges', bottom: 'pantalon' }, { shoes: 'nus', bottom: 'jupe' }, { shoes: 'sombres', bottom: 'slip' }
+    ];
+    var rows = C.PRESETS.concat(extra.map(function (e) { return Object.assign({}, C.PRESETS[0], e); }));
+    var cv = document.getElementById('c'), ctx = cv.getContext('2d');
+    cv.width = poses.length * cellW * S; cv.height = rows.length * cellH * S;
+    ctx.fillStyle = '#2b3a55'; ctx.fillRect(0, 0, cv.width, cv.height);
+    rows.forEach(function (cfg, r) {
+      poses.forEach(function (p, c) {
+        var g = C.compose(cfg, p);
+        for (var y = 0; y < C.H; y++) for (var x = 0; x < C.W; x++) if (g[y][x]) {
+          ctx.fillStyle = g[y][x];
+          ctx.fillRect((c * cellW + 2 + x) * S, (r * cellH + 2 + y) * S, S, S);
+        }
+      });
+    });
+    // photo pixélisée + palette
+    var im = GP.IMAGES && GP.IMAGES['jardin-des-plantes'], pc = document.getElementById('photo');
+    if (im) {
+      var Z = 8, px = pc.getContext('2d'); pc.width = im.w * Z; pc.height = im.h * Z + 30;
+      for (var y = 0; y < im.h; y++) for (var x = 0; x < im.w; x++) { px.fillStyle = im.palette[parseInt(im.data[y * im.w + x], 16)]; px.fillRect(x * Z, y * Z, Z, Z); }
+      im.palette.forEach(function (c, i) { px.fillStyle = c; px.fillRect(i * 24, im.h * Z + 6, 22, 22); });
+    }
+  </script>
+</body>
+</html>

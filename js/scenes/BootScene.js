@@ -1,0 +1,62 @@
+/**
+ * BootScene — génère toutes les textures (personnage, icônes, étoiles, météo, carte) puis lance le menu.
+ */
+GP.Scenes.Boot = class BootScene extends Phaser.Scene {
+  constructor() { super('Boot'); }
+
+  create() {
+    var PA = GP.PixelArt;
+    GP.Progression.init();
+
+    // ----- Sprites des planches (Claude Design) : une texture par sprite et par image -----
+    GP.Sprites.build(this);
+
+    // ----- Personnage : généré par calques depuis la configuration sauvegardée -----
+    GP.Character.build(this, GP.Progression.data.character || GP.Character.defaultConfig());
+
+    // ----- Nœuds 22×22 -----
+    var styles = { available: ['g', 'w'], completed: ['y', 'w'], locked: ['e', 'm'], coming: ['p', 'm'] };
+    Object.keys(styles).forEach(function (st) {
+      var o = PA.canvas(22, 22);
+      PA.disc(o.ctx, 11, 11, 10, 'k');
+      PA.disc(o.ctx, 11, 11, 8, styles[st][0]);
+      PA.rect(o.ctx, 5, 6, 2, 1, styles[st][1]); PA.rect(o.ctx, 6, 5, 3, 1, styles[st][1]);
+      if (st === 'coming') { for (var i = 4; i < 18; i += 4) PA.rect(o.ctx, i, 17, 2, 1, 'k'); }
+      PA.toTexture(this, 'node_' + st, o.cv);
+    }, this);
+
+    // badges
+    var b = PA.canvas(10, 10);
+    PA.disc(b.ctx, 5, 5, 4, 'k'); PA.disc(b.ctx, 5, 5, 3, 'w');
+    PA.rect(b.ctx, 3, 5, 1, 1, 'G'); PA.rect(b.ctx, 4, 6, 1, 1, 'G'); PA.rect(b.ctx, 5, 5, 1, 1, 'G'); PA.rect(b.ctx, 6, 4, 1, 1, 'G'); PA.rect(b.ctx, 7, 3, 1, 1, 'G');
+    PA.toTexture(this, 'badge_done', b.cv);
+    var lk = PA.canvas(10, 10);
+    PA.disc(lk.ctx, 5, 5, 4, 'k');
+    PA.rect(lk.ctx, 3, 5, 5, 3, 'm'); PA.rect(lk.ctx, 4, 3, 1, 2, 'm'); PA.rect(lk.ctx, 6, 3, 1, 2, 'm'); PA.rect(lk.ctx, 4, 3, 3, 1, 'm');
+    PA.toTexture(this, 'badge_lock', lk.cv);
+
+    // anneau de pulsation, ombre
+    var r = PA.canvas(30, 30); PA.ellipse(r.ctx, 15, 15, 13, 13, 'g'); PA.ellipse(r.ctx, 15, 15, 12, 12, 'w');
+    PA.toTexture(this, 'ring', r.cv);
+    var sh = PA.canvas(12, 4); PA.disc(sh.ctx, 6, 2, 2, 'rgba(20,24,46,0.45)'); sh.ctx.fillStyle = 'rgba(20,24,46,0.45)'; sh.ctx.fillRect(3, 1, 6, 2);
+    PA.toTexture(this, 'shadow', sh.cv);
+
+    // étoiles 7×7 (obtenue / vide) et étincelle du dévoilement
+    var star = ['...k...', '..kyk..', 'kkkyykk', 'kyyyyyk', '.kyyyk.', 'kyk.kyk', 'kk...kk'];
+    PA.sprite(this, 'star_on', star);
+    PA.sprite(this, 'star_off', star.map(function (row) { return row.replace(/y/g, 'e'); }));
+    PA.sprite(this, 'spark', ['.w.', 'wyw', '.w.']);
+
+    // ----- Météo (icônes, ombres de nuages, halos) -----
+    GP.WeatherFX.makeTextures(this);
+
+    // ----- Interface (flèches des touches) et décor des niveaux -----
+    GP.UI.makeTextures(this);
+    GP.LevelArt.makeTextures(this);
+
+    // ----- Carte -----
+    GP.MapArt.build(this);
+
+    this.scene.start('Menu');
+  }
+};

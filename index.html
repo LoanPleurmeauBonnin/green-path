@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#14182e">
+  <title>Green Path — Nantes</title>
+  <link rel="icon" href="assets/brand/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" href="assets/brand/favicon-32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="assets/brand/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+  <div id="game"></div>
+  <p id="loading">CHARGEMENT…</p>
+  <!-- Téléphone tenu en portrait : on demande de le tourner (le jeu est en pause). -->
+  <div id="rotate" role="alertdialog" aria-live="assertive" aria-label="Veuillez tourner votre téléphone">
+    <svg class="rotate-icon" viewBox="0 0 16 16" width="96" height="96" shape-rendering="crispEdges" aria-hidden="true">
+      <rect x="5" y="1" width="6" height="11" fill="#f4f7f2"/><rect x="6" y="2" width="4" height="8" fill="#2b3a55"/>
+      <rect x="7" y="10" width="2" height="1" fill="#2b3a55"/><rect x="1" y="13" width="3" height="1" fill="#2fbf71"/>
+      <rect x="12" y="13" width="3" height="1" fill="#2fbf71"/><rect x="3" y="12" width="1" height="1" fill="#2fbf71"/>
+      <rect x="12" y="12" width="1" height="1" fill="#2fbf71"/><rect x="4" y="14" width="8" height="1" fill="#2fbf71"/>
+    </svg>
+    <p>VEUILLEZ TOURNER<br>VOTRE TÉLÉPHONE</p>
+    <p class="small">GREEN PATH SE JOUE EN PAYSAGE</p>
+  </div>
+  <noscript><p class="msg">Green Path nécessite JavaScript.</p></noscript>
+
+  <script src="js/vendor/phaser.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/data/sprites/palette.js"></script>
+  <script src="js/data/sprites/commun.js"></script>
+  <script src="js/data/sprites/carte.js"></script>
+  <script src="js/data/sprites/ciel.js"></script>
+  <script src="js/data/sprites/signes.js"></script>
+  <script src="js/data/sprites/jardin.js"></script>
+  <script src="js/data/sprites/cathedrale.js"></script>
+  <script src="js/data/sprites/chateau.js"></script>
+  <script src="js/data/sprites/centre.js"></script>
+  <script src="js/data/sprites/ile.js"></script>
+  <script src="js/data/locations.js"></script>
+  <script src="js/systems/SaveManager.js"></script>
+  <script src="js/systems/ProgressionManager.js"></script>
+  <script src="js/systems/Stars.js"></script>
+  <script src="js/systems/Sfx.js"></script>
+  <script src="js/systems/PixelArt.js"></script>
+  <script src="js/systems/Sprites.js"></script>
+  <script src="js/systems/MapArt.js"></script>
+  <script src="js/systems/CharacterSprite.js"></script>
+  <script src="js/systems/WeatherManager.js"></script>
+  <script src="js/systems/WeatherFX.js"></script>
+  <script src="js/systems/Ui.js"></script>
+  <script src="js/systems/LevelArt.js"></script>
+  <script src="js/systems/PixelCollection.js"></script>
+  <script src="js/data/levels.js"></script>
+  <script src="assets/locations/jardin-des-plantes.js"></script>
+  <script src="js/scenes/BootScene.js"></script>
+  <script src="js/scenes/MenuScene.js"></script>
+  <script src="js/scenes/CharacterScene.js"></script>
+  <script src="js/scenes/MapScene.js"></script>
+  <script src="js/scenes/GameScene.js"></script>
+  <script src="js/scenes/ResultScene.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
