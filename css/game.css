@@ -1,9 +1,28 @@
 /* Conteneur du jeu : plein écran, rendu pixel net, pas de défilement tactile. */
 #game {
   position: fixed;
-  inset: 0;
+  /* plein écran, en évitant l'encoche et les barres système (viewport-fit=cover) */
+  inset: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
   touch-action: none;
 }
+
+/* Astuce affichée une fois sur iPhone / iPad (Safari) : installer le jeu pour jouer sans barres. */
+#ios-tip {
+  position: fixed;
+  left: 50%;
+  top: 8px;
+  transform: translateX(-50%);
+  z-index: 20;
+  max-width: 92vw;
+  padding: 8px 12px;
+  background: var(--ink);
+  border: 2px solid var(--green);
+  color: var(--white);
+  font-size: 9px;
+  line-height: 1.6;
+  text-align: center;
+}
+#ios-tip[hidden] { display: none; }
 
 #game canvas {
   image-rendering: pixelated;
