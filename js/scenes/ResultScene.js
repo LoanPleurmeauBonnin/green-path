@@ -10,15 +10,14 @@ GP.Scenes.Result = class ResultScene extends Phaser.Scene {
   init(data) { this.r = data || {}; }
 
   create() {
-    var self = this, r = this.r, P = GP.PAL, UI = GP.UI, W = GP.Config.WIDTH, H = GP.Config.HEIGHT;
+    var self = this, r = this.r, P = GP.PAL, UI = GP.UI, W = GP.Config.DW, H = GP.Config.HEIGHT;
     var loc = GP.LOCATIONS[r.index], rate = r.total ? r.pixels / r.total : 0, deaths = r.deaths || 0;
     var stars = GP.Stars.compute({ rate: rate, deaths: deaths, time: r.time }, loc);
     var res = GP.Progression.complete(r.index, r.pixels, rate, stars, Math.round(r.time * 10) / 10, deaths);
     this.leaving = false;
 
     this.cameras.main.fadeIn(350, 20, 24, 46);
-    this.add.image(0, 0, GP.UI.backdropKey(this)).setOrigin(0);
-    this.add.rectangle(0, 0, W, H, GP.int(P.k), 0.6).setOrigin(0);
+    UI.backdrop(this, 0.6);
     this.add.rectangle(20, 12, 440, 246, GP.int(P.k)).setOrigin(0);
     this.add.rectangle(22, 14, 436, 242, GP.int(P.d)).setOrigin(0);
     this.add.rectangle(22, 33, 436, 1, GP.int(P.G)).setOrigin(0);
@@ -57,7 +56,7 @@ GP.Scenes.Result = class ResultScene extends Phaser.Scene {
     });
 
     // notice courte
-    var notice = loc.notice.length > 110 ? loc.notice.slice(0, loc.notice.lastIndexOf(' ', 107)) + '…' : loc.notice;
+    var full = GP.t(loc.notice), notice = full.length > 110 ? full.slice(0, full.lastIndexOf(' ', 107)) + '…' : full;
     UI.txt(this, 238, y0 + 102, notice, P.c, { wordWrap: { width: 212 }, lineSpacing: 3 });
 
     // boutons

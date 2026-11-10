@@ -7,8 +7,12 @@ window.GP = window.GP || {};
 GP.Scenes = {};
 
 GP.Config = {
+  /** Zone de jeu : 270 px de haut ; la largeur s'adapte à l'écran (de 480 en 16:9 jusqu'à 640 sur un téléphone très long)
+   *  pour remplir tout l'écran sans bandes. DW = largeur de conception des menus et fenêtres (480), centrés dans la zone. */
   WIDTH: 480,
   HEIGHT: 270,
+  DW: 480,
+  DX: 0,
   FONT: '"Press Start 2P", monospace',
   SAVE_KEY: 'greenpath.save',
   SAVE_VERSION: 1,
@@ -50,6 +54,13 @@ GP.PAL = {
   f: '#d6eef5', // écume
   a: '#c9b27a'  // sable mouillé
 };
+
+// Largeur de la zone de jeu selon le rapport d'écran (côté long / côté court, donc identique en portrait et en paysage).
+(function () {
+  var w = window.innerWidth || 480, h = window.innerHeight || 270, a = Math.max(w, h) / Math.max(1, Math.min(w, h));
+  GP.Config.WIDTH = Math.max(480, Math.min(640, Math.round(270 * a))) & ~1;
+  GP.Config.DX = (GP.Config.WIDTH - GP.Config.DW) / 2;
+})();
 
 /** Convertit '#rrggbb' en entier Phaser. */
 GP.int = function (hex) { return parseInt(hex.replace('#', ''), 16); };
