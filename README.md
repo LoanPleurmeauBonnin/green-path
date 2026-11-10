@@ -31,6 +31,7 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
 ## Le concept
 - **Une archive qui se reconstruit** : chaque niveau cache des pixels. Chacun ramassé révèle un morceau de la photo du lieu (48×32 cases, 16 couleurs), dans un ordre propre au lieu : le Jardin des Plantes pousse **du bas vers le haut**, comme une plante.
 - **Une ligne verte à suivre** : sur la carte, le chemin s'allume en vert à chaque lieu terminé, et le monument passe du gris à la couleur.
+- **Des rencontres** : une fois un niveau terminé, un petit personnage apparaît près du monument sur la carte (Anne de Bretagne, Jules Verne enfant, Louis Pommeraye, un docker…) ; la fiche du lieu a une page **RENCONTRE** avec son anecdote et sa source (un simple panneau au Mémorial). Sources dans [docs/sources.md](docs/sources.md).
 - **Trois étoiles par niveau** : image complète, sans mourir, sous le temps cible.
 - **La vraie météo de Nantes** (Open-Meteo, mise à jour toutes les 5 min) change l'environnement et les niveaux réagissent, avec une annonce à l'entrée de chaque niveau :
 
