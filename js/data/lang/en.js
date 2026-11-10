@@ -7,15 +7,32 @@ window.GP = window.GP || {};
 GP.EN = {
   texts: {
     intro: "Psst… over here! I'm the keeper of the green line. Last night, a great gust of wind swept over Nantes. Its monuments flew away in a thousand pixels! The castle, the cathedral, the garden… 12 places are waiting to be rebuilt. Follow the green line, collect the pixels and give Nantes its monuments back to unlock a special illustration.",
-    privacy1: "Green Path asks for no personal information: no name, no e-mail, no account. There are no ads, no visit statistics and no tracking cookies.",
-    privacy2: "On your device, in the browser's local storage, the game keeps: your progress, your avatar, the language, your keys and the last weather received. None of this is sent to a server.",
-    privacy3: "One single network exchange: the weather in Nantes, requested from Open-Meteo (open-meteo.com) every 5 minutes. As with any website, that service sees your device's IP address. The site is hosted by Vercel, which keeps technical access logs.",
-    privacy4: "You can erase everything at any time: OPTIONS then ERASE MY DATA, or RESET in the menu. Clearing the browser's storage does the same.",
-    privacy5: "If accounts and a scoreboard are ever added, they will be optional (guest mode will remain) and this page will be updated before any data is collected.",
+    privacy1: "Green Path asks for no name and no e-mail. There are no ads, no visit statistics and no tracking cookies. You can play without sharing anything: that is guest mode.",
+    privacy2: "On your device, in the browser's local storage, the game keeps: your progress, your avatar, the language, your keys, the last weather received and, if you have a pseudonym, your save code.",
+    privacy3: "Network exchanges: the weather in Nantes, requested from Open-Meteo (open-meteo.com) every 5 minutes; and, only if you have a pseudonym, the save and the scoreboard (Supabase). As with any website, these services see your device's IP address. The site is hosted by Vercel, which keeps technical access logs.",
+    privacy4: "Pseudonym (optional, no e-mail): with your consent, a pseudonym, your avatar, your progress (stars, times, deaths) and a hash of your secret code are stored at Supabase, on servers in the European Union (Paris). The pseudonym is public on the scoreboard: do not use your real name.",
+    privacy5: "Erase everything: OPTIONS then ACCOUNT then DELETE MY ACCOUNT erases what is online; OPTIONS then ERASE MY DATA erases this browser; RESET erases progress. You can also ask for erasure through the GitHub repository.",
     privacy6: "Controller: the Green Path team (educational project, ESD Nantes). Questions and requests: issues on the GitHub repository LoanPleurmeauBonnin/green-path. This text informs; it is not legal advice."
   },
   words: {
-    // --- menu, options, crédits ---
+
+    // --- compte, classement ---
+    'CLASSEMENT': 'SCOREBOARD', 'CHARGEMENT…': 'LOADING…', 'TOI : ': 'YOU: ', 'JOUE EN INVITÉ : CRÉE UN PSEUDO DANS OPTIONS POUR APPARAÎTRE ICI.': 'PLAYING AS A GUEST: CREATE A PSEUDONYM IN OPTIONS TO APPEAR HERE.',
+    'CLASSEMENT INDISPONIBLE HORS LIGNE': 'SCOREBOARD UNAVAILABLE OFFLINE', "PERSONNE AU CLASSEMENT POUR L'INSTANT.": 'NOBODY ON THE SCOREBOARD YET.', 'PSEUDO': 'PSEUDONYM',
+    'COMPTE': 'ACCOUNT', 'INVITÉ': 'GUEST', "TON COMPTE EN LIGNE N'EST PAS SUPPRIMÉ : OPTIONS > COMPTE.": 'YOUR ONLINE ACCOUNT IS NOT DELETED: OPTIONS > ACCOUNT.',
+    'SAUVEGARDE ET CLASSEMENT': 'SAVE AND SCOREBOARD',
+    "Crée un pseudo (sans e-mail) pour sauvegarder ta progression et apparaître au classement. Ou joue en invité : tout reste sur cet appareil.": 'Create a pseudonym (no e-mail) to save your progress and appear on the scoreboard. Or play as a guest: everything stays on this device.',
+    'CRÉER MON PSEUDO': 'CREATE MY PSEUDONYM', "J'AI DÉJÀ UN CODE": 'I ALREADY HAVE A CODE', 'JOUER EN INVITÉ': 'PLAY AS A GUEST', 'PSEUDO (3 À 16 : LETTRES, CHIFFRES, - _)': 'PSEUDONYM (3 TO 16: LETTERS, DIGITS, - _)',
+    'LE PSEUDO EST PUBLIC : PAS DE VRAI NOM.': 'THE PSEUDONYM IS PUBLIC: NO REAL NAME.',
+    "J'ACCEPTE QUE MON PSEUDO, MON AVATAR ET MA PROGRESSION SOIENT ENREGISTRÉS (SUPABASE, UNION EUROPÉENNE). DÉTAIL : CRÉDITS, CONFIDENTIALITÉ.": 'I AGREE THAT MY PSEUDONYM, AVATAR AND PROGRESS ARE STORED (SUPABASE, EUROPEAN UNION). DETAILS: CREDITS, PRIVACY.',
+    'CRÉER': 'CREATE', 'PSEUDO INVALIDE : 3 À 16 CARACTÈRES': 'INVALID PSEUDONYM: 3 TO 16 CHARACTERS', 'ACCEPTE LA CONFIDENTIALITÉ POUR CONTINUER': 'ACCEPT THE PRIVACY NOTICE TO CONTINUE', 'PSEUDO DÉJÀ PRIS': 'PSEUDONYM ALREADY TAKEN',
+    'PSEUDO INVALIDE': 'INVALID PSEUDONYM', 'PAS DE CONNEXION : RÉESSAIE PLUS TARD': 'NO CONNECTION: TRY AGAIN LATER', 'NAVIGATEUR TROP ANCIEN POUR CRÉER UN CODE': 'BROWSER TOO OLD TO CREATE A CODE', 'ERREUR : RÉESSAIE PLUS TARD': 'ERROR: TRY AGAIN LATER',
+    'TON CODE DE SAUVEGARDE': 'YOUR SAVE CODE', "NOTE-LE : C'EST LE SEUL MOYEN DE RETROUVER TA SAUVEGARDE SUR UN AUTRE APPAREIL. IL NE PEUT PAS ÊTRE RÉCUPÉRÉ.": 'WRITE IT DOWN: IT IS THE ONLY WAY TO GET YOUR SAVE BACK ON ANOTHER DEVICE. IT CANNOT BE RECOVERED.',
+    'COPIER': 'COPY', 'COPIÉ !': 'COPIED!', 'COPIE IMPOSSIBLE : RECOPIE-LE À LA MAIN': 'COPY FAILED: WRITE IT DOWN BY HAND', "J'AI NOTÉ MON CODE": 'I WROTE MY CODE DOWN',
+    'RETROUVER MA SAUVEGARDE': 'RESTORE MY SAVE', 'CODE DE SAUVEGARDE': 'SAVE CODE', 'RETROUVER': 'RESTORE', 'PSEUDO OU CODE INCORRECT': 'WRONG PSEUDONYM OR CODE', 'SAUVEGARDE RETROUVÉE !': 'SAVE RESTORED!',
+    'MON COMPTE': 'MY ACCOUNT', 'AFFICHER MON CODE': 'SHOW MY CODE', 'SYNCHRONISER': 'SYNC NOW', 'SYNCHRONISÉ': 'SYNCED', "SE DÉCONNECTER D'ICI": 'LOG OUT FROM HERE', 'SUPPRIMER MON COMPTE': 'DELETE MY ACCOUNT',
+    'COMPTE INTROUVABLE EN LIGNE': 'ACCOUNT NOT FOUND ONLINE', 'SUPPRIMER MON COMPTE ?': 'DELETE MY ACCOUNT?', 'CELA EFFACE EN LIGNE TON PSEUDO, TON AVATAR ET TA PROGRESSION. LA SAUVEGARDE DE CET APPAREIL RESTE.': 'THIS ERASES YOUR PSEUDONYM, AVATAR AND PROGRESS ONLINE. THE SAVE ON THIS DEVICE STAYS.',
+    'OUI, SUPPRIMER': 'YES, DELETE',    // --- menu, options, crédits ---
     'HAUT/BAS + ENTRÉE  -  OU CLIC': 'UP/DOWN + ENTER  -  OR CLICK', 'CONTINUER': 'CONTINUE', 'COMMENCER': 'START', "PERSONNALISER L'AVATAR": 'CUSTOMIZE AVATAR',
     'RÉINITIALISER': 'RESET', 'CRÉDITS': 'CREDITS', 'OPTIONS': 'OPTIONS', 'OUI, EFFACER': 'YES, ERASE', 'ANNULER': 'CANCEL', 'EFFACER TOUTE LA PROGRESSION ?': 'ERASE ALL PROGRESS?',
     'RETOUR': 'BACK', 'DÉVELOPPEUR WEB, IA OPS': 'WEB DEVELOPER, AI OPS', 'CONFIDENTIALITÉ': 'PRIVACY', 'LANGUE': 'LANGUAGE', 'FRANÇAIS': 'FRANÇAIS', 'SON': 'SOUND',
@@ -97,6 +114,7 @@ GP.EN = {
     [/^TEMPS (\d+:\d\d)$/, function (m) { return 'TIME ' + m[1]; }],
     [/^MORTS (\d+)$/, function (m) { return 'DEATHS ' + m[1]; }],
     [/^(\d+)\/(\d+) NIVEAUX$/, function (m) { return m[1] + '/' + m[2] + ' LEVELS'; }],
+    [/^HORS LIGNE · VERSION VUE IL Y A (\d+) MIN$/, function (m) { return 'OFFLINE · VERSION SEEN ' + m[1] + ' MIN AGO'; }],
     [/^IL Y A (\d+) (MIN|H)$/, function (m) { return m[1] + ' ' + m[2] + ' AGO'; }],
     [/^MODÈLE (\d+)\/(\d+)$/, function (m) { return 'MODEL ' + m[1] + '/' + m[2]; }],
     [/^(-?\d+)° (.+)$/, function (m, t) { return m[1] + '° ' + t(m[2]); }],

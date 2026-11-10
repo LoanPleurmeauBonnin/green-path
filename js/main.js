@@ -9,6 +9,7 @@
     var loading = document.getElementById('loading');
     if (loading) loading.remove();
     GP.Settings.load();   // langue et touches du joueur, avant la création des scènes
+    GP.Cloud.init();      // compte en ligne éventuel (le jeu marche sans)
     GP.game = new Phaser.Game({
       type: Phaser.AUTO,
       parent: 'game',
@@ -20,7 +21,7 @@
       antialias: false,
       scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
       physics: { default: 'arcade', arcade: { debug: false } },
-      scene: [GP.Scenes.Boot, GP.Scenes.Menu, GP.Scenes.Character, GP.Scenes.Options, GP.Scenes.Map, GP.Scenes.Game, GP.Scenes.Result]
+      scene: [GP.Scenes.Boot, GP.Scenes.Menu, GP.Scenes.Character, GP.Scenes.Options, GP.Scenes.Score, GP.Scenes.Map, GP.Scenes.Game, GP.Scenes.Result]
     });
     GP.game.events.once('ready', checkOrientation);
     GP.Pad.start(GP.game);   // manette : menus et niveaux

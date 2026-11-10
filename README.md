@@ -75,7 +75,8 @@ Sur téléphone, le jeu se joue **en paysage** : tenu en portrait, un écran dem
 - **OPTIONS** : langue, son, plein écran, **touches réaffectables** (3 emplacements par action : gauche, droite, sauter, grimper, s'accroupir ; Échap, Entrée, H et M restent réservées), état de la manette, confidentialité, effacement de ses données.
 - **Manette** (API Gamepad, aucune installation) : branche-la et appuie sur un bouton. Croix ou stick = bouger ; A = sauter / valider ; B = retour ; Start = pause. Elle pilote aussi les menus.
 - **Téléphone, plein écran** : la zone de jeu s'élargit pour remplir tout l'écran (de 16:9 jusqu'à 21:9, sans bandes noires). Android et iPad : plein écran au premier toucher (ou OPTIONS → PLEIN ÉCRAN). **iPhone** : Safari n'a pas de plein écran ; touche Partager puis « Sur l'écran d'accueil » (le jeu est installable, `manifest.webmanifest`).
-- **Confidentialité (RGPD)** : aucun compte, aucune donnée personnelle collectée ; progression et réglages restent dans le navigateur. Page dans le jeu (CRÉDITS ou OPTIONS) et détail dans [docs/confidentialite.md](docs/confidentialite.md).
+- **Pseudo, sauvegarde en ligne et classement** (facultatifs, **sans e-mail**) : après le premier niveau terminé, le jeu propose **créer un pseudo**, **retrouver une sauvegarde avec son code** ou **jouer en invité** (mode par défaut, tout reste sur l'appareil). Avec un pseudo, tu reçois un **code secret de 20 caractères** (à noter : seul moyen de retrouver ta sauvegarde sur un autre appareil) ; ta progression et ton avatar sont enregistrés après chaque niveau, et le **CLASSEMENT** (menu) affiche pseudo, étoiles et temps. Gestion dans **OPTIONS → COMPTE** (synchroniser, se déconnecter, supprimer son compte). Hors ligne ou serveur indisponible : le jeu continue, le classement affiche la dernière version vue. Détails techniques : [supabase/README.md](supabase/README.md).
+- **Confidentialité (RGPD)** : aucune donnée personnelle sans pseudo ; avec pseudo, seulement pseudo, avatar, progression et haché du code, avec accord explicite, serveurs dans l'UE (Paris). Page dans le jeu (CRÉDITS ou OPTIONS) et détail dans [docs/confidentialite.md](docs/confidentialite.md).
 
 ![Options](docs/screenshots/options.png)
 
@@ -87,7 +88,7 @@ python3 -m http.server 8123
 puis http://localhost:8123. **Mode test** : ajouter `?dev=1` à l'adresse (W : météos simulées sur la carte, N dans un niveau ; K : ramasser tous les pixels).
 
 ## Fallback et limites connues
-- **Hors ligne, le jeu reste entièrement jouable** : si le réseau coupe, le jeu garde **la dernière météo reçue** (widget « HORS LIGNE · IL Y A N MIN ») ; si aucune n'a jamais été reçue, météo neutre sans effet ([data/fallback.json](data/fallback.json)). La progression est gardée dans le navigateur (`localStorage`).
+- **Hors ligne, le jeu reste entièrement jouable** (météo, sauvegarde locale ; le classement affiche la dernière version vue ; la sauvegarde en ligne repart au retour du réseau) : si le réseau coupe, le jeu garde **la dernière météo reçue** (widget « HORS LIGNE · IL Y A N MIN ») ; si aucune n'a jamais été reçue, météo neutre sans effet ([data/fallback.json](data/fallback.json)). La progression est gardée dans le navigateur (`localStorage`).
 - La météo est redemandée toutes les 5 min, et dès que le réseau revient.
 - Images à reconstruire : photo pixélisée validée pour le Jardin des Plantes ; pour les autres lieux, le monument de la planche de sprites en attendant des photos Commons validées.
 - Niveaux 5 à 12 à venir.
@@ -99,10 +100,11 @@ Phaser 3.90 (inclus en local), JavaScript natif en scripts classiques (pas de bu
 index.html               page, icônes, écran « tournez votre téléphone »
 js/config.js             réglages, palette, mode test (?dev=1)
 js/data/                 locations.js (12 lieux), levels.js (niveaux), sprites/ (planches importées), lang/ (fr.js, en.js)
-js/systems/              I18n (FR/EN), Settings (langue, touches), Controls (clavier réaffectable, manette), Sprites, MapArt (carte), LevelArt (ciel, décor), WeatherManager / WeatherFX / WeatherRules (météo en direct → règles de jeu),
+js/systems/              I18n (FR/EN), Settings (langue, touches), Controls (clavier réaffectable, manette), Cloud + Account (pseudo, sauvegarde, classement Supabase), Sprites, MapArt (carte), LevelArt (ciel, décor), WeatherManager / WeatherFX / WeatherRules (météo en direct → règles de jeu),
                          PixelCollection (photo à reconstruire), Save / Progression / Stars, Ui (fenêtres, aide, tactile)
-js/scenes/               Boot, Menu, Character (avatar), Options, Map, Game (moteur de plateforme), Result
+js/scenes/               Boot, Menu, Character (avatar), Options, Score (classement), Map, Game (moteur de plateforme), Result
 assets/                  police, logo et icônes, photos pixélisées (assets/locations/*.js)
+supabase/                schema.sql et README (base du pseudo, de la sauvegarde et du classement)
 tools/                   import-sprites.js, pixelize.swift, favicon.swift, compare-figma.js, bot.js (tests)
 ```
 

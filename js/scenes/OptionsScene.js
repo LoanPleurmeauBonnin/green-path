@@ -51,6 +51,8 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
         act: function () { self.sound(); }, left: function () { self.sound(); }, right: function () { self.sound(); } },
       { label: 'PLEIN ÉCRAN', value: function () { return fsOk ? (isFs ? 'DÉSACTIVER' : 'ACTIVER') : 'NON DISPONIBLE ICI'; },
         act: function () { self.fullscreen(); } },
+      { label: 'COMPTE', value: function () { return GP.Cloud.isAccount ? GP.Cloud.pseudo : 'INVITÉ'; },
+        act: function () { GP.Account.open({ mode: GP.Cloud.isAccount ? 'manage' : 'choose', onDone: function () { if (self.sys && self.sys.isActive()) self.build(); } }); } },
       { label: 'TOUCHES', value: function () { return '>'; }, act: function () { self.mode = 'keys'; self.sel = 0; self.slot = 0; self.build(); } },
       { label: 'MANETTE', value: function () { return GP.Pad.connected ? 'DÉTECTÉE' : 'NON DÉTECTÉE'; }, act: function () {} },
       { label: 'CONFIDENTIALITÉ', value: function () { return '>'; }, act: function () { self.privacy(); } },
@@ -64,7 +66,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     var self = this, names = { left: 'GAUCHE', right: 'DROITE', jump: 'SAUTER', up: 'GRIMPER', down: "S'ACCROUPIR" };
     var rows = GP.Settings.ACTIONS.map(function (a) { return { action: a, label: names[a], keys: true }; });
     rows.push({ label: 'TOUCHES PAR DÉFAUT', act: function () { GP.Settings.resetKeys(); self.toast('TOUCHES PAR DÉFAUT'); self.build(); } });
-    rows.push({ label: 'RETOUR', act: function () { self.mode = 'main'; self.sel = 3; self.build(); } });
+    rows.push({ label: 'RETOUR', act: function () { self.mode = 'main'; self.sel = 4; self.build(); } });
     return rows;
   }
 
@@ -74,10 +76,11 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     this.rowsList = this.rows();
     this.sel = Math.max(0, Math.min(this.sel, this.rowsList.length - 1));
     this.title.setText(this.confirm ? 'EFFACER LES DONNÉES DE CE NAVIGATEUR ?' : (this.mode === 'keys' ? 'TOUCHES' : 'OPTIONS'));
-    var top = this.mode === 'keys' && !this.confirm ? 56 : (this.confirm ? 100 : 34), step = this.mode === 'keys' && !this.confirm ? 24 : (this.confirm ? 26 : 25);
+    var top = this.mode === 'keys' && !this.confirm ? 56 : (this.confirm ? 100 : 30), step = this.mode === 'keys' && !this.confirm ? 24 : (this.confirm ? 26 : 22);
     if (this.mode === 'keys' && !this.confirm) {
       ['ACTION', 'TOUCHE 1', 'TOUCHE 2', 'TOUCHE 3'].forEach(function (h, i) { self.layer.push(self.txt(i ? 207 + (i - 1) * 83 : 70, 38, h, P.m).setOrigin(i ? 0.5 : 0, 0)); });
     }
+    if (this.confirm && GP.Cloud.isAccount) this.layer.push(this.txt(W / 2, 60, "TON COMPTE EN LIGNE N'EST PAS SUPPRIMÉ : OPTIONS > COMPTE.", P.o).setOrigin(0.5, 0));
     this.rowsList.forEach(function (r, i) {
       var y = top + i * step, wide = self.confirm ? 240 : 360, x0 = (W - wide) / 2;
       var bg = self.add.rectangle(x0, y - 3, wide, 20, GP.int(P.d), 0.9).setOrigin(0).setStrokeStyle(2, GP.int(P.k)).setInteractive({ useHandCursor: true });
@@ -116,7 +119,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     });
     var h = this.capturing ? 'APPUIE SUR UNE TOUCHE (ÉCHAP : ANNULER)' : (this.mode === 'keys' && !this.confirm ? 'ENTRÉE : CHANGER   SUPPR : VIDER' : (this.confirm ? '' : 'HAUT/BAS  < > CHANGER  ENTRÉE'));
     this.hint.setText(h);
-    if (!this.confirm && this.mode === 'main' && this.sel === 4) this.hint.setText((GP.Pad.connected ? '' : 'APPUIE SUR UN BOUTON DE LA MANETTE.  ') + 'MANETTE : STICK OU CROIX = BOUGER, A = SAUTER / VALIDER, START = PAUSE, B = RETOUR');
+    if (!this.confirm && this.mode === 'main' && this.sel === 5) this.hint.setText((GP.Pad.connected ? '' : 'APPUIE SUR UN BOUTON DE LA MANETTE.  ') + 'MANETTE : STICK OU CROIX = BOUGER, A = SAUTER / VALIDER, START = PAUSE, B = RETOUR');
   }
 
   // ---------- actions ----------
@@ -140,7 +143,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     if (this.modal) { this.modal.close(); return; }
     if (this.capturing) { this.endCapture(); return; }
     if (this.confirm) { this.confirm = false; this.build(); return; }
-    if (this.mode === 'keys') { this.mode = 'main'; this.sel = 3; this.build(); return; }
+    if (this.mode === 'keys') { this.mode = 'main'; this.sel = 4; this.build(); return; }
     this.leave();
   }
   leave() {

@@ -117,9 +117,10 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     var list = [{ label: has ? 'CONTINUER' : 'COMMENCER', action: function () { self.start(); } }];
     list.push({ label: "PERSONNALISER L'AVATAR", action: function () { self.openCreator('menu'); } });
     if (has) list.push({ label: 'RÉINITIALISER', action: function () { self.buildConfirm(); } });
+    list.push({ label: 'CLASSEMENT', action: function () { self.goTo('Score'); } });
     list.push({ label: 'OPTIONS', action: function () { self.goTo('Options'); } });
     list.push({ label: 'CRÉDITS', action: function () { self.buildCredits(); } });
-    this.setItems(list, 122, 24);
+    this.setItems(list, 116, 23);
   }
 
   buildConfirm() {

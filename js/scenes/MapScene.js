@@ -44,6 +44,10 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     if (ji >= 0) this.revealing = ji;
     this.refresh();
     if (ji >= 0) this.time.delayedCall(500, function () { self.reveal(ji); });
+    // après le premier niveau terminé : proposer pseudo + sauvegarde + classement (une seule fois ; on peut jouer en invité)
+    if (GP.Cloud.shouldAsk()) this.time.delayedCall(ji >= 0 ? 3200 : 900, function () {
+      if (self.alive && !self.panel && GP.Cloud.shouldAsk()) GP.Account.open({ mode: 'choose' });
+    });
 
     var kb = this.input.keyboard;
     kb.on('keydown-LEFT', function () { self.step(-1); });
