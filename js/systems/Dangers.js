@@ -2,7 +2,7 @@
  * Dangers (GP.Dangers) — mécaniques et ennemis des niveaux 4 à 12 (Feydeau, Graslin, Machines, Chantiers, Buren, Hangar,
  * Mémorial, Pommeraye, Tour LU) et esprits de la garde du Château. Un seul fichier, créé par GameScene.makeMechanics() à partir de la définition du niveau
  * (briques de js/data/levels.js : L.patrol, L.tide, L.boat, L.liar, L.faller, L.jet, L.beam, L.spring, L.seq, L.belt,
- * L.cart, L.ring + L.align, L.borne + L.cplat, L.elephant, L.hanger, L.crane, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
+ * L.cart, L.ring + L.align, L.borne + L.cplat, L.elephant, L.hanger, L.crane, L.plaque, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
  *
  *   update(dt)          fait vivre tout ce qui bouge (appelé à chaque image)
  *   input(c)            touches de la dernière image (pour la séquence de danse de Graslin)
@@ -181,6 +181,15 @@ GP.Dangers = function (scene) {
     self.cbornes.forEach(function (r) { if (r.halo) r.halo.setAlpha(r.color === c ? 0.8 : 0.25); });
   };
   if (this.cplats.length) this.setColor(this.cstart);
+
+  // ---------- Plaques de verre (Mémorial) : elles s'allument doucement quand on s'approche et affichent un fait daté ; une plaque allumée le reste ----------
+  this.plaques = (L.plaques || []).map(function (q) {
+    var x = q.x * 16 + 8, fl = q.floor * 16;
+    var img = scene.add.image(x, fl, 'lv_plaque').setOrigin(0.5, 1).setDepth(7).setAlpha(0.6);
+    var halo = has('lv_halo') ? scene.add.image(x, fl - 16, 'lv_halo').setBlendMode(Phaser.BlendModes.ADD).setTint(0xfff3a0).setScale(1.6).setAlpha(0).setDepth(6) : null;
+    var txt = GP.UI.txt(scene, x, fl - 40, ' ' + q.text + ' ', GP.PAL.w, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 4 }, wordWrap: { width: 220 }, lineSpacing: 3 }).setOrigin(0.5, 1).setDepth(40).setAlpha(0);
+    return { x: x, img: img, halo: halo, txt: txt, lit: false };
+  });
 
   // ---------- Grue des Chantiers : un conteneur suspendu à un câble, sous un chariot qui roule sur la flèche ; on monte dessus pour franchir le vide ----------
   this.cranes = (L.cranes || []).map(function (c) {
@@ -494,6 +503,13 @@ GP.Dangers.prototype = {
       else if (!proche) h.y = Math.max(h.yMin, h.y - 30 * k);
       h.img.y = h.y; h.thread.setSize(1, h.y);
       if (h.frozen) h.img.setTint(0x9fb0d0); else h.img.clearTint();
+    });
+
+    // plaques de verre du Mémorial : on s'approche, elles s'allument (et le restent) ; leur texte s'affiche tant qu'on est à côté
+    this.plaques.forEach(function (q) {
+      var near = Math.abs(p.x - q.x) < 36;
+      if (near && !q.lit) { q.lit = true; q.img.setAlpha(1); if (q.halo) q.halo.setAlpha(0.7); GP.Sfx.play('step'); }
+      q.txt.setAlpha(near ? 1 : 0);
     });
 
     // grue : va-et-vient sinusoïdal du conteneur (le joueur est transporté, comme sur un étal mobile)

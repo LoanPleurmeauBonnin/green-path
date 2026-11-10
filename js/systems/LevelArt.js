@@ -702,6 +702,12 @@ GP.LevelArt = (function () {
     R(ctx, 0, h - 44, w, 44, '#b3aa92'); for (x = 0; x < w; x += 24) R(ctx, x, h - 44, 1, 44, '#9a917b'); R(ctx, 0, h - 28, w, 1, '#9a917b');   // sol de dalles
     return o.cv;
   }
+  /** Plaque de verre debout (14×30), cadre sombre, verre bleuté et reflet : elle s'allume au passage dans le niveau du Mémorial. */
+  function drawPlaque() {
+    var o = PA.canvas(14, 30), ctx = o.ctx, k = '#1d1f2b';
+    R(ctx, 0, 0, 14, 30, k); R(ctx, 1, 1, 12, 28, '#a9cde6'); R(ctx, 1, 1, 12, 3, '#d4e8f6'); R(ctx, 3, 6, 1, 18, '#ffffff'); R(ctx, 5, 10, 1, 10, '#ffffff'); R(ctx, 3, 8, 8, 1, '#7fa6c4'); R(ctx, 3, 12, 6, 1, '#7fa6c4'); R(ctx, 3, 16, 7, 1, '#7fa6c4'); R(ctx, 3, 20, 5, 1, '#7fa6c4');
+    return o.cv;
+  }
   /** Fissure de voûte qui suinte (14×10) : lèvre de pierre sombre et trace d'humidité ; la goutte se forme en dessous. */
   function drawFuite() {
     var o = PA.canvas(14, 10), ctx = o.ctx, k = '#1d1f2b';
@@ -906,6 +912,7 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_gardienne', drawGardienne());
     PA.toTexture(scene, 'lv_banc_eglise', drawBancEglise());
     PA.toTexture(scene, 'lv_fuite', drawFuite());
+    PA.toTexture(scene, 'lv_plaque', drawPlaque());
     PA.toTexture(scene, 'lv_araignee', drawAraignee());
     PA.toTexture(scene, 'lv_toile', drawToile());
     PA.toTexture(scene, 'lv_fond_pommeraye', drawFondPommeraye());

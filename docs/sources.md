@@ -37,3 +37,17 @@ Sources consultées le 10 novembre 2026 (recherche web, pages patrimoniales de l
 | Passage Pommeraye | LOUIS POMMERAYE | Notaire devenu promoteur, j'ai ouvert ce passage en 1843. Il m'a ruiné, mais il est classé monument historique depuis 1976. | https://en.wikipedia.org/wiki/Passage_Pommeraye ; https://www.routard.com/fr/guide/france/pays-de-la-loire/nantes/quartier-graslin/passage-pommeraye | Date d'ouverture : 1843 (inauguration le 3 juillet selon certaines sources). Classement 1976 : confirmé par plusieurs sources. |
 | Tour LU | LOUIS LEFÈVRE-UTILE | J'ai imaginé le Petit-Beurre en 1886. Pour l'Exposition universelle de 1900, j'ai fait élever une tour de 36 mètres. | https://www.herodote.net/Les_biscuits_LU-synthese-2799.php ; https://artsandculture.google.com/exhibit/lu-une-histoire-nantaise/YwJSmyHH3im9Kg?hl=fr | Plusieurs dates divergent selon les sources (1886 pour le Petit-Beurre, 1888 pour le dépôt de marque) : à confirmer auprès du Château des ducs (exposition « LU, une histoire nantaise »). |
 | Mémorial | PANNEAU | MÉMORIAL DE L'ABOLITION DE L'ESCLAVAGE. Inauguré le 25 mars 2012, quai de la Fosse. Œuvre de Krzysztof Wodiczko et Julian Bonder. | https://metropole.nantes.fr/actualites/le-memorial-de-l-abolition-de-l-esclavage-monument-politique-et-artistique ; https://www.slaverymonuments.org/items/show/1152 | Texte volontairement neutre, sans personnage. |
+
+## Plaques du Mémorial (niveau 10)
+Six plaques de verre s'allument quand le joueur s'approche et affichent un fait. **Texte à valider par l'équipe avant la présentation** ; aucune scène inventée, aucune parole prêtée à une personne.
+
+| Plaque | Texte affiché | Source | À confirmer |
+|---|---|---|---|
+| 1 | Le mémorial est inauguré le 25 mars 2012, quai de la Fosse, à Nantes. | Ville de Nantes ; Wikipédia ; culture.pl (inauguration) | date de l'inauguration (le catalogue slaverymonuments.org donne cette date comme date de fiche) |
+| 2 | Un escalier à ciel ouvert descend vers un espace souterrain. | https://www.slaverymonuments.org/items/show/1152 | — |
+| 3 | Le Grand Passage est un mur de verre de 90 mètres, gravé de citations. | https://www.slaverymonuments.org/items/show/1152 | — |
+| 4 | Article 4 : nul ne sera tenu en esclavage ni en servitude ; l'esclavage et la traite des esclaves sont interdits sous toutes leurs formes. | Déclaration universelle des droits de l'homme, article 4 (texte officiel) ; la fiche slaverymonuments.org indique qu'une plaque de verre le porte | l'emplacement exact de cette plaque dans le vrai mémorial |
+| 5 | Le mot « liberté » est écrit en 47 langues, dont le créole et des langues africaines. | https://www.slaverymonuments.org/items/show/1152 | — |
+| 6 | Une chronologie de l'abolition court de 1777 à 1888. | https://www.slaverymonuments.org/items/show/1152 | — |
+
+Le nombre total de plaques du vrai mémorial n'est volontairement pas indiqué (non confirmé par les sources consultées).

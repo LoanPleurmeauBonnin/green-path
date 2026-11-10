@@ -371,9 +371,12 @@ GP.LEVELS['memorial'] = (function () {
     L.memo(15, 24, 'DJD');
     L.check(27);
     L.pix(29, 13);
+    L.plaque(28, "Le mémorial est inauguré le 25 mars 2012, quai de la Fosse, à Nantes.");
+    L.plaque(33, "Un escalier à ciel ouvert descend vers un espace souterrain.");
     // 2. La descente vers le passage bas : une deuxième séquence, puis des dalles de verre au-dessus de l'eau
     L.ground(36, 6, 3);
     L.check(38);
+    L.plaque(37, "Le Grand Passage est un mur de verre de 90 mètres, gravé de citations.");
     L.ground(42, 6, 2);
     L.ground(48, 8, 1);
     L.memo(44, 52, 'JJDJ');
@@ -394,6 +397,7 @@ GP.LEVELS['memorial'] = (function () {
     // 4. La traversée des stèles : une longue séquence, puis des dalles de verre
     L.ground(112, 20, 3);
     L.memo(114, 126, 'DJJDJ');
+    L.plaque(129, "Article 4 : nul ne sera tenu en esclavage ni en servitude ; l'esclavage et la traite des esclaves sont interdits sous toutes leurs formes.");
     L.pix(118, 13); L.pix(124, 13);
     L.check(129);
     L.pond(132, 147, 15);
@@ -402,6 +406,8 @@ GP.LEVELS['memorial'] = (function () {
     // 5. La remontée vers la lumière
     L.ground(147, 6, 3); L.ground(153, 6, 4); L.ground(159, 6, 5); L.ground(165, 11, 6);
     L.check(148);
+    L.plaque(150, "Le mot « liberté » est écrit en 47 langues, dont le créole et des langues africaines.");
+    L.plaque(168, "Une chronologie de l'abolition court de 1777 à 1888.");
     L.pix(150, 13); L.pix(155, 12); L.pix(161, 11); L.pix(168, 10); L.pix(172, 10);
     L.hint(166, 'LIBERTÉ');
   });

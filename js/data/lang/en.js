@@ -15,6 +15,13 @@ GP.EN = {
     privacy6: "Controller: the Green Path team (educational project, ESD Nantes). Questions and requests: issues on the GitHub repository LoanPleurmeauBonnin/green-path. This text informs; it is not legal advice."
   },
   words: {
+    // --- plaques du Mémorial ---
+    "Le mémorial est inauguré le 25 mars 2012, quai de la Fosse, à Nantes.": "The memorial opened on 25 March 2012, on the Quai de la Fosse in Nantes.",
+    "Un escalier à ciel ouvert descend vers un espace souterrain.": "An open-air staircase leads down to an underground space.",
+    "Le Grand Passage est un mur de verre de 90 mètres, gravé de citations.": "The Grand Passage is a 90-metre glass wall engraved with quotations.",
+    "Article 4 : nul ne sera tenu en esclavage ni en servitude ; l'esclavage et la traite des esclaves sont interdits sous toutes leurs formes.": "Article 4: no one shall be held in slavery or servitude; slavery and the slave trade shall be prohibited in all their forms.",
+    "Le mot « liberté » est écrit en 47 langues, dont le créole et des langues africaines.": "The word \"freedom\" is written in 47 languages, including Creole and African languages.",
+    "Une chronologie de l'abolition court de 1777 à 1888.": "A chronology of abolition runs from 1777 to 1888.",
     // --- anecdotes de la carte ---
     "SOURCE :": "SOURCE:",
     "L'APOTHICAIRE": "THE APOTHECARY",
