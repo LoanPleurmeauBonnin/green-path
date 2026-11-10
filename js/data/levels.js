@@ -34,7 +34,7 @@ GP.LevelBuilder = {
       width: width, rows: 17, grid: new Int8Array(width * 17),
       plats: [], thorns: [], pixels: [], checks: [], hints: [], deco: [], startX: 2, startRow: 13,
       climbs: [], crumbles: [], gargoyles: [], slits: [], gates: [], barrels: [], movers: [], rainThorns: [], sunPlats: [],
-      abilities: {}, skin: null
+      abilities: {}, skin: null, shelters: []
     };
     function set(x, y, v) { if (x >= 0 && x < width && y >= 0 && y < 17) L.grid[y * width + x] = v; }
     /** Première ligne pleine de la colonne x (sol, pierre, topiaire, pavés), ou 17 s'il n'y en a pas (trou). */
@@ -60,6 +60,10 @@ GP.LevelBuilder = {
       mover: function (x, y, w, dx, dy, period) { L.movers.push({ x: x, y: y, w: w, dx: dx || 0, dy: dy || 0, period: period || 3000 }); },
       rainThorn: function (x) { L.rainThorns.push({ x: x, y: L.top(x) - 1 }); },
       sunPlat: function (x, y, w) { L.sunPlats.push({ x: x, y: y, w: w || 1 }); },
+      /** x/y/w/h en pixels monde ; coefficients pluie, neige, vent indépendants. */
+      shelter: function (id, x, y, w, h, protection) {
+        L.shelters.push({ id: id, x: x, y: y, w: w, h: h, rain: protection.rain, snow: protection.snow, wind: protection.wind });
+      },
       /** Verdure au hasard, seulement là où il n'y a ni objet de jeu ni trou. */
       scatter: function (seed) {
         var rnd = GP.PixelArt.rng(seed), busy = {};
@@ -100,13 +104,16 @@ GP.LEVELS['jardin-des-plantes'] = (function () {
     L.start(2);
     L.deco(9, 'lv_glass', { depth: 1 });
     L.deco(5, 'lv_tram', { depth: 3 });
+    // Auvent déjà dessiné : toit à y=182..188 ; protection partielle, côtés ouverts.
+    L.shelter('gare-auvent-1', 66, 188, 44, 36, { rain: 0.5, snow: 0.5, wind: 0.25 });
     L.deco(15, 'lv_pine', { depth: 2 }); L.deco(21, 'lv_pine', { depth: 2, dx: 6 });
-    L.hint(3, '< > OU Q/D : COURIR');
+    L.hint(3, '{move} : COURIR');
     L.pixRow(8, 13, 5);
     // 2. Une marche, puis un trou de 3 tuiles : sauter
-    L.hint(18, 'ESPACE : SAUTER');
+    L.hint(18, '{jump} : SAUTER');
     L.ground(23, 8, 4, 'pave');
     L.deco(27, 'lv_tram', { depth: 3 });
+    L.shelter('gare-auvent-2', 418, 172, 44, 36, { rain: 0.5, snow: 0.5, wind: 0.25 });
     L.pix(25, 11);
     L.pix(31, 11); L.pix(32, 9); L.pix(33, 9);         // sur l'arc du saut
     // 3. Entrée du jardin : lanterne, puis une ronce isolée, puis une double ronce
@@ -118,7 +125,7 @@ GP.LEVELS['jardin-des-plantes'] = (function () {
     L.thorn(46, 1); L.pix(46, 9);
     L.thorn(52, 2); L.pix(52, 9); L.pix(53, 9);
     // 4. Rebords d'herbe à deux hauteurs : sauter plus haut
-    L.hint(58, 'MAINTIENS ESPACE : PLUS HAUT');
+    L.hint(58, 'MAINTIENS {jump} : PLUS HAUT');
     L.ground(61, 20, 3);
     L.plat(64, 12, 4); L.pix(65, 11); L.pix(66, 11);
     L.plat(69, 10, 4); L.pix(70, 9); L.pix(71, 9);     // accessible seulement depuis le premier rebord
@@ -165,7 +172,7 @@ GP.LEVELS['chateau'] = (function () {
     // 1. Cour : s'accroupir sous les flèches
     L.ground(0, 40, 3);
     L.start(2);
-    L.hint(4, "BAS OU S : S'ACCROUPIR");
+    L.hint(4, "{down} : S'ACCROUPIR");
     L.pixRow(7, 13, 3);
     L.hint(12, 'LES FLÈCHES VISENT LA TÊTE : ACCROUPIS-TOI');
     L.deco(29, 'chateau_tour_ronde_milieu', { depth: 3, dy: -16 }); L.deco(29, 'chateau_tour_ronde_pied', { depth: 3 });
@@ -185,8 +192,10 @@ GP.LEVELS['chateau'] = (function () {
     // 3. Herses : passer au bon moment (un linteau empêche de sauter par-dessus)
     L.hint(53, 'LA HERSE SE LÈVE : PASSE AU BON MOMENT');
     L.block(57, 0, 3, 11); L.gate(58, 1800, 1500);       // mur plein au-dessus de la porte : la herse remonte dedans
+    L.shelter('chateau-passage-1', 57 * 16, 11 * 16, 3 * 16, 3 * 16 + 1, { rain: 1, snow: 1, wind: 0.5 });
     L.pix(61, 13);
     L.block(63, 0, 3, 11); L.gate(64, 1800, 1500);
+    L.shelter('chateau-passage-2', 63 * 16, 11 * 16, 3 * 16, 3 * 16 + 1, { rain: 1, snow: 1, wind: 0.5 });
     L.pix(67, 13);
     L.pix(72, 11); L.pix(74, 11);
     L.deco(70, 'chateau_tonneau', { depth: 3 }); L.deco(71, 'chateau_caisse', { depth: 3 });
@@ -208,7 +217,7 @@ GP.LEVELS['chateau'] = (function () {
     L.deco(110, 'chateau_blason_simple', { depth: 3, dy: -24 });
   });
   L.id = 'chateau';
-  L.reveal = 'bottomUp';
+  L.reveal = 'fortification';
   L.abilities = { crouch: true };
   L.skin = {
     top: 'chateau_sol_pave_chateau', fill: ['chateau_mur_tuffeau_plein_1', 'chateau_mur_tuffeau_plein_2', 'chateau_mur_tuffeau_plein_3'],
@@ -234,7 +243,7 @@ GP.LEVELS['cathedrale'] = (function () {
     // 1. Grimper à une colonne
     L.ground(0, 22, 3);
     L.start(2);
-    L.hint(4, 'HAUT : GRIMPE AUX COLONNES');
+    L.hint(4, '{up} : GRIMPE AUX COLONNES');
     L.climb(9, 7, 13);
     L.plat(10, 7, 4);
     L.pix(9, 9); L.pix(11, 6); L.pix(12, 6);

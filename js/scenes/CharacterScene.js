@@ -42,7 +42,8 @@ GP.Scenes.Character = class CharacterScene extends Phaser.Scene {
     this.makeRow(n + 1, y0 + (n + 1) * dy, 'ALÉATOIRE', { kind: 'random' });
     this.makeRow(n + 2, y0 + (n + 2) * dy, 'VALIDER', { kind: 'ok' });
 
-    this.txt(W / 2, H - 14, 'HAUT/BAS  < > CHANGER  ESPACE ANIMER', P.m).setOrigin(0.5);
+    var hint = this.txt(W / 2, H - 26, '', P.m, { align: 'center', lineSpacing: 3 }).setOrigin(0.5, 0);
+    GP.Prompts.bind(this, hint, '{navY} CHOISIR  {navX} CHANGER\n{confirm} VALIDER  {preview} ANIMER  {back} RETOUR');
 
     var kb = this.input.keyboard;
     kb.on('keydown-UP', function () { self.move(-1); });

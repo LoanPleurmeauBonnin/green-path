@@ -16,4 +16,6 @@ généré dans son navigateur (100 bits). Le serveur ne garde que le **haché SH
 Classement de confiance, pas anti-triche (les résultats viennent du navigateur du joueur). Pas de limitation de débit ni de filtre de pseudos. Projet gratuit : mis en pause après environ une semaine d'inactivité (le jeu retombe alors en mode invité / hors ligne, sans erreur).
 
 ## Fichiers
-`schema.sql` : le schéma complet (appliqué par migrations via l'outil Supabase).
+`schema.sql` : le schéma de référence. **L'audit du 10 novembre a renforcé localement `gp_save`** (taille, identifiants de lieux, erreurs de conversion et annulation atomique). Ces changements n'ont **pas été exécutés sur le serveur**. Ne pas rejouer le schéma complet sur une base existante : après accord de l'équipe, préparer un `CREATE OR REPLACE FUNCTION public.gp_save…` à partir de cette définition et le tester sur une base de staging. Les tables et sauvegardes existantes ne sont pas migrées par ce travail.
+
+Le serveur déployé n'a pas été réaudité par des écritures réelles pendant cette session. RLS et permissions ci-dessus sont constatées dans le schéma, pas certifiées en production. L'absence de limitation de débit reste un risque avant ouverture à grande audience : prévoir un point d'entrée serveur protégé, plutôt qu'une limitation côté navigateur contournable.

@@ -60,8 +60,10 @@ GP.Scenes.Result = class ResultScene extends Phaser.Scene {
     UI.txt(this, 238, y0 + 102, notice, P.c, { wordWrap: { width: 212 }, lineSpacing: 3 });
 
     // boutons
-    var bCarte = UI.button(this, 30, 234, 140, 'CARTE (ENTRÉE)', function () { self.leave('Map'); }, { primary: true });
-    var bRe = UI.button(this, 182, 234, 130, 'REJOUER (R)', function () { self.leave('Game'); });
+    var bCarte = UI.button(this, 30 + GP.Config.DX, 234, 140, '', function () { self.leave('Map'); }, { primary: true });
+    var bRe = UI.button(this, 182 + GP.Config.DX, 234, 150, '', function () { self.leave('Game'); });
+    GP.Prompts.bind(this, bCarte.label, 'CARTE {confirm}');
+    GP.Prompts.bind(this, bRe.label, 'REJOUER {replay}');
     [bCarte, bRe].forEach(function (b) { b.objs.forEach(function (o) { o.setDepth(10); }); });
 
     var kb = this.input.keyboard;

@@ -7,10 +7,16 @@
  *   valeurs neutres de secours seulement si rien n'a jamais été reçu (jour/nuit déduit de l'heure de l'appareil).
  * - État normalisé : { temp, code, cat, label, icon, isDay, wind, windDir, precip, cloud, source }
  *   où source vaut 'live' (réseau), 'stale' (hors ligne, dernière donnée), 'fallback' (secours) ou 'sim' (test).
- * La météo est purement visuelle : elle ne modifie jamais la physique du jeu.
+ * WeatherRules traduit cet état validé en règles de jeu bornées.
  */
 GP.Weather = (function () {
   var CFG = GP.Config.WEATHER;
+
+  function valid(raw) {
+    return !!raw && ['temp', 'code', 'wind', 'windDir', 'precip', 'cloud'].every(function (k) {
+      return typeof raw[k] === 'number' && Number.isFinite(raw[k]);
+    }) && typeof raw.isDay === 'boolean' && Number.isInteger(raw.code) && raw.code >= 0 && raw.code <= 99;
+  }
 
   /** Codes WMO → catégorie, libellé court (≤ 10 caractères) et icône. */
   function categorize(code) {
@@ -35,7 +41,7 @@ GP.Weather = (function () {
     if (!isDay && icon === 'sun') icon = 'moon';
     if (!isDay && icon === 'part') icon = 'moonpart';
     return {
-      temp: Math.round(Number(raw.temp) || 0), code: Number(raw.code) || 0,
+      temp: Math.round(Math.max(-60, Math.min(60, raw.temp))), code: raw.code,
       cat: c.cat, label: c.label, icon: icon, isDay: isDay,
       wind: Math.max(0, Math.min(80, Number(raw.wind) || 0)),         // km/h, borné 0–80
       windDir: ((Number(raw.windDir) || 0) % 360 + 360) % 360,          // d'où vient le vent (°)
@@ -68,7 +74,7 @@ GP.Weather = (function () {
       var raw = window.localStorage.getItem(CFG.cacheKey);
       if (!raw) return null;
       var d = JSON.parse(raw);
-      if (!d || typeof d.time !== 'number') return null;
+      if (!valid(d) || !Number.isFinite(d.time) || d.time <= 0 || d.time > Date.now() + 60000) return null;
       return d;
     } catch (e) { return null; }
   }
@@ -112,11 +118,16 @@ GP.Weather = (function () {
 
     /** Interroge Open-Meteo (délai 4 s), met à jour l'état et prévient les abonnés. */
     refresh: function (cb) {
+      if (this.pending) { if (cb) this.pending.push(cb); return; }
+      this.pending = cb ? [cb] : [];
       var self = this, done = false;
       function finish(st) {
         if (done) return; done = true;
-        if (self.simIndex >= 0) { if (cb) cb(self.state); return; }   // une météo de test reste affichée
-        self.state = st; if (cb) cb(st); self.notify(st);
+        var callbacks = self.pending; self.pending = null;
+        if (self.simIndex >= 0) st = self.state;   // une météo de test reste affichée
+        self.state = st;
+        callbacks.forEach(function (fn) { try { fn(st); } catch (e) { /* scène fermée */ } });
+        self.notify(st);
       }
       function offline() {
         var last = readCache();
@@ -128,11 +139,13 @@ GP.Weather = (function () {
       fetch(url(), ctrl ? { signal: ctrl.signal } : {})
         .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function (j) {
+          if (done) return;   // une réponse après le délai ne doit pas écraser le cache
           clearTimeout(timer);
           var c = j && j.current;
           if (!c || c.temperature_2m === undefined) throw new Error('réponse incomplète');
           var raw = { temp: c.temperature_2m, code: c.weather_code, isDay: c.is_day === 1, wind: c.wind_speed_10m,
                       windDir: c.wind_direction_10m, precip: c.precipitation, cloud: c.cloud_cover, time: Date.now() };
+          if (!valid(raw) || (c.is_day !== 0 && c.is_day !== 1)) throw new Error('réponse invalide');
           writeCache(raw);
           finish(make(raw, 'live'));
         })

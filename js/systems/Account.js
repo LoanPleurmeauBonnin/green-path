@@ -8,7 +8,11 @@
  * Échap ferme ; le jeu ne reçoit aucune touche tant que la fenêtre est ouverte (manette incluse).
  */
 GP.Account = (function () {
-  var root = null, opts = null, busy = false;
+  var root = null, opts = null, busy = false, previousFocus = null, unwatch = null, repeatAt = 0;
+  function controls() {
+    var node = root && root.querySelector('.acct-controls');
+    if (node) node.textContent = GP.Prompts.format('{fields} CHOISIR  {confirm} VALIDER  {back} RETOUR');
+  }
 
   function T(s) { return GP.t(s); }
   function el(tag, attrs, kids) {
@@ -26,24 +30,42 @@ GP.Account = (function () {
   }
 
   function open(o) {
+    if (root && !root.hidden) return;
+    previousFocus = document.activeElement;
     opts = o || {};
     root = document.getElementById('acct');
     if (!root) return;
     root.hidden = false;
+    root.setAttribute('aria-label', T('SAUVEGARDE ET CLASSEMENT'));
     GP.Pad.capture = true;
+    repeatAt = 0;
+    var scene = GP.game.scene.getScenes(true)[0];
+    if (scene) unwatch = GP.Prompts.watch(scene, controls);
     root.onkeydown = root.onkeyup = root.onkeypress = function (ev) {
       ev.stopPropagation();   // le jeu ne doit pas voir les touches tapées dans les champs
       if (ev.type === 'keydown' && ev.key === 'Escape') { ev.preventDefault(); close('closed'); }
+      if (ev.type === 'keydown' && ev.key === 'Enter' && ev.target.tagName === 'INPUT') {
+        ev.preventDefault();
+        var target = ev.target.type === 'checkbox' ? ev.target : root.querySelector('.acct-btn.primary');
+        if (target) target.click();
+      }
+      if (ev.type === 'keydown' && ev.key === 'Tab') {
+        var fields = Array.from(root.querySelectorAll('input, button')).filter(function (e) { return !e.disabled; });
+        var i = fields.indexOf(document.activeElement), next = (i + (ev.shiftKey ? -1 : 1) + fields.length) % fields.length;
+        if (fields.length) { ev.preventDefault(); fields[next].focus(); }
+      }
     };
     show(opts.mode || (GP.Cloud.isAccount ? 'manage' : 'choose'));
   }
 
   function close(action, extra) {
-    if (!root) return;
+    if (!root || root.hidden || busy) return;   // ne pas fermer une opération encore en cours
     root.hidden = true; root.textContent = ''; root.onkeydown = root.onkeyup = root.onkeypress = null;
+    if (unwatch) { unwatch(); unwatch = null; }
     GP.Pad.capture = false;
     var cb = opts && opts.onDone; opts = null;
-    var canvas = document.querySelector('#game canvas'); if (canvas && canvas.focus) { try { canvas.focus(); } catch (e) { /* ignoré */ } }
+    var canvas = previousFocus && previousFocus.isConnected ? previousFocus : document.querySelector('#game canvas');
+    if (canvas && canvas.focus) { try { canvas.focus(); } catch (e) { /* ignoré */ } }
     if (cb) cb(Object.assign({ action: action }, extra || {}));
   }
 
@@ -56,6 +78,8 @@ GP.Account = (function () {
     var box = el('div', { class: 'acct-box' });
     root.appendChild(box);
     ({ choose: choose, create: create, restore: restore, manage: manage }[mode] || choose)(box);
+    box.appendChild(el('p', { class: 'acct-controls note', 'aria-live': 'polite' })); controls();
+    if (box.querySelector('input[type="text"]')) box.appendChild(el('p', { class: 'note', text: T('SAISIE DU PSEUDO ET DU CODE AU CLAVIER.') }));
     var first = box.querySelector('input, button'); if (first) first.focus();
   }
 
@@ -154,5 +178,17 @@ GP.Account = (function () {
     box.appendChild(btn('FERMER', function () { close('closed'); }, true));
   }
 
-  return { open: open, close: close };
+  function padInput(now, prev, time) {
+    if (!root || root.hidden) return;
+    if (now.B && !prev.B) { close('closed'); return; }
+    var fields = Array.from(root.querySelectorAll('input, button')).filter(function (e) { return !e.disabled; });
+    var dir = (now.DOWN ? 1 : 0) - (now.UP ? 1 : 0);
+    if (dir && ((now.DOWN && !prev.DOWN) || (now.UP && !prev.UP) || time >= repeatAt)) {
+      var index = fields.indexOf(document.activeElement);
+      if (fields.length) fields[(index + dir + fields.length) % fields.length].focus();
+      repeatAt = time + ((now.DOWN && !prev.DOWN) || (now.UP && !prev.UP) ? 400 : 130);
+    }
+    if (now.A && !prev.A && document.activeElement && root.contains(document.activeElement)) document.activeElement.click();
+  }
+  return { open: open, close: close, padInput: padInput, get isOpen() { return !!root && !root.hidden; } };
 })();

@@ -6,6 +6,9 @@
 window.GP = window.GP || {};
 GP.EN = {
   texts: {
+    credits: "Green Path — a platform game exploring Nantes's heritage. Educational project, ESD Nantes — PATRIMOINE.EXE, 2026.\n\nFlorine RACINE — UX/UI Designer, Game Design. Loan PLEURMEAU — Web Developer, AI Ops.\n\nTechnology: Phaser 3.90, JavaScript, Canvas/WebGL, WebAudio; Press Start 2P font. Services: Open-Meteo, optional Supabase saves, Vercel hosting.\n\nAssistance: Claude Code, Claude Design and GPT-6.1 Sol through OpenCode. Thanks to ESD Nantes and the authors of the resources listed in Sources and licences.",
+    heritageSources: "Main heritage source: Castle of the Dukes of Brittany, institutional website, History section: https://www.chateaunantes.fr/le-chateau/histoire/. The other places form a corpus of variations. The game's route is not an official numbering of the green line.\n\nOther monuments are stylised sprites, not photographs. Avatar: Figma base supplied by the team; the reference's provenance and reuse conditions are detailed in CREDITS.md. Scouting photographs and visual references support observation and are not included in the game.",
+    sources: "Palmarium photograph: Pymouss44, via Wikimedia Commons (Jardin des plantes Nantes-serre.JPG), CC BY-SA 3.0. Cropped and pixelated to 48 × 32 with 16 colours; this adaptation is shared under the same licence: https://creativecommons.org/licenses/by-sa/3.0/. Weather: Open-Meteo.com, CC BY 4.0. Phaser: MIT. Press Start 2P font: OFL. Background sprites: Claude Design assistance. Details and sources: CREDITS.md in the game folder.",
     intro: "Psst… over here! I'm the keeper of the green line. Last night, a great gust of wind swept over Nantes. Its monuments flew away in a thousand pixels! The castle, the cathedral, the garden… 12 places are waiting to be rebuilt. Follow the green line, collect the pixels and give Nantes its monuments back to unlock a special illustration.",
     privacy1: "Green Path asks for no name and no e-mail. There are no ads, no visit statistics and no tracking cookies. You can play without sharing anything: that is guest mode.",
     privacy2: "On your device, in the browser's local storage, the game keeps: your progress, your avatar, the language, your keys, the last weather received and, if you have a pseudonym, your save code.",
@@ -15,6 +18,32 @@ GP.EN = {
     privacy6: "Controller: the Green Path team (educational project, ESD Nantes). Questions and requests: issues on the GitHub repository LoanPleurmeauBonnin/green-path. This text informs; it is not legal advice."
   },
   words: {
+    'À PROPOS DE GREEN PATH': 'ABOUT GREEN PATH', 'SOURCES': 'SOURCES', 'JEU ET COMMANDES': 'GAME AND CONTROLS', 'DONNÉES ET AIDE': 'DATA AND HELP',
+    '{pages} PAGES  {navY} RUBRIQUES': '{pages} PAGES  {navY} SECTIONS',
+    '{navY} CHOISIR  {confirm} VALIDER\n{sections} RUBRIQUES  {back} RETOUR': '{navY} CHOOSE  {confirm} CONFIRM\n{sections} SECTIONS  {back} BACK',
+    'ABRI · AU SEC': 'SHELTER · DRY', 'ABRI · PROTECTION PARTIELLE': 'SHELTER · PARTIAL PROTECTION',
+    'CLAVIER': 'KEYBOARD', 'TACTILE': 'TOUCH', 'COMMANDES': 'CONTROLS', 'COMMANDES MANETTE': 'GAMEPAD CONTROLS', 'NEUTRE': 'NEUTRAL',
+    'APPUYER SUR UNE TOUCHE': 'PRESS A KEY', 'LE VOYAGE': 'THE JOURNEY',
+    'CROIX': 'CROSS', 'ROND': 'CIRCLE', 'CARRÉ': 'SQUARE', 'TRIANGLE': 'TRIANGLE',
+    'HORS LIGNE · CACHE': 'OFFLINE · CACHED', 'HORS LIGNE · SECOURS': 'OFFLINE · FALLBACK', 'TEST · SIMULATION': 'TEST · SIMULATED',
+    '{navY} CHOISIR  {confirm} VALIDER  {back} RETOUR': '{navY} CHOOSE  {confirm} CONFIRM  {back} BACK',
+    '{navY} CHOISIR  {navX} CHANGER  {preview} ANIMER': '{navY} CHOOSE  {navX} CHANGE  {preview} ANIMATE',
+    '{navY} CHOISIR  {navX} CHANGER\n{confirm} VALIDER  {preview} ANIMER  {back} RETOUR': '{navY} CHOOSE  {navX} CHANGE\n{confirm} CONFIRM  {preview} ANIMATE  {back} BACK',
+    'RETOUR {back}': 'BACK {back}',
+    '{navY} CHOISIR  {navX} CHANGER  {confirm} VALIDER  {back} RETOUR': '{navY} CHOOSE  {navX} CHANGE  {confirm} CONFIRM  {back} BACK',
+    '{confirm} CHANGER  SUPPR : VIDER  {back} RETOUR': '{confirm} CHANGE  DEL: CLEAR  {back} BACK',
+    '{confirm} VALIDER  {back} RETOUR': '{confirm} CONFIRM  {back} BACK',
+    '{fields} CHOISIR  {confirm} VALIDER  {back} RETOUR': '{fields} CHOOSE  {confirm} CONFIRM  {back} BACK',
+    'SAISIE DU PSEUDO ET DU CODE AU CLAVIER.': 'ENTER PSEUDONYM AND CODE WITH A KEYBOARD.',
+    "Navigation : {navX}, {navY}, {confirm} pour valider, {back} pour revenir. En jeu : {move} pour courir, {jump} pour sauter, {up} pour grimper, {down} pour s'accroupir, {pause} pour la pause, {help} pour l'aide. Le jeu reste visuel et n'est pas entièrement accessible aux lecteurs d'écran.": 'Navigation: {navX}, {navY}, {confirm} to confirm, {back} to go back. In a level: {move} to run, {jump} to jump, {up} to climb, {down} to crouch, {pause} to pause, {help} for help. The game remains visual and is not fully accessible to screen readers.',
+    '{navX} ÉTAPES  {confirm} FICHE  {help} AIDE': '{navX} STAGES  {confirm} INFO  {help} HELP',
+    '{back} : REPRENDRE': '{back}: RESUME', 'PAUSE\n{pause}': 'PAUSE\n{pause}',
+    'CARTE {confirm}': 'MAP {confirm}', 'REJOUER {replay}': 'REPLAY {replay}', 'REJOUER {confirm}': 'REPLAY {confirm}', 'JOUER {confirm}': 'PLAY {confirm}',
+    '{move} : COURIR': '{move}: RUN', '{jump} : SAUTER': '{jump}: JUMP', 'MAINTIENS {jump} : PLUS HAUT': 'HOLD {jump}: HIGHER',
+    "{down} : S'ACCROUPIR": '{down}: CROUCH', '{up} : GRIMPE AUX COLONNES': '{up}: CLIMB COLUMNS',
+    'CHANGER DE NIVEAU': 'CHANGE LEVEL', 'FEUILLETER LES PAGES': 'TURN PAGES', 'COURIR': 'RUN',
+    'SAUTER ; MAINTENIR = PLUS HAUT': 'JUMP; HOLD = HIGHER', "S'ACCROUPIR SOUS LES FLÈCHES": 'CROUCH UNDER ARROWS',
+    'SOURCES ET LICENCES': 'SOURCES AND LICENCES', 'SOURCE → RÈGLE': 'SOURCE → RULE',
 
     // --- compte, classement ---
     'CLASSEMENT': 'SCOREBOARD', 'CHARGEMENT…': 'LOADING…', 'TOI : ': 'YOU: ', 'JOUE EN INVITÉ : CRÉE UN PSEUDO DANS OPTIONS POUR APPARAÎTRE ICI.': 'PLAYING AS A GUEST: CREATE A PSEUDONYM IN OPTIONS TO APPEAR HERE.',
@@ -124,6 +153,7 @@ GP.EN = {
   /** Lieux : nom, élément, notice courte et résumé (paragraphes), par identifiant de lieu. */
   places: {
     'jardin-des-plantes': {
+      grammar: "VEGETAL VARIATION: the photograph appears from ground to sky, from the centre to the sides. This is a growth metaphor, not a botanical simulation. Rain activates brambles; sunshine opens flower platforms.",
       notice: "Botanical garden of Nantes, facing the station. Greenhouses, camellias and tall trees make it a haven of greenery in the city centre. First step of the green line.",
       summary: [
         "The Jardin des Plantes is Nantes's botanical garden. It opens right opposite the station: in a few steps you go from the forecourt, its tram stops and glass facades, to the shade of tall trees.",
@@ -132,8 +162,8 @@ GP.EN = {
         "First step of the green line, the garden is a breath of fresh air in the heart of the city."
       ]
     },
-    'cathedrale': { notice: "Gothic building whose construction began in 1434 and ended in the 19th century. It holds the tomb of Francis II. Its white stone nave is very tall." },
-    'chateau': { notice: "Fortress of the Dukes of Brittany, rebuilt in the late 15th century by Francis II then Anne of Brittany. Its tuffeau ramparts now house the Nantes history museum." },
+    'cathedrale': { grammar: "VERTICAL VARIATION: repeated columns become climbing zones and cornices become footholds. The image rises row by row. Gargoyles evoke water drainage: when it rains, drops fall more often.", notice: "Gothic building whose construction began in 1434 and ended in the 19th century. It holds the tomb of Francis II. Its white stone nave is very tall." },
+    'chateau': { grammar: "MAIN SOURCE: the Castle's walls, towers and doors become mass, elevation and thresholds to cross. Reconstruction reveals the base, the central curtain wall, then the side towers. Portcullises alternate passage and waiting. This is a playful translation, not a historical reconstruction.", notice: "Fortress of the Dukes of Brittany, rebuilt in the late 15th century by Francis II then Anne of Brittany. Its ramparts surround a residential palace. The site now houses the Nantes history museum." },
     'feydeau': { notice: "Former island of the Loire, joined to the city in the 20th century. Its 18th-century shipowners' townhouses, with mascaron-decorated facades, lean slightly." },
     'pommeraye': { notice: "Shopping arcade opened in 1843, on three levels linked by a monumental staircase. Glass roof, statues and decoration make it a famous covered passage." },
     'graslin': { notice: "Square dominated by the Grand Théâtre, neoclassical, completed in 1788. Its Corinthian-columned facade is crowned with statues of muses." },

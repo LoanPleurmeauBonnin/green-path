@@ -32,13 +32,15 @@ GP.WeatherRules = {
   },
 
   /** Effets communs sur le moteur (bornés). base = réglages normaux du moteur. */
-  physics: function (env, base) {
+  physics: function (env, base, cover) {
+    var C = cover || { rain: 0, snow: 0, wind: 0 }, T = GP.Tuning.weather;
+    function mix(dry, wet, protection) { return wet + (dry - wet) * Math.max(0, Math.min(1, protection || 0)); }
     var p = { accelGround: base.accelGround, accelAir: base.accelAir, airPush: 0, sight: 0 };
-    if (env.rain) p.accelGround = env.storm ? 560 : 650;          // sol mouillé : on glisse un peu en s'arrêtant
-    if (env.snow) { p.accelGround = 430; p.accelAir = 520; }       // neige : plus d'inertie
-    if (env.wind) p.airPush = env.windSign * Math.min(110, (env.wind - 15) * 2.5);   // en l'air seulement, toujours contrable
-    if (env.fog) p.sight = 90;                                     // brume : pixels visibles de près
-    else if (env.night) p.sight = 130;                             // nuit : un peu plus loin, les lanternes éclairent
+    if (env.rain) p.accelGround = mix(base.accelGround, env.storm ? T.stormGround : T.rainGround, C.rain);
+    if (env.snow) { p.accelGround = mix(base.accelGround, T.snowGround, C.snow); p.accelAir = mix(base.accelAir, T.snowAir, C.snow); }
+    if (env.wind) p.airPush = env.windSign * Math.min(T.maxAirPush, (env.wind - 15) * T.windFactor) * (1 - (C.wind || 0));
+    if (env.fog) p.sight = T.fogSight;
+    else if (env.night) p.sight = T.nightSight;
     return p;
   },
 

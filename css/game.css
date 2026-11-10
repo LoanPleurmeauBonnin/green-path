@@ -29,6 +29,7 @@
   image-rendering: crisp-edges;
   outline: none;
 }
+#game canvas:focus-visible { outline: 2px solid var(--green); outline-offset: -2px; }
 
 /* Portrait sur écran tactile : voile plein écran « tournez votre téléphone » (le jeu est mis en pause). */
 #rotate {

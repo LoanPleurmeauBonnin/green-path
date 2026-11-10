@@ -4,7 +4,7 @@
 - **Supabase** (Apache-2.0 pour le logiciel ; service gratuit) : sauvegarde et classement facultatifs (pseudo seul), région Paris. Aucune bibliothèque Supabase n'est incluse : le jeu appelle l'API avec `fetch`.
 
 ## Confidentialité
-Aucune donnée personnelle n'est collectée ; voir [docs/confidentialite.md](docs/confidentialite.md) (et CRÉDITS → CONFIDENTIALITÉ dans le jeu).
+Le mode invité ne demande aucune identité ; un compte facultatif enregistre un pseudo et la progression. Les services réseau voient l'adresse IP. Voir [docs/confidentialite.md](docs/confidentialite.md) (et CRÉDITS → CONFIDENTIALITÉ dans le jeu).
 
 ## Outils de développement
 Skills Phaser (`phaser-core`, `phaser-arcade-physics`) du dépôt gamedev-skills/awesome-gamedev-agent-skills, licence Apache-2.0 : lus avant installation, utilisés comme référence de bonnes pratiques ; non inclus dans le jeu ni dans le dépôt.
@@ -30,10 +30,13 @@ Skills Phaser (`phaser-core`, `phaser-arcade-physics`) du dépôt gamedev-skills
 - Crédit court affiché dans la documentation : « Palmarium, photo Pymouss44, CC BY-SA 3.0, via Wikimedia Commons, recadrée et pixélisée ».
 - Téléchargée le 9 novembre 2026 après validation de l'équipe. Les personnes visibles au loin sur la photo ne sont pas identifiables à 48×32.
 
-Les autres lieux utilisent encore le monument dessiné par code. Candidates : `docs/images-candidates.md`.
+Les autres lieux utilisent encore le monument de la planche de sprites, ou le dessin par code en repli. Candidates : `docs/images-candidates.md`.
+La licence et l'attribution du Palmarium ont été relues sur la page File: le 10 novembre 2026 pendant l'audit. Le jeu affiche aussi ces crédits dans CRÉDITS → SOURCES ET LICENCES. Aucun nouveau téléchargement photographique n'a été effectué.
 
 ## Sprites de décor (planches)
 Les 10 planches de sprites (`js/data/sprites/*.js` : commun, carte, ciel, signes, jardin, cathédrale, château, centre, île, bouffay ; 447 sprites, palette de 35 couleurs) ont été **générées avec Claude Design** (Anthropic) à partir des consignes de l'équipe, puis importées sans retouche par `tools/import-sprites.js`. Elles sont déclarées dans l'usage de l'IA du projet.
+
+Le rendu du sélecteur dérive désormais deux textures finies (`MapDecor.js`) : silhouette fermée de la haie et poteaux de la barrière isolée, avec la palette existante. Les matrices importées, arbres, lampadaires et buissons déjà corrects restent inchangés. Aucun asset tiers ajouté.
 
 ## Logo et icônes
 Logo « N » pixel art fourni par l'équipe (`assets/brand/logo.png`) ; icônes du site générées à partir de lui (`tools/favicon.swift`, agrandissement sans lissage).
@@ -46,3 +49,10 @@ Carte du monde, décor des niveaux (sol, pavés, arbres, ronces, lanternes, ciel
 Les photos de repérage de la gare de Nantes et du Jardin des Plantes (arrêt de tram, bâtiment de verre, pin, bassin, massifs, topiaires, personnage en bois) ont servi de **référence de dessin uniquement** ; aucune n'est intégrée au jeu.
 Les **topiaires** et le personnage en bois du jardin sont des œuvres d'artistes vivants, protégées : le jeu les évoque par des formes génériques (butte de feuillage arrondie, silhouette de bois simple) **sans les copier**.
 Les captures de référence fournies (cartes de monde et niveaux de jeux de plateforme, jeux en vue de dessus, planches de touches de clavier) ont servi **d'inspiration uniquement** : aucun élément n'en est repris. Certaines portent des filigranes de banques d'images : elles ne sont ni intégrées au jeu ni diffusées.
+
+## Assistance d'audit (10 novembre 2026)
+GPT-6.1 Sol via OpenCode : exploration, lecture du brief, correctifs de robustesse et de sécurité, reprise locale, copie hors ligne, médiation de la grammaire, tests et documentation. Les tests exécutés et leurs limites sont détaillés dans `AUDIT.md`. Cette assistance ne constitue ni une validation juridique des assets ni un test croisé par des étudiants.
+
+Passe suivante : contrôles adaptatifs, retarget du sélecteur, rendu des pentes par bandes de pixels, HUD/météo/contexte compacts et recette UX. Pastilles de boutons dessinées par code avec la palette existante, aucun pack d'icônes ni asset tiers ajouté. Les planches `docs/screenshots/polish-*` sont des exports QA du rendu Phaser (météo et manette simulées), pas des captures matérielles ni de nouvelles photographies patrimoniales. Voir `docs/UX_POLISH.md` et `docs/GAMEPLAY_UPGRADES.md`.
+
+Lot correctif : rubriques Crédits/Confidentialité/Sources distinctes sans retrait du contenu antérieur, Options aéré, piédestaux logiques, terminaisons ciblées, fiche et transition centrées, météo abritée et instrumentation volontaire de playtest. Les exports `docs/screenshots/regressions-*` sont des planches QA du rendu Phaser, avec météo simulée ; aucun test humain ni matériel n'est revendiqué. Voir `docs/PLAYTEST_REPORT.md` et `docs/WEATHER_SHELTERS.md`.

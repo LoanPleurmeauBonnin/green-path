@@ -9,10 +9,16 @@
     var loading = document.getElementById('loading');
     if (loading) loading.remove();
     GP.Settings.load();   // langue et touches du joueur, avant la création des scènes
+    GP.Prompts.start();
     GP.Cloud.init();      // compte en ligne éventuel (le jeu marche sans)
     GP.game = new Phaser.Game({
       type: Phaser.AUTO,
       parent: 'game',
+      callbacks: { postBoot: function (game) {
+        game.canvas.setAttribute('tabindex', '0');
+        game.canvas.setAttribute('aria-label', 'Green Path');
+        game.canvas.setAttribute('aria-describedby', 'instructions');
+      } },
       width: GP.Config.WIDTH,
       height: GP.Config.HEIGHT,
       backgroundColor: GP.PAL.k,
@@ -21,7 +27,7 @@
       antialias: false,
       scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
       physics: { default: 'arcade', arcade: { debug: false } },
-      scene: [GP.Scenes.Boot, GP.Scenes.Menu, GP.Scenes.Character, GP.Scenes.Options, GP.Scenes.Score, GP.Scenes.Map, GP.Scenes.Game, GP.Scenes.Result]
+      scene: [GP.Scenes.Boot, GP.Scenes.Menu, GP.Scenes.About, GP.Scenes.Character, GP.Scenes.Options, GP.Scenes.Score, GP.Scenes.Map, GP.Scenes.Game, GP.Scenes.Result]
     });
     GP.game.events.once('ready', checkOrientation);
     GP.Pad.start(GP.game);   // manette : menus et niveaux
@@ -39,6 +45,14 @@
     else if (!loop.running) loop.wake();
   }
   GP.checkOrientation = checkOrientation;
+  // Sur HTTPS/localhost, une première visite complète prépare les rechargements sans réseau.
+  // file:// garde son fonctionnement autonome ; aucun service worker n'y est nécessaire.
+  GP.offlineReady = Promise.resolve(false);
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !GP.Config.DEV_TOOLS) {
+    GP.offlineReady = navigator.serviceWorker.register('./sw.js').then(function () {
+      return navigator.serviceWorker.ready.then(function () { return true; });
+    }).catch(function () { return false; });
+  }
   window.addEventListener('resize', checkOrientation);
   window.addEventListener('orientationchange', function () { setTimeout(checkOrientation, 150); });
   // Au premier toucher (un geste de l'utilisateur est obligatoire) : plein écran puis verrouillage en paysage,

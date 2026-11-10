@@ -16,3 +16,4 @@ Open-Meteo (CC BY 4.0) : météo actuelle de Nantes, voir `README.md`.
 
 ## Textes patrimoniaux
 Notices et fiches de `js/data/locations.js` : brouillons de l'équipe. Points à vérifier : `docs/fiche-source.md`.
+Château : source institutionnelle « Histoire », https://www.chateaunantes.fr/le-chateau/histoire/, consultée le 10 novembre 2026 pendant l'audit. La notice a été précisée pour distinguer remparts et palais résidentiel (sans généraliser le tuffeau à l'ensemble des remparts). Les autres notices n'ont pas fait l'objet d'une vérification historique exhaustive.
