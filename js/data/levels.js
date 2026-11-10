@@ -146,9 +146,20 @@ GP.LEVELS['jardin-des-plantes'] = (function () {
     L.rainThorn(56); L.rainThorn(79); L.rainThorn(133);   // pluie : des ronces poussent (on les saute, elles sont annoncées)
     L.sunPlat(31, 12, 3);                                 // soleil : une fleur fait un pont au-dessus du premier trou
     L.sunPlat(75, 11, 2);                                 // … et une autre aide à attraper les pixels hauts
+    // sculptures de l'été au jardin (dessins originaux, en décor : elles ne gênent jamais le passage)
+    L.deco(49, 'lv_sil_orange', { depth: 3 });
+    L.deco(73, 'lv_sil_jaune', { depth: 3 });
+    L.deco(109, 'lv_sil_ruban', { depth: 3 });
+    L.deco(124, 'lv_sil_oiseau', { depth: 3 });
+    // plantes : massifs rouges, hortensias, hautes herbes
+    [41, 60, 66, 77, 129, 135].forEach(function (x) { L.deco(x, 'lv_massif_rouge', { depth: 4 }); });
+    L.deco(105, 'lv_massif_rouge', { depth: 4, dx: 3 });
+    [44, 62, 100, 115, 131].forEach(function (x) { L.deco(x, 'lv_hortensia', { depth: 4 }); });
+    [57, 70, 80, 132].forEach(function (x) { L.deco(x, 'lv_herbes_hautes', { depth: 4 }); });
     L.scatter(1934);
   });
   L.weatherText = { rain: 'LES RONCES POUSSENT', sun: 'DES FLEURS FONT DES PLATEFORMES' };
+  L.sky = { farKey: 'lv_fond_parc', farBottom: 226, hills: true };   // fond de parc (arbres) à la place des montagnes
   L.id = 'jardin-des-plantes';
   L.reveal = 'bottomUp';          // ordre de révélation de l'image (grammaire du lieu)
   L.backdrop = { x: 129, key: 'lm_jardin-des-plantes', scale: 3 };   // la serre en silhouette, au fond
@@ -195,7 +206,6 @@ GP.LEVELS['chateau'] = (function () {
     L.ground(81, 10, 5);
     L.slit(90, 11, -1, 1400, 400, 8);
     L.pix(84, 11); L.pix(87, 11);
-    L.deco(90, 'chateau_tour_ronde_haut', { depth: 3, dy: -16 });
     L.ground(91, 6, 4);
     L.barrel(92, 95, 55);
     L.pix(94, 9);
@@ -218,7 +228,8 @@ GP.LEVELS['chateau'] = (function () {
     bridge: ['chateau_planche_echafaudage_g', 'chateau_planche_echafaudage_m', 'chateau_planche_echafaudage_d']
   };
   L.thornKey = 'commun_pointes_fer_1'; L.thornText = 'AÏE, LES POINTES !';
-  L.sky = { farKey: 'chateau_chateau_silhouette_tile_x', farBottom: 236 };
+  L.sky = { farKey: 'lv_fond_chateau', farBottom: 236 };
+  L.rooms = [{ x: 55, key: 'lv_salle_herses' }, { x: 77, key: 'lv_salle_gardes' }];   // le châtelet aux herses, puis la salle des gardes (intérieur)
   L.backdrop = { x: 112, key: 'chateau_grand_logis', scale: 1, tint: false };
   L.weatherText = { wind: 'LE VENT FAIT ROULER LES TONNEAUX' };
   return L;

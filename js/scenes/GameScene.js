@@ -60,6 +60,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   makeBackground() {
     var L = this.L;
     this.sky = GP.LevelArt.sky(this, -40, L.sky || {});
+    var self = this;
+    (L.rooms || []).forEach(function (r) { self.add.image(r.x * 16, 0, r.key).setOrigin(0, 0).setDepth(-20); });   // salles intérieures : fond de pierre devant le ciel
     if (L.backdrop) {
       var bx = L.backdrop.x * 16, top = L.top(L.backdrop.x) * 16, img = this.add.image(bx, top + 2, L.backdrop.key).setOrigin(0.5, 1).setScale(L.backdrop.scale).setDepth(-5);
       if (L.backdrop.tint !== false) img.setTintFill(0x2b3a55).setAlpha(0.55);
