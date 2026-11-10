@@ -69,7 +69,7 @@ GP.LEVELS['feydeau'] = (function () {
     ledge: ['feydeau_balcon_fer_g', 'feydeau_balcon_fer_m', 'feydeau_balcon_fer_d'], mover: ['feydeau_balcon_fer_g', 'feydeau_balcon_fer_m', 'feydeau_balcon_fer_d']
   };
   L.thornKey = 'feydeau_obstacle_ancre_pointes'; L.thornText = 'AÏE, UNE ANCRE À POINTES !';
-  L.sky = { farKey: 'feydeau_fond_tile_x', farBottom: 236 };
+  L.sky = { farKey: 'lv_fond_feydeau', farBottom: 236 };         // hôtels d'armateurs en tuffeau, d'après des vues de l'île
   L.wxm = { rain: { tide: 1 }, sun: { tide: -1 }, wind: { boat: 1.5 } };
   L.weatherText = { rain: 'LA MARÉE MONTE PLUS HAUT', sun: 'LA MARÉE RESTE BASSE', wind: 'LA LOIRE EST AGITÉE : LES BATEAUX COULENT VITE' };
   return L;
@@ -118,7 +118,7 @@ GP.LEVELS['graslin'] = (function () {
     ledge: ['graslin_terrasse_cafe_g', 'graslin_terrasse_cafe_m', 'graslin_terrasse_cafe_d'], mover: ['graslin_terrasse_cafe_g', 'graslin_terrasse_cafe_m', 'graslin_terrasse_cafe_d']
   };
   L.thornKey = 'graslin_obstacle_chaises'; L.thornText = 'AÏE, DES CHAISES RENVERSÉES !';
-  L.sky = { farKey: 'graslin_fond_tile_x', farBottom: 236 };
+  L.sky = { farKey: 'lv_fond_graslin', farBottom: 236 };         // immeubles de la place, d'après des vues de Graslin
   L.backdrop = { x: 120, key: 'graslin_theatre_facade', scale: 1, tint: false };
   L.wxm = { rain: { note: 0.75 }, sun: { beam: 1.25 }, wind: { spring: 1.1 } };
   L.weatherText = { rain: 'LA PLUIE ÉTOUFFE LES NOTES : PLUS LENTES', sun: 'LES PROJECTEURS BALAIENT PLUS VITE', wind: 'LE VENT GONFLE LES PARASOLS : REBOND PLUS HAUT' };
@@ -132,7 +132,8 @@ GP.LEVELS['machines'] = (function () {
     L.ground(0, 30, 3);
     L.start(2);
     L.hint(3, "LES RAILS T'ENTRAÎNENT VERS LA DROITE");
-    L.deco(5, 'machines_charpente_module', { depth: 1 }); L.deco(16, 'machines_engrenage_grand', { depth: 3 });
+    L.deco(5, 'machines_charpente_module', { depth: 1 });
+    L.deco(11, 'lv_carrousel', { depth: 2.5 });                  // le Carrousel des Mondes Marins
     L.belt(0, 30, 1, 45);
     L.pix(10, 13); L.pix(14, 13); L.pix(18, 13);
     L.thorn(26, 1); L.pix(26, 11);
@@ -142,14 +143,15 @@ GP.LEVELS['machines'] = (function () {
     L.hint(32, 'LE SOUFFLE PRÉVIENT : ATTENDS, PUIS COURS');
     L.belt(30, 62, -1, 30);                           // un léger recul pendant qu'on attend le souffle
     L.jet(36, 4, 3200, 0); L.jet(43, 4, 3200, 1600); L.jet(51, 4, 3000, 800); L.jet(57, 4, 3000, 2200);
-    L.deco(40, 'machines_tuyau_cuivre', { depth: 3 }); L.deco(54, 'machines_tuyau_cuivre', { depth: 3 });
+    L.deco(47, 'lv_arbre_herons', { depth: 2.5 });               // l'Arbre aux Hérons
     L.pix(34, 13); L.pix(40, 13); L.pix(47, 13); L.pix(54, 13); L.pix(60, 13);
     L.check(47);
     // 3. L'horlogerie : rails à contre-sens, des robots te poursuivent
     L.ground(62, 38, 3);
-    L.hint(64, 'LES ROBOTS TE POURSUIVENT : SAUTE-LES');
+    L.hint(64, "LES ARAIGNÉES AVANCENT SI TU NE LES REGARDES PAS");
+    L.deco(90, 'lv_gardienne', { depth: 2.5 });                  // la Gardienne des Ténèbres (l'araignée)
     L.belt(62, 80, -1, 50); L.belt(80, 100, 1, 60);
-    L.patrol(66, 76, 'robot', 40); L.patrol(82, 96, 'robot', 44);
+    L.patrol(66, 76, 'araignee', 40); L.patrol(82, 96, 'araignee', 44);
     L.plat(70, 12, 3); L.pix(71, 11); L.plat(86, 12, 3); L.pix(87, 11);
     L.thorn(78, 1); L.pix(78, 11); L.thorn(94, 1); L.pix(94, 11);
     L.pix(68, 13); L.pix(84, 13);
@@ -163,12 +165,11 @@ GP.LEVELS['machines'] = (function () {
     // 5. L'esplanade du Grand Éléphant : les jets de sa trompe, un dernier robot
     L.ground(122, 20, 3);
     L.belt(122, 142, -1, 35);
-    L.deco(136, 'machines_animal_mecanique', { depth: 3 });
+    L.deco(133, 'lv_elephant', { depth: 2.5 });                  // le Grand Éléphant
     L.jet(128, 4, 3600, 0); L.jet(131, 4, 3600, 1800);
-    L.patrol(123, 127, 'robot', 36);
+    L.patrol(123, 127, 'araignee', 36);
     L.pix(124, 13); L.pix(126, 11); L.pix(134, 13); L.pix(138, 13); L.pix(139, 11);
     L.check(122);
-    for (var px = 1; px < 142; px += 2) L.deco(px, 'machines_tuyau_cuivre', { depth: 2, dy: -112 });   // grands tuyaux de cuivre, en continu au-dessus du niveau
   });
   L.id = 'machines';
   L.maxTime = 200;
@@ -178,10 +179,10 @@ GP.LEVELS['machines'] = (function () {
     top: ['machines_sol_haut_1', 'machines_sol_haut_2'], fill: 'machines_sol_plein', left: 'machines_sol_gauche', right: 'machines_sol_droite', block: 'machines_sol_plein',
     ledge: ['machines_passerelle_acier_g', 'machines_passerelle_acier_m', 'machines_passerelle_acier_d'], mover: ['machines_passerelle_acier_g', 'machines_passerelle_acier_m', 'machines_passerelle_acier_d']
   };
-  L.thornKey = 'machines_obstacle_engrenage_dents'; L.thornText = 'AÏE, LES DENTS DU ROUAGE !';
+  L.thornKey = 'lv_toile'; L.thornText = 'COLLÉ DANS UNE TOILE D\'ARAIGNÉE !';      // des toiles d'araignée au sol
   L.sky = { farKey: 'machines_fond_tile_x', farBottom: 236 };
   L.wxm = { rain: { jet: 0.75 }, sun: { enemy: 1.25 }, wind: { belt: 1.3 } };
-  L.weatherText = { rain: 'LA PLUIE REFROIDIT LES JETS : PLUS COURTS', sun: 'LE SOLEIL SURCHAUFFE LES ROBOTS : PLUS RAPIDES', wind: 'LE VENT RELANCE LES TAPIS : PLUS VIFS' };
+  L.weatherText = { rain: 'LA PLUIE REFROIDIT LES JETS : PLUS COURTS', sun: 'LE SOLEIL SURCHAUFFE LES ARAIGNÉES : PLUS RAPIDES', wind: 'LE VENT RELANCE LES TAPIS : PLUS VIFS' };
   return L;
 })();
 
@@ -465,7 +466,7 @@ GP.LEVELS['pommeraye'] = (function () {
     ledge: ['pommeraye_balcon_galerie_g', 'pommeraye_balcon_galerie_m', 'pommeraye_balcon_galerie_d'], mover: ['pommeraye_balcon_galerie_g', 'pommeraye_balcon_galerie_m', 'pommeraye_balcon_galerie_d']
   };
   L.thornKey = 'pommeraye_obstacle_grille_pointes'; L.thornText = 'AÏE, UNE GRILLE À POINTES !';
-  L.sky = { farKey: 'pommeraye_fond_tile_x', farBottom: 236 };
+  L.sky = { farKey: 'lv_fond_pommeraye', farBottom: 236 };        // galerie à trois niveaux et verrière, dessinée d'après des vues du passage
   L.wxm = { rain: { glass: 0.7 }, sun: { glassback: 0.6 } };
   L.weatherText = { rain: 'LA PLUIE FRAGILISE LE VERRE : IL CÈDE PLUS VITE', sun: 'LE SOLEIL RÉCHAUFFE LE VERRE : IL REVIENT VITE', wind: 'LE VENT SOUFFLE DANS LA VERRIÈRE' };
   return L;
@@ -474,22 +475,22 @@ GP.LEVELS['pommeraye'] = (function () {
 /** NIVEAU 12 — TOUR LU : toutes les mécaniques reprises, puis la nouveauté : le courant d'air ascendant de la coupole (gravité allégée de moitié). Pas de boss. */
 GP.LEVELS['tour-lu'] = (function () {
   var L = GP.LevelBuilder.create(200, function (L) {
-    // 1. Le quai devant la tour : un parasol, puis un anneau au-dessus du canal
+    // 1. La rue devant la tour : un parasol de café (ressort), puis des petits-beurres flottants au-dessus du canal
     L.ground(0, 30, 3);
     L.start(2);
     L.hint(3, 'LA TOUR LU : TOUT CE QUE TU AS APPRIS SERT ICI');
-    L.deco(20, 'hangar_conteneur_bleu', { depth: 3 });
+    L.deco(5, 'lv_pan_stop', { depth: 3 }); L.deco(17, 'lv_pan_sens', { depth: 3 }); L.deco(23, 'lv_feu', { depth: 3 });
     L.pix(6, 13); L.pix(18, 13); L.pix(25, 13);
-    L.hint(8, 'SAUTE SUR LE PARASOL');
+    L.hint(8, 'SAUTE SUR LE PARASOL DU CAFÉ');
     L.spring(10); L.plat(13, 10, 4); L.pix(14, 9); L.pix(15, 9);
     L.check(27);
     L.pond(30, 39, 15);
-    L.ring(33, 10, 'red');
-    // 2. Les fours : tapis et jets de vapeur
+    L.plat(31, 13, 3); L.plat(35, 12, 3); L.pix(32, 11); L.pix(36, 10);
+    // 2. La rue de la biscuiterie : jets de vapeur
     L.ground(39, 56, 3);
     L.check(41);
-    L.hint(43, 'LES FOURS : TAPIS ET JETS DE VAPEUR');
-    L.belt(40, 60, 1, 45); L.belt(60, 80, -1, 50);
+    L.hint(43, 'LA RUE DE LA BISCUITERIE : ATTENTION AUX BOUCHES DE VAPEUR'); L.deco(42, 'lv_pan_cedez', { depth: 3 }); L.deco(58, 'lv_pan_stop', { depth: 3 }); L.deco(77, 'lv_abribus', { depth: 3 });
+    [9, 14, 46, 62, 84, 92, 133, 146, 162, 178, 196].forEach(function (tx) { L.deco(tx, 'lv_arbre_rue', { depth: 3 }); });   // arbres d'alignement posés au sol
     L.jet(48, 4, 3200, 0); L.jet(54, 4, 3200, 1600); L.jet(66, 4, 3000, 800); L.jet(72, 4, 3000, 2200);
     L.pix(44, 13); L.pix(51, 13); L.pix(57, 13); L.pix(63, 13); L.pix(69, 13); L.pix(76, 13);
     L.plat(84, 12, 3); L.pix(85, 11);
@@ -503,7 +504,7 @@ GP.LEVELS['tour-lu'] = (function () {
     // 4. La soufflerie du dôme : des courants d'air qui allègent la gravité
     L.ground(127, 22, 3);
     L.check(129);
-    L.hint(131, "LE COURANT D'AIR T'ALLÈGE : SAUTE DEDANS");
+    L.hint(131, "LE COURANT D'AIR T'ALLÈGE : SAUTE DEDANS"); L.deco(129, 'lv_feu', { depth: 3 }); L.deco(138, 'lv_pan_sens', { depth: 3 });
     L.draft(141, 146, 1, 14);
     L.plat(146, 8, 4);
     L.draft(147, 152, 1, 8);
@@ -512,9 +513,8 @@ GP.LEVELS['tour-lu'] = (function () {
     // 5. La terrasse du sommet : un dernier jet, un dernier tapis
     L.ground(156, 44, 14);
     L.check(158);
-    L.belt(160, 176, -1, 40);
     L.jet(166, 4, 3200, 0); L.jet(172, 4, 3200, 1600);
-    L.deco(188, 'hangar_conteneur_bleu', { depth: 3 });
+    L.deco(188, 'lv_pan_stop', { depth: 3 }); L.deco(184, 'lv_abribus', { depth: 3 });
     L.pix(162, 2); L.pix(169, 2); L.pix(176, 2); L.pix(182, 2); L.pix(190, 2);
   });
   L.id = 'tour-lu';
@@ -523,11 +523,11 @@ GP.LEVELS['tour-lu'] = (function () {
   L.reveal = 'topDown';
   L.abilities = { crouch: true, grab: true };
   L.skin = {
-    top: ['hangar_sol_haut_1', 'hangar_sol_haut_2'], fill: 'hangar_sol_plein', left: 'hangar_sol_gauche', right: 'hangar_sol_droite', block: 'hangar_sol_plein',
-    ledge: ['pommeraye_balcon_galerie_g', 'pommeraye_balcon_galerie_m', 'pommeraye_balcon_galerie_d'], mover: ['pommeraye_balcon_galerie_g', 'pommeraye_balcon_galerie_m', 'pommeraye_balcon_galerie_d']
+    top: ['lv_bit_h1', 'lv_bit_h2', 'lv_bit_h1'], fill: 'lv_bit_plein', left: 'lv_bit_g', right: 'lv_bit_d', block: 'lv_bit_plein',       // bitume de la rue
+    ledge: ['lv_pb_g', 'lv_pb_m', 'lv_pb_d'], mover: ['lv_pb_g', 'lv_pb_m', 'lv_pb_d']       // des petits-beurres
   };
-  L.sky = { farKey: 'hangar_fond_tile_x', farBottom: 236 };
-  L.wxm = { rain: { belt: 1.3 }, sun: { jet: 1.2 }, wind: { spring: 1.1 } };
-  L.weatherText = { rain: 'LA PLUIE RELANCE LES TAPIS : PLUS VIFS', sun: 'LA CHALEUR ALLONGE LES JETS DE VAPEUR', wind: 'LE VENT GONFLE LE PARASOL : REBOND PLUS HAUT' };
+  L.sky = { farKey: 'lv_fond_quartier', farBottom: 236 };        // le quartier : immeubles et arbres d'alignement
+  L.wxm = { rain: { jet: 0.8 }, sun: { jet: 1.2 }, wind: { spring: 1.1 } };
+  L.weatherText = { rain: 'LA PLUIE REFROIDIT LA VAPEUR : JETS PLUS COURTS', sun: 'LA CHALEUR ALLONGE LES JETS DE VAPEUR', wind: 'LE VENT GONFLE LE PARASOL : REBOND PLUS HAUT' };
   return L;
 })();

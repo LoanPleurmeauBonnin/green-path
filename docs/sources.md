@@ -17,6 +17,9 @@ Open-Meteo (CC BY 4.0) : météo actuelle de Nantes, voir `README.md`.
 ## Textes patrimoniaux
 Notices et fiches de `js/data/locations.js` : brouillons de l'équipe. Points à vérifier : `docs/fiche-source.md`.
 
+## Références de dessin des Machines de l'île (non intégrées)
+Photos consultées sur Wikimédia Commons le 10 novembre 2026, pour dessiner de zéro les décors du niveau 6 : « Elephant de nantes.jpg » (Grand Éléphant), « Carrousel des Mondes Marins - Nantes.jpg », « Nantes-Machines-Arbre aux hérons-2025-03.jpg », « La Gardienne des Ténèbres.jpg ». Aucune image n'est téléchargée dans le dépôt ni reprise ; licences à relire sur chaque page `File:` si une image devait un jour être intégrée.
+
 ## Anecdotes des personnages (fiche du lieu, page « RENCONTRE »)
 Sources consultées le 10 novembre 2026 (recherche web, pages patrimoniales de la Ville de Nantes, du ministère de la Culture, d'Estuaire, du Voyage à Nantes, d'OpenEdition, d'Hérodote, Wikipédia). Les textes sont **reformulés** (aucune citation recopiée). Les personnages historiques disparus parlent à la première personne ; les personnes vivantes (Daniel Buren, les créateurs des Machines) ne sont **jamais citées en paroles** : un personnage fictif (promeneuse, machiniste, docker, ouvrier) raconte. Le Mémorial n'a pas de personnage : un panneau sobre. **Statut : à valider par l'équipe avant la présentation.** Les doutes restent ici, jamais à l'écran.
 

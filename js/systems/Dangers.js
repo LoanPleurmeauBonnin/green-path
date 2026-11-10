@@ -16,9 +16,9 @@ GP.Dangers = function (scene) {
   this.s = scene; this.t = 0;
   function has(k) { return scene.textures.exists(k); }
 
-  // ---------- Ennemis : esprits (patrouille) et robots (poursuite) ----------
+  // ---------- Ennemis : esprits (patrouille), robots (poursuite) et araignées (elles n'avancent que si on ne les regarde pas, comme les anges qui pleurent) ----------
   this.patrols = (L.patrols || []).map(function (p) {
-    var key = { esprit: 'lv_esprit', robot: 'lv_robot' }[p.kind] || 'lv_esprit';
+    var key = { esprit: 'lv_esprit', robot: 'lv_robot', araignee: 'lv_araignee' }[p.kind] || 'lv_esprit';
     var feet = (p.y + 1) * 16, img = scene.add.image(p.x0 * 16 + 8, feet, key).setOrigin(0.5, 1).setDepth(9);
     if (p.kind === 'esprit') img.setAlpha(0.85);
     return { img: img, x0: p.x0 * 16 + 8, x1: p.x1 * 16 + 8, feet: feet, kind: p.kind, speed: p.speed || 30, dir: 1, pause: 0, home: p.x0 * 16 + 8, bob: p.x0 * 97 };
@@ -82,7 +82,7 @@ GP.Dangers = function (scene) {
   // ---------- Ressorts (parasols de café) : on rebondit à 4,5 tuiles ----------
   this.springs = (L.springs || []).map(function (sp) {
     var floor = (sp.y + 1) * 16, x = sp.x * 16 + 8;
-    var spr = has('graslin_parasol_cafe') ? scene.add.image(x, floor, 'graslin_parasol_cafe').setOrigin(0.5, 1).setDepth(8) : scene.add.image(x, floor, 'lv_rock').setOrigin(0.5, 1).setDepth(8);
+    var skey = L.springKey || 'graslin_parasol_cafe', spr = has(skey) ? scene.add.image(x, floor, skey).setOrigin(0.5, 1).setDepth(8) : scene.add.image(x, floor, 'lv_rock').setOrigin(0.5, 1).setDepth(8);
     var plat = scene.add.image(x - 14, floor - 28, 'lv_tileset').setOrigin(0, 0).setDisplaySize(28, 6).setVisible(false);
     scene.platformBody(plat, true);
     return { x: x, top: floor - 28, spr: spr, cool: 0 };
@@ -289,7 +289,14 @@ GP.Dangers.prototype = {
     this.patrols.forEach(function (e) {
       var sp = e.speed * self.f('enemy'), img = e.img;
       e.bob += dt;
-      if (e.kind === 'robot') {
+      if (e.kind === 'araignee') {
+        var ax = p.x - img.x, proche = Math.abs(ax) < 170 && Math.abs(p.y - e.feet) < 50;
+        var regard = ax > 0 ? p.flipX : !p.flipX;                                  // le joueur tourne la tête vers elle ?
+        e.frozen = proche && regard;
+        if (proche && !regard) { img.x += Math.sign(ax) * sp * k; e.dir = ax > 0 ? 1 : -1; }
+        img.x = Phaser.Math.Clamp(img.x, e.x0, e.x1);
+        if (e.frozen) img.setTint(0x9fb0d0); else img.clearTint();               // figée : teinte de pierre
+      } else if (e.kind === 'robot') {
         var dx = p.x - img.x, near = Math.abs(dx) < 96 && Math.abs(p.y - e.feet) < 40;
         if (near) { img.x += Math.sign(dx) * sp * k; e.dir = dx > 0 ? 1 : -1; }
         else img.x += Math.sign(e.home - img.x) * Math.min(Math.abs(e.home - img.x), sp * 0.5 * k);
@@ -498,8 +505,8 @@ GP.Dangers.prototype = {
     var i, e, b = this.s.player.body, H = this.s.H;
     for (i = 0; i < this.patrols.length; i++) {
       e = this.patrols[i];
-      var h = e.kind === 'robot' ? 11 : 14, y = e.kind === 'esprit' ? e.img.y - 16 : e.feet - h;
-      if (hit(e.img.x - 5, y, 10, h)) return e.kind === 'robot' ? 'UN ROBOT T\'A ATTRAPÉ !' : 'UN ESPRIT DE LA GARDE !';
+      var h = e.kind === 'robot' ? 11 : (e.kind === 'araignee' ? 10 : 14), y = e.kind === 'esprit' ? e.img.y - 16 : e.feet - h;
+      if (hit(e.img.x - (e.kind === 'araignee' ? 9 : 5), y, e.kind === 'araignee' ? 18 : 10, h)) return e.kind === 'robot' ? 'UN ROBOT T\'A ATTRAPÉ !' : (e.kind === 'araignee' ? 'UNE ARAIGNÉE T\'A ATTRAPÉE !' : 'UN ESPRIT DE LA GARDE !');
     }
     for (i = 0; i < this.tides.length; i++) {
       e = this.tides[i];

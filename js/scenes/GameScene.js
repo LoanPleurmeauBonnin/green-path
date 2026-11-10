@@ -108,6 +108,15 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
         if (!GP.reducedMotion) self.tweens.add({ targets: jet, scaleY: 0.8, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       }
     });
+    if (L.supports) L.plats.forEach(function (p) {                      // chaque corniche repose sur deux piliers de pierre (rien ne flotte dans le vide)
+      [p.x * 16 + 1, (p.x + p.w) * 16 - 7].forEach(function (px) {
+        var floor = Math.min(self.H, L.top(Math.floor((px + 3) / 16)) * 16), y0 = (p.y + 1) * 16 - 4;
+        if (floor <= y0) return;
+        self.add.rectangle(px, y0, 6, floor - y0, 0x5f5a4b, 1).setOrigin(0, 0).setDepth(3);
+        self.add.rectangle(px + 1, y0, 4, floor - y0, 0xcfc7b2, 1).setOrigin(0, 0).setDepth(3);
+        self.add.rectangle(px + 1, y0, 1, floor - y0, 0xeee6d0, 1).setOrigin(0, 0).setDepth(3);
+      });
+    });
     var thornKey = L.thornKey || 'lv_thorn';
     this.thorns = L.thorns.map(function (t) {
       self.add.image(t.x * 16 + 8, (t.y + 1) * 16, thornKey).setOrigin(0.5, 1).setDepth(6);
@@ -222,8 +231,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     });
     this.drops = [];
     this.gargoyles = L.gargoyles.map(function (g, i) {
-      var img = self.add.image(g.x * 16 + 8, g.y * 16 + 16, self.key('cathedrale_gargouille', 'lv_rock')).setOrigin(0.5, 1).setDepth(6);
-      return { img: img, x: g.x * 16 + 8 + (img.flipX ? -6 : 6), y: g.y * 16 + 14, period: g.period, t: -i * 500, warned: false };
+      var gk = L.gargoyleKey || 'cathedrale_gargouille', img = self.add.image(g.x * 16 + 8, g.y * 16 + 16, self.key(gk, 'lv_rock')).setOrigin(0.5, 1).setDepth(6);
+      return { img: img, x: g.x * 16 + 8 + (L.gargoyleKey ? 0 : (img.flipX ? -6 : 6)), y: g.y * 16 + 14, period: g.period, t: -i * 500, warned: false };
     });
 
     // réactions à la météo (créées maintenant, activées selon la météo)

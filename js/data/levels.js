@@ -276,6 +276,7 @@ GP.LEVELS['cathedrale'] = (function () {
     L.ground(0, 22, 3);
     L.start(2);
     L.hint(4, 'HAUT : GRIMPE AUX COLONNES');
+    L.deco(6, 'lv_banc_eglise', { depth: 3 }); L.deco(14, 'lv_banc_eglise', { depth: 3 }); L.deco(18, 'lv_banc_eglise', { depth: 3 });
     L.climb(9, 7, 13);
     L.plat(10, 7, 4);
     L.pix(9, 9); L.pix(11, 6); L.pix(12, 6);
@@ -287,8 +288,8 @@ GP.LEVELS['cathedrale'] = (function () {
     L.check(29);
     // 3. Gargouilles : la goutte se forme, puis tombe
     L.hint(30, 'UNE GOUTTE SE FORME : ATTENDS');
-    L.block(32, 5, 1, 1); L.gargoyle(32, 5, 2400);
-    L.block(36, 5, 1, 1); L.gargoyle(36, 5, 2400);
+    L.block(30, 0, 12, 1); L.gargoyle(32, 0, 2400);      // une arche de la voûte : l'eau suinte d'une fissure
+    L.gargoyle(36, 0, 2400);
     L.pix(34, 13); L.pix(38, 13);
     // 4. Corniches qui s'effritent au-dessus des pointes
     L.ground(40, 2, 3); L.check(40);
@@ -305,12 +306,13 @@ GP.LEVELS['cathedrale'] = (function () {
     L.plat(68, 5, 3); L.pix(69, 4); L.pix(70, 4);
     L.ground(67, 13, 3);
     L.check(73);
-    L.block(70, 2, 1, 1); L.gargoyle(70, 2, 2000);
+    L.block(67, 0, 8, 1); L.gargoyle(70, 0, 2000);
     // 6. Un dernier mur à saisir, puis la nef
     L.ground(80, 5, 7);
     L.pix(81, 9); L.pix(83, 9);
     L.ground(85, 35, 3);
     L.pix(90, 13); L.pix(94, 13); L.pix(98, 13);
+    L.deco(88, 'lv_banc_eglise', { depth: 3 }); L.deco(92, 'lv_banc_eglise', { depth: 3 }); L.deco(96, 'lv_banc_eglise', { depth: 3 }); L.deco(103, 'lv_banc_eglise', { depth: 3 }); L.deco(108, 'lv_banc_eglise', { depth: 3 });
     L.plat(100, 11, 3); L.pix(101, 10); L.pix(102, 10);
   });
   L.id = 'cathedrale';
@@ -322,7 +324,9 @@ GP.LEVELS['cathedrale'] = (function () {
     ledge: ['cathedrale_corniche_g', 'cathedrale_corniche_m', 'cathedrale_corniche_d']
   };
   L.thornKey = 'cathedrale_pointes_pierre_1'; L.thornText = 'AÏE, LES POINTES DE PIERRE !';
-  L.sky = { farKey: 'cathedrale_nef_fond_tile_x', farBottom: 240 };
+  L.sky = { farKey: 'lv_fond_nef', farBottom: 236 };           // l'intérieur : piliers, vitraux et rosace
+  L.gargoyleKey = 'lv_fuite';                                  // plus de statues : des fissures de la voûte laissent tomber des gouttes
+  L.supports = true;                                           // les corniches reposent sur des piliers de pierre
   L.backdrop = { x: 108, key: 'cathedrale_tour_facade', scale: 1, tint: false };
   L.rainGargoyle = true;
   L.weatherText = { rain: 'LES GARGOUILLES COULENT PLUS SOUVENT' };
