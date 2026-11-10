@@ -345,7 +345,7 @@ GP.Character = (function () {
       'hero-crouch': { frames: ['crouch'], rate: 1 }
     };
     Object.keys(anims).forEach(function (key) {
-      if (scene.anims.exists(key)) scene.anims.remove(key);
+      if (scene.anims.exists(key)) return;   // créée une seule fois : les images (textures) sont mises à jour sur place
       scene.anims.create({
         key: key, frameRate: anims[key].rate, repeat: -1,
         frames: anims[key].frames.map(function (f) { return { key: 'hero_' + f }; })
