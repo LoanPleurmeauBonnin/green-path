@@ -15,7 +15,7 @@ GP.Config = {
   /** Outils de test (météo simulée W, fin de niveau K) : actifs seulement si l'adresse contient ?dev=1. */
   DEV_TOOLS: /[?&]dev=1\b/.test((window.location && window.location.search) || ""),
   /** Météo réelle (Open-Meteo) : Nantes, centre-ville. */
-  WEATHER: { lat: 47.2184, lon: -1.5536, tz: 'Europe/Paris', timeoutMs: 4000, cacheMin: 30, cacheKey: 'greenpath.weather' }
+  WEATHER: { lat: 47.2184, lon: -1.5536, tz: 'Europe/Paris', timeoutMs: 4000, refreshMin: 5, cacheKey: 'greenpath.weather' }
 };
 
 /** Vrai si le système demande moins d'animations (accessibilité). */

@@ -2,8 +2,7 @@
  * Les 12 étapes de Green Path — SOURCE UNIQUE de données.
  * Ajouter / modifier un lieu = éditer ce fichier (le moteur n'a pas à changer).
  *
- * L'ordre (celui du GDD) est une sélection pour le jeu, PAS la numérotation officielle
- * de la ligne verte du Voyage à Nantes. Pommeraye, Mémorial et Tour LU sont provisoires.
+ * L'ordre est une sélection pour le jeu, PAS la numérotation officielle de la ligne verte du Voyage à Nantes.
  *
  * Champs :
  *  id, name        identifiant et nom affiché
@@ -35,13 +34,6 @@ GP.LOCATIONS = [
     element: { label: 'Palmarium (serre)', verify: true }, verify: true
   },
   {
-    id: 'cathedrale', name: 'Cathédrale Saint-Pierre-et-Saint-Paul',
-    sprite: 'cathedrale_monument_cathedrale',
-    playable: true, level: 'cathedrale', parTime: 110,
-    notice: "Édifice gothique dont la construction débute en 1434 et s'achève au XIXe siècle. Elle abrite le tombeau de François II. Sa nef de pierre blanche est très haute.",
-    element: { label: 'Façade et deux tours', verify: false }, verify: false
-  },
-  {
     id: 'chateau', name: 'Château des ducs de Bretagne',
     sprite: 'chateau_monument_chateau',
     playable: true, level: 'chateau', parTime: 100,
@@ -49,25 +41,32 @@ GP.LOCATIONS = [
     element: { label: 'Remparts et tours', verify: false }, verify: false
   },
   {
+    id: 'cathedrale', name: 'Cathédrale Saint-Pierre-et-Saint-Paul',
+    sprite: 'cathedrale_monument_cathedrale',
+    playable: true, level: 'cathedrale', parTime: 110,
+    notice: "Édifice gothique dont la construction débute en 1434 et s'achève au XIXe siècle. Elle abrite le tombeau de François II. Sa nef de pierre blanche est très haute.",
+    element: { label: 'Façade et deux tours', verify: false }, verify: false
+  },
+  {
+    id: 'bouffay', name: 'Quartier du Bouffay',
+    sprite: 'bouffay_monument_bouffay',
+    playable: true, level: 'bouffay', parTime: 120,
+    notice: "Ancien cœur médiéval de Nantes, aujourd'hui piéton et animé. Ruelles, places et maisons à pans de bois racontent la ville d'avant les grandes transformations.",
+    element: { label: 'Maison du 7 rue de la Juiverie', verify: true }, verify: true
+  },
+  {
     id: 'feydeau', name: 'Île Feydeau',
     sprite: 'feydeau_monument_feydeau',
-    playable: true, level: 'feydeau', parTime: 120,
+    playable: false,
     notice: "Ancienne île de la Loire, rattachée à la ville au XXe siècle. Ses hôtels d'armateurs du XVIIIe siècle, aux façades ornées de mascarons, se penchent légèrement.",
     element: { label: 'Façades des hôtels d\'armateurs', verify: false }, verify: false
   },
   {
-    id: 'grue-titan', name: 'Grue Titan',
-    sprite: 'chantiers_monument_chantiers',
+    id: 'pommeraye', name: 'Passage Pommeraye',
+    sprite: 'pommeraye_monument_pommeraye',
     playable: false,
-    notice: "Grande grue jaune des anciens chantiers navals, conservée à la pointe ouest de l'île de Nantes. Elle rappelle le passé industriel du port et domine encore le quai.",
-    element: { label: 'La grue jaune', verify: true }, verify: true
-  },
-  {
-    id: 'elephant', name: "Éléphant des Machines de l'île",
-    sprite: 'machines_monument_machines',
-    playable: false,
-    notice: "Atelier-spectacle installé dans les anciens chantiers navals. Le Grand Éléphant, géant mécanique de bois et d'acier, promène les visiteurs sur l'île.",
-    element: { label: 'Grand Éléphant', verify: false }, verify: false
+    notice: "Galerie commerçante ouverte en 1843, sur trois niveaux reliés par un escalier monumental. Verrière, statues et décors en font un passage couvert célèbre.",
+    element: { label: 'Verrière et escalier', verify: false }, verify: false
   },
   {
     id: 'graslin', name: 'Place Graslin',
@@ -75,6 +74,27 @@ GP.LOCATIONS = [
     playable: false,
     notice: "Place dominée par le Grand Théâtre, de style néoclassique, achevé en 1788. Sa façade à colonnes corinthiennes est couronnée de statues de muses.",
     element: { label: 'Façade du Grand Théâtre', verify: false }, verify: false
+  },
+  {
+    id: 'memorial', name: "Mémorial de l'abolition de l'esclavage",
+    sprite: 'memorial_monument_memorial',
+    playable: false,
+    notice: "Mémorial au bord de la Loire rappelant le rôle de Nantes dans la traite négrière et l'histoire de son abolition. Il mêle quai, verre et textes gravés.",
+    element: { label: 'Plaques de verre du quai', verify: true }, verify: true
+  },
+  {
+    id: 'machines', name: "Machines de l'île",
+    sprite: 'machines_monument_machines',
+    playable: false,
+    notice: "Atelier-spectacle installé dans les anciens chantiers navals. Le Grand Éléphant, géant mécanique de bois et d'acier, promène les visiteurs sur l'île.",
+    element: { label: 'Grand Éléphant', verify: false }, verify: false
+  },
+  {
+    id: 'chantiers', name: 'Parc des Chantiers',
+    sprite: 'chantiers_monument_chantiers',
+    playable: false,
+    notice: "Parc aménagé sur l'ancien site des chantiers navals, au cœur de l'île de Nantes. Grues et vestiges industriels dialoguent avec les jardins.",
+    element: { label: 'Grue jaune des chantiers', verify: true }, verify: true
   },
   {
     id: 'buren', name: 'Anneaux de Buren',
@@ -89,27 +109,6 @@ GP.LOCATIONS = [
     playable: false,
     notice: "Ancien entrepôt portuaire où transitaient les bananes venues des Antilles, reconverti en lieu de restaurants, de culture et de loisirs au bord de la Loire.",
     element: { label: 'Le hangar du quai', verify: true }, verify: true
-  },
-  {
-    id: 'pommeraye', name: 'Passage Pommeraye',
-    sprite: 'pommeraye_monument_pommeraye',
-    playable: false,
-    notice: "Galerie commerçante ouverte en 1843, sur trois niveaux reliés par un escalier monumental. Verrière, statues et décors en font un passage couvert célèbre.",
-    element: { label: 'Verrière et escalier', verify: false }, verify: false
-  },
-  {
-    id: 'memorial', name: "Mémorial de l'abolition de l'esclavage",
-    sprite: 'memorial_monument_memorial',
-    playable: false,
-    notice: "Mémorial au bord de la Loire rappelant le rôle de Nantes dans la traite négrière et l'histoire de son abolition. Il mêle quai, verre et textes gravés.",
-    element: { label: 'Plaques de verre du quai', verify: true }, verify: true
-  },
-  {
-    id: 'tour-lu', name: 'Tour LU',
-    sprite: '',
-    playable: false,
-    notice: "Tour de l'ancienne biscuiterie LU, face au château. Avec sa coupole, elle signalait l'usine au bord de l'eau ; le bâtiment accueille aujourd'hui une scène culturelle.",
-    element: { label: 'La tour et sa coupole', verify: true }, verify: true
   }
 ];
 

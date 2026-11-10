@@ -175,39 +175,48 @@ GP.WeatherFX = (function () {
   }
 
   // ---------- Widget (température, condition, icône, source) ----------
-  // Source des données : EN DIRECT (réseau), IL Y A N MIN (copie gardée moins de 30 min dans le navigateur,
-  // pour ne pas appeler l'API à chaque écran), HORS LIGNE (valeurs de secours), TEST (météo simulée).
+  // Source des données : EN DIRECT (réseau, rafraîchi toutes les 5 min), HORS LIGNE · IL Y A N MIN (réseau coupé :
+  // dernière donnée reçue), HORS LIGNE (rien n'a jamais été reçu : valeurs neutres), TEST (météo simulée).
   var SOURCE = {
-    live: { tag: 'EN DIRECT', color: GP.PAL.g },
-    cache: { tag: 'IL Y A', color: GP.PAL.l },
-    fallback: { tag: 'HORS LIGNE', color: GP.PAL.o },
-    sim: { tag: 'TEST', color: GP.PAL.p }
+    live: { color: GP.PAL.g }, stale: { color: GP.PAL.o }, fallback: { color: GP.PAL.o }, sim: { color: GP.PAL.p }
   };
-  function sourceTag(st) {
-    var s = SOURCE[st.source] || SOURCE.fallback;
-    if (st.source === 'sim') return 'TEST : ' + (st.simName || '');
-    if (st.source === 'cache') return 'IL Y A ' + Math.max(1, Math.round((Date.now() - st.time) / 60000)) + ' MIN';
-    return s.tag;
+  function sourceLines(st) {
+    if (st.source === 'sim') return ['TEST : ' + (st.simName || ''), ''];
+    if (st.source === 'live') return ['EN DIRECT', ''];
+    if (st.source === 'stale') {
+      var m = Math.max(1, Math.round((Date.now() - st.time) / 60000));
+      return ['HORS LIGNE', m >= 120 ? 'IL Y A ' + Math.round(m / 60) + ' H' : 'IL Y A ' + m + ' MIN'];
+    }
+    return ['HORS LIGNE', 'MÉTÉO NEUTRE'];
   }
 
+  /** Widget météo (fixe à l'écran) : icône, température, condition, source sur une ou deux lignes. Textes à 8 px. */
   function widget(scene, x, y, depth) {
-    var w = 154, h = 28, D = depth || 50;
+    var w = 154, h = 38, D = depth || 50;
     var bg = scene.add.graphics().setDepth(D);
     bg.fillStyle(GP.int(GP.PAL.k), 1); bg.fillRect(x, y, w, h);
     bg.fillStyle(GP.int(GP.PAL.d), 1); bg.fillRect(x + 2, y + 2, w - 4, h - 4);
-    var icon = scene.add.image(x + 12, y + 14, 'wx_part').setDepth(D + 1).setScale(1);
-    var t1 = scene.add.text(x + 24, y + 5, '…', { fontFamily: GP.Config.FONT, fontSize: '8px', color: GP.PAL.w }).setDepth(D + 1);
-    var dot = scene.add.rectangle(x + 24, y + 17, 4, 4, GP.int(GP.PAL.o)).setOrigin(0).setDepth(D + 1);
-    var t2 = scene.add.text(x + 31, y + 16, 'MÉTÉO…', { fontFamily: GP.Config.FONT, fontSize: '8px', color: GP.PAL.m }).setDepth(D + 1).setScale(0.75);
-    [bg, icon, t1, dot, t2].forEach(function (o) { o.setScrollFactor(0); });
+    var icon = scene.add.image(x + 12, y + 14, 'wx_part').setDepth(D + 1);
+    function t(yy, c) { return scene.add.text(x + 24, y + yy, '', { fontFamily: GP.Config.FONT, fontSize: '8px', color: c }).setDepth(D + 1); }
+    var t1 = t(5, GP.PAL.w), t2 = t(16, GP.PAL.m), t3 = t(26, GP.PAL.m);
+    t1.setText('…');
+    var all = [bg, icon, t1, t2, t3];
+    all.forEach(function (o) { o.setScrollFactor(0); });
+    var last = null;
+    function draw() {
+      if (!last) return;
+      var lines = sourceLines(last), c = (SOURCE[last.source] || SOURCE.fallback).color;
+      t2.setText(lines[0]).setColor(c); t3.setText(lines[1]).setColor(c);
+    }
+    // l'âge « IL Y A N MIN » avance tout seul
+    var ev = scene.time.addEvent({ delay: 30000, loop: true, callback: draw });
     return {
-      objects: [bg, icon, t1, dot, t2],
+      objects: all, height: h,
       set: function (st) {
+        last = st;
         icon.setTexture('wx_' + st.icon);
         t1.setText(st.temp + '° ' + st.label);
-        var s = SOURCE[st.source] || SOURCE.fallback;
-        dot.setFillStyle(GP.int(s.color));
-        t2.setText(sourceTag(st)).setColor(s.color);
+        draw();
       }
     };
   }

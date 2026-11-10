@@ -29,26 +29,27 @@ Statut : brouillon J1. Les valeurs chiffrées sont des paramètres de départ, �
 Les ordres des trois autres lieux sont à valider après observation de leurs images ; je ne les ai pas encore vérifiés sur Nantes Patrimonia.
 
 ## Mapping météo (entrée → règle → sortie perceptible)
-Implémenté dans `js/systems/WeatherFX.js`, sur la carte et dans le niveau 1 (où le ciel en bandes, les nuages et les lanternes suivent aussi la météo).
+La météo réelle de Nantes change l'environnement de Green Path et les niveaux y réagissent (`js/systems/WeatherRules.js`, rendu `WeatherFX.js` et `LevelArt.sky`). Données demandées au démarrage puis toutes les 5 min.
 
-| Entrée Open-Meteo | Règle | Sortie visible |
+| Entrée Open-Meteo | Règle (bornée) | Sortie perceptible |
 |---|---|---|
-| `is_day` | nuit → filtre MULTIPLY bleu profond ; lampadaires et fenêtres allumés | Ambiance jour / nuit |
-| `weather_code` (WMO) | catégorie : dégagé, nuageux, couvert, brume, bruine, pluie, neige, orage → teinte du filtre et type de particules | Couleur générale, pluie ou neige, voile de brume |
-| `cloud_cover` | 0–100 % → 0 à 6 ombres de nuages | Ombres qui passent sur la carte |
-| `precipitation` | 0–10 mm (borné) → 45 à 170 gouttes (÷ 3 si mouvement réduit) | Densité de pluie / neige |
-| `wind_speed_10m` + `wind_direction_10m` | 0–80 km/h (borné) → vitesse de dérive des nuages (3–35 px/s) et inclinaison de la pluie, dans la direction où souffle le vent | Mouvement et pente |
-| `temperature_2m` | affichée dans le widget ; teinte de la palette du niveau en Phase 2 (0–35 °C) | Chiffre, puis couleur |
+| `weather_code` pluie / bruine / orage | accélération au sol 1100 → 650 (orage 560) ; niveau : ronces qui poussent (Jardin), gargouilles ×1,7 plus fréquentes (Cathédrale) | pluie, ciel gris, on glisse en s'arrêtant, ronces qui sortent de terre (1,2 s d'annonce) |
+| `weather_code` neige | accélération au sol 430, en l'air 520 | flocons, dérapage |
+| `wind_speed_10m` ≥ 20 km/h + `wind_direction_10m` | poussée horizontale en l'air : (vent − 15) × 2,5 px/s², max 110 (toujours inférieure au contrôle du joueur, 700) ; tonneaux ×1,25 | sauts déportés, nuages et pluie inclinés |
+| `weather_code` brume | les pixels ne se voient qu'à 90 px (une lueur reste à 15 %) | voile clair, pixels qui apparaissent de près |
+| `is_day` = 0 | pixels visibles à 130 px ; lanternes et lampadaires allumés | ciel de nuit étoilé, halos |
+| `weather_code` dégagé + jour | Jardin : fleurs-plateformes (raccourcis, jamais indispensables) | soleil, fleurs géantes |
+| `cloud_cover` | 0–100 % → 0 à 8 nuages | ciel plus ou moins chargé |
+| `temperature_2m` | affichée | widget |
 
-**Limites** : effet purement visuel (jamais sur la physique) ; pas de flash ni d'éclair ; transitions en fondu (0,9 s).
-**Fallback** : délai 4 s puis valeurs de secours codées dans `WeatherManager.js` (13 °C, nuageux, jour 7 h–19 h selon l'horloge de l'appareil) ; cache de 30 min. Le widget affiche la source : EN DIRECT, IL Y A N MIN (copie en cache), HORS LIGNE ou TEST.
-**Vérifié** : la hauteur de saut mesurée est la même de jour et par nuit pluvieuse (51,25 px).
+**Limites** : chaque effet est annoncé à l'entrée du niveau (et par un message si la météo change en cours de partie) ; les 4 niveaux restent finissables : test d'accessibilité de tous les pixels rejoué sous pluie, vent et neige (`tools/bot.js`). Pas de flash, pas d'éclair.
+**Fallback** : réseau coupé → dernière météo reçue, gardée dans le navigateur (« HORS LIGNE · IL Y A N MIN ») ; jamais rien reçu → météo neutre sans effet (`data/fallback.json`, valeurs codées dans `WeatherManager.js`).
 
 ## Niveau : règles
 - Un pixel ramassé = un groupe de cases révélé (le nombre de groupes est égal au nombre de pixels du niveau : 32 pour le Jardin).
-- Ronce ou chute = **une mort** : compteur MORTS +1, retour à la dernière lanterne allumée, pixels gardés (le compteur sert à l'étoile « sans mourir »).
+- Ronce, pointes, flèche, goutte, tonneau ou chute = **une mort** : compteur MORTS +1, retour à la dernière lanterne allumée, pixels gardés (le compteur sert à l'étoile « sans mourir »).
 - L'image reconstruite est une **vraie photo pixélisée** (48×32 cases, 16 couleurs) : un pixel ramassé révèle un groupe de cases ; les cases cachées restent en gris très sombre (l'image « en mémoire »).
-- Les mécaniques sont introduites une à une dans le niveau 1 (courir, sauter, sauter plus haut, lanternes, ronces), puis combinées.
+- Une capacité nouvelle par niveau, puis combinées : Jardin (courir, sauter, ronces), Château (s'accroupir : flèches, herses, tonneaux), Cathédrale (grimper aux colonnes, s'accrocher aux rebords : gargouilles, corniches qui s'effritent), Bouffay (étals mobiles, tout combiné).
 
 ## Étoiles (objectif de fin de niveau)
 Règle (`js/systems/Stars.js`, à ajuster au playtest) : 1 étoile image complète, +1 sans mourir, +1 sous le temps cible du lieu (`parTime`). Sans image complète, 0 étoile. Le meilleur résultat est conservé.

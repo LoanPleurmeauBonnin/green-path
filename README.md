@@ -2,51 +2,68 @@
 
 > *« Psst… par ici ! Je suis le gardien de la ligne verte. Cette nuit, un grand coup de vent a soufflé sur Nantes. Ses monuments se sont envolés en mille pixels ! »*
 
-Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en lieu, tu cours, tu sautes et tu ramasses les pixels qui reconstruisent, case après case, **une vraie photo de chaque monument**. Le ciel du jeu suit **la météo réelle de Nantes**, en direct.
+Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en lieu, tu cours, tu sautes, tu grimpes et tu ramasses les pixels qui reconstruisent, case après case, chaque monument. **La vraie météo de Nantes change le jeu** : s'il pleut à Nantes, il pleut dans Green Path, le sol glisse et les ronces poussent.
 
 **▶ Jouer : https://green-path-sepia.vercel.app** (ordinateur, ou téléphone tenu en paysage)
 
 ![Écran d'accueil](docs/screenshots/menu.png)
 
-| La carte du monde | Le premier niveau : le Jardin des Plantes |
+| La carte du monde | 1 · Jardin des Plantes |
 |---|---|
 | ![Carte du monde](docs/screenshots/carte.png) | ![Niveau du Jardin des Plantes](docs/screenshots/niveau-jardin.png) |
-| **Il pleut à Nantes ? Il pleut sur la carte.** | **Sur téléphone, en paysage, avec les boutons tactiles** |
-| ![Carte sous la pluie](docs/screenshots/carte-pluie.png) | ![Contrôles tactiles](docs/screenshots/mobile-paysage.png) |
+| **2 · Château** : s'accroupir sous les flèches (ici sous la pluie) | **3 · Cathédrale** : grimper aux colonnes, s'accrocher aux rebords |
+| ![Château sous la pluie](docs/screenshots/niveau-chateau-pluie.png) | ![Cathédrale](docs/screenshots/niveau-cathedrale.png) |
+| **4 · Bouffay** : les étals bougent | **Sur téléphone, en paysage** |
+| ![Bouffay](docs/screenshots/niveau-bouffay.png) | ![Contrôles tactiles](docs/screenshots/mobile-paysage.png) |
 
 ## Le concept
 - **Une archive qui se reconstruit** : chaque niveau cache des pixels. Chacun ramassé révèle un morceau de la photo du lieu (48×32 cases, 16 couleurs), dans un ordre propre au lieu : le Jardin des Plantes pousse **du bas vers le haut**, comme une plante.
 - **Une ligne verte à suivre** : sur la carte, le chemin s'allume en vert à chaque lieu terminé, et le monument passe du gris à la couleur.
 - **Trois étoiles par niveau** : image complète, sans mourir, sous le temps cible.
-- **La vraie météo** (Open-Meteo) : jour ou nuit, nuages, pluie, neige, vent. Aujourd'hui l'effet est visuel ; dans la prochaine version, chaque niveau aura sa règle météo (pluie = les ronces poussent, soleil = des fleurs deviennent des plateformes…), toujours annoncée et jamais bloquante.
+- **La vraie météo de Nantes** (Open-Meteo, mise à jour toutes les 5 min) change l'environnement et les niveaux réagissent, avec une annonce à l'entrée de chaque niveau :
+
+  | Météo à Nantes | Dans Green Path |
+  |---|---|
+  | Pluie, bruine, orage | pluie à l'écran, le sol glisse ; Jardin : des ronces poussent ; Cathédrale : les gargouilles coulent plus souvent |
+  | Neige | flocons, on dérape (plus d'inertie) |
+  | Vent fort | le vent pousse les sauts dans sa direction ; Château et Bouffay : les tonneaux roulent plus vite |
+  | Brume | voile clair, les pixels ne se voient que de près |
+  | Nuit | ciel étoilé, lanternes allumées, pixels visibles un peu moins loin |
+  | Grand soleil | Jardin : des fleurs deviennent des plateformes (raccourcis) |
+
+  Chaque effet est borné : on peut toujours contrer le vent, et chaque niveau reste finissable (vérifié par script sous pluie, vent et neige).
 - **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou un des 8 modèles.
 
 ## Les 12 lieux
-L'ordre suit le game design du projet : **ce n'est pas la numérotation officielle de la ligne verte du Voyage à Nantes.**
+L'ordre est une sélection pour le jeu : **ce n'est pas la numérotation officielle de la ligne verte du Voyage à Nantes.**
 
 | # | Lieu | Statut |
 |---|---|---|
-| 1 | Jardin des Plantes | ✅ jouable |
-| 2 | Cathédrale Saint-Pierre-et-Saint-Paul | 🚧 en construction |
-| 3 | Château des ducs de Bretagne | 🚧 en construction |
-| 4 | Île Feydeau | 🚧 en construction |
-| 5 | Grue Titan | à venir |
-| 6 | Éléphant des Machines de l'île | à venir |
-| 7 | Place Graslin | à venir |
-| 8 | Anneaux de Buren | à venir |
-| 9 | Hangar à Bananes | à venir |
-| 10 | Passage Pommeraye *(provisoire)* | à venir |
-| 11 | Mémorial de l'abolition de l'esclavage *(provisoire)* | à venir |
-| 12 | Tour LU *(provisoire)* | à venir |
+| # | Lieu | Statut | Ce qu'on y apprend |
+|---|---|---|---|
+| 1 | Jardin des Plantes | ✅ jouable | courir, sauter, ronces, lanternes |
+| 2 | Château des ducs de Bretagne | ✅ jouable | **s'accroupir** sous les flèches, tonneaux, herses, douves |
+| 3 | Cathédrale Saint-Pierre-et-Saint-Paul | ✅ jouable | **grimper** aux colonnes, **s'accrocher** aux rebords, gargouilles, corniches qui s'effritent |
+| 4 | Quartier du Bouffay | ✅ jouable | **étals qui bougent**, tout combiné |
+| 5 | Île Feydeau | à venir | |
+| 6 | Passage Pommeraye | à venir | |
+| 7 | Place Graslin | à venir | |
+| 8 | Mémorial de l'abolition de l'esclavage | à venir | |
+| 9 | Machines de l'île | à venir | |
+| 10 | Parc des Chantiers | à venir | |
+| 11 | Anneaux de Buren | à venir | |
+| 12 | Hangar à Bananes | à venir | |
 
 ## Commandes
 | Carte | Niveau |
 |---|---|
 | ← → ou A D : lieu précédent / suivant | ← → ou Q/A D : courir |
-| Entrée / Espace : fiche du lieu, JOUER | Espace, ↑, W ou Z : sauter (maintenir = plus haut) |
-| Clic sur un piédestal : y aller | Échap : pause (reprendre, aide, quitter) |
-| H ou **COMMENT JOUER ?** : aide en 4 pages | Téléphone : ← → ↓ et saut à l'écran, bouton PAUSE |
-| Échap : menu · M : son | Ronce ou chute = une mort, retour à la dernière lanterne |
+| Entrée / Espace : fiche du lieu, JOUER | Espace, W ou Z : sauter (maintenir = plus haut) |
+| Clic sur un piédestal : y aller | ↓ ou S : s'accroupir · ↑ : grimper, se hisser sur un rebord |
+| H ou **COMMENT JOUER ?** : aide en 4 pages | Échap : pause (reprendre, aide, quitter) |
+| Échap : menu · M : son | Téléphone : ← → ↓ et saut à l'écran (le saut sert aussi à grimper), PAUSE |
+
+Ronces, pointes, flèches, gouttes, tonneaux ou chute = une mort : retour à la dernière lanterne allumée, les pixels ramassés sont gardés.
 
 Sur téléphone, le jeu se joue **en paysage** : tenu en portrait, un écran demande de le tourner et le jeu se met en pause.
 
@@ -58,9 +75,10 @@ python3 -m http.server 8123
 puis http://localhost:8123. **Mode test** : ajouter `?dev=1` à l'adresse (W : météos simulées sur la carte, N dans un niveau ; K : ramasser tous les pixels).
 
 ## Fallback et limites connues
-- **Hors ligne, le jeu reste entièrement jouable** : la météo passe sur des valeurs de secours neutres (affichées « HORS LIGNE »), la progression est gardée dans le navigateur (`localStorage`).
-- La météo est mise en cache 30 min (« IL Y A N MIN ») pour ne pas rappeler l'API à chaque écran.
-- Un seul niveau jouable pour l'instant ; les niveaux 2 à 4 arrivent avec le moteur de mécaniques (escalade, accroupi, plateformes mobiles) et les règles météo.
+- **Hors ligne, le jeu reste entièrement jouable** : si le réseau coupe, le jeu garde **la dernière météo reçue** (widget « HORS LIGNE · IL Y A N MIN ») ; si aucune n'a jamais été reçue, météo neutre sans effet ([data/fallback.json](data/fallback.json)). La progression est gardée dans le navigateur (`localStorage`).
+- La météo est redemandée toutes les 5 min, et dès que le réseau revient.
+- Images à reconstruire : photo pixélisée validée pour le Jardin des Plantes ; pour les autres lieux, le monument de la planche de sprites en attendant des photos Commons validées.
+- Niveaux 5 à 12 à venir.
 
 ## Stack
 Phaser 3.90 (inclus en local), JavaScript natif en scripts classiques (pas de build, compatible `file://`), police Press Start 2P, résolution 480×270 agrandie sans lissage. Tout le décor vient de planches de sprites en texte (une lettre = une couleur d'une palette de 35) transformées en textures au démarrage. Déploiement statique sur Vercel.
@@ -69,7 +87,7 @@ Phaser 3.90 (inclus en local), JavaScript natif en scripts classiques (pas de bu
 index.html               page, icônes, écran « tournez votre téléphone »
 js/config.js             réglages, palette, mode test (?dev=1)
 js/data/                 locations.js (12 lieux), levels.js (niveaux), sprites/ (planches importées)
-js/systems/              Sprites, MapArt (carte), LevelArt (ciel, décor), WeatherManager / WeatherFX (météo),
+js/systems/              Sprites, MapArt (carte), LevelArt (ciel, décor), WeatherManager / WeatherFX / WeatherRules (météo en direct → règles de jeu),
                          PixelCollection (photo à reconstruire), Save / Progression / Stars, Ui (fenêtres, aide, tactile)
 js/scenes/               Boot, Menu, Character (avatar), Map, Game (moteur de plateforme), Result
 assets/                  police, logo et icônes, photos pixélisées (assets/locations/*.js)

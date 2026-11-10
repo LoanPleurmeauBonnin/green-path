@@ -155,7 +155,13 @@ GP.Character = (function () {
     walk3: { head: 1, legs: 'stepR', armL: 'down', armR: 'down' },
     jump: { head: 0, legs: 'tuck', armL: 'raised', armR: 'raised' },
     cheer0: { head: 0, legs: 'stand', armL: 'raised', armR: 'raised' },
-    cheer1: { head: 1, legs: 'stand', armL: 'raised', armR: 'raised' }
+    cheer1: { head: 1, legs: 'stand', armL: 'raised', armR: 'raised' },
+    // escalade (colonnes) et accroche à un rebord : bras levés, jambes qui alternent
+    climb0: { head: 0, legs: 'stepL', armL: 'raised', armR: 'raised' },
+    climb1: { head: 0, legs: 'stepR', armL: 'raised', armR: 'raised' },
+    hang: { head: 0, legs: 'stand', armL: 'raised', armR: 'raised' },
+    // accroupi : la pose de repos tassée (voir squash)
+    crouch: { head: 0, legs: 'stand', armL: 'down', armR: 'down', squash: true }
   };
   // Bras : cases de l'épaule vers la main [ligne, colonne], puis cases de la main (mains asymétriques, comme sur Figma).
   var ARMS = {
@@ -273,20 +279,27 @@ GP.Character = (function () {
     return o;
   }
 
+  /** Accroupi : on retire le cou (lignes 9 à 11) et le haut des jambes (15-16), puis on recale l'image en bas (14 lignes visibles). */
+  function squash(g) {
+    var keep = g.filter(function (row, y) { return [9, 10, 11, 15, 16].indexOf(y) < 0; }), out = blank();
+    keep.forEach(function (row, i) { out[H - keep.length + i] = row; });
+    return out;
+  }
+
   /** Assemble une image de la pose (grille 15×19 de couleurs CSS ou null). */
   function compose(cfg, pose) {
     cfg = sanitize(cfg);
     pose = typeof pose === 'string' ? POSES[pose] : (pose || POSES.idle0);
     var g = blank(), pal = palette(cfg);
     drawBottom(g, pal, cfg, pose.legs);
-    drawHead(g, pal, cfg, pose.head);
     drawTorso(g, pal, cfg);
+    drawHead(g, pal, cfg, pose.head);   // la tête passe DEVANT le torse quand elle s'abaisse (respiration)
     drawArm(g, pal, cfg, 'L', pose.armL);
     drawArm(g, pal, cfg, 'R', pose.armR);
     drawShoeTops(g, pal, cfg, pose.legs);
     var o = outline(g);
     drawSoles(o, pal, cfg, pose.legs);
-    return o;
+    return pose.squash ? squash(o) : o;
   }
 
   function toCanvas(grid) {
@@ -326,7 +339,10 @@ GP.Character = (function () {
       'hero-idle': { frames: ['idle0', 'idle1'], rate: 2 },
       'hero-walk': { frames: ['walk0', 'walk1', 'walk2', 'walk3'], rate: 8 },
       'hero-jump': { frames: ['jump'], rate: 1 },
-      'hero-cheer': { frames: ['cheer0', 'cheer1'], rate: 4 }
+      'hero-cheer': { frames: ['cheer0', 'cheer1'], rate: 4 },
+      'hero-climb': { frames: ['climb0', 'climb1'], rate: 6 },
+      'hero-hang': { frames: ['hang'], rate: 1 },
+      'hero-crouch': { frames: ['crouch'], rate: 1 }
     };
     Object.keys(anims).forEach(function (key) {
       if (scene.anims.exists(key)) scene.anims.remove(key);

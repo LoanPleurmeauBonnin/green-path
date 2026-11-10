@@ -89,26 +89,26 @@ GP.UI = (function () {
     },
     {
       title: 'DANS UN NIVEAU', rows: [
-        [['<', '>'], 'COURIR (OU Q/A ET D)'], [['ESPACE'], 'SAUTER (OU HAUT, W, Z)'],
-        [['ESPACE'], 'MAINTENIR : SAUTER PLUS HAUT'], [['ÉCHAP'], 'PAUSE'],
-        [[], 'SUR TÉLÉPHONE : BOUTONS À L\'ÉCRAN'], [[], 'ÉCHAP OU H : FERMER CETTE AIDE']
+        [['<', '>'], 'COURIR (OU Q/A ET D)'], [['ESPACE'], 'SAUTER (OU W, Z) ; MAINTENIR = PLUS HAUT'],
+        [['v'], "S'ACCROUPIR SOUS LES FLÈCHES (OU S)"], [['^'], 'GRIMPER AUX COLONNES, SE HISSER SUR UN REBORD'],
+        [['ÉCHAP'], 'PAUSE'], [[], 'SUR TÉLÉPHONE : BOUTONS À L\'ÉCRAN, EN PAYSAGE']
       ]
     },
     {
       title: 'BUT DU JEU', icons: true, rows: [
         [['#lv_pixel'], 'RAMASSE LES PIXELS : CHACUN RÉVÈLE UNE PARTIE DE LA PHOTO DU LIEU.'],
-        [['#lv_thorn'], 'RONCE OU CHUTE = UNE MORT : RETOUR À LA DERNIÈRE LANTERNE.'],
+        [['#lv_thorn'], 'RONCES, POINTES, FLÈCHES, TONNEAUX, CHUTE = UNE MORT : RETOUR À LA LANTERNE.'],
         [['#lv_lantern_on'], 'LANTERNE ALLUMÉE = POINT DE CONTRÔLE.'],
         [['#star_on', '#star_on', '#star_on'], 'IMAGE COMPLÈTE, SANS MOURIR, SOUS LE TEMPS CIBLE.']
       ]
     },
     {
       title: 'MÉTÉO', icons: true, rows: [
-        [['#wx_sun', '#wx_moon', '#wx_rain', '#wx_snow'], 'LE CIEL SUIT LA MÉTÉO RÉELLE DE NANTES : JOUR, NUIT, NUAGES, PLUIE, VENT.'],
-        [['#wx_cloud'], 'EFFET VISUEL SEULEMENT : SAUTS ET VITESSE NE CHANGENT JAMAIS.'],
-        [[], 'EN DIRECT : DONNÉES REÇUES À L\'INSTANT.'],
-        [[], 'IL Y A N MIN : COPIE GARDÉE PAR LE NAVIGATEUR (30 MIN AU PLUS).'],
-        [[], 'HORS LIGNE : VALEURS DE SECOURS.']
+        [['#wx_sun', '#wx_moon', '#wx_rain', '#wx_snow'], 'LA VRAIE MÉTÉO DE NANTES CHANGE LE JEU : ANNONCÉ À CHAQUE NIVEAU.'],
+        [['#wx_rain'], 'PLUIE : LE SOL GLISSE, LES RONCES POUSSENT. NEIGE : ON DÉRAPE.'],
+        [['#wx_cloud'], 'VENT : IL POUSSE LES SAUTS. BRUME, NUIT : PIXELS VISIBLES DE PRÈS.'],
+        [['#wx_sun'], 'SOLEIL : DES FLEURS FONT DES PLATEFORMES.'],
+        [[], 'EN DIRECT TOUTES LES 5 MIN ; HORS LIGNE, LA DERNIÈRE MÉTÉO REÇUE.']
       ]
     }
   ];
@@ -204,7 +204,7 @@ GP.UI = (function () {
     btn(70, H - 30, 19, 'ui_arr_r', 'right');
     btn(114, H - 26, 15, 'ui_arr_d', 'down');
     btn(W - 32, H - 34, 24, 'ui_arr_u', 'jump');
-    if (onPause) { var pz = button(scene, W - 64, 38, 60, 'PAUSE', onPause); pz.objs.forEach(function (o) { o.setDepth(55); objs.push(o); }); }
+    if (onPause) { var pz = button(scene, W - 64, 46, 60, 'PAUSE', onPause); pz.objs.forEach(function (o) { o.setDepth(55); objs.push(o); }); }
     return objs;
   }
 

@@ -2,7 +2,7 @@
  * PixelCollection — l'image à reconstruire pendant un niveau.
  *
  * Source : la photo pixélisée du lieu (GP.IMAGES[id], 48×32, 16 couleurs, voir tools/pixelize.swift et CREDITS.md) ;
- * à défaut, le monument dessiné par code (texture lm_<id>, 32×28).
+ * à défaut, le monument de la planche de sprites (48×44), ou le dessin par code (lm_<id>, 32×28).
  * Les cases de l'image sont triées dans l'ordre de la grammaire du lieu,
  * puis répartis en autant de groupes que de pixels à ramasser dans le niveau. Chaque pixel ramassé révèle
  * le groupe suivant ; les cases encore cachées restent en silhouette sombre.
@@ -49,7 +49,7 @@ GP.PixelCollection.cells = function (scene, locId) {
     cells.w = im.w; cells.h = im.h;
     return cells;
   }
-  var src = scene.textures.get('lm_' + locId).getSourceImage(), tmp = GP.PixelArt.canvas(src.width, src.height);
+  var src = scene.textures.get(GP.PixelCollection.fallbackKey(locId)).getSourceImage(), tmp = GP.PixelArt.canvas(src.width, src.height);
   tmp.ctx.drawImage(src, 0, 0);
   var data = tmp.ctx.getImageData(0, 0, src.width, src.height).data;
   for (y = 0; y < src.height; y++) for (x = 0; x < src.width; x++) {
@@ -60,10 +60,16 @@ GP.PixelCollection.cells = function (scene, locId) {
   return cells;
 };
 
+/** Image de secours tant qu'aucune photo n'est validée : le monument de la planche (48×44), sinon le dessin par code. */
+GP.PixelCollection.fallbackKey = function (locId) {
+  var loc = GP.LOCATIONS.filter(function (l) { return l.id === locId; })[0];
+  return loc ? GP.MapArt.monument(loc, false) : 'lm_' + locId;
+};
+
 /** Clé d'une texture de l'image complète du lieu (photo pixélisée, ou monument dessiné à défaut). */
 GP.PixelCollection.photoKey = function (scene, locId) {
   var im = GP.IMAGES && GP.IMAGES[locId];
-  if (!im) return 'lm_' + locId;
+  if (!im) return GP.PixelCollection.fallbackKey(locId);
   var key = 'photo_' + locId;
   if (!scene.textures.exists(key)) {
     var o = GP.PixelArt.canvas(im.w, im.h);

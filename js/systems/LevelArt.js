@@ -236,6 +236,10 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_fence', drawFence(false));
     PA.toTexture(scene, 'lv_gate', drawFence(true));
     PA.toTexture(scene, 'lv_backdrop', drawBackdrop(scene));
+    // flèche des meurtrières, goutte des gargouilles, fleur-plateforme (soleil)
+    PA.sprite(scene, 'lv_arrow', ['k.........', 'kkkkkkkkwk', 'k.........']);
+    PA.sprite(scene, 'lv_drop', ['.l.', 'lfl', 'lbl', '.l.']);
+    PA.sprite(scene, 'lv_flowerplat', ['..kkkkkkkkkkkk..', '.kyyrryyyyrryyk.', 'kyyrrrryyrrrryyk', 'kGyyrryyyyrryyGk', '.kGGGGGGGGGGGGk.', '..kkkkkkkkkkkk..']);
   }
 
   /** Fond fixe du menu et du créateur : ciel, montagnes, collines, sol d'herbe avec la ligne verte. */
@@ -273,7 +277,13 @@ GP.LevelArt = (function () {
       o.astro = scene.add.image(400, 40, 'ciel_soleil').setScrollFactor(0).setDepth(D + 2).setVisible(false);
     } else o.starImg = scene.add.image(0, 0, 'lv_stars').setOrigin(0).setScrollFactor(0).setDepth(D + 1).setVisible(false);
     // lointain : la ville (carte) ou des montagnes (niveaux), puis des collines
-    if (city) {
+    if (opts.farKey && scene.textures.exists(opts.farKey)) {
+      // fond propre au lieu (silhouette du château, nef de la cathédrale, ruelle du Bouffay…)
+      var fi = scene.textures.get(opts.farKey).getSourceImage();
+      o.far = scene.add.tileSprite(0, opts.farBottom || 240, W, fi.height, opts.farKey).setOrigin(0, 1).setScrollFactor(0).setDepth(D + 5);
+      o.near = scene.add.tileSprite(0, opts.nearBottom || 250, W, 40, 'commun_collines_vertes').setOrigin(0, 1).setScrollFactor(0).setDepth(D + 10).setVisible(!!opts.hills);
+      city = true;
+    } else if (city) {
       o.far = scene.add.tileSprite(0, opts.farBottom || 178, W, 110, 'carte_batiments_lointains').setOrigin(0, 1).setScrollFactor(0).setDepth(D + 5);
       o.near = scene.add.tileSprite(0, opts.nearBottom || 190, W, 40, 'carte_collines_proches').setOrigin(0, 1).setScrollFactor(0).setDepth(D + 10);
     } else {
@@ -317,7 +327,40 @@ GP.LevelArt = (function () {
   }
 
   // ---------- Terrain d'un niveau ----------
+  /**
+   * Terrain d'un niveau habillé avec les tuiles d'une planche (L.skin) :
+   *   { top: [..], fill: [..], left, right, block, blockTop, blockBottom, ledge: [g, m, d], bridge: [g, m, d] }
+   * Une case pleine sans voisin au-dessus prend une tuile « top », un bord gauche/droit la tuile de bord, sinon « fill ».
+   */
+  function renderSkin(scene, key, L) {
+    var W = L.width * T, H = L.rows * T, o = PA.canvas(W, H), ctx = o.ctx, sk = L.skin;
+    function im(k) { return scene.textures.exists(k) ? scene.textures.get(k).getSourceImage() : null; }
+    function put(k, x, y) { var i = im(k); if (i) ctx.drawImage(i, x, y); }
+    function at(x, y) { if (y >= L.rows) return 1; if (x < 0 || x >= L.width || y < 0) return 0; return L.grid[y * L.width + x]; }
+    function solid(x, y) { var v = at(x, y); return v === 1 || v === 2 || v === 4 || v === 5; }
+    function pick(list, cx, cy) { return Array.isArray(list) ? list[(cx * 7 + cy * 3) % list.length] : list; }
+    for (var cy = 0; cy < L.rows; cy++) for (var cx = 0; cx < L.width; cx++) {
+      var v = at(cx, cy), x0 = cx * T, y0 = cy * T;
+      if (v === 2) {
+        // bloc : créneaux en haut, linteau en bas (s'il y en a dans la planche), sinon pierre pleine
+        var bk = !solid(cx, cy - 1) && cy > 0 && sk.blockTop ? sk.blockTop : (!solid(cx, cy + 1) && sk.blockBottom ? sk.blockBottom : (sk.block || sk.fill));
+        put(pick(bk, cx, cy), x0, y0); continue;
+      }
+      if (v !== 1 && v !== 5) continue;
+      if (!solid(cx, cy - 1)) put(pick(sk.top, cx, cy), x0, y0);
+      else if (!solid(cx - 1, cy) && sk.left) put(sk.left, x0, y0);
+      else if (!solid(cx + 1, cy) && sk.right) put(sk.right, x0, y0);
+      else put(pick(sk.fill, cx, cy), x0, y0);
+    }
+    L.plats.forEach(function (p) {
+      var set = p.kind === 'bridge' ? (sk.bridge || sk.ledge) : sk.ledge;
+      for (var j = 0; j < p.w; j++) put(set[j === 0 ? 0 : (j === p.w - 1 ? 2 : 1)], (p.x + j) * T, p.y * T);
+    });
+    PA.toTexture(scene, key, o.cv);
+  }
+
   function renderTerrain(scene, key, L) {
+    if (L.skin) return renderSkin(scene, key, L);
     var W = L.width * T, H = L.rows * T, o = PA.canvas(W, H), ctx = o.ctx, k = GP.PAL.k;
     function at(x, y) { return (x < 0 || x >= L.width || y >= L.rows) ? (y >= L.rows ? 1 : 0) : (y < 0 ? 0 : L.grid[y * L.width + x]); }
     function solid(x, y) { var v = at(x, y); return v === 1 || v === 2 || v === 4 || v === 5; }

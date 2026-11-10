@@ -169,7 +169,7 @@ GP.MapArt = (function () {
   var LM_BY_ID = {
     'jardin-des-plantes': 'jardin', 'chateau': 'chateau', 'cathedrale': 'cathedrale', 'bouffay': 'bouffay',
     'feydeau': 'feydeau', 'pommeraye': 'pommeraye', 'graslin': 'graslin', 'memorial': 'memorial',
-    'elephant': 'machines', 'grue-titan': 'chantiers', 'buren': 'buren', 'hangar': 'hangar', 'tour-lu': 'tourlu'
+    'machines': 'machines', 'chantiers': 'chantiers', 'buren': 'buren', 'hangar': 'hangar'
   };
 
   function drawLandmark(id) {
@@ -201,15 +201,21 @@ GP.MapArt = (function () {
   function drawWorld(scene) {
     var o = PA.canvas(WIDTH, H), ctx = o.ctx, rnd = PA.rng(77);
     function put(key, x, y) { var im = img(scene, key); if (im) ctx.drawImage(im, x, y); }
+    /** Dessine seulement dans la bande [y, y + h) de la colonne x. */
+    function clip(x, y, h, fn) { ctx.save(); ctx.beginPath(); ctx.rect(x, y, T, h); ctx.clip(); fn(); ctx.restore(); }
     // eau (toute la largeur, derrière le quai)
     for (var x = 0; x < WIDTH; x += T) { put('carte_eau_surface', x, WATER + 6); for (var y = WATER + 22; y < H; y += T) put('carte_eau_profonde', x, y); }
     COLUMNS.forEach(function (col, c) {
       var x = c * T;
       if (col.kind === 'gap') return;
-      put('carte_plateau_herbe_haut_' + (1 + (c % 3)), x, col.top - 6);          // talus d'herbe derrière le chemin
-      for (var y = WATER - 2 * T; y > col.top - T; y -= T) put('carte_falaise_a', x, y);   // terre
-      put('carte_falaise_b', x, WATER - T);                                         // pierre du quai
-      put('carte_falaise_pied', x, WATER);                                          // pied du quai dans l'eau
+      // Chaque couche est découpée à sa bande : la terre ne remonte jamais au-dessus du chemin,
+      // et du talus on ne garde que l'herbe (pas sa terre), sinon on voit des bandes marron sur les pentes.
+      clip(x, col.top + T, WATER - col.top - T, function () {
+        for (var y = WATER - 2 * T; y > col.top; y -= T) put('carte_falaise_a', x, y);   // terre sous le chemin
+        put('carte_falaise_b', x, WATER - T);                                           // pierre du quai
+      });
+      put('carte_falaise_pied', x, WATER);                                              // pied du quai dans l'eau
+      clip(x, col.top - 6, 7, function () { put('carte_plateau_herbe_haut_' + (1 + (c % 3)), x, col.top - 6); });   // talus d'herbe
       var tile = col.kind === 'up' ? 'carte_chemin_pente_montante' : col.kind === 'down' ? 'carte_chemin_pente_descendante'
         : 'carte_chemin_plat_' + (1 + Math.floor(rnd() * 3));
       put(tile, x, col.top);

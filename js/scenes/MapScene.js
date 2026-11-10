@@ -173,8 +173,6 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       img.on('pointerdown', function () { if (!self.panel) self.goTo(i, true); });
       self.nodes.push({ img: img, num: num, badge: badge, stars: stars });
     });
-    this.ring = this.add.image(0, 0, 'ring').setDepth(9).setVisible(false);
-    this.tweens.add({ targets: this.ring, scale: { from: 0.8, to: 1.25 }, alpha: { from: 1, to: 0 }, duration: 1100, repeat: -1 });
   }
 
   /** Met à jour l'apparence de tout ce qui dépend de la progression. */
@@ -190,10 +188,6 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       if (i !== self.revealing) self.lms[i].setTexture(GP.MapArt.monument(l, st !== 'completed'));
     });
     this.drawPath();
-    var a = -1;
-    for (var i = 0; i < this.locs.length; i++) if (P.status(i) === 'available') a = i;
-    if (a >= 0) this.ring.setPosition(this.nx(a), this.ny(a)).setVisible(true);
-    else this.ring.setVisible(false);
     if (this.hud) {
       this.hudCount.setText(P.completedCount() + '/' + (GP.LAST_PLAYABLE + 1) + ' NIVEAUX');
       this.hudStars.setText(P.totalStars() + '/' + GP.Stars.maxTotal());
@@ -317,6 +311,9 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     this.wxWidget = GP.WeatherFX.widget(this, GP.Config.WIDTH - 158, 4, 50);
     this.applyWeather(GP.Weather.get());
     GP.Weather.load(function (s) { if (self.alive) self.applyWeather(s); });
+    // météo en direct : la scène suit les mises à jour (toutes les 5 min, ou retour du réseau)
+    var unsub = GP.Weather.subscribe(function (s) { if (self.alive) self.applyWeather(s); });
+    this.events.once('shutdown', unsub);
   }
   applyWeather(st) { this.sky.set(st); this.wx.set(st); this.wxWidget.set(st); }
 

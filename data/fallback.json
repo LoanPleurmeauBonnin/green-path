@@ -1,0 +1,11 @@
+{
+  "_doc": "Météo de secours de Green Path, utilisée seulement si aucune météo n'a jamais été reçue (premier lancement hors ligne). Copie de référence des valeurs codées dans js/systems/WeatherManager.js (fonction fallback), lues sans réseau même en file://. Effet de jeu : aucun (météo neutre).",
+  "temp": 13,
+  "code": 2,
+  "isDay": "entre 7 h et 19 h selon l'horloge de l'appareil",
+  "wind": 15,
+  "windDir": 250,
+  "precip": 0,
+  "cloud": 45,
+  "label": "HORS LIGNE · MÉTÉO NEUTRE"
+}

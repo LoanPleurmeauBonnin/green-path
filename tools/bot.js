@@ -55,17 +55,28 @@ GP.TestBot.reach = function (g, stepFn) {
     L.plats.forEach(function (pl) { if (col >= pl.x && col < pl.x + pl.w) out.push(pl.y * 16); });
     return out.filter(function (y) { return y > belowY; }).sort(function (a, b) { return a - b; });
   }
+  // Manières d'essayer : marcher, saut long, saut + s'accrocher puis se hisser, grimper (colonne) puis aller à droite.
+  var PLANS = [
+    function (f, d) { return { right: d > 0, jump: false }; },
+    function (f, d) { return { right: d > 0, jump: f > 1 && f <= 23 }; },
+    function (f, d) { return { right: d > 0, jump: (f > 1 && f <= 23) || (f > 50 && f < 56) }; },
+    function (f, d) { return { right: f > 100 && d > 0, up: f > 1 && f < 140, jump: false }; }
+  ];
+  function reset(x0, s) {
+    g.hanging = null; g.climbing = null; g.setCrouch(false); b.setAllowGravity(true); b.enable = true;
+    b.reset(x0, s); p.setAlpha(1);
+  }
   saved.forEach(function (px) {
     var ok = false;
-    for (var d = 0; d <= 84 && !ok; d += 6) {
+    for (var d = -24; d <= 84 && !ok; d += 6) {
       var x0 = px.x - d, s = surfaces(Math.floor(x0 / 16), px.y - 2)[0];
       if (s === undefined) continue;
-      [0, 22].forEach(function (hold) {
+      PLANS.forEach(function (plan) {
         if (ok) return;
-        p.body.reset(x0, s); p.setAlpha(1);
+        reset(x0, s);
         var f = 0;
-        g.bot = { step: function () { f++; return { left: false, right: d > 0, jump: f > 1 && f <= 1 + hold }; } };
-        for (var i = 0; i < 80 && !ok; i++) {
+        g.bot = { step: function () { f++; var o = plan(f, d); o.left = !o.right && d < 0 && f > 1; return o; } };
+        for (var i = 0; i < 170 && !ok; i++) {
           stepFn(1);
           if (b.x < px.x + 5 && b.x + b.width > px.x - 5 && b.y < px.y + 5 && b.y + b.height > px.y - 5) ok = true;
         }
@@ -73,6 +84,7 @@ GP.TestBot.reach = function (g, stepFn) {
     }
     if (!ok) bad.push([Math.floor(px.x / 16), Math.floor(px.y / 16)]);
   });
+  reset(g.respawn.x, g.respawn.y);
   g.pixels = saved; g.bot = null; g.invuln = 0; g.die = die;
   return bad;
 };

@@ -2,10 +2,11 @@
  * WeatherManager (GP.Weather) — météo réelle de Nantes via Open-Meteo (sans clé d'API).
  *
  * - Requête « current » : température, code WMO, jour/nuit, vent, précipitations, nébulosité.
- * - Délai maximum 4 s (AbortController) ; résultat mis en cache 30 min dans localStorage.
- * - Hors ligne ou API indisponible : valeurs de secours (jour/nuit déduit de l'heure de l'appareil).
+ * - En direct : demandée au démarrage puis toutes les 5 min (délai maximum 4 s, AbortController).
+ * - Hors ligne ou API indisponible : la dernière donnée reçue (gardée dans localStorage) reste affichée ;
+ *   valeurs neutres de secours seulement si rien n'a jamais été reçu (jour/nuit déduit de l'heure de l'appareil).
  * - État normalisé : { temp, code, cat, label, icon, isDay, wind, windDir, precip, cloud, source }
- *   où source vaut 'live' (réseau), 'cache' ou 'fallback' (secours), ou 'sim' (outil de test).
+ *   où source vaut 'live' (réseau), 'stale' (hors ligne, dernière donnée), 'fallback' (secours) ou 'sim' (test).
  * La météo est purement visuelle : elle ne modifie jamais la physique du jeu.
  */
 GP.Weather = (function () {
@@ -89,21 +90,41 @@ GP.Weather = (function () {
     fallback: fallback,
 
     /** État courant (secours tant que rien n'est chargé). */
-    get: function () { return this.state || fallback(); },
+    get: function () {
+      if (this.state) return this.state;
+      var last = readCache();                        // en attendant le réseau : la dernière météo reçue
+      return last ? make(last, 'stale') : fallback();
+    },
 
     /**
-     * Charge la météo puis appelle cb(state). Ordre : cache récent → réseau → secours.
-     * cb est toujours appelé une seule fois.
+     * Météo « en direct » : demandée au réseau au démarrage puis toutes les 5 minutes (refreshMin).
+     * Si le réseau ne répond pas, on garde la DERNIÈRE donnée reçue, quel que soit son âge (source 'stale',
+     * affichée « HORS LIGNE · IL Y A N MIN ») ; valeurs neutres de secours seulement si rien n'a jamais été reçu.
+     * load(cb) : renvoie l'état courant s'il a moins de refreshMin minutes, sinon interroge le réseau. cb appelé une fois.
      */
     load: function (cb) {
+      var self = this;
+      if (this.simIndex >= 0) { if (cb) cb(this.state); return; }
+      this.startPolling();
+      if (this.state && (this.state.source === 'live') && Date.now() - this.state.time < CFG.refreshMin * 60000) { if (cb) cb(this.state); return; }
+      this.refresh(cb);
+    },
+
+    /** Interroge Open-Meteo (délai 4 s), met à jour l'état et prévient les abonnés. */
+    refresh: function (cb) {
       var self = this, done = false;
-      function finish(st) { if (done) return; done = true; self.state = st; if (cb) cb(st); }
-      if (this.simIndex >= 0) { finish(this.state); return; }
-      var cached = readCache();
-      if (cached && Date.now() - cached.time < CFG.cacheMin * 60000) { finish(make(cached, 'cache')); return; }
-      if (!window.fetch) { finish(fallback()); return; }
+      function finish(st) {
+        if (done) return; done = true;
+        if (self.simIndex >= 0) { if (cb) cb(self.state); return; }   // une météo de test reste affichée
+        self.state = st; if (cb) cb(st); self.notify(st);
+      }
+      function offline() {
+        var last = readCache();
+        finish(last ? make(last, 'stale') : fallback());
+      }
+      if (!window.fetch) { offline(); return; }
       var ctrl = window.AbortController ? new AbortController() : null;
-      var timer = setTimeout(function () { if (ctrl) ctrl.abort(); finish(fallback()); }, CFG.timeoutMs);
+      var timer = setTimeout(function () { if (ctrl) ctrl.abort(); offline(); }, CFG.timeoutMs);
       fetch(url(), ctrl ? { signal: ctrl.signal } : {})
         .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function (j) {
@@ -115,7 +136,22 @@ GP.Weather = (function () {
           writeCache(raw);
           finish(make(raw, 'live'));
         })
-        .catch(function () { clearTimeout(timer); finish(fallback()); });
+        .catch(function () { clearTimeout(timer); offline(); });
+    },
+
+    /** Abonnement aux changements de météo (rafraîchissement automatique). Renvoie la fonction de désabonnement. */
+    listeners: [],
+    subscribe: function (fn) {
+      var self = this; this.listeners.push(fn);
+      return function () { self.listeners = self.listeners.filter(function (f) { return f !== fn; }); };
+    },
+    notify: function (st) { this.listeners.slice().forEach(function (f) { try { f(st); } catch (e) { /* une scène fermée */ } }); },
+    startPolling: function () {
+      var self = this;
+      if (this.timer) return;
+      this.timer = setInterval(function () { if (self.simIndex < 0) self.refresh(); }, CFG.refreshMin * 60000);
+      // retour du réseau : on redemande tout de suite
+      window.addEventListener('online', function () { if (self.simIndex < 0) self.refresh(); });
     },
 
     /** Outil de test : passe à la météo simulée suivante (puis revient à la vraie météo). */
