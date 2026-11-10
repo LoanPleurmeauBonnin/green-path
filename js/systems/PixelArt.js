@@ -14,9 +14,20 @@ GP.PixelArt = {
     return { cv: cv, ctx: ctx };
   },
 
-  /** Enregistre un canvas comme texture Phaser (remplace l'existante). */
+  /**
+   * Enregistre un canvas comme texture Phaser.
+   * Si la texture existe déjà avec la même taille, on REDESSINE dedans (sans la supprimer) : supprimer une texture
+   * qu'un sprite affiche encore (ou dont une animation tourne) fait planter le rendu (écran noir, ex. après RÉINITIALISER).
+   */
   toTexture: function (scene, key, cv) {
-    if (scene.textures.exists(key)) scene.textures.remove(key);
+    var ex = scene.textures.exists(key) ? scene.textures.get(key) : null;
+    if (ex && ex.getCanvas && ex.getSourceImage().width === cv.width && ex.getSourceImage().height === cv.height) {
+      var c = ex.getCanvas(), ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, c.width, c.height); ctx.drawImage(cv, 0, 0);
+      ex.refresh();
+      return;
+    }
+    if (ex) scene.textures.remove(key);
     scene.textures.addCanvas(key, cv);
   },
 

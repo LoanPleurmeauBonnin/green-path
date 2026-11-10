@@ -14,7 +14,7 @@ GP.Scenes.Character = class CharacterScene extends Phaser.Scene {
   }
 
   create() {
-    var self = this, W = GP.Config.WIDTH, H = GP.Config.HEIGHT, C = GP.Character, P = GP.PAL;
+    var self = this, W = GP.Config.DW, H = GP.Config.HEIGHT, C = GP.Character, P = GP.PAL;
     this.cfg = Object.assign({}, GP.Progression.data.character || C.defaultConfig());
     this.sel = 0;
     this.presetIdx = 0;
@@ -23,8 +23,7 @@ GP.Scenes.Character = class CharacterScene extends Phaser.Scene {
     this.leaving = false;
 
     this.cameras.main.fadeIn(300, 20, 24, 46);
-    this.add.image(0, 0, GP.UI.backdropKey(this)).setOrigin(0);
-    this.add.rectangle(0, 0, W, H, GP.int(P.k), 0.82).setOrigin(0);
+    GP.UI.backdrop(this, 0.82);
     this.txt(14, 10, 'TON AVATAR', P.g);
     this.txt(14, 21, "IL T'ACCOMPAGNE TOUT LE PARCOURS", P.m);
 
@@ -157,6 +156,7 @@ GP.Scenes.Character = class CharacterScene extends Phaser.Scene {
   // ---------- sortie ----------
   validate() {
     GP.Progression.setCharacter(this.cfg);
+    if (GP.Cloud) GP.Cloud.schedulePush();
     GP.Character.build(this, this.cfg);
     GP.Sfx.play('unlock');
     this.leave(this.from === 'start' ? 'Map' : 'Menu');

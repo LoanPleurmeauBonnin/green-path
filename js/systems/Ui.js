@@ -47,12 +47,14 @@ GP.UI = (function () {
   function modal(scene, titleLeft, titleRight, opts) {
     opts = opts || {};
     var W = GP.Config.WIDTH, H = GP.Config.HEIGHT, objs = [];
-    var x = opts.x || 20, y = opts.y || 12, w = opts.w || 440, h = opts.h || 226;
+    var x = opts.x || 20, y = opts.y || 12, w = opts.w || 440, h = opts.h || 226, dx = GP.Config.DX;
+    // Les fenêtres sont dessinées sur 480 px de large et centrées : chaque objet ajouté est décalé de DX.
     function add(o) {
       if (Array.isArray(o)) { o.forEach(add); return o; }
-      o.setDepth(D + (o.depthBoost || 0)).setScrollFactor(0); objs.push(o); return o;
+      o.setDepth(D + (o.depthBoost || 0)).setScrollFactor(0); o.x += dx; objs.push(o); return o;
     }
-    add(scene.add.rectangle(0, 0, W, H, GP.int(P.k), 0.6).setOrigin(0).setInteractive());
+    var dim = scene.add.rectangle(0, 0, W, H, GP.int(P.k), 0.6).setOrigin(0).setInteractive().setDepth(D).setScrollFactor(0);
+    objs.push(dim);
     add(scene.add.rectangle(x, y, w, h, GP.int(P.k)).setOrigin(0));
     add(scene.add.rectangle(x + 2, y + 2, w - 4, h - 4, GP.int(P.d)).setOrigin(0));
     add(scene.add.rectangle(x + 2, y + 21, w - 4, 1, GP.int(P.G)).setOrigin(0));
@@ -142,7 +144,7 @@ GP.UI = (function () {
       });
       // points de pagination
       for (var i = 0; i < PAGES.length; i++)
-        addC(scene.add.rectangle(GP.Config.WIDTH / 2 - 15 + i * 10, 203, 6, 6, GP.int(i === cur ? P.g : P.e)).setOrigin(0.5));
+        addC(scene.add.rectangle(GP.Config.DW / 2 - 15 + i * 10, 203, 6, 6, GP.int(i === cur ? P.g : P.e)).setOrigin(0.5));
       prev.label.setAlpha(cur > 0 ? 1 : 0.35);
       next.label.setAlpha(cur < PAGES.length - 1 ? 1 : 0.35);
     }
@@ -211,5 +213,78 @@ GP.UI = (function () {
   /** Fond des écrans fixes (menu, créateur, résultat) : le fond d'accueil de la planche « carte », sinon le décor généré. */
   function backdropKey(scene) { return scene.textures.exists('carte_fond_accueil') ? 'carte_fond_accueil' : 'lv_backdrop'; }
 
-  return { isTouch: isTouch, touchPad: touchPad, backdropKey: backdropKey, txt: txt, button: button, modal: modal, help: help, key: key, makeTextures: makeTextures, PAGES: PAGES };
+  /**
+   * Prépare un écran à mise en page fixe (480×270) : on centre cette zone (la caméra est décalée de DX) et le fond,
+   * répété, remplit toute la largeur de l'écran. Les textes et boutons de l'écran restent donc écrits en coordonnées 0-480.
+   * dim : opacité d'un voile sombre sur le fond (0 = aucun).
+   */
+  function backdrop(scene, dim) {
+    var W = GP.Config.WIDTH, H = GP.Config.HEIGHT, dx = GP.Config.DX;
+    scene.cameras.main.setScroll(-dx, 0);
+    var bg = scene.add.tileSprite(-dx, 0, W, H, backdropKey(scene)).setOrigin(0).setDepth(-100);
+    if (dim) scene.add.rectangle(-dx, 0, W, H, GP.int(P.k), dim).setOrigin(0).setDepth(-99);
+    return bg;
+  }
+
+  /** Découpe des paragraphes en pages qui tiennent dans une zone (largeur, hauteur en px) ; coupe entre deux phrases. */
+  function paginate(scene, paragraphs, width, height) {
+    var probe = txt(scene, -1000, -1000, '', P.w, { wordWrap: { width: width }, lineSpacing: 4 });
+    function fits(t) { probe.setText(t); return probe.height <= height; }
+    var pieces = [];
+    paragraphs.forEach(function (p) {
+      if (fits(p)) { pieces.push(p); return; }
+      var cur = '';
+      p.split(/(?<=[.!?])\s+/).forEach(function (s) {
+        var next = cur ? cur + ' ' + s : s;
+        if (cur && !fits(next)) { pieces.push(cur); cur = s; } else cur = next;
+      });
+      if (cur) pieces.push(cur);
+    });
+    var pages = [], page = '';
+    pieces.forEach(function (p) {
+      var next = page ? page + '\n\n' + p : p;
+      if (page && !fits(next)) { pages.push(page); page = p; } else page = next;
+    });
+    if (page) pages.push(page);
+    probe.destroy();
+    return pages;
+  }
+
+  /**
+   * Fenêtre de texte en plusieurs pages (confidentialité…). Navigation : boutons, flèches ←/→ ; Échap ferme
+   * (l'appelant gère Échap en appelant close()). Renvoie { objs, close() }.
+   */
+  function pagedText(scene, title, paragraphs, opts) {
+    opts = opts || {};
+    var pages = paginate(scene, paragraphs.map(function (p) { return GP.t(p); }), 412, 156), cur = 0, content = [];
+    var m = modal(scene, title, '');
+    function render() {
+      content.forEach(function (o) { o.destroy(); }); content = [];
+      m.titleRight.setText(pages.length > 1 ? (cur + 1) + '/' + pages.length : '');
+      content.push(m.add(txt(scene, 34, 40, pages[cur], P.w, { wordWrap: { width: 412 }, lineSpacing: 4 })));
+      if (pages.length > 1) for (var i = 0; i < pages.length; i++)
+        content.push(m.add(scene.add.rectangle(GP.Config.DW / 2 - (pages.length - 1) * 5 + i * 10, 203, 6, 6, GP.int(i === cur ? P.g : P.e)).setOrigin(0.5)));
+      prev.label.setAlpha(cur > 0 ? 1 : 0.35); next.label.setAlpha(cur < pages.length - 1 ? 1 : 0.35);
+    }
+    function go(d) { var n = Math.max(0, Math.min(pages.length - 1, cur + d)); if (n !== cur) { cur = n; GP.Sfx.play('step'); render(); } }
+    var prev = button(scene, 34, 214, 110, '< PRÉCÉDENT', function () { go(-1); });
+    var close = button(scene, 195, 214, 90, 'FERMER', function () { h.close(); });
+    var next = button(scene, 336, 214, 110, 'SUIVANT >', function () { go(1); }, { primary: true });
+    m.add(prev.objs); m.add(close.objs); m.add(next.objs);
+    var kb = scene.input.keyboard, L = function () { go(-1); }, R = function () { go(1); };
+    kb.on('keydown-LEFT', L); kb.on('keydown-RIGHT', R);
+    var h = {
+      objs: m.objs, open: true,
+      close: function () {
+        if (!h.open) return; h.open = false;
+        kb.off('keydown-LEFT', L); kb.off('keydown-RIGHT', R);
+        m.destroy(); GP.Sfx.play('back');
+        if (opts.onClose) opts.onClose();
+      }
+    };
+    render(); GP.Sfx.play('select');
+    return h;
+  }
+
+  return { backdrop: backdrop, paginate: paginate, pagedText: pagedText, isTouch: isTouch, touchPad: touchPad, backdropKey: backdropKey, txt: txt, button: button, modal: modal, help: help, key: key, makeTextures: makeTextures, PAGES: PAGES };
 })();

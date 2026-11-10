@@ -54,6 +54,7 @@ GP.Progression = {
     var next = i + 1, unlockedNew = false;
     if (next <= GP.LAST_PLAYABLE && this.data.unlocked < next) { this.data.unlocked = next; unlockedNew = true; }
     this.persist();
+    if (GP.Cloud) GP.Cloud.schedulePush();   // sauvegarde en ligne si le joueur a un compte (silencieux sinon)
     return { unlockedNew: unlockedNew, allDone: i >= GP.LAST_PLAYABLE, first: !prev, stars: cur.stars };
   },
 

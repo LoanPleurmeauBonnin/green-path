@@ -15,6 +15,7 @@ func save(_ i: CGImage, _ name: String) -> Data {
 let grid = render(16, from: img)                       // 1 case du logo = 1 pixel
 _ = save(render(180, from: grid), "apple-touch-icon.png")
 _ = save(render(192, from: grid), "icon-192.png")
+_ = save(render(512, from: grid), "icon-512.png")
 let p32 = save(render(32, from: grid), "favicon-32.png")
 // favicon.ico : un en-tête ICO autour de l'image PNG 32×32 (format accepté par tous les navigateurs récents)
 var ico = Data([0, 0, 1, 0, 1, 0, 32, 32, 0, 0, 1, 0, 32, 0])

@@ -1,9 +1,28 @@
 /* Conteneur du jeu : plein écran, rendu pixel net, pas de défilement tactile. */
 #game {
   position: fixed;
-  inset: 0;
+  /* plein écran, en évitant l'encoche et les barres système (viewport-fit=cover) */
+  inset: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
   touch-action: none;
 }
+
+/* Astuce affichée une fois sur iPhone / iPad (Safari) : installer le jeu pour jouer sans barres. */
+#ios-tip {
+  position: fixed;
+  left: 50%;
+  top: 8px;
+  transform: translateX(-50%);
+  z-index: 20;
+  max-width: 92vw;
+  padding: 8px 12px;
+  background: var(--ink);
+  border: 2px solid var(--green);
+  color: var(--white);
+  font-size: 9px;
+  line-height: 1.6;
+  text-align: center;
+}
+#ios-tip[hidden] { display: none; }
 
 #game canvas {
   image-rendering: pixelated;
@@ -35,3 +54,66 @@
 @media (orientation: portrait) and (pointer: coarse) {
   #rotate { display: grid; }
 }
+
+/* Fenêtre du pseudo et du code de sauvegarde (par-dessus le jeu). */
+#acct {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  background: rgba(20, 24, 46, 0.86);
+  overflow: auto;
+}
+#acct[hidden] { display: none; }
+#acct .acct-box {
+  width: min(440px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  padding: 14px 16px;
+  background: #2b3a55;
+  border: 3px solid var(--ink);
+  outline: 2px solid var(--green);
+  font-size: 9px;
+  line-height: 1.7;
+  user-select: text;
+  -webkit-user-select: text;
+}
+#acct h2 { margin: 0 0 10px; font-size: 11px; font-weight: normal; color: var(--green); }
+#acct p { margin: 0 0 10px; }
+#acct .note { color: #aab4c0; }
+#acct label { display: block; margin: 8px 0 4px; color: #aab4c0; }
+#acct input[type="text"] {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px;
+  font: inherit;
+  font-size: 11px;
+  color: var(--white);
+  background: var(--ink);
+  border: 2px solid #6b7280;
+  text-transform: none;
+}
+#acct input[type="text"]:focus, #acct .acct-btn:focus-visible { outline: 3px solid var(--green); outline-offset: 1px; }
+#acct label.check { display: flex; gap: 8px; align-items: flex-start; margin: 10px 0; color: var(--white); }
+#acct input[type="checkbox"] { flex: none; width: 18px; height: 18px; margin: 0; }
+#acct .acct-btn {
+  display: block;
+  width: 100%;
+  margin: 6px 0 0;
+  padding: 9px 8px;
+  font: inherit;
+  color: #aab4c0;
+  background: #2b3a55;
+  border: 2px solid var(--ink);
+  cursor: pointer;
+}
+#acct .acct-btn:hover { background: #1e8a4f; color: var(--white); }
+#acct .acct-btn.primary { color: var(--green); }
+#acct .acct-btn.primary:hover { color: var(--white); }
+#acct .acct-pseudo { font-size: 12px; color: #f4d35e; }
+#acct .acct-code { font-size: 12px; padding: 10px 6px; text-align: center; letter-spacing: 1px; color: var(--white); background: var(--ink); border: 2px solid var(--green); word-break: break-all; }
+#acct .acct-status { min-height: 14px; margin: 6px 0 0; }
+#acct .acct-status.good { color: var(--green); }
+#acct .acct-status.bad { color: #e8873a; }

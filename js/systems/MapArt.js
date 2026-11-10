@@ -169,7 +169,7 @@ GP.MapArt = (function () {
   var LM_BY_ID = {
     'jardin-des-plantes': 'jardin', 'chateau': 'chateau', 'cathedrale': 'cathedrale', 'bouffay': 'bouffay',
     'feydeau': 'feydeau', 'pommeraye': 'pommeraye', 'graslin': 'graslin', 'memorial': 'memorial',
-    'machines': 'machines', 'chantiers': 'chantiers', 'buren': 'buren', 'hangar': 'hangar'
+    'machines': 'machines', 'chantiers': 'chantiers', 'buren': 'buren', 'hangar': 'hangar', 'tour-lu': 'tourlu'
   };
 
   function drawLandmark(id) {

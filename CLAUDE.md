@@ -5,10 +5,24 @@ Projet noté (ESD Nantes B3, atelier PATRIMOINE.EXE / NANTES 001). **Gel fonctio
 
 ## Conventions de code
 - Phaser 3.90 local (`js/vendor/phaser.min.js`), JavaScript natif, **scripts classiques sans modules ES** (le jeu doit marcher en `file://`). Tout vit dans l'espace de noms global `GP`. L'ordre des `<script>` dans `index.html` compte ; les scènes sont listées dans `js/main.js`.
-- Résolution de base **480×270**, agrandie sans lissage (`pixelArt: true`). Police Press Start 2P à 8 px, **jamais de `setScale` sur un texte** (flou).
+- Résolution de base **270 px de haut** (480 px de large en 16:9, jusqu'à 640 selon l'écran, voir plus bas), agrandie sans lissage (`pixelArt: true`). Police Press Start 2P à 8 px, **jamais de `setScale` sur un texte** (flou).
 - Pas de nouvelle dépendance, pas de CDN, pas de lecture réseau bloquante (la météo a un délai de 4 s et un secours).
 - Style existant : `var`, fonctions courtes, commentaires en français. Code simple et explicable par l'équipe (notation individuelle).
 - Visuels : planches de sprites (`js/data/sprites/*.js`, importées par `node tools/import-sprites.js`) transformées en textures par `GP.Sprites` ; le reste est dessiné par code (`GP.PixelArt`).
+
+## Langues, réglages, entrées, écran
+- **Textes en français dans le code** ; l'anglais est dans `js/data/lang/en.js` (phrase exacte → traduction, modèles pour les nombres, lieux par id). Tout texte Phaser passe par `GP.I18n.tr` : une phrase sans traduction reste en français (`GP.I18n.missing()` liste les oublis). **Tout texte ajouté (panneaux de niveau, notices…) doit recevoir sa traduction anglaise.** Texte à couper ou mesurer : `GP.t(...)` d'abord.
+- Touches : jamais de `addKey('SPACE')` en dur. Les entrées passent par `GP.Controls.attach(scene).read(touch)` (clavier réaffectable de `GP.Settings`, tactile, manette). Les menus répondent aux événements `keydown-UP/DOWN/LEFT/RIGHT/ENTER/SPACE/ESC`, que la manette émet aussi.
+- Zone de jeu : hauteur 270, **largeur variable** (`GP.Config.WIDTH`, 480 à 640). Écrans à mise en page fixe (menu, options, avatar, résultat) : `GP.Config.DW` (480) + `GP.UI.backdrop(scene)` ; fenêtres : `GP.UI.modal` (centrées automatiquement). HUD et ciel : ancrés aux bords, fonds en `tileSprite`.
+- Textures : **ne jamais supprimer une texture ou une animation qu'un sprite utilise encore** (écran noir) : `GP.PixelArt.toTexture` met à jour sur place. Images larges : morceaux de 2048 px max (`LevelArt.CHUNK`, limite des téléphones).
+
+## Supabase (pseudo, sauvegarde, classement)
+- Projet `green-path` (eu-west-3). **Pas de Supabase Auth** : pseudo + code secret, tables fermées (RLS sans politique), cinq fonctions `gp_*` (voir `supabase/README.md` et `supabase/schema.sql`). Clé publique dans `js/config.js` (`GP.Config.CLOUD`) ; **jamais de clé service_role dans le dépôt**.
+- Le jeu doit marcher sans compte et hors ligne : tout appel réseau passe par `GP.Cloud` (délai 4 s, échec silencieux). Modifier le schéma : migration via l'outil Supabase puis mise à jour de `supabase/schema.sql` et de la notice de confidentialité (`js/data/lang/*.js`, `docs/confidentialite.md`).
+
+## Branches et dépôt
+- Dépôt `LoanPleurmeauBonnin/green-path` (public), collaboratrice : Floflodesiles (conception et construction des niveaux : `js/data/levels.js`, `docs/niveaux.md`). Travailler sur une branche (`fix/...`, `feat/...`) et ouvrir une PR vers `main` ; ne pas fusionner ni pousser sur `main` sans accord. Garder les changements du moteur (`GameScene.js`) petits pour éviter les conflits avec les niveaux.
+- Skills Phaser locaux dans `.claude/skills/` (non versionnés) : `phaser-core`, `phaser-arcade-physics` (Apache-2.0, `gamedev-skills/awesome-gamedev-agent-skills`), relus avant installation.
 
 ## Textes
 - Interface en **français avec accents**, en majuscules dans le jeu.
