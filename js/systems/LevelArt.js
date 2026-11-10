@@ -105,7 +105,7 @@ GP.LevelArt = (function () {
   }
 
   function drawTree(big) {
-    var w = big ? 40 : 30, h = big ? 58 : 42, r = big ? 16 : 11, o = PA.canvas(w, h), ctx = o.ctx, cx = w / 2, cy = r + 2;
+    var w = big ? 46 : 32, h = big ? 58 : 42, r = big ? 16 : 11, o = PA.canvas(w, h), ctx = o.ctx, cx = w / 2, cy = r + 2;
     // tronc
     R(ctx, cx - 4, cy + r - 4, 8, h - (cy + r - 4), GP.PAL.k); R(ctx, cx - 3, cy + r - 4, 6, h - (cy + r - 4) - 1, C.dirtD); R(ctx, cx - 2, cy + r - 4, 2, h - (cy + r - 4) - 1, C.dirt);
     // feuillage rond cerclé de noir, avec deux bosses
@@ -201,6 +201,179 @@ GP.LevelArt = (function () {
     R(ctx, 1, 12, 5, 3, k); R(ctx, 2, 13, 4, 1, C.dirtL); R(ctx, 14, 9, 5, 3, k); R(ctx, 15, 10, 3, 1, C.dirtL);
     R(ctx, 6, 26, 3, 16, k); R(ctx, 11, 26, 3, 16, k); R(ctx, 7, 26, 1, 15, C.dirt); R(ctx, 12, 26, 1, 15, C.dirt);
     R(ctx, 4, 42, 12, 2, k);
+    // lattes de bois : de fines rayures sur le corps et les jambes
+    for (var y = 14; y < 26; y += 3) R(ctx, 6, y, 8, 1, C.dirtD);
+    for (y = 29; y < 42; y += 3) { R(ctx, 7, y, 1, 1, C.dirtD); R(ctx, 12, y, 1, 1, C.dirtD); }
+    return o.cv;
+  }
+
+  // ---------- Silhouettes du jardin (dessins originaux : inspirées des sculptures de l'été au Jardin des Plantes) ----------
+  /** Trait épais, pixel par pixel (sert à dessiner les silhouettes). */
+  function line(ctx, x0, y0, x1, y1, c, t) {
+    var n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)), h = Math.floor(t / 2);
+    for (var i = 0; i <= n; i++) {
+      var f = n ? i / n : 0;
+      R(ctx, Math.round(x0 + (x1 - x0) * f) - h, Math.round(y0 + (y1 - y0) * f) - h, t, t, c);
+    }
+  }
+  /** Personnage orange qui marche à grands pas, du lierre sur le dos. */
+  function drawMarcheurOrange() {
+    var o = PA.canvas(46, 52), ctx = o.ctx, k = GP.PAL.k, orange = GP.PAL.o, rnd = PA.rng(8), verts = [GP.PAL.G, GP.PAL.g, '#1f6a3c'];
+    var traits = [[21, 28, 37, 47, 4], [37, 47, 43, 47, 3], [21, 28, 7, 47, 4], [7, 47, 2, 47, 3], [21, 28, 25, 14, 5], [25, 17, 37, 25, 3], [25, 17, 12, 24, 3]];
+    traits.forEach(function (t) { line(ctx, t[0], t[1], t[2], t[3], k, t[4] + 2); });
+    PA.disc(ctx, 27, 9, 6, k); R(ctx, 31, 8, 7, 4, k);
+    traits.forEach(function (t) { line(ctx, t[0], t[1], t[2], t[3], orange, t[4]); });
+    PA.disc(ctx, 27, 9, 5, orange); R(ctx, 32, 9, 5, 2, orange); P(ctx, 29, 8, k);    // tête, nez, œil
+    // lierre : de petites feuilles le long du dos, de la jambe arrière et de la tête
+    [[22, 15, 20, 28], [20, 28, 7, 46], [22, 5, 25, 11]].forEach(function (s) {
+      for (var i = 0; i < 9; i++) {
+        var f = i / 8;
+        R(ctx, Math.round(s[0] + (s[2] - s[0]) * f) - 3 - (rnd() < 0.5 ? 1 : 0), Math.round(s[1] + (s[3] - s[1]) * f), 2, 2, verts[Math.floor(rnd() * 3)]);
+      }
+    });
+    return o.cv;
+  }
+  /** Personnage jaune « en 8 » à côté d'une grande main jaune. */
+  function drawDuoJaune() {
+    var o = PA.canvas(48, 40), ctx = o.ctx, k = GP.PAL.k, y = GP.PAL.y;
+    PA.disc(ctx, 9, 10, 8, k); PA.disc(ctx, 9, 29, 9, k); R(ctx, 5, 15, 9, 6, k);
+    PA.disc(ctx, 9, 10, 7, y); PA.disc(ctx, 9, 29, 8, y); R(ctx, 6, 15, 7, 6, y);
+    R(ctx, 14, 23, 2, 9, GP.PAL.o);
+    R(ctx, 6, 8, 2, 3, k); R(ctx, 11, 8, 2, 3, k); R(ctx, 8, 13, 3, 1, k);            // visage
+    // la main : une paume et quatre doigts
+    var main = [[27, 20, 19, 19], [27, 10, 4, 12], [32, 6, 4, 16], [37, 8, 4, 14], [42, 13, 4, 9]];
+    main.forEach(function (r) { R(ctx, r[0] - 1, r[1] - 1, r[2] + 2, r[3] + 2, k); });
+    main.forEach(function (r) { R(ctx, r[0], r[1], r[2], r[3], y); });
+    R(ctx, 28, 22, 17, 1, GP.PAL.o); R(ctx, 41, 24, 3, 12, GP.PAL.o);
+    return o.cv;
+  }
+  /** Grand personnage orange : chevelure ronde, visage souriant, main sur le nez, et un ruban vert qui retombe jusqu'au sol. */
+  function drawPersonnageRuban() {
+    var o = PA.canvas(42, 60), ctx = o.ctx, k = GP.PAL.k, peau = '#e8905a', clair = '#f2b088', vert = '#a6e04a';
+    var bras = [[9, 25, 5, 45, 4], [21, 24, 28, 26, 3], [28, 26, 22, 18, 3]], jambes = [[10, 40, 10, 58, 5], [20, 40, 20, 58, 5]];
+    var cheveux = [[13, 10, 7], [21, 8, 6], [8, 13, 5], [26, 12, 5], [17, 6, 5]];
+    bras.concat(jambes).forEach(function (t) { line(ctx, t[0], t[1], t[2], t[3], k, t[4] + 2); });
+    R(ctx, 7, 21, 17, 21, k); PA.disc(ctx, 16, 16, 7, k);
+    cheveux.forEach(function (c) { PA.disc(ctx, c[0], c[1], c[2] + 1, k); });
+    bras.forEach(function (t) { line(ctx, t[0], t[1], t[2], t[3], peau, t[4]); });
+    jambes.forEach(function (t) { line(ctx, t[0], t[1], t[2], t[3], clair, t[4]); });
+    R(ctx, 8, 22, 15, 19, peau); R(ctx, 8, 32, 15, 9, clair);
+    cheveux.forEach(function (c) { PA.disc(ctx, c[0], c[1], c[2], peau); });
+    PA.disc(ctx, 16, 16, 6, peau);
+    R(ctx, 11, 13, 3, 2, GP.PAL.w); R(ctx, 18, 13, 3, 2, GP.PAL.w); P(ctx, 12, 14, k); P(ctx, 19, 14, k);   // yeux
+    R(ctx, 16, 14, 1, 4, k); P(ctx, 12, 19, k); R(ctx, 13, 20, 4, 1, k); P(ctx, 17, 19, k);                 // nez et sourire
+    // le ruban vert : un long fil qui descend du nez, fait une boucle dans l'herbe, et un second plus fin
+    function fil(pts) { for (var i = 0; i < pts.length - 1; i++) line(ctx, pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], vert, 2); }
+    fil([[18, 17], [19, 28], [21, 40], [18, 52], [22, 58], [34, 57], [39, 50], [34, 46]]);
+    fil([[24, 28], [27, 38], [26, 48], [30, 56]]);
+    return o.cv;
+  }
+  /** Oiseau en topiaire (buisson taillé en forme de gros oiseau, bec jaune pointé vers la gauche). */
+  function drawOiseauTopiaire() {
+    var o = PA.canvas(46, 39), ctx = o.ctx, k = GP.PAL.k;
+    PA.disc(ctx, 26, 25, 13, k); PA.disc(ctx, 12, 12, 9, k);
+    PA.disc(ctx, 26, 25, 12, GP.PAL.G); PA.disc(ctx, 12, 12, 8, GP.PAL.G);
+    PA.disc(ctx, 30, 30, 8, '#1f6a3c'); PA.disc(ctx, 21, 19, 5, GP.PAL.g); PA.disc(ctx, 10, 9, 3, GP.PAL.g);
+    R(ctx, 0, 12, 6, 5, k); R(ctx, 1, 13, 5, 3, GP.PAL.y); R(ctx, 1, 15, 4, 1, GP.PAL.o);   // bec
+    R(ctx, 10, 11, 3, 3, GP.PAL.w); R(ctx, 10, 12, 2, 2, k);                                  // œil
+    R(ctx, 38, 14, 5, 3, k); R(ctx, 38, 15, 4, 1, GP.PAL.G);                                 // plumes de la queue
+    for (var x = 18; x < 36; x += 5) P(ctx, x, 36, GP.PAL.g);
+    return o.cv;
+  }
+
+  // ---------- Plantes du jardin ----------
+  /** Massif de cannas rouges et de feuillage argenté. */
+  function drawMassifRouge() {
+    var o = PA.canvas(30, 24), ctx = o.ctx, k = GP.PAL.k;
+    R(ctx, 2, 21, 26, 3, k); R(ctx, 3, 22, 24, 1, C.dirtD);
+    var fleurs = [[4, 12], [9, 6], [14, 10], [19, 4], [24, 9], [28, 14]];
+    fleurs.forEach(function (f) { R(ctx, f[0], f[1] + 2, 1, 20 - f[1] - 2, GP.PAL.G); });
+    [[6, 18, 6], [15, 19, 7], [24, 18, 6]].forEach(function (b) { PA.disc(ctx, b[0], b[1], b[2], '#c5ccd0'); PA.disc(ctx, b[0] - 1, b[1] - 1, Math.round(b[2] / 2), '#e8eef0'); });
+    fleurs.forEach(function (f) { R(ctx, f[0] - 1, f[1], 3, 3, GP.PAL.r); P(ctx, f[0], f[1] - 1, GP.PAL.r); P(ctx, f[0], f[1] + 1, GP.PAL.y); });
+    return o.cv;
+  }
+  /** Buisson d'hortensias (roses, blancs et bleus). */
+  function drawHortensia() {
+    var o = PA.canvas(34, 22), ctx = o.ctx, k = GP.PAL.k, rnd = PA.rng(33), cols = ['#e59bb5', GP.PAL.w, '#9fc4ea'];
+    var boules = [[9, 13, 8], [22, 12, 9], [16, 9, 8]];
+    boules.forEach(function (b) { PA.disc(ctx, b[0], b[1], b[2] + 1, k); });
+    R(ctx, 2, 18, 28, 4, k);
+    boules.forEach(function (b) { PA.disc(ctx, b[0], b[1], b[2], GP.PAL.G); });
+    R(ctx, 3, 18, 26, 3, GP.PAL.G);
+    for (var i = 0; i < 18; i++) { var x = 3 + Math.floor(rnd() * 26), y = 3 + Math.floor(rnd() * 14); R(ctx, x, y, 3, 2, cols[Math.floor(rnd() * 3)]); }
+    return o.cv;
+  }
+  /** Touffe de hautes herbes à épis clairs. */
+  function drawHerbesHautes() {
+    var o = PA.canvas(24, 28), ctx = o.ctx, tiges = [[4, 7], [9, 3], [14, 6], [19, 9], [12, 12]];
+    tiges.forEach(function (t) { line(ctx, 12, 27, t[0], t[1], GP.PAL.g, 1); PA.disc(ctx, t[0], t[1], 2, '#ece6d4'); P(ctx, t[0], t[1] - 2, GP.PAL.w); });
+    R(ctx, 6, 24, 12, 4, GP.PAL.G); R(ctx, 8, 23, 8, 1, GP.PAL.g);
+    return o.cv;
+  }
+  // ---------- Château des ducs de Bretagne (dessins originaux, d'après des descriptions et des photos de repérage) ----------
+  /** Triangle plein (toit pointu). */
+  function toit(ctx, x, y, larg, haut, c) {
+    for (var j = 0; j < haut; j++) { var l = Math.round(larg * (j + 1) / haut); R(ctx, x + Math.round((larg - l) / 2), y + j, l, 1, c); }
+  }
+  /** Fond lointain du château (largeur 480, raccord horizontal) : courtines de schiste sombre, tours rondes, logis blanc en tuffeau et toits d'ardoise. */
+  function drawFondChateau() {
+    var w = 480, h = 120, o = PA.canvas(w, h), ctx = o.ctx, mur = '#7d869c', murC = '#8d96ab', ombre = '#6a728a', ardoise = '#58607a', tuffeau = '#e6e0d0', i, x;
+    R(ctx, 0, 70, w, h - 70, mur); R(ctx, 0, 70, w, 4, murC); R(ctx, 0, 74, w, 5, ombre);
+    for (x = 0; x < w; x += 8) R(ctx, x + 1, 74, 6, 4, ardoise);                                                   // mâchicoulis sous le chemin de ronde
+    for (x = 3; x < w; x += 14) R(ctx, x, 92 + (x % 3), 2, 5, ombre);                                               // quelques pierres sombres
+    [[36, 28], [300, 30], [430, 26]].forEach(function (t) {                                                         // tours rondes à toit en terrasse
+      R(ctx, t[0], 44, t[1], h - 44, mur); R(ctx, t[0], 44, 7, h - 44, murC); R(ctx, t[0] + t[1] - 6, 44, 6, h - 44, ombre);
+      R(ctx, t[0] - 2, 40, t[1] + 4, 5, murC); for (i = t[0]; i < t[0] + t[1]; i += 6) R(ctx, i, 45, 4, 4, ardoise);
+      R(ctx, t[0] + t[1] / 2 - 1, 58, 2, 7, ardoise);
+    });
+    toit(ctx, 168, 18, 46, 30, ardoise);                                                                           // la tour du Fer-à-Cheval : toit pointu
+    R(ctx, 172, 48, 38, h - 48, mur); R(ctx, 172, 48, 6, h - 48, murC); R(ctx, 204, 48, 6, h - 48, ombre);
+    R(ctx, 100, 38, 64, h - 38, tuffeau);                                                                          // logis blanc
+    R(ctx, 96, 30, 72, 10, ardoise); R(ctx, 100, 40, 64, 2, '#c9c2b0');
+    for (i = 0; i < 3; i++) { R(ctx, 108 + i * 20, 22, 10, 12, tuffeau); toit(ctx, 107 + i * 20, 15, 12, 8, ardoise); }   // lucarnes
+    for (i = 0; i < 4; i++) { R(ctx, 108 + i * 14, 52, 6, 10, '#8a93a8'); R(ctx, 108 + i * 14, 76, 6, 10, '#8a93a8'); }
+    toit(ctx, 330, 22, 40, 24, ardoise); R(ctx, 334, 46, 32, h - 46, tuffeau);                                        // un second pavillon
+    R(ctx, 340, 56, 6, 9, '#8a93a8'); R(ctx, 354, 56, 6, 9, '#8a93a8');
+    return o.cv;
+  }
+  /** Salle intérieure du château (fond de tuffeau, voûte, piliers, fenêtres en arc, bannières à hermines, torches). largeur en tuiles ; cheminee : grande cheminée au centre. */
+  function drawSalle(wT, cheminee) {
+    var w = wT * 16, h = 272, o = PA.canvas(w, h), ctx = o.ctx, k = GP.PAL.k, pierre = '#a9a08a', joint = '#958c76', ombre = '#5f5a4b', bois = '#6b4230', x, y;
+    R(ctx, 0, 0, w, h, pierre);
+    for (y = 0; y < h; y += 8) { R(ctx, 0, y, w, 1, joint); for (x = ((y / 8) % 2) * 8; x < w; x += 16) R(ctx, x, y, 1, 8, joint); }   // appareil de pierre
+    R(ctx, 0, 0, w, 34, ombre); R(ctx, 0, 34, w, 2, k); R(ctx, 0, 36, w, 6, bois); R(ctx, 0, 42, w, 1, k);                         // voûte sombre et poutre
+    for (x = 0; x < w; x += 12) R(ctx, x, 30 - (x % 24 ? 0 : 3), 6, 4 + (x % 24 ? 0 : 3), '#7a735f');                                  // nervures
+    var pas = 96;
+    for (x = 0; x + pas <= w; x += pas) {
+      R(ctx, x, 0, 12, h, k); R(ctx, x + 1, 0, 10, h, '#c9c0a6'); R(ctx, x + 9, 0, 2, h, ombre); R(ctx, x - 2, 42, 16, 5, k); R(ctx, x - 1, 43, 14, 3, '#b3aa90');
+      var cx = x + 54;                                                                                                                  // fenêtre en arc entre deux piliers
+      PA.disc(ctx, cx, 76, 12, k); R(ctx, cx - 12, 76, 24, 34, k); PA.disc(ctx, cx, 76, 10, '#9fc4ea'); R(ctx, cx - 10, 76, 20, 32, '#9fc4ea');
+      R(ctx, cx, 66, 1, 42, k); R(ctx, cx - 10, 88, 20, 1, k); R(ctx, cx - 13, 110, 26, 4, k); R(ctx, cx - 12, 110, 24, 2, ombre);
+      R(ctx, x + 16, 62, 14, 38, k); R(ctx, x + 17, 63, 12, 36, GP.PAL.w);                                                              // bannière à hermines
+      [[21, 70], [25, 78], [21, 86], [25, 94]].forEach(function (m) { R(ctx, x + m[0], m[1], 2, 4, k); P(ctx, x + m[0] - 1, m[1] + 4, k); P(ctx, x + m[0] + 2, m[1] + 4, k); });
+      var tx = x + 84;                                                                                                                  // torche murale
+      R(ctx, tx, 122, 2, 10, k); R(ctx, tx - 2, 120, 6, 3, k); PA.disc(ctx, tx + 1, 116, 4, GP.PAL.o); PA.disc(ctx, tx + 1, 117, 2, GP.PAL.y);
+      ctx.globalAlpha = 0.18; PA.disc(ctx, tx + 1, 118, 16, GP.PAL.y); ctx.globalAlpha = 1;
+    }
+    if (cheminee) {                                                                                                                      // grande cheminée de la salle des gardes
+      var mx = Math.round(w / 2) - 28;
+      R(ctx, mx, 110, 56, 100, k); R(ctx, mx + 2, 112, 52, 96, '#8f8774'); R(ctx, mx + 10, 150, 36, 58, k); R(ctx, mx + 12, 152, 32, 56, '#2b2f3f');
+      PA.disc(ctx, mx + 28, 198, 7, GP.PAL.o); PA.disc(ctx, mx + 28, 200, 4, GP.PAL.y); R(ctx, mx - 4, 106, 64, 6, k); R(ctx, mx - 3, 107, 62, 3, ombre);
+    }
+    R(ctx, 0, 0, 8, h, '#5d6475'); R(ctx, w - 8, 0, 8, h, '#5d6475'); R(ctx, 8, 0, 1, h, k); R(ctx, w - 9, 0, 1, h, k);                   // montants des portes d'entrée et de sortie
+    return o.cv;
+  }
+  /** Fond du Jardin des Plantes : rangées d'arbres, claires au loin puis plus foncées (raccord horizontal, largeur 320). */
+  function drawFondParc() {
+    var w = 320, h = 120, o = PA.canvas(w, h), ctx = o.ctx, rnd = PA.rng(14), i;
+    function boule(cx, cy, r, c) { [-w, 0, w].forEach(function (dx) { PA.disc(ctx, cx + dx, cy, r, c); }); }
+    for (i = 0; i < 16; i++) boule(Math.round(i * 20 + rnd() * 10), 46 + Math.floor(rnd() * 14), 14 + Math.floor(rnd() * 8), '#5d9a78');
+    R(ctx, 0, 62, w, h - 62, '#5d9a78');
+    for (i = 0; i < 10; i++) { var tx = Math.round(i * 32 + rnd() * 14); R(ctx, tx, 70, 3, 40, C.dirtD); }              // quelques troncs
+    for (i = 0; i < 12; i++) boule(Math.round(i * 27 + rnd() * 12), 72 + Math.floor(rnd() * 12), 15 + Math.floor(rnd() * 9), '#3f7a4a');
+    R(ctx, 0, 90, w, h - 90, '#3f7a4a');
+    for (i = 0; i < 7; i++) boule(Math.round(i * 46 + rnd() * 20), 66 + Math.floor(rnd() * 8), 4, '#efb8c8');         // arbres en fleurs (magnolias)
+    for (i = 0; i < 40; i++) P(ctx, Math.floor(rnd() * w), 60 + Math.floor(rnd() * 40), GP.PAL.G);
     return o.cv;
   }
   /** Barrière en bois (et portail du jardin). */
@@ -233,6 +406,17 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_jet', drawJet());
     PA.toTexture(scene, 'lv_flowerbed', drawFlowerBed());
     PA.toTexture(scene, 'lv_woodman', drawWoodMan());
+    PA.toTexture(scene, 'lv_sil_orange', drawMarcheurOrange());
+    PA.toTexture(scene, 'lv_sil_jaune', drawDuoJaune());
+    PA.toTexture(scene, 'lv_sil_ruban', drawPersonnageRuban());
+    PA.toTexture(scene, 'lv_sil_oiseau', drawOiseauTopiaire());
+    PA.toTexture(scene, 'lv_massif_rouge', drawMassifRouge());
+    PA.toTexture(scene, 'lv_hortensia', drawHortensia());
+    PA.toTexture(scene, 'lv_herbes_hautes', drawHerbesHautes());
+    PA.toTexture(scene, 'lv_fond_parc', drawFondParc());
+    PA.toTexture(scene, 'lv_fond_chateau', drawFondChateau());
+    PA.toTexture(scene, 'lv_salle_herses', drawSalle(22, false));
+    PA.toTexture(scene, 'lv_salle_gardes', drawSalle(20, true));
     PA.toTexture(scene, 'lv_fence', drawFence(false));
     PA.toTexture(scene, 'lv_gate', drawFence(true));
     PA.toTexture(scene, 'lv_backdrop', drawBackdrop(scene));
