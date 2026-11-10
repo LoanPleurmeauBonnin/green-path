@@ -30,7 +30,74 @@ Skills Phaser (`phaser-core`, `phaser-arcade-physics`) du dépôt gamedev-skills
 - Crédit court affiché dans la documentation : « Palmarium, photo Pymouss44, CC BY-SA 3.0, via Wikimedia Commons, recadrée et pixélisée ».
 - Téléchargée le 9 novembre 2026 après validation de l'équipe. Les personnes visibles au loin sur la photo ne sont pas identifiables à 48×32.
 
-Les autres lieux utilisent encore le monument dessiné par code. Candidates : `docs/images-candidates.md`.
+### Cathédrale Saint-Pierre-et-Saint-Paul (lieu 2)
+- **Fichier** : « Cathédrale Saint-Pierre de Nantes - façade.jpg » — https://commons.wikimedia.org/wiki/File:Cathédrale_Saint-Pierre_de_Nantes_-_façade.jpg
+- **Auteur** : Eusebius, via Wikimedia Commons.
+- **Licence** : **CC BY 3.0 (la page indique aussi le domaine public et GFDL ; on retient CC BY 3.0, attribution obligatoire)** — https://creativecommons.org/licenses/by/3.0/
+- **Modifications** : recadrage 3:2 sur la rosace et les portails (1488×992 depuis 1488×2000), réduction à **48×32 cases**, léger renfort du contraste et de la saturation, **16 couleurs** — `tools/pixelize.swift`. Fichier produit : `assets/locations/cathedrale.js`.
+- **Obligations** : créditer l'auteur, donner le lien vers la licence, indiquer les modifications.
+- Téléchargée le 10 novembre 2026 après validation de l'équipe, image par image. Personnes éventuelles non identifiables à 48×32. Aucune œuvre d'artiste contemporain dans le cadre.
+
+### Château des ducs de Bretagne (lieu 3)
+- **Fichier** : « Château des Ducs de Bretagne façade.JPG » — https://commons.wikimedia.org/wiki/File:Château_des_Ducs_de_Bretagne_façade.JPG
+- **Auteur** : JoévinB, via Wikimedia Commons.
+- **Licence** : **CC BY-SA 3.0** — https://creativecommons.org/licenses/by-sa/3.0/
+- **Modifications** : recadrage 3:2 sur les deux tours, les douves et le Grand Logis (1600×1067 depuis 1920×1440 ; personnes sur la pelouse exclues), réduction à **48×32 cases**, léger renfort du contraste et de la saturation, **16 couleurs** — `tools/pixelize.swift`. Fichier produit : `assets/locations/chateau.js`.
+- **Obligations** : créditer l'auteur, donner le lien vers la licence, indiquer les modifications, et diffuser l'image pixélisée sous la même licence.
+- Téléchargée le 10 novembre 2026 après validation de l'équipe, image par image. Personnes éventuelles non identifiables à 48×32. Aucune œuvre d'artiste contemporain dans le cadre.
+
+### Île Feydeau (lieu 4)
+- **Fichier** : « Feydeau Nantes 2.JPG » — https://commons.wikimedia.org/wiki/File:Feydeau_Nantes_2.JPG
+- **Auteur** : Jibi44 (téléverseur ; la page ne nomme pas d'auteur), via Wikimedia Commons.
+- **Licence** : **CC BY-SA 3.0** — https://creativecommons.org/licenses/by-sa/3.0/
+- **Modifications** : recadrage 3:2 sur les façades (1480×987 depuis 1920×1440), réduction à **48×32 cases**, léger renfort du contraste et de la saturation, **16 couleurs** — `tools/pixelize.swift`. Fichier produit : `assets/locations/feydeau.js`.
+- **Obligations** : créditer l'auteur, donner le lien vers la licence, indiquer les modifications, et diffuser l'image pixélisée sous la même licence.
+- Téléchargée le 10 novembre 2026 après validation de l'équipe, image par image. Personnes éventuelles non identifiables à 48×32. Aucune œuvre d'artiste contemporain dans le cadre.
+
+### Place Graslin (théâtre) (lieu 5)
+- **Fichier** : « Nantes 2018 Façade du théâtre Graslin 02.jpg » — https://commons.wikimedia.org/wiki/File:Nantes_2018_Façade_du_théâtre_Graslin_02.jpg
+- **Auteur** : François de Dijon, via Wikimedia Commons.
+- **Licence** : **CC BY-SA 4.0** — https://creativecommons.org/licenses/by-sa/4.0/
+- **Modifications** : recadrage 3:2 sur la façade (1060×707 depuis 1920×1282), réduction à **48×32 cases**, léger renfort du contraste et de la saturation, **16 couleurs** — `tools/pixelize.swift`. Fichier produit : `assets/locations/graslin.js`.
+- **Obligations** : créditer l'auteur, donner le lien vers la licence, indiquer les modifications, et diffuser l'image pixélisée sous la même licence.
+- Téléchargée le 10 novembre 2026 après validation de l'équipe, image par image. Personnes éventuelles non identifiables à 48×32. Aucune œuvre d'artiste contemporain dans le cadre.
+
+### Parc des Chantiers (Grue Titan) (lieu 7)
+- **Fichier** : « Grue Titan jaune, Nantes-5147.jpg » — https://commons.wikimedia.org/wiki/File:Grue_Titan_jaune,_Nantes-5147.jpg
+- **Auteur** : Raimond Spekking, via Wikimedia Commons.
+- **Licence** : **CC BY-SA 4.0** — https://creativecommons.org/licenses/by-sa/4.0/
+- **Modifications** : recadrage 3:2 sur la grue (1700×1133 depuis 1920×1920), réduction à **48×32 cases**, léger renfort du contraste et de la saturation, **16 couleurs** — `tools/pixelize.swift`. Fichier produit : `assets/locations/chantiers.js`.
+- **Obligations** : créditer l'auteur, donner le lien vers la licence, indiquer les modifications, et diffuser l'image pixélisée sous la même licence.
+- Téléchargée le 10 novembre 2026 après validation de l'équipe, image par image. Personnes éventuelles non identifiables à 48×32. Aucune œuvre d'artiste contemporain dans le cadre.
+
+### Hangar à Bananes (lieu 9)
+- **Fichier** : « W5618 Nantes HangarBanane 42780EOS.jpg » — https://commons.wikimedia.org/wiki/File:W5618_Nantes_HangarBanane_42780EOS.jpg
+- **Auteur** : Llann Wé², via Wikimedia Commons.
+- **Licence** : **CC BY-SA 4.0** — https://creativecommons.org/licenses/by-sa/4.0/
+- **Modifications** : image entière (960×640 téléchargés), réduction à **48×32 cases**, léger renfort du contraste et de la saturation, **16 couleurs** — `tools/pixelize.swift`. Fichier produit : `assets/locations/hangar.js`.
+- **Obligations** : créditer l'auteur, donner le lien vers la licence, indiquer les modifications, et diffuser l'image pixélisée sous la même licence.
+- Téléchargée le 10 novembre 2026 après validation de l'équipe, image par image. Personnes éventuelles non identifiables à 48×32. Aucune œuvre d'artiste contemporain dans le cadre.
+
+### Passage Pommeraye (lieu 11)
+- **Fichier** : « Galerie Régnier du passage Pommeraye.jpg » — https://commons.wikimedia.org/wiki/File:Galerie_Régnier_du_passage_Pommeraye.jpg
+- **Auteur** : Tgllyn, via Wikimedia Commons.
+- **Licence** : **CC BY-SA 4.0** — https://creativecommons.org/licenses/by-sa/4.0/
+- **Modifications** : recadrage 3:2 sur la partie haute (1280×853 depuis 1280×1707 ; foule du bas exclue), réduction à **48×32 cases**, léger renfort du contraste et de la saturation, **16 couleurs** — `tools/pixelize.swift`. Fichier produit : `assets/locations/pommeraye.js`.
+- **Obligations** : créditer l'auteur, donner le lien vers la licence, indiquer les modifications, et diffuser l'image pixélisée sous la même licence.
+- Téléchargée le 10 novembre 2026 après validation de l'équipe, image par image. Personnes éventuelles non identifiables à 48×32. Aucune œuvre d'artiste contemporain dans le cadre.
+
+### Tour LU (Lieu Unique) (lieu 12)
+- **Fichier** : « Nantes-TourLU.jpg » — https://commons.wikimedia.org/wiki/File:Nantes-TourLU.jpg
+- **Auteur** : Selbymay, via Wikimedia Commons.
+- **Licence** : **CC BY-SA 4.0** — https://creativecommons.org/licenses/by-sa/4.0/
+- **Modifications** : recadrage 3:2 sur le dôme et la fresque (1920×1280 depuis 1920×2791), réduction à **48×32 cases**, léger renfort du contraste et de la saturation, **16 couleurs** — `tools/pixelize.swift`. Fichier produit : `assets/locations/tour-lu.js`.
+- **Obligations** : créditer l'auteur, donner le lien vers la licence, indiquer les modifications, et diffuser l'image pixélisée sous la même licence.
+- Téléchargée le 10 novembre 2026 après validation de l'équipe, image par image. Personnes éventuelles non identifiables à 48×32. Aucune œuvre d'artiste contemporain dans le cadre.
+
+### Lieux sans photo (6 Machines de l'île, 8 Anneaux de Buren, 10 Mémorial)
+Leur sujet est une œuvre d'artiste protégée (Grand Éléphant, anneaux de Buren, mémorial) : **aucune photo n'est utilisée**, le monument reste dessiné par code, pour ne prendre aucun risque de droit d'auteur. Décision de l'équipe du 10 novembre 2026.
+
+Point à confirmer : le décor sculpté de la Tour LU (1909) est supposé dans le domaine public (auteurs morts depuis plus de 70 ans) ; dates de décès non vérifiées.
 
 ## Sprites de décor (planches)
 Les 10 planches de sprites (`js/data/sprites/*.js` : commun, carte, ciel, signes, jardin, cathédrale, château, centre, île, bouffay ; 447 sprites, palette de 35 couleurs) ont été **générées avec Claude Design** (Anthropic) à partir des consignes de l'équipe, puis importées sans retouche par `tools/import-sprites.js`. Elles sont déclarées dans l'usage de l'IA du projet.

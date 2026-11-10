@@ -1,0 +1,11 @@
+/**
+ * Image patrimoniale pixélisée (générée par tools/pixelize.swift, ne pas modifier à la main).
+ * Source et licence : voir CREDITS.md.
+ */
+window.GP = window.GP || {};
+GP.IMAGES = GP.IMAGES || {};
+GP.IMAGES['hangar'] = {
+  w: 48, h: 32,
+  palette: ['#a2a4a8', '#020202', '#f3f2fe', '#6c5734', '#807a72', '#353634', '#d4d7e7', '#605c52', '#4d3b2a', '#87857e', '#242321', '#72695d', '#e1e3f2', '#c2c7d5', '#4d4c45', '#7a7165'],
+  data: 'cccccc222222622222222222222222222cccc666cc666666cccccccc222262222222222222222222222222ccccc66cc66cccccccccc6022222222c22222222222cccccccc666666666cccccccccddc2222ccccccc2222222cc6666666666666666666cccccccdcccccccc6ccccccc2cc666dddd6666666666666666666cddccccccc6d666cccccc66ddddd666d66666c66666666cccd666cccc66d66c66cccccc666666dddd6666c666666666c6efcccccc6096cc6c666c6666ddddddddd66666666666666da7cccc6d9eeb90666666666dddddddddd66666666666666da4666607777e770ddddddddd6ddddddd6666666609999400a4666607777777f6ddddddddddd00000009996669444444970d0009775ebbbe777777777777777bbbbbfb099b7bbb77bebbffbb777777b7f444999999444444444f44d44999999947fbb77e555555eee755e5e777775ae557eef4d9b777777bbe55f9fee5ee5ee79b55e5e00404557e744744d94ff4f4f4feeeffb7eeeeee7e77e777bfbfbfbbfbbfbf9909444999999799994fbfbbfbbb44499999999999999999994994444494974444f7e447ee77bffffff44bbbb4947b4999b99f8e88888a88555eb99455e5aa55aa55e5a5555a5ef444899f57555ee58ea5ae55aaa57ee5aaa1a5aa1a55a1aeff448f4b3333338a83888eaaaaa5e51aaaa1a5aa1a55a1a5757483b37333333833333355835ee5555a5a5e555a555aa5aa7b8ffbbbbbbb7eb37b37b7337777777777777e77e77777eee7ef44444444444444f4ffffffffffffffffffffffffffffffeffffffffff444f4ffff4444fff4f4fffff4fff4ffffffff87bbbbbbfbbfffffffbfffffffff4ffffffbffffffffffff77bb7bbbbbbbfffffffffffffffffffff4ffffffffffffbf7bb7bbbbb7bfffbbfbf4fffffffffffbffbf4ffffbffffffbfbbbbbbbffbbbbfbfbbfffbffffffffffbbfffffbbfffbffffbbbbbffbfbfbffbfbfffbbbfffffffffbffffbbffbbffbbbbbffffffbfffbffbfbbbbfffbffbfbbffbffbbbfbbbbbbfffbbfbfbbfbbbbbbfbffbfbfffbfbfbbbfbbfbfbbbfbbf'
+};

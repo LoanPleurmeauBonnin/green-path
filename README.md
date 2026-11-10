@@ -89,7 +89,7 @@ puis http://localhost:8123. **Mode test** : ajouter `?dev=1` à l'adresse (W : m
 ## Fallback et limites connues
 - **Hors ligne, le jeu reste entièrement jouable** (météo, sauvegarde locale ; le classement affiche la dernière version vue ; la sauvegarde en ligne repart au retour du réseau) : si le réseau coupe, le jeu garde **la dernière météo reçue** (widget « HORS LIGNE · IL Y A N MIN ») ; si aucune n'a jamais été reçue, météo neutre sans effet ([data/fallback.json](data/fallback.json)). La progression est gardée dans le navigateur (`localStorage`).
 - La météo est redemandée toutes les 5 min, et dès que le réseau revient.
-- Images à reconstruire : photo pixélisée validée pour le Jardin des Plantes ; pour les autres lieux, le monument de la planche de sprites en attendant des photos Commons validées.
+- Images à reconstruire : **9 photos Wikimedia Commons** pixélisées (48×32, 16 couleurs, validées une à une : Jardin des Plantes, Cathédrale, Château, Île Feydeau, Graslin, Chantiers, Hangar à Bananes, Pommeraye, Tour LU ; crédits dans [CREDITS.md](CREDITS.md)). Les 3 lieux dont le sujet est une œuvre d'artiste protégée (Machines de l'île, Anneaux de Buren, Mémorial) gardent le monument dessiné par code, sans photo.
 - Niveaux 5 à 12 à venir.
 
 ## Stack
