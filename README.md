@@ -37,8 +37,6 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
 ## Les 12 lieux
 L'ordre suit la séquence de la page [« Arpenter la ligne verte »](https://www.levoyageanantes.fr/les-parcours/arpenter-la-ligne-verte/) du Voyage à Nantes pour les lieux qui y figurent (Jardin des Plantes, Cathédrale, Château, Machines, Chantiers, Buren, Mémorial, Pommeraye), complétée pour les autres. Cette page ne donne aucune numérotation : **l'ordre des 12 étapes est une sélection pour le jeu, ce n'est pas la numérotation officielle de la ligne verte.**
 
-| # | Lieu | Statut |
-|---|---|---|
 | # | Lieu | Statut | Ce qu'on y apprend |
 |---|---|---|---|
 | 1 | Jardin des Plantes | ✅ jouable | courir, sauter, ronces, lanternes |
