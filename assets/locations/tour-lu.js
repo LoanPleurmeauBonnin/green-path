@@ -1,0 +1,11 @@
+/**
+ * Image patrimoniale pixélisée (générée par tools/pixelize.swift, ne pas modifier à la main).
+ * Source et licence : voir CREDITS.md.
+ */
+window.GP = window.GP || {};
+GP.IMAGES = GP.IMAGES || {};
+GP.IMAGES['tour-lu'] = {
+  w: 48, h: 32,
+  palette: ['#4b8ae6', '#02152e', '#f7f6f1', '#757168', '#adaaa1', '#4871a6', '#748190', '#4e5458', '#7ba3d0', '#dfd7d2', '#938f87', '#526176', '#5fa1f7', '#3f7cd9', '#3b4046', '#c1bebc'],
+  data: 'ddddddddddddddddddddddddddddddddd000000000000000ddddddddddddddddddddddddddddddddd000000000000000dddddddddddddddddddddd56bdddddddd000000000000000ddddddddddddddddddddddb7bdddddddd000000000000000dddddddddddddddddddddd548dddddddd000000000000000ddddddddddddddddddddd537a8dddddd0000000000000000ddddddddddddddddddddd737fadddddd0000000000000000ddddddddddddddddddddd53346ddddd00000000000000000ddddddddddddddddddddd77733ddddd00000000000000000dddddddddddddddddddd5ee3336dddd00000000000000000ddddddddddddddddddddde3443ddddd00000000000000000dddddddddddddddddddd3a444a6dddd00000000000000000ddddddddddddddddddd6424b7ff8ddd0000000000000000000dddddddddddddddd59946b6b22ddd00000000000000000000000ddddddddddddbf97336b924dd0000000000000000000000000000000000574fe3336f2a8d0000000000000000000000000000000000be4a333aaf234d000000000000000000000000000000000deba4aaa44924400000000000000000000000000000000005e3444f999f99480000000000000000c00000000000000005b666a44ff49298000000000000000cc000000000000000057333aaaaaa4f98000000000000000cc000000000000000debb644444f43a440000000000000cccccc00000000000005b76bb66aaaa44f400000000000ccccccccccc0000000000d77bb7777773f4a4000000000cccccccccccccccccc0000c5eebbb64fffaf43a00cccccccccccccccccccccccccccccc0ebb44ff999f999a0ccccccccccccccccccccccccccccccccbb64fff999f999fcccccccccccccccccccccccccccccccccbb34f4ff99f999fcccccccccccccccccccccccc074cccc05bb336af44a64f9fcccccccccccccccccccccccc5babb5e11bb7743a44f6a49fcccccccccccccccccccccccc5b7e777ee7bb737a4f948994666666cccccccccccc88cccc5b7bb777ebbb6a33344f4f9fa33a4a6cccccccccc'
+};
