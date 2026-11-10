@@ -19,7 +19,7 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
 | **4 · Île Feydeau** : la marée monte, les bateaux s'enfoncent, les visages des façades mentent | **5 · Place Graslin** : les Muses lancent des notes, parasols qui font rebondir, projecteurs, rideau à ouvrir |
 |---|---|
 | ![Île Feydeau](docs/screenshots/niveau-feydeau.png) | ![Place Graslin](docs/screenshots/niveau-graslin.png) |
-| **6 · Machines de l'île** : rails qui entraînent, jets de vapeur, petits robots qui poursuivent | **7 · Parc des Chantiers** : conteneurs qui tombent de la grue (l'ombre prévient), chariots |
+| **6 · Machines de l'île** : rails qui entraînent, jets de vapeur, araignées qui se figent quand on les regarde, et le **Grand Éléphant** sur lequel on monte pour traverser le canal | **7 · Parc des Chantiers** : conteneurs qui tombent de la grue (l'ombre prévient), chariots |
 | ![Machines de l'île](docs/screenshots/niveau-machines.png) | ![Parc des Chantiers](docs/screenshots/niveau-chantiers.png) |
 | **8 · Anneaux de Buren** : des **bornes de couleur** allument les passerelles néon de leur couleur au-dessus de la Loire | **9 · Hangar à Bananes** : les pixels pourrissent, la moisissure gagne du terrain |
 | ![Anneaux de Buren](docs/screenshots/niveau-buren.png) | ![Hangar à Bananes](docs/screenshots/niveau-hangar.png) |
@@ -55,7 +55,7 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
   | Château | esprits de la garde plus lents | esprits plus agités | tonneaux plus rapides |
   | Île Feydeau | la marée monte plus haut | la marée reste basse | les bateaux coulent plus vite |
   | Place Graslin | notes de Muse plus lentes | projecteurs plus rapides | parasols : rebond plus haut |
-  | Machines de l'île | jets plus courts | robots plus rapides | tapis plus vifs |
+  | Machines de l'île | jets plus courts | araignées plus rapides | tapis plus vifs |
   | Parc des Chantiers | cale plus vive | chariots plus rapides | conteneurs plus fréquents |
   | Anneaux de Buren | la couleur d'une borne ne reste allumée que 5 s | | |
   | Hangar à Bananes | pixels plus lents à pourrir, moisissure plus vive | pixels plus rapides à pourrir, moisissure plus lente | |
@@ -63,7 +63,7 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
   | Passage Pommeraye | verre plus fragile | verre qui revient plus vite | |
   | Tour LU | tapis plus vifs | jets de vapeur plus longs | parasol : rebond plus haut |
 - **Un décor propre à chaque lieu** : le **Jardin des Plantes** est un vrai parc (rangées d'arbres, magnolias, massifs, hortensias, hautes herbes) où l'on croise des silhouettes colorées inspirées des sculptures de l'été au jardin ; le **Château** se traverse de la cour, avec ses tours de schiste et son logis blanc en tuffeau, jusqu'aux **salles intérieures** (châtelet aux herses, puis salle des gardes avec sa cheminée). Tout est dessiné par code, sans image externe.
-- **Un danger propre à chaque lieu** : ronces et mauvaises herbes au Jardin, gargouilles à la Cathédrale, esprits de la garde au Château, eau qui monte et visages menteurs à l'Île Feydeau, Muses qui lancent des notes et projecteurs à Graslin, jets et petits robots aux Machines, conteneurs qui tombent aux Chantiers, bornes de couleur à Buren, pourriture des pixels et moisissure au Hangar, une stèle à lire et rien d'hostile au Mémorial, verre qui se fissure à la Pommeraye, courant d'air qui allège la gravité à la Tour LU. Un signe (ombre, souffle, tremblement) précède toujours le danger.
+- **Un danger propre à chaque lieu** : ronces et mauvaises herbes au Jardin, fissures de voûte qui suintent à la Cathédrale, esprits de la garde au Château, eau qui monte et visages menteurs à l'Île Feydeau, Muses qui lancent des notes et projecteurs à Graslin, jets, araignées qui se figent et Grand Éléphant à monter aux Machines, conteneurs qui tombent aux Chantiers, bornes de couleur à Buren, pourriture des pixels et moisissure au Hangar, une stèle à lire et rien d'hostile au Mémorial, verre qui se fissure à la Pommeraye, courant d'air qui allège la gravité à la Tour LU. Un signe (ombre, souffle, tremblement) précède toujours le danger.
 - **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou un des 8 modèles.
 
 ## Les 12 lieux

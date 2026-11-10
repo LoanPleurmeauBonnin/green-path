@@ -127,7 +127,7 @@ GP.LEVELS['graslin'] = (function () {
 
 /** NIVEAU 6 — MACHINES DE L'ÎLE : tapis et rails qui entraînent, jets de vapeur à contretemps, petits robots qui poursuivent. */
 GP.LEVELS['machines'] = (function () {
-  var L = GP.LevelBuilder.create(142, function (L) {
+  var L = GP.LevelBuilder.create(158, function (L) {
     // 1. Le parvis : les rails t'entraînent vers l'avant
     L.ground(0, 30, 3);
     L.start(2);
@@ -162,14 +162,20 @@ GP.LEVELS['machines'] = (function () {
     L.plat(104, 12, 3); L.pix(105, 11); L.plat(110, 11, 3); L.pix(111, 10); L.plat(116, 12, 3); L.pix(117, 11);
     L.jet(108, 4, 3000, 0); L.jet(114, 4, 3000, 1500);
     L.check(101);
-    // 5. L'esplanade du Grand Éléphant : les jets de sa trompe, un dernier robot
-    L.ground(122, 20, 3);
-    L.belt(122, 142, -1, 35);
-    L.deco(133, 'lv_elephant', { depth: 2.5 });                  // le Grand Éléphant
-    L.jet(128, 4, 3600, 0); L.jet(131, 4, 3600, 1800);
+    // 5. L'esplanade : le Grand Éléphant traverse le canal, on grimpe sur son dos (croupe, dos, toit, oreille, défenses)
+    L.ground(122, 10, 3);
+    L.belt(122, 132, -1, 35);
+    L.jet(125, 4, 3600, 0); L.jet(128, 4, 3600, 1800);
     L.patrol(123, 127, 'araignee', 36);
-    L.pix(124, 13); L.pix(126, 11); L.pix(134, 13); L.pix(138, 13); L.pix(139, 11);
+    L.hint(129, "MONTE SUR LE GRAND ÉLÉPHANT : IL TRAVERSE LE CANAL");
+    L.pix(124, 13); L.pix(126, 11);
     L.check(122);
+    L.pond(132, 150, 15);
+    L.elephant(132, 150, 13000);
+    L.pix(139, 8); L.pix(143, 8); L.pix(147, 9);
+    L.ground(150, 8, 3);
+    L.check(150);
+    L.pix(152, 13); L.pix(155, 13); L.pix(157, 11);
   });
   L.id = 'machines';
   L.maxTime = 200;

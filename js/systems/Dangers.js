@@ -2,7 +2,7 @@
  * Dangers (GP.Dangers) — mécaniques et ennemis des niveaux 4 à 12 (Feydeau, Graslin, Machines, Chantiers, Buren, Hangar,
  * Mémorial, Pommeraye, Tour LU) et esprits de la garde du Château. Un seul fichier, créé par GameScene.makeMechanics() à partir de la définition du niveau
  * (briques de js/data/levels.js : L.patrol, L.tide, L.boat, L.liar, L.faller, L.jet, L.beam, L.spring, L.seq, L.belt,
- * L.cart, L.ring + L.align, L.borne + L.cplat, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
+ * L.cart, L.ring + L.align, L.borne + L.cplat, L.elephant, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
  *
  *   update(dt)          fait vivre tout ce qui bouge (appelé à chaque image)
  *   input(c)            touches de la dernière image (pour la séquence de danse de Graslin)
@@ -181,6 +181,20 @@ GP.Dangers = function (scene) {
     self.cbornes.forEach(function (r) { if (r.halo) r.halo.setAlpha(r.color === c ? 0.8 : 0.25); });
   };
   if (this.cplats.length) this.setColor(this.cstart);
+
+  // ---------- Le Grand Éléphant (Machines) : il traverse le canal d'une rive à l'autre ; on grimpe sur lui par la croupe, le dos, le toit, l'oreille puis les défenses ----------
+  this.elephants = (L.elephants || []).map(function (e) {
+    var floorY = 15 * 16 + 8, x0 = e.west * 16 - 10, dx = e.east * 16 + 16 - 128 - x0;                    // pieds dans l'eau du canal
+    var img = scene.add.image(x0, floorY, 'lv_elephant').setOrigin(0, 1).setDepth(7), topY = floorY - img.height;
+    var parts = [[8, 58, 18], [22, 32, 18], [40, 12, 34], [78, 24, 20], [102, 66, 24]].map(function (q) {   // [x, y, largeur] dans l'image : croupe, dos, toit du balcon, oreille, défenses
+      var pl = scene.add.image(x0 + q[0] + 2, topY + q[1] + 2, 'lv_tileset').setOrigin(0, 0).setDisplaySize(q[2], 4).setVisible(false);
+      scene.physics.add.existing(pl);
+      var b = pl.body; b.setAllowGravity(false); b.setImmovable(true); b.checkCollision.down = false; b.checkCollision.left = false; b.checkCollision.right = false;
+      scene.physics.add.collider(scene.player, pl);
+      return { body: b, ox: q[0] + 2 };
+    });
+    return { img: img, x0: x0, dx: dx, period: e.period, parts: parts };
+  });
 
   // ---------- Dalles de verre : elles se fissurent 0,8 s après qu'on s'y pose, tombent, et reviennent 3 s plus tard ----------
   var glassSet = ['memorial_sol_dalle_verre', 'memorial_sol_dalle_verre', 'memorial_sol_dalle_verre'];
@@ -447,6 +461,13 @@ GP.Dangers.prototype = {
       m.p = ph < 0.35 ? ph / 0.35 : ph < 0.65 ? 1 : (1 - ph) / 0.35;
       var w = Math.max(1, m.w * m.p), vis = m.p > 0.02;
       m.body.setSize(w, 9).setVisible(vis); m.edge.setSize(w, 2).setVisible(vis);
+    });
+
+    // Grand Éléphant : va-et-vient lent (il s'arrête à chaque rive), les plateformes de son dos transportent le joueur
+    this.elephants.forEach(function (el) {
+      var w = Math.PI * 2 / el.period * 1000, ph = self.t / el.period * Math.PI * 2, kk = 0.5 - 0.5 * Math.cos(ph), v = 0.5 * Math.sin(ph) * w;
+      el.img.x = el.x0 + el.dx * kk;
+      el.parts.forEach(function (q) { q.body.setVelocity(el.dx * v + (el.x0 + el.dx * kk + q.ox - q.body.x) * 3, 0); });
     });
 
     // bornes de couleur : marcher dessus allume les passerelles de sa couleur ; sous la pluie le bleu revient après 5 s

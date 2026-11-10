@@ -34,7 +34,7 @@ GP.LevelBuilder = {
       width: width, rows: 17, grid: new Int8Array(width * 17),
       plats: [], thorns: [], pixels: [], checks: [], hints: [], deco: [], startX: 2, startRow: 13,
       climbs: [], crumbles: [], gargoyles: [], slits: [], gates: [], barrels: [], movers: [], rainThorns: [], sunPlats: [],
-      muses: [], molds: [], glasses: [], cbornes: [], cplats: [], memos: [], drafts: [],
+      muses: [], molds: [], glasses: [], elephants: [], cbornes: [], cplats: [], memos: [], drafts: [],
       patrols: [], tides: [], boats: [], liars: [], fallers: [], jets: [], beams: [], springs: [], seqs: [], belts: [], carts: [], rings: [], aligns: [], ponds: [],
       rot: false, wxm: {},
       abilities: {}, skin: null
@@ -79,6 +79,7 @@ GP.LevelBuilder = {
       align: function (rings, bx, by, bw) { L.aligns.push({ rings: rings, bridge: { x: bx, y: by, w: bw } }); },                              // anneaux alignés : un pont apparaît
       muse: function (x, dir, period, offset) { L.muses.push({ x: x, dir: dir || -1, period: period, offset: offset }); },                    // Muse (statue) qui lance des notes
       mold: function (x, w, period, offset) { L.molds.push({ x: x, w: w, period: period, offset: offset }); },                                // moisissure qui gagne du terrain
+      elephant: function (west, east, period) { L.elephants.push({ west: west, east: east, period: period || 13000 }); },                   // le Grand Éléphant traverse un canal du bord ouest au bord est : on monte sur lui
       borne: function (x, color) { L.cbornes.push({ x: x, color: color }); },                                                              // borne de couleur : la toucher allume les passerelles de sa couleur
       cplat: function (x, y, w, color) { L.cplats.push({ x: x, y: y, w: w, color: color }); },                                           // passerelle de couleur (solide seulement si sa couleur est allumée)
       glass: function (x, y, w) { L.glasses.push({ x: x, y: y, w: w }); },                                                                    // dalle de verre qui se fissure
