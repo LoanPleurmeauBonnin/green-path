@@ -288,7 +288,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     var label = MapScene.LABELS[st];
     // 41 caractères tiennent à gauche du bouton d'aide ; le nom est tronqué pour laisser la place à l'état
     var room = 41 - (label ? label.length + 2 : 0);
-    var name = String(i + 1).padStart(2, '0') + ' ' + l.name.toUpperCase();
+    var name = String(i + 1).padStart(2, '0') + ' ' + GP.t(l.name.toUpperCase());   // traduit avant de couper
     if (name.length > room) name = name.slice(0, room - 1) + '.';
     this.barName.setText(name);
     this.barState.setText(label).setX(6 + (name.length + 2) * 8)
@@ -351,7 +351,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     var pages = [];
     if (st === 'completed') {
       pages.push({ title: 'BILAN', draw: function (add) { self.drawDebrief(add, i); } });
-      MapScene.paginate(this, l.summary || [l.notice], 412, 156).forEach(function (txt, k, all) {
+      GP.UI.paginate(this, (l.summary || [l.notice]).map(function (p) { return GP.t(p); }), 412, 156).forEach(function (txt, k, all) {
         pages.push({ title: 'FICHE DU LIEU' + (all.length > 1 ? ' ' + (k + 1) : ''), draw: function (add) {
           add(UI.txt(self, 34, 40, txt, GP.PAL.w, { wordWrap: { width: 412 }, lineSpacing: 4 }));
         } });
@@ -392,7 +392,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       .setColor(this.P.status(this.panelIndex) === 'completed' ? P.y : P.m);
     pg.draw(add);
     if (sh.pages.length > 1) for (var k = 0; k < sh.pages.length; k++)
-      add(self.add.rectangle(GP.Config.WIDTH / 2 - (sh.pages.length - 1) * 5 + k * 10, 203, 6, 6, GP.int(k === sh.page ? P.g : P.e)).setOrigin(0.5));
+      add(self.add.rectangle(GP.Config.DW / 2 - (sh.pages.length - 1) * 5 + k * 10, 203, 6, 6, GP.int(k === sh.page ? P.g : P.e)).setOrigin(0.5));
   }
 
   /** Page unique avant réussite (ou lieu à venir). */
@@ -463,30 +463,3 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
 GP.Scenes.Map.PEDESTAL = { available: 'disponible', completed: 'termine', locked: 'verrouille', coming: 'avenir' };
 
 GP.Scenes.Map.LABELS = { completed: 'TERMINÉ', available: '', locked: 'VERROUILLÉ', coming: 'À VENIR' };
-
-/**
- * Découpe des paragraphes en pages qui tiennent dans une zone (largeur, hauteur en px) ;
- * un paragraphe trop long est coupé entre deux phrases.
- */
-GP.Scenes.Map.paginate = function (scene, paragraphs, width, height) {
-  var probe = GP.UI.txt(scene, -1000, -1000, '', GP.PAL.w, { wordWrap: { width: width }, lineSpacing: 4 });
-  function fits(t) { probe.setText(t); return probe.height <= height; }
-  var pieces = [];
-  paragraphs.forEach(function (p) {
-    if (fits(p)) { pieces.push(p); return; }
-    var cur = '';
-    p.split(/(?<=[.!?])\s+/).forEach(function (s) {
-      var next = cur ? cur + ' ' + s : s;
-      if (cur && !fits(next)) { pieces.push(cur); cur = s; } else cur = next;
-    });
-    if (cur) pieces.push(cur);
-  });
-  var pages = [], page = '';
-  pieces.forEach(function (p) {
-    var next = page ? page + '\n\n' + p : p;
-    if (page && !fits(next)) { pages.push(page); page = p; } else page = next;
-  });
-  if (page) pages.push(page);
-  probe.destroy();
-  return pages;
-};

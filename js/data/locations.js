@@ -2,7 +2,10 @@
  * Les 12 étapes de Green Path — SOURCE UNIQUE de données.
  * Ajouter / modifier un lieu = éditer ce fichier (le moteur n'a pas à changer).
  *
- * L'ordre est une sélection pour le jeu, PAS la numérotation officielle de la ligne verte du Voyage à Nantes.
+ * L'ordre suit la séquence de la page « Arpenter la ligne verte » du Voyage à Nantes pour les lieux qui y figurent
+ * (Jardin des Plantes, Cathédrale, Château, Machines, Chantiers, Buren, Mémorial, Pommeraye), complétée pour les autres.
+ * Cette page ne donne pas de numérotation : ce n'est PAS la numérotation officielle de la ligne verte.
+ * Le niveau « bouffay » (js/data/levels.js) est conservé mais n'est plus rattaché à un lieu.
  *
  * Champs :
  *  id, name        identifiant et nom affiché
@@ -34,13 +37,6 @@ GP.LOCATIONS = [
     element: { label: 'Palmarium (serre)', verify: true }, verify: true
   },
   {
-    id: 'chateau', name: 'Château des ducs de Bretagne',
-    sprite: 'chateau_monument_chateau',
-    playable: true, level: 'chateau', parTime: 100,
-    notice: "Forteresse des ducs de Bretagne, reconstruite à la fin du XVe siècle par François II puis Anne de Bretagne. Ses remparts de tuffeau abritent aujourd'hui le musée d'histoire de Nantes.",
-    element: { label: 'Remparts et tours', verify: false }, verify: false
-  },
-  {
     id: 'cathedrale', name: 'Cathédrale Saint-Pierre-et-Saint-Paul',
     sprite: 'cathedrale_monument_cathedrale',
     playable: true, level: 'cathedrale', parTime: 110,
@@ -48,11 +44,11 @@ GP.LOCATIONS = [
     element: { label: 'Façade et deux tours', verify: false }, verify: false
   },
   {
-    id: 'bouffay', name: 'Quartier du Bouffay',
-    sprite: 'bouffay_monument_bouffay',
-    playable: true, level: 'bouffay', parTime: 120,
-    notice: "Ancien cœur médiéval de Nantes, aujourd'hui piéton et animé. Ruelles, places et maisons à pans de bois racontent la ville d'avant les grandes transformations.",
-    element: { label: 'Maison du 7 rue de la Juiverie', verify: true }, verify: true
+    id: 'chateau', name: 'Château des ducs de Bretagne',
+    sprite: 'chateau_monument_chateau',
+    playable: true, level: 'chateau', parTime: 100,
+    notice: "Forteresse des ducs de Bretagne, reconstruite à la fin du XVe siècle par François II puis Anne de Bretagne. Ses remparts de tuffeau abritent aujourd'hui le musée d'histoire de Nantes.",
+    element: { label: 'Remparts et tours', verify: false }, verify: false
   },
   {
     id: 'feydeau', name: 'Île Feydeau',
@@ -62,25 +58,11 @@ GP.LOCATIONS = [
     element: { label: 'Façades des hôtels d\'armateurs', verify: false }, verify: false
   },
   {
-    id: 'pommeraye', name: 'Passage Pommeraye',
-    sprite: 'pommeraye_monument_pommeraye',
-    playable: false,
-    notice: "Galerie commerçante ouverte en 1843, sur trois niveaux reliés par un escalier monumental. Verrière, statues et décors en font un passage couvert célèbre.",
-    element: { label: 'Verrière et escalier', verify: false }, verify: false
-  },
-  {
     id: 'graslin', name: 'Place Graslin',
     sprite: 'graslin_monument_graslin',
     playable: false,
     notice: "Place dominée par le Grand Théâtre, de style néoclassique, achevé en 1788. Sa façade à colonnes corinthiennes est couronnée de statues de muses.",
     element: { label: 'Façade du Grand Théâtre', verify: false }, verify: false
-  },
-  {
-    id: 'memorial', name: "Mémorial de l'abolition de l'esclavage",
-    sprite: 'memorial_monument_memorial',
-    playable: false,
-    notice: "Mémorial au bord de la Loire rappelant le rôle de Nantes dans la traite négrière et l'histoire de son abolition. Il mêle quai, verre et textes gravés.",
-    element: { label: 'Plaques de verre du quai', verify: true }, verify: true
   },
   {
     id: 'machines', name: "Machines de l'île",
@@ -109,6 +91,27 @@ GP.LOCATIONS = [
     playable: false,
     notice: "Ancien entrepôt portuaire où transitaient les bananes venues des Antilles, reconverti en lieu de restaurants, de culture et de loisirs au bord de la Loire.",
     element: { label: 'Le hangar du quai', verify: true }, verify: true
+  },
+  {
+    id: 'memorial', name: "Mémorial de l'abolition de l'esclavage",
+    sprite: 'memorial_monument_memorial',
+    playable: false,
+    notice: "Mémorial au bord de la Loire rappelant le rôle de Nantes dans la traite négrière et l'histoire de son abolition. Il mêle quai, verre et textes gravés.",
+    element: { label: 'Plaques de verre du quai', verify: true }, verify: true
+  },
+  {
+    id: 'pommeraye', name: 'Passage Pommeraye',
+    sprite: 'pommeraye_monument_pommeraye',
+    playable: false,
+    notice: "Galerie commerçante ouverte en 1843, sur trois niveaux reliés par un escalier monumental. Verrière, statues et décors en font un passage couvert célèbre.",
+    element: { label: 'Verrière et escalier', verify: false }, verify: false
+  },
+  {
+    id: 'tour-lu', name: 'Tour LU',
+    sprite: '',
+    playable: false,
+    notice: "Tour de l'ancienne biscuiterie LU, face au château. Avec sa coupole, elle signalait l'usine au bord de l'eau ; le bâtiment accueille aujourd'hui une scène culturelle, le Lieu Unique.",
+    element: { label: 'La tour et sa coupole', verify: true }, verify: true
   }
 ];
 

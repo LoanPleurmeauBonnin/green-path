@@ -2,8 +2,13 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#14182e">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Green Path">
   <title>Green Path — Nantes</title>
   <link rel="icon" href="assets/brand/favicon.ico" sizes="32x32">
   <link rel="icon" type="image/png" href="assets/brand/favicon-32.png" sizes="32x32">
@@ -26,10 +31,17 @@
     <p>VEUILLEZ TOURNER<br>VOTRE TÉLÉPHONE</p>
     <p class="small">GREEN PATH SE JOUE EN PAYSAGE</p>
   </div>
+  <!-- iPhone / iPad (Safari) : pas de plein écran possible dans le navigateur ; une seule fois, on explique comment. -->
+  <div id="ios-tip" role="note" hidden><span id="ios-tip-text"></span></div>
   <noscript><p class="msg">Green Path nécessite JavaScript.</p></noscript>
 
   <script src="js/vendor/phaser.min.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/data/lang/fr.js"></script>
+  <script src="js/data/lang/en.js"></script>
+  <script src="js/systems/I18n.js"></script>
+  <script src="js/systems/Settings.js"></script>
+  <script src="js/systems/Controls.js"></script>
   <script src="js/data/sprites/palette.js"></script>
   <script src="js/data/sprites/commun.js"></script>
   <script src="js/data/sprites/carte.js"></script>
@@ -61,6 +73,7 @@
   <script src="js/scenes/BootScene.js"></script>
   <script src="js/scenes/MenuScene.js"></script>
   <script src="js/scenes/CharacterScene.js"></script>
+  <script src="js/scenes/OptionsScene.js"></script>
   <script src="js/scenes/MapScene.js"></script>
   <script src="js/scenes/GameScene.js"></script>
   <script src="js/scenes/ResultScene.js"></script>

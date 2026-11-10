@@ -269,12 +269,12 @@ GP.LevelArt = (function () {
     var SP = GP.Sprites && GP.Sprites.has('ciel_jour_1');           // ciel de la planche « ciel » si elle est chargée
     var city = !!opts.city && GP.Sprites && GP.Sprites.has('carte_batiments_lointains');
     var o = { clouds: [], stars: [], state: null, lastX: undefined, bands: [] };
-    if (SP) for (var b = 0; b < 5; b++) o.bands.push(scene.add.image(0, b * 54, 'ciel_jour_' + (b + 1)).setOrigin(0).setScrollFactor(0).setDepth(D));
+    if (SP) for (var b = 0; b < 5; b++) o.bands.push(scene.add.tileSprite(0, b * 54, W, 54, 'ciel_jour_' + (b + 1)).setOrigin(0).setScrollFactor(0).setDepth(D));   // répété : remplit toute la largeur
     else o.img = scene.add.image(0, 0, 'lv_sky_day').setOrigin(0).setScrollFactor(0).setDepth(D);
     if (SP) {
       var rs = PA.rng(5);
       for (var k = 0; k < 40; k++) o.stars.push(scene.add.image(Math.floor(rs() * W), Math.floor(rs() * 150), 'ciel_etoile_' + (1 + k % 3)).setScrollFactor(0).setDepth(D + 1).setVisible(false));
-      o.astro = scene.add.image(400, 40, 'ciel_soleil').setScrollFactor(0).setDepth(D + 2).setVisible(false);
+      o.astro = scene.add.image(W - 80, 40, 'ciel_soleil').setScrollFactor(0).setDepth(D + 2).setVisible(false);
     } else o.starImg = scene.add.image(0, 0, 'lv_stars').setOrigin(0).setScrollFactor(0).setDepth(D + 1).setVisible(false);
     // lointain : la ville (carte) ou des montagnes (niveaux), puis des collines
     if (opts.farKey && scene.textures.exists(opts.farKey)) {
@@ -307,26 +307,42 @@ GP.LevelArt = (function () {
       var n = Math.round(st.cloud / 100 * 7) + (st.cat === 'clear' ? 1 : 0);
       for (var i = 0; i < n; i++) {
         var key = SP ? CLOUDS[kind][i % 3] : 'lv_cloud';
-        o.clouds.push(scene.add.image(rnd() * 520 - 20, 18 + rnd() * 90, key).setScrollFactor(0).setDepth(D + 3).setScale(!SP && rnd() < 0.4 ? 2 : 1));
+        o.clouds.push(scene.add.image(rnd() * (W + 40) - 20, 18 + rnd() * 90, key).setScrollFactor(0).setDepth(D + 3).setScale(!SP && rnd() < 0.4 ? 2 : 1));
       }
       if (!SP) o.clouds.forEach(function (c) { if (kind === 'grey' || kind === 'storm' || kind === 'night') c.setTint(kind === 'night' ? 0x8090b8 : 0xc0c6d2); });
     };
     o.update = function (cam, delta) {
       var cx = cam.scrollX, st = o.state;
-      o.far.tilePositionX = cx * (city ? 0.25 : 0.15);
-      o.near.tilePositionX = cx * (city ? 0.5 : 0.4);
+      o.far.tilePositionX = Math.round(cx * (city ? 0.25 : 0.15));   // arrondi : pas de scintillement des pixels
+      o.near.tilePositionX = Math.round(cx * (city ? 0.5 : 0.4));
       var drift = st ? Math.sin((st.windDir + 180) * Math.PI / 180) * (4 + st.wind * 0.3) : 4;
       var dt = Math.min(delta || 16, 50) / 1000, dcam = cx - (o.lastX === undefined ? cx : o.lastX);
       o.lastX = cx;
       o.clouds.forEach(function (c) {
         c.x += (GP.reducedMotion ? 0 : drift * dt) - dcam * 0.08;
-        if (c.x > 520) c.x -= 560; if (c.x < -40) c.x += 560;
+        if (c.x > W + 40) c.x -= W + 80; if (c.x < -40) c.x += W + 80;
       });
     };
     return o;
   }
 
   // ---------- Terrain d'un niveau ----------
+  /**
+   * Découpe l'image du terrain en morceaux de 2048 px de large : certains téléphones ne gèrent pas de textures plus
+   * larges (le terrain d'un long niveau disparaîtrait). Renvoie les clés des textures, de gauche à droite.
+   */
+  var CHUNK = 2048;
+  function chunks(scene, key, cv) {
+    var n = Math.max(1, Math.ceil(cv.width / CHUNK)), keys = [];
+    for (var i = 0; i < n; i++) {
+      var c = PA.canvas(Math.min(CHUNK, cv.width - i * CHUNK), cv.height);
+      c.ctx.drawImage(cv, -i * CHUNK, 0);
+      PA.toTexture(scene, key + '_' + i, c.cv);
+      keys.push(key + '_' + i);
+    }
+    return keys;
+  }
+
   /**
    * Terrain d'un niveau habillé avec les tuiles d'une planche (L.skin) :
    *   { top: [..], fill: [..], left, right, block, blockTop, blockBottom, ledge: [g, m, d], bridge: [g, m, d] }
@@ -356,7 +372,7 @@ GP.LevelArt = (function () {
       var set = p.kind === 'bridge' ? (sk.bridge || sk.ledge) : sk.ledge;
       for (var j = 0; j < p.w; j++) put(set[j === 0 ? 0 : (j === p.w - 1 ? 2 : 1)], (p.x + j) * T, p.y * T);
     });
-    PA.toTexture(scene, key, o.cv);
+    return chunks(scene, key, o.cv);
   }
 
   function renderTerrain(scene, key, L) {
@@ -427,7 +443,7 @@ GP.LevelArt = (function () {
         }
       }
     });
-    PA.toTexture(scene, key, o.cv);
+    return chunks(scene, key, o.cv);
   }
 
   /** Ciel selon la météo : nuit, orage, gris (pluie, bruine, neige, brume, couvert), nuageux, jour. */
@@ -439,5 +455,5 @@ GP.LevelArt = (function () {
     return 'day';
   }
 
-  return { makeTextures: makeTextures, renderTerrain: renderTerrain, skyKind: skyKind, sky: sky, TILE: T, C: C };
+  return { CHUNK: CHUNK, makeTextures: makeTextures, renderTerrain: renderTerrain, skyKind: skyKind, sky: sky, TILE: T, C: C };
 })();

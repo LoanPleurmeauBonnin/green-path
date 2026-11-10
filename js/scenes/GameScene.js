@@ -68,8 +68,10 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
 
   makeTerrain() {
     var L = this.L, data = [];
-    GP.LevelArt.renderTerrain(this, 'lv_terrain', L);
-    this.add.image(0, 0, 'lv_terrain').setOrigin(0).setDepth(5);
+    var self = this;
+    GP.LevelArt.renderTerrain(this, 'lv_terrain', L).forEach(function (k, i) {   // morceaux de 2048 px (limite des textures sur téléphone)
+      self.add.image(i * GP.LevelArt.CHUNK, 0, k).setOrigin(0).setDepth(5);
+    });
     // carte de collision : 1 terre, 2 pierre, 3 sens unique, 4 topiaire, 5 pavés (tuiles invisibles)
     for (var y = 0; y < L.rows; y++) {
       var row = [];
@@ -317,7 +319,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   // ---------- Entrées ----------
   makeInput() {
     var self = this, kb = this.input.keyboard;
-    this.keys = kb.addKeys({ left: 'LEFT', right: 'RIGHT', up: 'UP', down: 'DOWN', a: 'A', q: 'Q', d: 'D', s: 'S', z: 'Z', w: 'W', space: 'SPACE' });
+    this.ctl = GP.Controls.attach(this);   // clavier (touches réaffectables), tactile et manette
     this.touch = { left: false, right: false, down: false, jump: false };
     this.jumpWasDown = false; this.upWasDown = false;
     kb.on('keydown-ESC', function () { self.onEsc(); });
@@ -366,20 +368,21 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   update(time, delta) {
     this.sky.update(this.cameras.main, delta);
     if (this.paused || this.finished || this.dying || !this.player) return;
-    var dt = Math.min(delta, 50), p = this.player, b = p.body, k = this.keys, U = this.TUNE, X = this.phy;
+    var dt = Math.min(delta, 50), p = this.player, b = p.body, U = this.TUNE, X = this.phy;
     this.updateMechanics(dt);
     if (this.introMs > 0) { this.introMs -= dt; b.setVelocityX(0); return; }
     this.time_ms += dt;
 
     // entrées (clavier, tactile ou robot de test)
     var bot = this.bot ? this.bot.step(this) : null;
-    var left = bot ? bot.left : (k.left.isDown || k.a.isDown || k.q.isDown || this.touch.left);
-    var right = bot ? bot.right : (k.right.isDown || k.d.isDown || this.touch.right);
-    var down = bot ? !!bot.down : (k.down.isDown || k.s.isDown || this.touch.down);
-    var upKey = bot ? !!bot.up : k.up.isDown;
+    var c = bot ? null : this.ctl.read(this.touch);
+    var left = bot ? bot.left : c.left;
+    var right = bot ? bot.right : c.right;
+    var down = bot ? !!bot.down : c.down;
+    var upKey = bot ? !!bot.up : c.up;
     var zone = this.ab.climb ? this.climbZoneAt(b) : null;
     // ↑ fait sauter, sauf là où il sert à grimper (colonne, rebord) ; sur téléphone le bouton de saut fait les deux
-    var jumpKey = bot ? bot.jump : (k.space.isDown || k.z.isDown || k.w.isDown || this.touch.jump);
+    var jumpKey = bot ? bot.jump : c.jump;
     var up = upKey || ((zone || this.hanging) && jumpKey && !(left || right));
     // après une escalade, ↑ encore enfoncé ne doit pas déclencher un saut : il faut d'abord le relâcher
     if (!upKey) this.upLock = false;

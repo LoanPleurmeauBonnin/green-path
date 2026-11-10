@@ -35,24 +35,26 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
 - **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou un des 8 modèles.
 
 ## Les 12 lieux
-L'ordre est une sélection pour le jeu : **ce n'est pas la numérotation officielle de la ligne verte du Voyage à Nantes.**
+L'ordre suit la séquence de la page [« Arpenter la ligne verte »](https://www.levoyageanantes.fr/les-parcours/arpenter-la-ligne-verte/) du Voyage à Nantes pour les lieux qui y figurent (Jardin des Plantes, Cathédrale, Château, Machines, Chantiers, Buren, Mémorial, Pommeraye), complétée pour les autres. Cette page ne donne aucune numérotation : **l'ordre des 12 étapes est une sélection pour le jeu, ce n'est pas la numérotation officielle de la ligne verte.**
 
 | # | Lieu | Statut |
 |---|---|---|
 | # | Lieu | Statut | Ce qu'on y apprend |
 |---|---|---|---|
 | 1 | Jardin des Plantes | ✅ jouable | courir, sauter, ronces, lanternes |
-| 2 | Château des ducs de Bretagne | ✅ jouable | **s'accroupir** sous les flèches, tonneaux, herses, douves |
-| 3 | Cathédrale Saint-Pierre-et-Saint-Paul | ✅ jouable | **grimper** aux colonnes, **s'accrocher** aux rebords, gargouilles, corniches qui s'effritent |
-| 4 | Quartier du Bouffay | ✅ jouable | **étals qui bougent**, tout combiné |
-| 5 | Île Feydeau | à venir | |
-| 6 | Passage Pommeraye | à venir | |
-| 7 | Place Graslin | à venir | |
-| 8 | Mémorial de l'abolition de l'esclavage | à venir | |
-| 9 | Machines de l'île | à venir | |
-| 10 | Parc des Chantiers | à venir | |
-| 11 | Anneaux de Buren | à venir | |
-| 12 | Hangar à Bananes | à venir | |
+| 2 | Cathédrale Saint-Pierre-et-Saint-Paul | ✅ jouable | **grimper** aux colonnes, **s'accrocher** aux rebords, gargouilles, corniches qui s'effritent |
+| 3 | Château des ducs de Bretagne | ✅ jouable | **s'accroupir** sous les flèches, tonneaux, herses, douves |
+| 4 | Île Feydeau | à venir | |
+| 5 | Place Graslin | à venir | |
+| 6 | Machines de l'île (Grand Éléphant) | à venir | |
+| 7 | Parc des Chantiers (Grue Titan) | à venir | |
+| 8 | Anneaux de Buren | à venir | |
+| 9 | Hangar à Bananes | à venir | |
+| 10 | Mémorial de l'abolition de l'esclavage | à venir | |
+| 11 | Passage Pommeraye | à venir | |
+| 12 | Tour LU (Lieu Unique) | à venir | |
+
+*Un niveau « Bouffay » (étals mobiles) existe dans `js/data/levels.js` mais n'est rattaché à aucun lieu pour l'instant.*
 
 ## Commandes
 | Carte | Niveau |
@@ -62,10 +64,20 @@ L'ordre est une sélection pour le jeu : **ce n'est pas la numérotation officie
 | Clic sur un piédestal : y aller | ↓ ou S : s'accroupir · ↑ : grimper, se hisser sur un rebord |
 | H ou **COMMENT JOUER ?** : aide en 4 pages | Échap : pause (reprendre, aide, quitter) |
 | Échap : menu · M : son | Téléphone : ← → ↓ et saut à l'écran (le saut sert aussi à grimper), PAUSE |
+| **Manette** : croix ou stick, A valider | **Manette** : croix ou stick = bouger, A = sauter, ↓ = s'accroupir, ↑ = grimper, Start = pause |
 
 Ronces, pointes, flèches, gouttes, tonneaux ou chute = une mort : retour à la dernière lanterne allumée, les pixels ramassés sont gardés.
 
 Sur téléphone, le jeu se joue **en paysage** : tenu en portrait, un écran demande de le tourner et le jeu se met en pause.
+
+## Options, langues, manette, plein écran
+- **Langues** : français (source) et anglais. Bouton **FR/EN** en haut à droite de l'accueil (touche L), ou **OPTIONS → LANGUE**. Un navigateur non français démarre en anglais.
+- **OPTIONS** : langue, son, plein écran, **touches réaffectables** (3 emplacements par action : gauche, droite, sauter, grimper, s'accroupir ; Échap, Entrée, H et M restent réservées), état de la manette, confidentialité, effacement de ses données.
+- **Manette** (API Gamepad, aucune installation) : branche-la et appuie sur un bouton. Croix ou stick = bouger ; A = sauter / valider ; B = retour ; Start = pause. Elle pilote aussi les menus.
+- **Téléphone, plein écran** : la zone de jeu s'élargit pour remplir tout l'écran (de 16:9 jusqu'à 21:9, sans bandes noires). Android et iPad : plein écran au premier toucher (ou OPTIONS → PLEIN ÉCRAN). **iPhone** : Safari n'a pas de plein écran ; touche Partager puis « Sur l'écran d'accueil » (le jeu est installable, `manifest.webmanifest`).
+- **Confidentialité (RGPD)** : aucun compte, aucune donnée personnelle collectée ; progression et réglages restent dans le navigateur. Page dans le jeu (CRÉDITS ou OPTIONS) et détail dans [docs/confidentialite.md](docs/confidentialite.md).
+
+![Options](docs/screenshots/options.png)
 
 ## Lancer en local
 Aucun build, aucune dépendance : ouvrir `index.html` dans un navigateur (fonctionne en `file://`), ou servir le dossier :
@@ -86,16 +98,16 @@ Phaser 3.90 (inclus en local), JavaScript natif en scripts classiques (pas de bu
 ```
 index.html               page, icônes, écran « tournez votre téléphone »
 js/config.js             réglages, palette, mode test (?dev=1)
-js/data/                 locations.js (12 lieux), levels.js (niveaux), sprites/ (planches importées)
-js/systems/              Sprites, MapArt (carte), LevelArt (ciel, décor), WeatherManager / WeatherFX / WeatherRules (météo en direct → règles de jeu),
+js/data/                 locations.js (12 lieux), levels.js (niveaux), sprites/ (planches importées), lang/ (fr.js, en.js)
+js/systems/              I18n (FR/EN), Settings (langue, touches), Controls (clavier réaffectable, manette), Sprites, MapArt (carte), LevelArt (ciel, décor), WeatherManager / WeatherFX / WeatherRules (météo en direct → règles de jeu),
                          PixelCollection (photo à reconstruire), Save / Progression / Stars, Ui (fenêtres, aide, tactile)
-js/scenes/               Boot, Menu, Character (avatar), Map, Game (moteur de plateforme), Result
+js/scenes/               Boot, Menu, Character (avatar), Options, Map, Game (moteur de plateforme), Result
 assets/                  police, logo et icônes, photos pixélisées (assets/locations/*.js)
 tools/                   import-sprites.js, pixelize.swift, favicon.swift, compare-figma.js, bot.js (tests)
 ```
 
 ## Crédits et IA
 - **Florine RACINE** — UX/UI Designer, Game Design · **Loan PLEURMEAU** — Développeur web, IA Ops (ESD Nantes, atelier PATRIMOINE.EXE).
-- **Usage de l'IA** : le code a été écrit avec Claude Code (Anthropic) sous la direction de l'équipe, qui le relit et sait l'expliquer ; les planches de sprites de décor ont été générées avec Claude Design puis importées telles quelles ; le sprite de l'avatar vient du fichier Figma de l'équipe.
+- **Usage de l'IA** : le code a été écrit avec Claude Code (Anthropic) sous la direction de l'équipe, qui le relit et sait l'expliquer (des *skills* Phaser, lus avant installation, servent de référence pour éviter les bugs 2D courants) ; les planches de sprites de décor ont été générées avec Claude Design puis importées telles quelles ; le sprite de l'avatar vient du fichier Figma de l'équipe.
 - Photo du Palmarium : Pymouss44, CC BY-SA 3.0, via Wikimedia Commons, recadrée et pixélisée. Données météo : Open-Meteo (CC BY 4.0). Police Press Start 2P (OFL). Phaser (MIT).
 - Détails, licences et obligations : [CREDITS.md](CREDITS.md).
