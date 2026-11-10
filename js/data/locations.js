@@ -53,42 +53,42 @@ GP.LOCATIONS = [
   {
     id: 'feydeau', name: 'Île Feydeau',
     sprite: 'feydeau_monument_feydeau',
-    playable: false,
+    playable: true, level: 'feydeau', parTime: 120,
     notice: "Ancienne île de la Loire, rattachée à la ville au XXe siècle. Ses hôtels d'armateurs du XVIIIe siècle, aux façades ornées de mascarons, se penchent légèrement.",
     element: { label: 'Façades des hôtels d\'armateurs', verify: false }, verify: false
   },
   {
     id: 'graslin', name: 'Place Graslin',
     sprite: 'graslin_monument_graslin',
-    playable: false,
+    playable: true, level: 'graslin', parTime: 120,
     notice: "Place dominée par le Grand Théâtre, de style néoclassique, achevé en 1788. Sa façade à colonnes corinthiennes est couronnée de statues de muses.",
     element: { label: 'Façade du Grand Théâtre', verify: false }, verify: false
   },
   {
     id: 'machines', name: "Machines de l'île",
     sprite: 'machines_monument_machines',
-    playable: false,
+    playable: true, level: 'machines', parTime: 120,
     notice: "Atelier-spectacle installé dans les anciens chantiers navals. Le Grand Éléphant, géant mécanique de bois et d'acier, promène les visiteurs sur l'île.",
     element: { label: 'Grand Éléphant', verify: false }, verify: false
   },
   {
     id: 'chantiers', name: 'Parc des Chantiers',
     sprite: 'chantiers_monument_chantiers',
-    playable: false,
+    playable: true, level: 'chantiers', parTime: 130,
     notice: "Parc aménagé sur l'ancien site des chantiers navals, au cœur de l'île de Nantes. Grues et vestiges industriels dialoguent avec les jardins.",
     element: { label: 'Grue jaune des chantiers', verify: true }, verify: true
   },
   {
     id: 'buren', name: 'Anneaux de Buren',
     sprite: 'buren_monument_buren',
-    playable: false,
+    playable: true, level: 'buren', parTime: 110,
     notice: "Installation d'art public de Daniel Buren sur le quai des Antilles, composée d'anneaux lumineux qui scandent la rive de la Loire.",
     element: { label: 'Les anneaux', verify: true }, verify: true
   },
   {
     id: 'hangar', name: 'Hangar à Bananes',
     sprite: 'hangar_monument_hangar',
-    playable: false,
+    playable: true, level: 'hangar', parTime: 140,
     notice: "Ancien entrepôt portuaire où transitaient les bananes venues des Antilles, reconverti en lieu de restaurants, de culture et de loisirs au bord de la Loire.",
     element: { label: 'Le hangar du quai', verify: true }, verify: true
   },

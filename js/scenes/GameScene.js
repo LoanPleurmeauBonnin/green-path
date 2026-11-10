@@ -37,7 +37,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.deaths = 0; this.time_ms = 0; this.paused = false; this.finished = false; this.invuln = 0;
     this.introMs = 1700;   // bandeau d'introduction : le joueur attend, le chrono ne tourne pas encore
     this.dying = false; this.crouching = false; this.climbing = null; this.hanging = null;
-    this.coyote = 0; this.buffer = 0; this.jumping = false;
+    this.coyote = 0; this.buffer = 0; this.jumping = false; this.boost = 0;
+    this.maxTime = (L.maxTime || 180) * 1000; this.timeWarned = false; this.timedOut = false;   // limite douce : 3 min par défaut, plus pour les niveaux qui en demandent
     this.alive = true;
     this.events.once('shutdown', function () { self.alive = false; });
 
@@ -236,6 +237,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       var b = self.platformBody(img, true); b.enable = false;
       return { img: img, body: b };
     });
+    this.dangers = new GP.Dangers(this);   // esprits, eau qui monte, conteneurs, jets, projecteurs, anneaux, pourriture…
   }
 
   // ---------- Interface ----------
@@ -372,8 +374,11 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     if (this.paused || this.finished || this.dying || !this.player) return;
     var dt = Math.min(delta, 50), p = this.player, b = p.body, U = this.TUNE, X = this.phy;
     this.updateMechanics(dt);
+    this.dangers.update(dt);
     if (this.introMs > 0) { this.introMs -= dt; b.setVelocityX(0); return; }
     this.time_ms += dt;
+    if (!this.timeWarned && this.time_ms > this.maxTime - 30000) { this.timeWarned = true; this.toast('PLUS QUE 30 SECONDES', GP.PAL.y); }
+    if (this.time_ms >= this.maxTime) { this.timeUp(); return; }
 
     // entrées (clavier, tactile ou robot de test)
     var bot = this.bot ? this.bot.step(this) : null;
@@ -393,6 +398,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var upPressed = up && !this.upWasDown;
     this.jumpWasDown = jumpDown; this.upWasDown = up;
     var dir = (right ? 1 : 0) - (left ? 1 : 0), onGround = b.blocked.down || b.touching.down;
+    this.dangers.input({ left: left, right: right, down: down, jump: jumpPressed });
 
     // --- accroché à un rebord : ↑ ou saut pour se hisser, ↓ pour lâcher ---
     if (this.hanging) {
@@ -426,7 +432,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     // course : accélération douce vers la vitesse cible (le sol mouillé ou enneigé glisse un peu plus)
     var max = this.crouching ? U.crouchSpeed : U.speed;
     var target = dir * max, a = (onGround ? X.accelGround : X.accelAir) * dt / 1000;
-    b.setVelocityX(b.velocity.x + Phaser.Math.Clamp(target - b.velocity.x, -a, a));
+    if (this.boost > 0) this.boost = onGround ? 0 : this.boost - dt;   // élan d'un anneau rouge : on garde sa vitesse en l'air
+    if (!(this.boost > 0)) b.setVelocityX(b.velocity.x + Phaser.Math.Clamp(target - b.velocity.x, -a, a));
     if (!onGround && X.airPush) b.setVelocityX(Phaser.Math.Clamp(b.velocity.x + X.airPush * dt / 1000, -180, 180));   // le vent pousse les sauts
     if (dir) p.setFlipX(dir < 0);
 
@@ -558,6 +565,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       for (i = 0; i < this.arrows.length; i++) { var a = this.arrows[i].img; if (hit(a.x - 5, a.y - 1, 10, 3)) { this.die('UNE FLÈCHE ! ACCROUPIS-TOI'); return; } }
       for (i = 0; i < this.drops.length; i++) { var d = this.drops[i].img; if (hit(d.x - 2, d.y - 2, 4, 4)) { this.die('LA GARGOUILLE T\'A EU !'); return; } }
       for (i = 0; i < this.barrels.length; i++) { var br = this.barrels[i].img; if (hit(br.x - 5, br.y - 12, 10, 12)) { this.die('ATTENTION AU TONNEAU !'); return; } }
+      var dm = this.dangers.check(hit);
+      if (dm) { this.die(dm); return; }
     }
     var lanOn = this.key('commun_lanterne_allumee', 'lv_lantern_on');
     this.lanterns.forEach(function (l) {
@@ -577,10 +586,10 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var sight = this.phy.sight;
     this.pixels.forEach(function (px) {
       if (px.taken) return;
-      if (hit(px.x - 5, px.y - 5, 10, 10)) { self.collect(px); return; }
+      if (!px.locked && hit(px.x - 5, px.y - 5, 10, 10)) { self.collect(px); return; }
       // brume ou nuit : les pixels lointains s'effacent (une lueur reste toujours visible)
-      if (sight) { var dd = Math.abs(px.x - p.x) + Math.abs(px.y - p.y) * 0.5; px.img.setAlpha(Phaser.Math.Clamp(1 - (dd - sight) / 50, 0.15, 1)); }
-      else if (px.img.alpha !== 1) px.img.setAlpha(1);
+      if (sight && !px.dim) { var dd = Math.abs(px.x - p.x) + Math.abs(px.y - p.y) * 0.5; px.img.setAlpha(Phaser.Math.Clamp(1 - (dd - sight) / 50, 0.15, 1)); }
+      else if (px.img.alpha !== 1 && !px.dim) px.img.setAlpha(1);
     });
   }
 
@@ -621,6 +630,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
         p.body.enable = true; p.body.setAllowGravity(true);
         if (self.crouching) { self.crouching = false; p.body.setSize(8, 16).setOffset(4, 3); }
         p.body.reset(self.respawn.x, self.respawn.y);
+        self.dangers.reset();
         p.setAlpha(0.45);
         self.invuln = U.invuln;
         self.jumping = false; self.buffer = 0;
@@ -644,6 +654,40 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
         self.scene.start('Result', { index: self.index, pixels: self.pc.count, total: self.pc.total, deaths: self.deaths, time: self.time_ms / 1000 });
       });
     });
+  }
+
+  /**
+   * Limite de temps atteinte (3 min par défaut, L.maxTime pour les niveaux plus longs) : le niveau s'arrête, sans rien enregistrer
+   * (ni étoile, ni étape débloquée), et propose REJOUER (R) ou la CARTE (Entrée). Le temps passé en pause n'est pas compté.
+   */
+  timeUp() {
+    var self = this;
+    if (this.timedOut || this.finished) return;
+    this.timedOut = true; this.finished = true;
+    this.physics.pause();
+    if (this.toastObj) { this.toastObj.destroy(); this.toastObj = null; }
+    GP.Sfx.play('error');
+    var m = GP.UI.modal(this, 'TEMPS ÉCOULÉ', '', { x: 120, y: 56, w: 240, h: 128 });
+    m.add(GP.UI.txt(this, 240, 92, this.pc.count + ' PIXELS SUR ' + this.pc.total, GP.PAL.w).setOrigin(0.5, 0));
+    m.add(GP.UI.txt(this, 240, 108, 'PAS D\'ÉTOILE : ESSAIE ENCORE !', GP.PAL.o).setOrigin(0.5, 0));
+    var bRe = GP.UI.button(this, 150, 132, 180, 'REJOUER (R)', function () { self.leaveTimeUp('Game'); }, { primary: true });
+    var bCa = GP.UI.button(this, 150, 154, 180, 'CARTE (ENTRÉE)', function () { self.leaveTimeUp('Map'); });
+    m.add(bRe.objs); m.add(bCa.objs);
+    var kb = this.input.keyboard;
+    kb.removeAllListeners();
+    kb.on('keydown-R', function () { self.leaveTimeUp('Game'); });
+    kb.on('keydown-ENTER', function () { self.leaveTimeUp('Map'); });
+    kb.on('keydown-SPACE', function () { self.leaveTimeUp('Map'); });
+  }
+
+  leaveTimeUp(key) {
+    var self = this;
+    if (this.leaving) return;
+    this.leaving = true;
+    GP.Sfx.play(key === 'Map' ? 'back' : 'confirm');
+    this.input.keyboard.removeAllListeners();
+    this.cameras.main.fadeOut(300, 20, 24, 46);
+    this.cameras.main.once('camerafadeoutcomplete', function () { self.scene.start(key, key === 'Game' ? { index: self.index } : undefined); });
   }
 
   // ---------- Pause ----------

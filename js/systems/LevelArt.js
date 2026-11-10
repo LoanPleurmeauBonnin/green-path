@@ -363,6 +363,58 @@ GP.LevelArt = (function () {
     R(ctx, 0, 0, 8, h, '#5d6475'); R(ctx, w - 8, 0, 8, h, '#5d6475'); R(ctx, 8, 0, 1, h, k); R(ctx, w - 9, 0, 1, h, k);                   // montants des portes d'entrée et de sortie
     return o.cv;
   }
+  // ---------- Ennemis et accessoires des niveaux de la ville (dessins originaux) ----------
+  /** Esprit de la garde : un fantôme pâle qui flotte. */
+  function drawEsprit() {
+    var o = PA.canvas(16, 22), ctx = o.ctx, k = GP.PAL.k, c = '#d4e6ff', c2 = '#a9c4ea';
+    PA.disc(ctx, 8, 8, 7, k); R(ctx, 1, 8, 14, 11, k);
+    PA.disc(ctx, 8, 8, 6, c); R(ctx, 2, 8, 12, 10, c); R(ctx, 10, 9, 4, 9, c2);
+    for (var x = 2; x < 14; x += 4) { R(ctx, x, 18, 2, 3, k); R(ctx, x, 18, 2, 2, c); }           // bas de drap en festons
+    R(ctx, 5, 7, 2, 3, k); R(ctx, 10, 7, 2, 3, k); R(ctx, 7, 12, 3, 2, k);                           // yeux et bouche
+    return o.cv;
+  }
+  /** Petit robot de la galerie (chenilles, œil jaune, antenne rouge). */
+  function drawRobot() {
+    var o = PA.canvas(16, 16), ctx = o.ctx, k = GP.PAL.k;
+    R(ctx, 3, 1, 1, 3, k); R(ctx, 2, 0, 3, 2, GP.PAL.r);
+    R(ctx, 1, 4, 14, 8, k); R(ctx, 2, 5, 12, 6, '#8f98a8'); R(ctx, 2, 5, 12, 1, '#c7ced9');
+    R(ctx, 4, 6, 8, 3, k); R(ctx, 5, 7, 6, 1, GP.PAL.y);
+    R(ctx, 0, 12, 16, 4, k); R(ctx, 1, 13, 14, 2, '#5d6475'); for (var x = 2; x < 15; x += 3) P(ctx, x, 13, '#9aa2ae');
+    return o.cv;
+  }
+  /** Danseur masqué de la place Graslin (masque blanc, costume violet, bras écartés). */
+  function drawDanseur() {
+    var o = PA.canvas(18, 26), ctx = o.ctx, k = GP.PAL.k, v = GP.PAL.p;
+    R(ctx, 5, 0, 8, 3, k); R(ctx, 6, 1, 6, 2, GP.PAL.r);                                             // chapeau
+    PA.disc(ctx, 9, 7, 5, k); PA.disc(ctx, 9, 7, 4, GP.PAL.w); R(ctx, 6, 6, 2, 2, k); R(ctx, 10, 6, 2, 2, k); R(ctx, 8, 9, 3, 1, k);     // masque
+    R(ctx, 5, 11, 8, 9, k); R(ctx, 6, 12, 6, 7, v); R(ctx, 8, 13, 2, 5, GP.PAL.y);                    // costume
+    R(ctx, 0, 12, 6, 3, k); R(ctx, 1, 13, 5, 1, v); R(ctx, 12, 12, 6, 3, k); R(ctx, 12, 13, 5, 1, v); // bras
+    R(ctx, 6, 20, 3, 6, k); R(ctx, 10, 20, 3, 6, k); R(ctx, 7, 20, 1, 5, v); R(ctx, 11, 20, 1, 5, v);   // jambes
+    return o.cv;
+  }
+  /** Conteneur de chantier qui tombe de la grue. */
+  function drawConteneur() {
+    var o = PA.canvas(34, 22), ctx = o.ctx, k = GP.PAL.k, c = '#c4562e', cl = '#e07a4a';
+    R(ctx, 0, 2, 34, 20, k); R(ctx, 1, 3, 32, 18, c); R(ctx, 1, 3, 32, 2, cl);
+    for (var x = 4; x < 32; x += 4) R(ctx, x, 5, 1, 15, '#8f3a1f');
+    R(ctx, 15, 0, 4, 3, k); R(ctx, 16, 0, 2, 2, GP.PAL.m);                                           // crochet
+    return o.cv;
+  }
+  /** Rideau de théâtre (à ouvrir en jouant la bonne séquence). */
+  function drawRideau() {
+    var o = PA.canvas(18, 50), ctx = o.ctx, k = GP.PAL.k;
+    R(ctx, 0, 0, 18, 50, k); R(ctx, 1, 1, 16, 48, '#a8323c');
+    for (var x = 2; x < 17; x += 4) { R(ctx, x, 1, 1, 48, '#d2565f'); R(ctx, x + 2, 1, 1, 48, '#7a2029'); }
+    R(ctx, 0, 0, 18, 4, k); R(ctx, 1, 1, 16, 2, GP.PAL.y);
+    return o.cv;
+  }
+  /** Tapis roulant ou rail de rouages : chevrons jaunes sur fond sombre (16×8, à répéter). */
+  function drawTapis() {
+    var o = PA.canvas(16, 8), ctx = o.ctx, k = GP.PAL.k;
+    R(ctx, 0, 0, 16, 8, '#3a4258'); R(ctx, 0, 0, 16, 1, k); R(ctx, 0, 7, 16, 1, k);
+    for (var i = 0; i < 2; i++) { var x = 2 + i * 8; P(ctx, x, 2, '#f4d35e'); P(ctx, x + 1, 3, '#f4d35e'); P(ctx, x + 2, 4, '#f4d35e'); P(ctx, x + 1, 5, '#f4d35e'); P(ctx, x, 6, '#f4d35e'); }
+    return o.cv;
+  }
   /** Fond du Jardin des Plantes : rangées d'arbres, claires au loin puis plus foncées (raccord horizontal, largeur 320). */
   function drawFondParc() {
     var w = 320, h = 120, o = PA.canvas(w, h), ctx = o.ctx, rnd = PA.rng(14), i;
@@ -415,6 +467,12 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_herbes_hautes', drawHerbesHautes());
     PA.toTexture(scene, 'lv_fond_parc', drawFondParc());
     PA.toTexture(scene, 'lv_fond_chateau', drawFondChateau());
+    PA.toTexture(scene, 'lv_esprit', drawEsprit());
+    PA.toTexture(scene, 'lv_robot', drawRobot());
+    PA.toTexture(scene, 'lv_danseur', drawDanseur());
+    PA.toTexture(scene, 'lv_conteneur', drawConteneur());
+    PA.toTexture(scene, 'lv_rideau', drawRideau());
+    PA.toTexture(scene, 'lv_tapis', drawTapis());
     PA.toTexture(scene, 'lv_salle_herses', drawSalle(22, false));
     PA.toTexture(scene, 'lv_salle_gardes', drawSalle(20, true));
     PA.toTexture(scene, 'lv_fence', drawFence(false));

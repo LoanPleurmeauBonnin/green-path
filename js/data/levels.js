@@ -34,6 +34,8 @@ GP.LevelBuilder = {
       width: width, rows: 17, grid: new Int8Array(width * 17),
       plats: [], thorns: [], pixels: [], checks: [], hints: [], deco: [], startX: 2, startRow: 13,
       climbs: [], crumbles: [], gargoyles: [], slits: [], gates: [], barrels: [], movers: [], rainThorns: [], sunPlats: [],
+      patrols: [], tides: [], boats: [], liars: [], fallers: [], jets: [], beams: [], springs: [], seqs: [], belts: [], carts: [], rings: [], aligns: [], ponds: [],
+      rot: false, wxm: {},
       abilities: {}, skin: null
     };
     function set(x, y, v) { if (x >= 0 && x < width && y >= 0 && y < 17) L.grid[y * width + x] = v; }
@@ -60,6 +62,22 @@ GP.LevelBuilder = {
       mover: function (x, y, w, dx, dy, period) { L.movers.push({ x: x, y: y, w: w, dx: dx || 0, dy: dy || 0, period: period || 3000 }); },
       rainThorn: function (x) { L.rainThorns.push({ x: x, y: L.top(x) - 1 }); },
       sunPlat: function (x, y, w) { L.sunPlats.push({ x: x, y: y, w: w || 1 }); },
+      // --- niveaux de la ville (voir js/systems/Dangers.js) ---
+      patrol: function (x0, x1, kind, speed) { L.patrols.push({ x0: x0, x1: x1, y: L.top(x0) - 1, kind: kind, speed: speed }); },           // 'esprit', 'robot', 'danseur'
+      tide: function (x0, x1, low, high, period) { L.tides.push({ x0: x0, x1: x1, low: low, high: high, period: period || 9000 }); },        // eau qui monte (lignes basse et haute)
+      boat: function (x, y, w) { L.boats.push({ x: x, y: y, w: w || 2 }); },                                                                  // bateau qui s'enfonce
+      liar: function (x, y, text, blur) { L.liars.push({ x: x, y: y, text: text, blur: blur }); },                                            // visage qui ment
+      faller: function (x, y, period, offset) { L.fallers.push({ x: x, y: y, period: period, offset: offset }); },                            // conteneur qui tombe
+      jet: function (x, h, period, offset) { L.jets.push({ x: x, h: h, period: period, offset: offset }); },                                  // jet de vapeur ou d'eau
+      beam: function (x0, x1, speed) { L.beams.push({ x0: x0, x1: x1, speed: speed }); },                                                     // projecteur qui balaie
+      spring: function (x) { L.springs.push({ x: x, y: L.top(x) - 1 }); },                                                                    // parasol qui fait rebondir
+      seq: function (x, pattern) { L.seqs.push({ x: x, pattern: pattern.split('') }); },                                                      // rideau à ouvrir (séquence L R D J)
+      belt: function (x0, x1, dir, speed) { L.belts.push({ x0: x0, x1: x1, dir: dir, speed: speed }); },                                      // tapis roulant
+      cart: function (x, y, w, dx) { L.carts.push({ x: x, y: y, w: w, dx: dx }); },                                                           // chariot qui avance quand on monte dessus
+      ring: function (x, y, color) { L.rings.push({ x: x, y: y, color: color || 'red' }); return L.rings.length - 1; },                       // anneau d'élan
+      align: function (rings, bx, by, bw) { L.aligns.push({ rings: rings, bridge: { x: bx, y: by, w: bw } }); },                              // anneaux alignés : un pont apparaît
+      pond: function (x0, x1, row) { L.ponds.push({ x0: x0, x1: x1, row: row }); },                                                           // eau décorative
+      rotting: function (on) { L.rot = on !== false; },                                                                                       // pixels qui mûrissent puis pourrissent
       /** Verdure au hasard, seulement là où il n'y a ni objet de jeu ni trou. */
       scatter: function (seed) {
         var rnd = GP.PixelArt.rng(seed), busy = {};
@@ -184,6 +202,7 @@ GP.LEVELS['chateau'] = (function () {
     L.pix(21, 13); L.pix(24, 13); L.pix(27, 13);
     L.deco(17, 'chateau_torche_murale', { depth: 3, dy: -20 }); L.deco(25, 'chateau_banniere_hermine', { depth: 3, dy: -20 });
     L.check(32);
+    L.patrol(14, 24, 'esprit', 26);                     // esprit de la garde : il patrouille dans la cour
     L.pix(35, 13); L.pix(37, 13);
     // 2. Douves et tonneaux : sauter
     L.hint(38, 'SAUTE PAR-DESSUS LES TONNEAUX');
@@ -202,6 +221,7 @@ GP.LEVELS['chateau'] = (function () {
     L.pix(72, 11); L.pix(74, 11);
     L.deco(70, 'chateau_tonneau', { depth: 3 }); L.deco(71, 'chateau_caisse', { depth: 3 });
     L.check(76);
+    L.patrol(67, 74, 'esprit', 24);                     // un autre garde, entre la herse et la lanterne
     // 4. Remparts : flèches et marches combinées
     L.ground(81, 10, 5);
     L.slit(90, 11, -1, 1400, 400, 8);
@@ -216,6 +236,7 @@ GP.LEVELS['chateau'] = (function () {
     L.plat(107, 9, 2); L.pix(107, 8);
     L.pix(112, 13); L.pix(113, 13); L.pix(114, 13);
     L.deco(110, 'chateau_blason_simple', { depth: 3, dy: -24 });
+    L.patrol(102, 112, 'esprit', 28);                   // le dernier esprit garde la cour du Grand Logis
   });
   L.id = 'chateau';
   L.reveal = 'bottomUp';
@@ -231,7 +252,8 @@ GP.LEVELS['chateau'] = (function () {
   L.sky = { farKey: 'lv_fond_chateau', farBottom: 236 };
   L.rooms = [{ x: 55, key: 'lv_salle_herses' }, { x: 77, key: 'lv_salle_gardes' }];   // le châtelet aux herses, puis la salle des gardes (intérieur)
   L.backdrop = { x: 112, key: 'chateau_grand_logis', scale: 1, tint: false };
-  L.weatherText = { wind: 'LE VENT FAIT ROULER LES TONNEAUX' };
+  L.wxm = { rain: { enemy: 0.8 }, sun: { enemy: 1.2 } };
+  L.weatherText = { wind: 'LE VENT FAIT ROULER LES TONNEAUX', rain: 'LA PLUIE RALENTIT LES ESPRITS DE LA GARDE', sun: 'LE SOLEIL AGITE LES ESPRITS DE LA GARDE' };
   return L;
 })();
 

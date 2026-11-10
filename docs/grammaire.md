@@ -51,6 +51,28 @@ La météo réelle de Nantes change l'environnement de Green Path et les niveaux
 - L'image reconstruite est une **vraie photo pixélisée** (48×32 cases, 16 couleurs) : un pixel ramassé révèle un groupe de cases ; les cases cachées restent en gris très sombre (l'image « en mémoire »).
 - Une capacité nouvelle par niveau, puis combinées : Jardin (courir, sauter, ronces), Château (s'accroupir : flèches, herses, tonneaux), Cathédrale (grimper aux colonnes, s'accrocher aux rebords : gargouilles, corniches qui s'effritent), Bouffay (étals mobiles, tout combiné).
 
+## Mécaniques, ennemis et météo des niveaux 4 à 9
+Chaque lieu a **une mécanique propre** (`js/systems/Dangers.js`, briques du constructeur de `js/data/levels-ville.js`) et **deux ou trois réactions à la météo** (réglées par `L.wxm`, annoncées par `L.weatherText`). Règle commune : un danger a toujours un **signe avant d'agir** (ombre, souffle, tremblement, eau qui monte), et chaque réaction est bornée.
+
+| Lieu | Mécanique ou ennemi | Signe avant le danger | Pluie | Soleil | Vent |
+|---|---|---|---|---|---|
+| Jardin | ronces, mauvaises herbes | ronce visible avant de piquer | ronces qui poussent (1,2 s) | fleurs-plateformes | |
+| Cathédrale | gargouilles | goutte qui se forme (0,5 s) | gouttes ×1,7 plus fréquentes | | |
+| Château | esprits de la garde (patrouille, 24 à 28 px/s) | esprit visible, flotte | ×0,8 (plus lents) | ×1,2 (plus agités) | tonneaux ×1,25 |
+| Île Feydeau | eau qui monte (marée, 9 s), bateaux qui s'enfoncent (14 px en 1,6 s), visages qui mentent et brouillent les pixels proches | la surface monte lentement ; le bateau descend | marée +1 ligne | marée −1 ligne | bateaux qui coulent ×1,5 |
+| Place Graslin | danseurs masqués (34 à 44 px/s, pause de 0,7 s en bout de course), parasols qui font rebondir (4,75 tuiles), projecteurs, rideau à séquence (< > V) | danseur visible, faisceau visible, séquence affichée | danseurs ×0,75 | projecteurs ×1,25 | rebond ×1,1 |
+| Machines de l'île | rails et tapis (50 à 60 px/s), jets de vapeur (3 s de cycle), robots (poursuite à 36 à 44 px/s sous 6 tuiles) | souffle 0,6 s avant le jet (1,2 s) | jets ×0,75 | robots ×1,25 | tapis ×1,3 |
+| Parc des Chantiers | conteneurs qui tombent de la grue, chariots qui avancent seulement quand on est dessus, cale qui entraîne en arrière (55 px/s) | ombre au sol 0,9 s avant la chute | tapis ×1,3 | chariots ×1,3 | conteneurs ×1,25 plus fréquents |
+| Anneaux de Buren | anneaux d'élan (rouge : +250 px/s pendant 0,7 s ; bleu : saut −400 px/s), couleur qui change à chaque passage, anneaux alignés = pont | anneau coloré, couleur visible | élan ×0,92 | élan ×1,08 | |
+| Hangar à Bananes | pourriture : vert (1,6 s), jaune (5,2 s, récoltable), brun (1,8 s), effacé (3 s), puis repousse | la couleur du pixel | ×0,8 (plus lente) | ×1,3 (plus rapide) | |
+
+Au total, plus de 3 paramètres de la météo opèrent dans chaque niveau : la pluie (sol qui glisse + réaction du lieu), le vent (poussée des sauts + réaction du lieu), la brume (pixels visibles de près), la nuit, et le soleil. **Secours** : sans réseau, météo neutre, aucun de ces réglages ne s'applique et tous les niveaux restent finissables.
+
+**Vérifications faites par script** (jeu piloté image par image avec la vraie physique) : parasol (rebond jusqu'à la corniche), anneau rouge (franchit 9 tuiles d'eau, un saut un peu tardif fait accrocher le rebord), anneau bleu (atteint la passerelle haute), alignement (un seul passage dans l'anneau bleu fait apparaître le pont), chaîne de trois anneaux, chariot, enfoncement des bateaux, marée (mort sur le bas quai à marée haute, pas sur un balcon), conteneur, jet, projecteur, rideau (séquence < > V), cycle de pourriture, fin de niveau jusqu'à l'écran de résultat, textes anglais. **Non fait** : aucun de ces niveaux n'a encore été joué à la main de bout en bout ; temps cibles et difficulté sont provisoires.
+
+## Limite de temps
+Chaque niveau s'arrête après **180 s** de jeu (`L.maxTime` : 200 s pour Feydeau, Graslin et Machines, 210 s pour les Chantiers, 240 s pour le Hangar où l'on attend parfois qu'un pixel jaunisse). Avertissement à 30 s de la fin (message fixe, pas de flash), puis écran « TEMPS ÉCOULÉ » : REJOUER ou CARTE, **sans rien enregistrer**. La pause n'est pas comptée. Ce n'est pas une règle de la grammaire du lieu : c'est une garde contre un niveau sans fin pendant l'évaluation.
+
 ## Étoiles (objectif de fin de niveau)
 Règle (`js/systems/Stars.js`, à ajuster au playtest) : 1 étoile image complète, +1 sans mourir, +1 sous le temps cible du lieu (`parTime`). Sans image complète, 0 étoile. Le meilleur résultat est conservé.
 
