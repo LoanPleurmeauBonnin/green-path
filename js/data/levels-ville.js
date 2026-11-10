@@ -222,8 +222,8 @@ GP.LEVELS['chantiers'] = (function () {
     L.pix(79, 13); L.pix(97, 13);
     L.check(104);
     // 4. La flèche : trois chariots à la suite au-dessus du vide
-    L.hint(102, 'MONTE SUR LES CHARIOTS : ILS AVANCENT');
-    L.cart(106, 12, 3, 6); L.cart(114, 11, 3, 6); L.cart(122, 12, 3, 6);
+    L.hint(102, 'LA GRUE PORTE DES CONTENEURS : MONTE DESSUS');
+    L.crane(106, 12, 6, 0, 7000, 0); L.crane(114, 11, 6, 0, 7000, 3500); L.crane(122, 12, 6, 0, 7000, 0);   // la flèche de la grue jaune : trois conteneurs suspendus
     L.pix(110, 10); L.pix(118, 9); L.pix(126, 10);
     // 5. Le belvédère de la proue
     L.ground(130, 22, 3);
@@ -243,7 +243,7 @@ GP.LEVELS['chantiers'] = (function () {
   L.thornKey = 'chantiers_obstacle_ferraille'; L.thornText = 'AÏE, DE LA FERRAILLE !';
   L.sky = { farKey: 'chantiers_fond_tile_x', farBottom: 236 };
   L.wxm = { rain: { belt: 1.3 }, sun: { mover: 1.3 }, wind: { fall: 0.8 } };
-  L.weatherText = { rain: 'LA PLUIE LUBRIFIE LA CALE : PENTE PLUS VIVE', sun: 'LE SOLEIL DILATE LES RAILS : CHARIOTS PLUS RAPIDES', wind: 'LE VENT AGITE LA GRUE : CONTENEURS PLUS VITE' };
+  L.weatherText = { rain: 'LA PLUIE LUBRIFIE LA CALE : PENTE PLUS VIVE', sun: 'LE SOLEIL ÉCHAUFFE LES CÂBLES : LA GRUE VA PLUS VITE', wind: 'LE VENT AGITE LA GRUE : CONTENEURS PLUS VITE' };
   return L;
 })();
 
@@ -441,20 +441,25 @@ GP.LEVELS['pommeraye'] = (function () {
     L.pix(42, 12); L.pix(50, 11); L.pix(58, 10); L.pix(66, 9); L.pix(46, 9);
     L.plat(58, 8, 3); L.pix(59, 7);
     L.check(49); L.check(56);
+    L.patrol(49, 54, 'statue', 30);                       // les statues du passage s'animent quand on ne les regarde pas
     // 3. La mezzanine : des ponts de verre au-dessus du vide, des balcons en fonte
     L.ground(64, 22, 7);
+    L.hint(69, 'LES STATUES AVANCENT SI TU NE LES REGARDES PAS');
+    L.patrol(72, 84, 'statue', 32);
     L.deco(70, 'pommeraye_pilier_galerie', { depth: 2 }); L.deco(80, 'pommeraye_lustre', { depth: 3, dy: -64 });
     L.pix(74, 9); L.pix(80, 9);
     L.glass(87, 10, 3); L.glass(92, 10, 3);
     L.pix(88, 9); L.pix(93, 9);
     L.ground(96, 36, 7);
     L.check(98);
+    L.patrol(106, 122, 'statue', 34);
     L.plat(104, 8, 3); L.pix(105, 7);
     L.mover(112, 7, 3, 5, 0, 3600); L.pix(114, 6);
     L.pix(100, 9); L.pix(110, 9); L.pix(124, 9);
     // 4. Sous la verrière : on monte tout en haut, puis un dernier pont de verre
     L.ground(132, 6, 8); L.ground(138, 6, 9); L.ground(144, 6, 10); L.ground(150, 6, 11);
     L.check(134);
+    L.gargoyle(100, 0, 2400); L.gargoyle(120, 0, 2000); L.gargoyle(140, 0, 2200); L.gargoyle(160, 0, 2600);   // vitres cassées de la verrière : l'eau goutte sous la pluie
     L.pix(135, 7); L.pix(141, 6); L.pix(147, 5); L.pix(152, 4);
     L.glass(157, 6, 3); L.glass(162, 6, 3);
     L.pix(158, 5); L.pix(163, 5);
@@ -471,8 +476,9 @@ GP.LEVELS['pommeraye'] = (function () {
   };
   L.thornKey = 'pommeraye_obstacle_grille_pointes'; L.thornText = 'AÏE, UNE GRILLE À POINTES !';
   L.sky = { farKey: 'lv_fond_pommeraye', farBottom: 236 };        // galerie à trois niveaux et verrière, dessinée d'après des vues du passage
+  L.gargoyleKey = 'lv_fuite'; L.rainOnly = true;   // la verrière laisse passer la pluie par ses vitres cassées
   L.wxm = { rain: { glass: 0.7 }, sun: { glassback: 0.6 } };
-  L.weatherText = { rain: 'LA PLUIE FRAGILISE LE VERRE : IL CÈDE PLUS VITE', sun: 'LE SOLEIL RÉCHAUFFE LE VERRE : IL REVIENT VITE', wind: 'LE VENT SOUFFLE DANS LA VERRIÈRE' };
+  L.weatherText = { rain: 'LA PLUIE FRAGILISE LE VERRE ET GOUTTE PAR LES VITRES CASSÉES', sun: 'LE SOLEIL RÉCHAUFFE LE VERRE : IL REVIENT VITE', wind: 'LE VENT SOUFFLE DANS LA VERRIÈRE' };
   return L;
 })();
 

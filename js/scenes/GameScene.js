@@ -560,6 +560,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     // gargouilles : une goutte se forme (annonce) puis tombe ; plus souvent sous la pluie
     this.gargoyles.forEach(function (g) {
       var period = g.period * (self.env.rain && self.L.rainGargoyle ? 0.6 : 1);
+      if (self.L.rainOnly && !self.env.rain) { g.t = 0; return; }                  // vitres cassées : ça ne goutte que sous la pluie
       g.t += dt;
       if (g.t > period - 500 && !g.warned) { g.warned = true; g.warn = self.add.image(g.x, g.y + 4, 'lv_drop').setDepth(7).setAlpha(0.6); }
       if (g.t > period) {

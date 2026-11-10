@@ -34,7 +34,7 @@ GP.LevelBuilder = {
       width: width, rows: 17, grid: new Int8Array(width * 17),
       plats: [], thorns: [], pixels: [], checks: [], hints: [], deco: [], startX: 2, startRow: 13,
       climbs: [], crumbles: [], gargoyles: [], slits: [], gates: [], barrels: [], movers: [], rainThorns: [], sunPlats: [],
-      muses: [], molds: [], glasses: [], hangers: [], elephants: [], cbornes: [], cplats: [], memos: [], drafts: [],
+      muses: [], molds: [], glasses: [], hangers: [], cranes: [], elephants: [], cbornes: [], cplats: [], memos: [], drafts: [],
       patrols: [], tides: [], boats: [], liars: [], fallers: [], jets: [], beams: [], springs: [], seqs: [], belts: [], carts: [], rings: [], aligns: [], ponds: [],
       rot: false, wxm: {},
       abilities: {}, skin: null
@@ -80,6 +80,7 @@ GP.LevelBuilder = {
       muse: function (x, dir, period, offset) { L.muses.push({ x: x, dir: dir || -1, period: period, offset: offset }); },                    // Muse (statue) qui lance des notes
       mold: function (x, w, period, offset) { L.molds.push({ x: x, w: w, period: period, offset: offset }); },                                // moisissure qui gagne du terrain
       hanger: function (x) { L.hangers.push({ x: x, floor: L.top(x) }); },                                                               // araignée suspendue à un fil : elle descend si on ne la regarde pas (accroupi : on passe dessous)
+      crane: function (x, y, dx, dy, period, offset) { L.cranes.push({ x: x, y: y, dx: dx || 0, dy: dy || 0, period: period || 7000, offset: offset || 0 }); },   // grue : un conteneur suspendu à un câble va et vient (plateforme qui transporte)
       elephant: function (west, east, period) { L.elephants.push({ west: west, east: east, period: period || 13000 }); },                   // le Grand Éléphant traverse un canal du bord ouest au bord est : on monte sur lui
       borne: function (x, color) { L.cbornes.push({ x: x, color: color }); },                                                              // borne de couleur : la toucher allume les passerelles de sa couleur
       cplat: function (x, y, w, color) { L.cplats.push({ x: x, y: y, w: w, color: color }); },                                           // passerelle de couleur (solide seulement si sa couleur est allumée)

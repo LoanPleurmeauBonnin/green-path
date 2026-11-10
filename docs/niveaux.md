@@ -1317,3 +1317,20 @@ Grâce à la richesse des planches fournies dans l'énoncé, **les 9 niveaux san
 6. **Absence de planche de sprites dédiée à la Tour LU dans la liste d'assets** :
 * *Risque* : Le niveau 12 porte sur la Tour LU (monument provisoire), mais la liste de sprites ne contient pas de préfixe `lu_`.
 * *Solution appliquée* : Le niveau 12 assume un rôle de « Niveau Final Synthèse » réutilisant intelligemment les briques, engrenages, verrières et anneaux des niveaux 1 à 11, tout en isolant les **3 seuls sprites indispensables** (`lu_dome_coupole`, `lu_monument_tour_lu`, `boss_vortex_tempete`) dans la section `SPRITE MANQUANT`.
+
+## Règle de conception : le patrimoine est un système, pas un décor
+Pour chaque monument, on se demande **ce qu'il fait dans la vraie vie** (lever, défendre, relier, mûrir, se souvenir…) et on en fait la mécanique du niveau.
+
+| Lieu | Ce que fait le monument | Mécanique |
+|---|---|---|
+| Château | défendre | herses, flèches |
+| Cathédrale | élever, laisser suinter | grimper aux colonnes, corniches qui s'effritent, fissures de voûte qui gouttent |
+| Machines de l'île | porter, marcher | Grand Éléphant qui traverse le canal avec le joueur sur le dos ; araignées qui se figent quand on les regarde |
+| Chantiers | lever des blocs de navires | grue jaune : conteneurs suspendus qui transportent le joueur |
+| Graslin | jouer, ouvrir le rideau | séquence du rideau, Muses qui lancent des notes |
+| Pommeraye | abriter sous une verrière, exposer des statues | statues qui s'animent hors du regard, pluie par les vitres cassées |
+| Buren | colorer la perspective | bornes de couleur qui allument les passerelles |
+| Hangar à Bananes | faire mûrir | pixels qui pourrissent, moisissure |
+| Tour LU | faire monter, cuire | courant d'air ascendant, petits-beurres-plateformes |
+| Mémorial | se souvenir | stèle et porte de lumière, rien d'hostile |
+| Feydeau, Jardin | à reprendre (marée, façades ; stores du Palmarium) | idées dans `docs/carnet-de-bord.md` |

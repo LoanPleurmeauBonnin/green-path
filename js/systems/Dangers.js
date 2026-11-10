@@ -2,7 +2,7 @@
  * Dangers (GP.Dangers) — mécaniques et ennemis des niveaux 4 à 12 (Feydeau, Graslin, Machines, Chantiers, Buren, Hangar,
  * Mémorial, Pommeraye, Tour LU) et esprits de la garde du Château. Un seul fichier, créé par GameScene.makeMechanics() à partir de la définition du niveau
  * (briques de js/data/levels.js : L.patrol, L.tide, L.boat, L.liar, L.faller, L.jet, L.beam, L.spring, L.seq, L.belt,
- * L.cart, L.ring + L.align, L.borne + L.cplat, L.elephant, L.hanger, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
+ * L.cart, L.ring + L.align, L.borne + L.cplat, L.elephant, L.hanger, L.crane, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
  *
  *   update(dt)          fait vivre tout ce qui bouge (appelé à chaque image)
  *   input(c)            touches de la dernière image (pour la séquence de danse de Graslin)
@@ -16,9 +16,9 @@ GP.Dangers = function (scene) {
   this.s = scene; this.t = 0;
   function has(k) { return scene.textures.exists(k); }
 
-  // ---------- Ennemis : esprits (patrouille), robots (poursuite) et araignées (elles n'avancent que si on ne les regarde pas, comme les anges qui pleurent) ----------
+  // ---------- Ennemis : esprits (patrouille), robots (poursuite), araignées et statues (elles n'avancent que si on ne les regarde pas, comme les anges qui pleurent) ----------
   this.patrols = (L.patrols || []).map(function (p) {
-    var key = { esprit: 'lv_esprit', robot: 'lv_robot', araignee: 'lv_araignee' }[p.kind] || 'lv_esprit';
+    var key = { esprit: 'lv_esprit', robot: 'lv_robot', araignee: 'lv_araignee', statue: L.statueKey || 'pommeraye_statue' }[p.kind] || 'lv_esprit';
     var feet = (p.y + 1) * 16, img = scene.add.image(p.x0 * 16 + 8, feet, key).setOrigin(0.5, 1).setDepth(9);
     if (p.kind === 'esprit') img.setAlpha(0.85);
     return { img: img, x0: p.x0 * 16 + 8, x1: p.x1 * 16 + 8, feet: feet, kind: p.kind, speed: p.speed || 30, dir: 1, pause: 0, home: p.x0 * 16 + 8, bob: p.x0 * 97 };
@@ -182,6 +182,21 @@ GP.Dangers = function (scene) {
   };
   if (this.cplats.length) this.setColor(this.cstart);
 
+  // ---------- Grue des Chantiers : un conteneur suspendu à un câble, sous un chariot qui roule sur la flèche ; on monte dessus pour franchir le vide ----------
+  this.cranes = (L.cranes || []).map(function (c) {
+    var x0 = c.x * 16, y0 = c.y * 16, cw = 50;
+    scene.add.rectangle(x0 - 6, 0, Math.abs(c.dx) * 16 + cw + 12, 7, 0xf4d35e, 1).setOrigin(0, 0).setDepth(8);               // flèche jaune au-dessus du niveau
+    scene.add.rectangle(x0 - 6, 6, Math.abs(c.dx) * 16 + cw + 12, 2, 0x8a6d1a, 1).setOrigin(0, 0).setDepth(8);
+    var trolley = scene.add.rectangle(x0 + cw / 2, 3, 12, 9, 0x2b2e3a, 1).setDepth(9);
+    var cable = scene.add.rectangle(x0 + cw / 2, 8, 2, y0, 0x2b2e3a, 1).setOrigin(0.5, 0).setDepth(8);
+    var img = scene.add.image(x0, y0, 'lv_conteneur_long').setOrigin(0, 0).setDepth(9);
+    var pl = scene.add.image(x0, y0, 'lv_tileset').setOrigin(0, 0).setDisplaySize(cw, 4).setVisible(false);
+    scene.physics.add.existing(pl);
+    var b = pl.body; b.setAllowGravity(false); b.setImmovable(true); b.checkCollision.down = false; b.checkCollision.left = false; b.checkCollision.right = false;
+    scene.physics.add.collider(scene.player, pl);
+    return { def: c, x0: x0, y0: y0, cw: cw, trolley: trolley, cable: cable, img: img, body: b };
+  });
+
   // ---------- Araignées suspendues (Machines) : elles descendent du plafond au bout d'un fil quand on ne les regarde pas, se figent si on les regarde, remontent quand on s'éloigne ----------
   this.hangers = (L.hangers || []).map(function (h) {
     var x = h.x * 16 + 8, yMin = 30, yMax = h.floor * 16 - 12;                                             // son bas s'arrête à hauteur de tête : accroupi, on passe dessous
@@ -311,7 +326,7 @@ GP.Dangers.prototype = {
     this.patrols.forEach(function (e) {
       var sp = e.speed * self.f('enemy'), img = e.img;
       e.bob += dt;
-      if (e.kind === 'araignee') {
+      if (e.kind === 'araignee' || e.kind === 'statue') {
         var ax = p.x - img.x, proche = Math.abs(ax) < 170 && Math.abs(p.y - e.feet) < 50;
         var regard = ax > 0 ? p.flipX : !p.flipX;                                  // le joueur tourne la tête vers elle ?
         e.frozen = proche && regard;
@@ -481,6 +496,14 @@ GP.Dangers.prototype = {
       if (h.frozen) h.img.setTint(0x9fb0d0); else h.img.clearTint();
     });
 
+    // grue : va-et-vient sinusoïdal du conteneur (le joueur est transporté, comme sur un étal mobile)
+    this.cranes.forEach(function (c) {
+      var d = c.def, per = d.period / self.f('mover'), w = Math.PI * 2 / per * 1000, ph = (self.t + d.offset) / per * Math.PI * 2, kk = 0.5 - 0.5 * Math.cos(ph), v = 0.5 * Math.sin(ph) * w;
+      var tx = c.x0 + d.dx * 16 * kk, ty = c.y0 + d.dy * 16 * kk;
+      c.body.setVelocity(d.dx * 16 * v + (tx - c.body.x) * 3, d.dy * 16 * v + (ty - c.body.y) * 3);
+      c.img.setPosition(c.body.x, c.body.y); c.trolley.x = c.body.x + c.cw / 2; c.cable.x = c.body.x + c.cw / 2; c.cable.setSize(2, Math.max(1, c.body.y - 8));
+    });
+
     // Grand Éléphant : va-et-vient lent (il s'arrête à chaque rive), les plateformes de son dos transportent le joueur
     this.elephants.forEach(function (el) {
       var w = Math.PI * 2 / el.period * 1000, ph = self.t / el.period * Math.PI * 2, kk = 0.5 - 0.5 * Math.cos(ph), v = 0.5 * Math.sin(ph) * w;
@@ -544,8 +567,8 @@ GP.Dangers.prototype = {
     var i, e, b = this.s.player.body, H = this.s.H;
     for (i = 0; i < this.patrols.length; i++) {
       e = this.patrols[i];
-      var h = e.kind === 'robot' ? 11 : (e.kind === 'araignee' ? 10 : 14), y = e.kind === 'esprit' ? e.img.y - 16 : e.feet - h;
-      if (hit(e.img.x - (e.kind === 'araignee' ? 9 : 5), y, e.kind === 'araignee' ? 18 : 10, h)) return e.kind === 'robot' ? 'UN ROBOT T\'A ATTRAPÉ !' : (e.kind === 'araignee' ? 'UNE ARAIGNÉE T\'A ATTRAPÉE !' : 'UN ESPRIT DE LA GARDE !');
+      var h = e.kind === 'robot' ? 11 : (e.kind === 'araignee' ? 10 : (e.kind === 'statue' ? Math.max(14, Math.round(e.img.displayHeight) - 4) : 14)), y = e.kind === 'esprit' ? e.img.y - 16 : e.feet - h;
+      if (hit(e.img.x - (e.kind === 'araignee' ? 9 : (e.kind === 'statue' ? 7 : 5)), y, e.kind === 'araignee' ? 18 : (e.kind === 'statue' ? 14 : 10), h)) return e.kind === 'robot' ? 'UN ROBOT T\'A ATTRAPÉ !' : (e.kind === 'araignee' ? 'UNE ARAIGNÉE T\'A ATTRAPÉE !' : (e.kind === 'statue' ? 'UNE STATUE T\'A ATTRAPÉ !' : 'UN ESPRIT DE LA GARDE !'));
     }
     for (i = 0; i < this.hangers.length; i++) {
       e = this.hangers[i];

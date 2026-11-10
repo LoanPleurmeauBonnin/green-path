@@ -404,11 +404,12 @@ GP.LevelArt = (function () {
     return o.cv;
   }
   /** Conteneur de chantier qui tombe de la grue. */
-  function drawConteneur() {
-    var o = PA.canvas(34, 22), ctx = o.ctx, k = GP.PAL.k, c = '#c4562e', cl = '#e07a4a';
-    R(ctx, 0, 2, 34, 20, k); R(ctx, 1, 3, 32, 18, c); R(ctx, 1, 3, 32, 2, cl);
-    for (var x = 4; x < 32; x += 4) R(ctx, x, 5, 1, 15, '#8f3a1f');
-    R(ctx, 15, 0, 4, 3, k); R(ctx, 16, 0, 2, 2, GP.PAL.m);                                           // crochet
+  function drawConteneur(w) {
+    w = w || 34;
+    var o = PA.canvas(w, 22), ctx = o.ctx, k = GP.PAL.k, c = '#c4562e', cl = '#e07a4a', m = Math.floor(w / 2);
+    R(ctx, 0, 2, w, 20, k); R(ctx, 1, 3, w - 2, 18, c); R(ctx, 1, 3, w - 2, 2, cl);
+    for (var x = 4; x < w - 2; x += 4) R(ctx, x, 5, 1, 15, '#8f3a1f');
+    R(ctx, m - 2, 0, 4, 3, k); R(ctx, m - 1, 0, 2, 2, GP.PAL.m);                                     // crochet
     return o.cv;
   }
   /** Rideau de théâtre (à ouvrir en jouant la bonne séquence). */
@@ -883,6 +884,7 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_esprit', drawEsprit());
     PA.toTexture(scene, 'lv_robot', drawRobot());
     PA.toTexture(scene, 'lv_conteneur', drawConteneur());
+    PA.toTexture(scene, 'lv_conteneur_long', drawConteneur(50));
     PA.toTexture(scene, 'lv_rideau', drawRideau());
     PA.toTexture(scene, 'lv_tapis', drawTapis(false));
     PA.toTexture(scene, 'lv_tapis_g', drawTapis(true));
