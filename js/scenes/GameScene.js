@@ -68,8 +68,10 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
 
   makeTerrain() {
     var L = this.L, data = [];
-    GP.LevelArt.renderTerrain(this, 'lv_terrain', L);
-    this.add.image(0, 0, 'lv_terrain').setOrigin(0).setDepth(5);
+    var self = this;
+    GP.LevelArt.renderTerrain(this, 'lv_terrain', L).forEach(function (k, i) {   // morceaux de 2048 px (limite des textures sur téléphone)
+      self.add.image(i * GP.LevelArt.CHUNK, 0, k).setOrigin(0).setDepth(5);
+    });
     // carte de collision : 1 terre, 2 pierre, 3 sens unique, 4 topiaire, 5 pavés (tuiles invisibles)
     for (var y = 0; y < L.rows; y++) {
       var row = [];

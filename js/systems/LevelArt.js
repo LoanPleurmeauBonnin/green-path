@@ -328,6 +328,22 @@ GP.LevelArt = (function () {
 
   // ---------- Terrain d'un niveau ----------
   /**
+   * Découpe l'image du terrain en morceaux de 2048 px de large : certains téléphones ne gèrent pas de textures plus
+   * larges (le terrain d'un long niveau disparaîtrait). Renvoie les clés des textures, de gauche à droite.
+   */
+  var CHUNK = 2048;
+  function chunks(scene, key, cv) {
+    var n = Math.max(1, Math.ceil(cv.width / CHUNK)), keys = [];
+    for (var i = 0; i < n; i++) {
+      var c = PA.canvas(Math.min(CHUNK, cv.width - i * CHUNK), cv.height);
+      c.ctx.drawImage(cv, -i * CHUNK, 0);
+      PA.toTexture(scene, key + '_' + i, c.cv);
+      keys.push(key + '_' + i);
+    }
+    return keys;
+  }
+
+  /**
    * Terrain d'un niveau habillé avec les tuiles d'une planche (L.skin) :
    *   { top: [..], fill: [..], left, right, block, blockTop, blockBottom, ledge: [g, m, d], bridge: [g, m, d] }
    * Une case pleine sans voisin au-dessus prend une tuile « top », un bord gauche/droit la tuile de bord, sinon « fill ».
@@ -356,7 +372,7 @@ GP.LevelArt = (function () {
       var set = p.kind === 'bridge' ? (sk.bridge || sk.ledge) : sk.ledge;
       for (var j = 0; j < p.w; j++) put(set[j === 0 ? 0 : (j === p.w - 1 ? 2 : 1)], (p.x + j) * T, p.y * T);
     });
-    PA.toTexture(scene, key, o.cv);
+    return chunks(scene, key, o.cv);
   }
 
   function renderTerrain(scene, key, L) {
@@ -427,7 +443,7 @@ GP.LevelArt = (function () {
         }
       }
     });
-    PA.toTexture(scene, key, o.cv);
+    return chunks(scene, key, o.cv);
   }
 
   /** Ciel selon la météo : nuit, orage, gris (pluie, bruine, neige, brume, couvert), nuageux, jour. */
@@ -439,5 +455,5 @@ GP.LevelArt = (function () {
     return 'day';
   }
 
-  return { makeTextures: makeTextures, renderTerrain: renderTerrain, skyKind: skyKind, sky: sky, TILE: T, C: C };
+  return { CHUNK: CHUNK, makeTextures: makeTextures, renderTerrain: renderTerrain, skyKind: skyKind, sky: sky, TILE: T, C: C };
 })();

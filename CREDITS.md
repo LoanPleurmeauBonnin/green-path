@@ -1,5 +1,11 @@
 # Crédits
 
+## Confidentialité
+Aucune donnée personnelle n'est collectée ; voir [docs/confidentialite.md](docs/confidentialite.md) (et CRÉDITS → CONFIDENTIALITÉ dans le jeu).
+
+## Outils de développement
+Skills Phaser (`phaser-core`, `phaser-arcade-physics`) du dépôt gamedev-skills/awesome-gamedev-agent-skills, licence Apache-2.0 : lus avant installation, utilisés comme référence de bonnes pratiques ; non inclus dans le jeu ni dans le dépôt.
+
 ## Équipe
 - **Florine RACINE** — UX/UI Designer, Game Design
 - **Loan PLEURMEAU** — Développeur web, IA Ops
