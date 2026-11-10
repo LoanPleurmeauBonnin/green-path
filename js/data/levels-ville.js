@@ -514,7 +514,9 @@ GP.LEVELS['tour-lu'] = (function () {
     // 4. La soufflerie du dôme : des courants d'air qui allègent la gravité
     L.ground(127, 22, 3);
     L.check(129);
-    L.hint(131, "LE COURANT D'AIR T'ALLÈGE : SAUTE DEDANS"); L.deco(129, 'lv_feu', { depth: 3 }); L.deco(138, 'lv_pan_sens', { depth: 3 });
+    L.hint(131, "MONTE LA TOUR : LE COURANT D'AIR T'ALLÈGE");
+    L.deco(147, 'lv_tour_lu', { depth: 1 });                       // la vraie tour : on la grimpe, du courant d'air jusqu'au belvédère
+    L.deco(129, 'lv_feu', { depth: 3 }); L.deco(138, 'lv_pan_sens', { depth: 3 });
     L.draft(141, 146, 1, 14);
     L.plat(146, 8, 4);
     L.draft(147, 152, 1, 8);

@@ -1333,4 +1333,5 @@ Pour chaque monument, on se demande **ce qu'il fait dans la vraie vie** (lever, 
 | Hangar à Bananes | faire mûrir | pixels qui pourrissent, moisissure |
 | Tour LU | faire monter, cuire | courant d'air ascendant, petits-beurres-plateformes |
 | Mémorial | se souvenir | stèle et porte de lumière, rien d'hostile |
-| Feydeau, Jardin | à reprendre (marée, façades ; stores du Palmarium) | idées dans `docs/carnet-de-bord.md` |
+| Feydeau | une île dans la Loire | marée qui monte, balcons de fer en refuge, bateaux, visages qui mentent |
+| Jardin des Plantes | faire pousser | fleurs-plateformes qui poussent au soleil |
