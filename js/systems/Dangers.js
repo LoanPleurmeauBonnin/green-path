@@ -2,7 +2,7 @@
  * Dangers (GP.Dangers) — mécaniques et ennemis des niveaux 4 à 12 (Feydeau, Graslin, Machines, Chantiers, Buren, Hangar,
  * Mémorial, Pommeraye, Tour LU) et esprits de la garde du Château. Un seul fichier, créé par GameScene.makeMechanics() à partir de la définition du niveau
  * (briques de js/data/levels.js : L.patrol, L.tide, L.boat, L.liar, L.faller, L.jet, L.beam, L.spring, L.seq, L.belt,
- * L.cart, L.ring + L.align, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
+ * L.cart, L.ring + L.align, L.borne + L.cplat, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
  *
  *   update(dt)          fait vivre tout ce qui bouge (appelé à chaque image)
  *   input(c)            touches de la dernière image (pour la séquence de danse de Graslin)
@@ -120,12 +120,13 @@ GP.Dangers = function (scene) {
   var RC = { red: 0xff6b5b, blue: 0x6ea8ff };
   this.rcolors = RC;
   this.rings = (L.rings || []).map(function (r) {
-    var key = has('buren_mat_anneau_petit') ? 'buren_mat_anneau_petit' : 'lv_rock', cx = r.x * 16 + 8, cy = r.y * 16 + 8;
+    var cx = r.x * 16 + 8, cy = r.y * 16 + 8;
     var col = L.top(r.x) < 17 ? L.top(r.x) * 16 : H;                       // le mât est planté dans le sol, ou au fond de l'eau
-    scene.add.rectangle(cx, cy + 10, 4, col - cy - 10, 0x8a94a6, 1).setOrigin(0.5, 0).setDepth(7);
-    scene.add.rectangle(cx - 1, cy + 10, 1, col - cy - 10, 0xc7ced9, 1).setOrigin(0.5, 0).setDepth(7);
-    var img = scene.add.image(cx, cy, key).setOrigin(0.5, 10 / 64).setCrop(0, 0, 24, 20).setDepth(8).setTint(RC[r.color] || RC.red);   // seule la partie « anneau » du sprite
-    return { img: img, x: img.x, y: img.y, color: r.color || 'red', cool: 0 };
+    scene.add.rectangle(cx, cy + 18, 5, col - cy - 18, 0x8a94a6, 1).setOrigin(0.5, 0).setDepth(7);
+    scene.add.rectangle(cx - 1, cy + 18, 1, col - cy - 18, 0xc7ced9, 1).setOrigin(0.5, 0).setDepth(7);
+    var img = scene.add.image(cx, cy, 'lv_anneau_' + (r.color || 'red')).setDepth(8);   // anneau néon, rouge ou bleu
+    var halo = has('lv_halo') ? scene.add.image(cx, cy, 'lv_halo').setBlendMode(Phaser.BlendModes.ADD).setTint(RC[r.color] || RC.red).setAlpha(0.35).setScale(1.7).setDepth(7) : null;   // lueur néon
+    return { img: img, halo: halo, x: img.x, y: img.y, color: r.color || 'red', cool: 0 };
   });
   this.aligns = (L.aligns || []).map(function (a) {
     var set = (L.skin && (L.skin.bridge || L.skin.ledge)) || null, n = a.bridge.w;
@@ -150,6 +151,36 @@ GP.Dangers = function (scene) {
     var edge = scene.add.rectangle(m.x * 16, floor - 7, 1, 2, 0xa9bd4f, 1).setOrigin(0, 1).setDepth(10);
     return { x: m.x * 16, w: m.w * 16, floor: floor, period: m.period || 8000, t: -(m.offset || 0), body: body, edge: edge, p: 0 };
   });
+
+  // ---------- Bornes de couleur (Buren) : en marchant sur une borne, on allume les passerelles néon de sa couleur (les autres s'éteignent) ----------
+  // Sous la pluie, une couleur autre que le bleu ne reste allumée que 5 s (elle clignote avant de s'éteindre).
+  var CC = { blue: ['#3d9bff', '#cfe6ff'], green: ['#4dff9c', '#d4ffe8'], red: ['#ff4f66', '#ffd0d6'] };
+  this.cstart = L.cstart || 'blue'; this.ccolor = this.cstart; this.ctimer = 0;
+  Object.keys(CC).forEach(function (k) {
+    var o = GP.PixelArt.canvas(12, 20), cx = o.ctx;
+    cx.fillStyle = '#0d1226'; cx.fillRect(0, 8, 12, 12); cx.fillStyle = '#6f7a8e'; cx.fillRect(1, 9, 10, 11); cx.fillStyle = '#c7ced9'; cx.fillRect(1, 9, 2, 11);
+    cx.fillStyle = '#0d1226'; cx.fillRect(1, 0, 10, 9); cx.fillStyle = CC[k][0]; cx.fillRect(2, 1, 8, 7); cx.fillStyle = CC[k][1]; cx.fillRect(3, 2, 3, 2);
+    GP.PixelArt.toTexture(scene, 'lv_borne_' + k, o.cv);
+  });
+  this.cbornes = (L.cbornes || []).map(function (r) {
+    var fl = L.top(r.x) * 16, img = scene.add.image(r.x * 16 + 8, fl, 'lv_borne_' + r.color).setOrigin(0.5, 1).setDepth(8);
+    var halo = has('lv_halo') ? scene.add.image(r.x * 16 + 8, fl - 14, 'lv_halo').setBlendMode(Phaser.BlendModes.ADD).setTint(parseInt(CC[r.color][0].slice(1), 16)).setAlpha(0.4).setDepth(7) : null;
+    return { x: r.x * 16 + 8, floor: fl, color: r.color, img: img, halo: halo };
+  });
+  this.cplats = (L.cplats || []).map(function (r, i) {
+    var key = 'lv_cplat_' + i, o = GP.PixelArt.canvas(r.w * 16, 10), c = CC[r.color], cx = o.ctx;
+    cx.globalAlpha = 0.25; cx.fillStyle = c[0]; cx.fillRect(0, 0, r.w * 16, 10);
+    cx.globalAlpha = 1; cx.fillRect(0, 2, r.w * 16, 5); cx.fillStyle = c[1]; cx.fillRect(1, 3, r.w * 16 - 2, 2);
+    GP.PixelArt.toTexture(scene, key, o.cv);
+    var img = scene.add.image(r.x * 16, r.y * 16, key).setOrigin(0, 0).setDepth(9);
+    return { img: img, body: scene.platformBody(img, true), color: r.color };
+  });
+  this.setColor = function (c) {
+    self.ccolor = c; self.ctimer = (c !== self.cstart && scene.env && scene.env.rain) ? 5000 : 0;
+    self.cplats.forEach(function (p) { var on = p.color === c; p.body.enable = on; p.img.setAlpha(on ? 1 : 0.13); });
+    self.cbornes.forEach(function (r) { if (r.halo) r.halo.setAlpha(r.color === c ? 0.8 : 0.25); });
+  };
+  if (this.cplats.length) this.setColor(this.cstart);
 
   // ---------- Dalles de verre : elles se fissurent 0,8 s après qu'on s'y pose, tombent, et reviennent 3 s plus tard ----------
   var glassSet = ['memorial_sol_dalle_verre', 'memorial_sol_dalle_verre', 'memorial_sol_dalle_verre'];
@@ -203,7 +234,8 @@ GP.Dangers.prototype = {
   reset: function () {
     var self = this;
     this.s.player.body.setGravityY(0);
-    (this.s.L.rings || []).forEach(function (r, i) { var o = self.rings[i]; o.color = r.color; o.img.setTint(self.rcolors[r.color]); o.cool = 0; });
+    if (this.cplats.length) this.setColor(this.cstart);
+    (this.s.L.rings || []).forEach(function (r, i) { var o = self.rings[i]; o.color = r.color; o.img.setTexture('lv_anneau_' + r.color); if (o.halo) o.halo.setTint(self.rcolors[r.color]); o.cool = 0; });
   },
 
   input: function (c) {
@@ -372,13 +404,13 @@ GP.Dangers.prototype = {
     this.rings.forEach(function (r) {
       r.cool -= dt;
       if (r.cool > 0 || onGround) return;
-      if (Math.abs(p.x - r.x) < 8 && Math.abs((b.y + 8) - r.y) < 26) {
+      if (Math.abs(p.x - r.x) < 11 && Math.abs((b.y + 8) - r.y) < 32) {
         r.cool = 700;
         var dir = b.velocity.x < -5 ? -1 : 1;
         if (r.color === 'red') { b.setVelocityX(dir * 250 * self.f('ring')); b.setVelocityY(Math.min(b.velocity.y, -160)); s.boost = 700; }
         else { b.setVelocityY(-400 * self.f('ring')); }
         GP.Sfx.play('select');
-        r.color = r.color === 'red' ? 'blue' : 'red'; r.img.setTint(self.rcolors[r.color]);
+        r.color = r.color === 'red' ? 'blue' : 'red'; r.img.setTexture('lv_anneau_' + r.color); if (r.halo) r.halo.setTint(self.rcolors[r.color]);
       }
     });
     this.aligns.forEach(function (a) {
@@ -409,6 +441,16 @@ GP.Dangers.prototype = {
       var w = Math.max(1, m.w * m.p), vis = m.p > 0.02;
       m.body.setSize(w, 9).setVisible(vis); m.edge.setSize(w, 2).setVisible(vis);
     });
+
+    // bornes de couleur : marcher dessus allume les passerelles de sa couleur ; sous la pluie le bleu revient après 5 s
+    if (this.cplats.length) {
+      this.cbornes.forEach(function (r) { if (Math.abs(p.x - r.x) < 9 && Math.abs(b.bottom - r.floor) < 6 && self.ccolor !== r.color) { self.setColor(r.color); GP.Sfx.play('confirm'); } });
+      if (this.ctimer > 0) {
+        this.ctimer -= dt;
+        if (this.ctimer <= 0) self.setColor(this.cstart);
+        else if (this.ctimer < 1500) this.cplats.forEach(function (q) { if (q.color === self.ccolor) q.img.setAlpha(GP.reducedMotion ? 0.55 : (Math.floor(self.ctimer / 100) % 2 ? 1 : 0.35)); });
+      }
+    }
 
     // dalles de verre
     this.glasses.forEach(function (c) {

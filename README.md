@@ -21,7 +21,7 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
 | ![Île Feydeau](docs/screenshots/niveau-feydeau.png) | ![Place Graslin](docs/screenshots/niveau-graslin.png) |
 | **6 · Machines de l'île** : rails qui entraînent, jets de vapeur, petits robots qui poursuivent | **7 · Parc des Chantiers** : conteneurs qui tombent de la grue (l'ombre prévient), chariots |
 | ![Machines de l'île](docs/screenshots/niveau-machines.png) | ![Parc des Chantiers](docs/screenshots/niveau-chantiers.png) |
-| **8 · Anneaux de Buren** : anneaux d'élan, à aligner pour faire apparaître le paysage | **9 · Hangar à Bananes** : les pixels pourrissent, la moisissure gagne du terrain |
+| **8 · Anneaux de Buren** : des **bornes de couleur** allument les passerelles néon de leur couleur au-dessus de la Loire | **9 · Hangar à Bananes** : les pixels pourrissent, la moisissure gagne du terrain |
 | ![Anneaux de Buren](docs/screenshots/niveau-buren.png) | ![Hangar à Bananes](docs/screenshots/niveau-hangar.png) |
 | **10 · Mémorial** : sobre, sans ennemi : une stèle à lire, une porte de lumière, du verre qui se fissure | **11 · Passage Pommeraye** : l'escalier monumental, la verrière, les ponts de verre |
 | ![Mémorial](docs/screenshots/niveau-memorial.png) | ![Passage Pommeraye](docs/screenshots/niveau-pommeraye.png) |
@@ -56,13 +56,13 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
   | Place Graslin | notes de Muse plus lentes | projecteurs plus rapides | parasols : rebond plus haut |
   | Machines de l'île | jets plus courts | robots plus rapides | tapis plus vifs |
   | Parc des Chantiers | cale plus vive | chariots plus rapides | conteneurs plus fréquents |
-  | Anneaux de Buren | élan réduit (−8 %) | élan renforcé (+8 %) | |
+  | Anneaux de Buren | la couleur d'une borne ne reste allumée que 5 s | | |
   | Hangar à Bananes | pixels plus lents à pourrir, moisissure plus vive | pixels plus rapides à pourrir, moisissure plus lente | |
   | Mémorial | marée un peu plus haute, verre plus fragile | marée basse, verre qui revient vite | |
   | Passage Pommeraye | verre plus fragile | verre qui revient plus vite | |
   | Tour LU | tapis plus vifs | jets de vapeur plus longs | parasol : rebond plus haut |
 - **Un décor propre à chaque lieu** : le **Jardin des Plantes** est un vrai parc (rangées d'arbres, magnolias, massifs, hortensias, hautes herbes) où l'on croise des silhouettes colorées inspirées des sculptures de l'été au jardin ; le **Château** se traverse de la cour, avec ses tours de schiste et son logis blanc en tuffeau, jusqu'aux **salles intérieures** (châtelet aux herses, puis salle des gardes avec sa cheminée). Tout est dessiné par code, sans image externe.
-- **Un danger propre à chaque lieu** : ronces et mauvaises herbes au Jardin, gargouilles à la Cathédrale, esprits de la garde au Château, eau qui monte et visages menteurs à l'Île Feydeau, Muses qui lancent des notes et projecteurs à Graslin, jets et petits robots aux Machines, conteneurs qui tombent aux Chantiers, anneaux à aligner à Buren, pourriture des pixels et moisissure au Hangar, une stèle à lire et rien d'hostile au Mémorial, verre qui se fissure à la Pommeraye, courant d'air qui allège la gravité à la Tour LU. Un signe (ombre, souffle, tremblement) précède toujours le danger.
+- **Un danger propre à chaque lieu** : ronces et mauvaises herbes au Jardin, gargouilles à la Cathédrale, esprits de la garde au Château, eau qui monte et visages menteurs à l'Île Feydeau, Muses qui lancent des notes et projecteurs à Graslin, jets et petits robots aux Machines, conteneurs qui tombent aux Chantiers, bornes de couleur à Buren, pourriture des pixels et moisissure au Hangar, une stèle à lire et rien d'hostile au Mémorial, verre qui se fissure à la Pommeraye, courant d'air qui allège la gravité à la Tour LU. Un signe (ombre, souffle, tremblement) précède toujours le danger.
 - **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou un des 8 modèles.
 
 ## Les 12 lieux
@@ -77,7 +77,7 @@ L'ordre suit la séquence de la page [« Arpenter la ligne verte »](https://www
 | 5 | Place Graslin | ✅ jouable | **parasols** qui font rebondir, **Muses** qui lancent des notes, **projecteurs** qui balaient, **rideau** à ouvrir en rejouant une séquence |
 | 6 | Machines de l'île (Grand Éléphant) | ✅ jouable | **rails et tapis** qui entraînent, **jets de vapeur** (le souffle prévient), **petits robots** qui poursuivent |
 | 7 | Parc des Chantiers (Grue Titan) | ✅ jouable | **conteneurs qui tombent** (l'ombre prévient), **chariots** qui avancent quand on monte dessus, cale qui entraîne en arrière |
-| 8 | Anneaux de Buren | ✅ jouable | **anneaux d'élan** (rouge : en avant, bleu : en haut), les **aligner** fait apparaître un pont |
+| 8 | Anneaux de Buren | ✅ jouable | **bornes de couleur** (bleu, vert, rouge) qui allument les passerelles de leur couleur ; décor de jour ou de nuit selon la météo, garde-corps du quai |
 | 9 | Hangar à Bananes | ✅ jouable | **pourriture** : chaque pixel est vert, jaune (à récolter), brun, puis s'efface avant de repousser ; **moisissure** qui gagne du terrain sur le sol |
 | 10 | Mémorial de l'abolition de l'esclavage | ✅ jouable | niveau **sobre, sans ennemi** : lire une **stèle** puis rejouer sa séquence (bas, haut) devant une porte de lumière, **verre** qui se fissure, marée calme |
 | 11 | Passage Pommeraye | ✅ jouable | niveau **vertical** : escalier monumental, **verre** de la verrière qui se fissure (0,8 s), lustres qui balancent |

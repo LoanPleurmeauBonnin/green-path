@@ -237,6 +237,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       var b = self.platformBody(img, true); b.enable = false;
       return { img: img, body: b };
     });
+    if (L.railing) for (var rx = 0; rx < L.width; rx++) { var rt = L.top(rx); if (rt >= 13 && rt < 17) this.add.image(rx * 16, rt * 16 - 16, 'lv_gardecorps').setOrigin(0).setDepth(3); }   // garde-corps du quai, en décor
     this.dangers = new GP.Dangers(this);   // esprits, eau qui monte, conteneurs, jets, projecteurs, anneaux, pourriture…
   }
 
@@ -297,6 +298,17 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.events.once('shutdown', unsub);
   }
 
+  /** De nuit, le voile sombre passe devant le décor : pixels et anneaux (néon) passent devant lui pour rester lisibles. */
+  setNuit(nuit) {
+    if (!this.L.nightFond) return;
+    var d = nuit ? 31 : 8;
+    this.pixels.forEach(function (px) { px.img.setDepth(d); });
+    (this.dangers ? this.dangers.rings : []).forEach(function (r) {
+      r.img.setDepth(d);
+      if (r.halo) r.halo.setDepth(nuit ? 30.5 : 7).setAlpha(nuit ? 0.7 : 0.35);
+    });
+  }
+
   /**
    * La météo de Nantes change l'environnement : ciel, pluie, lumière (WeatherFX), puis les règles de jeu
    * (GP.WeatherRules) et les réactions du niveau. Si elle change en cours de partie, on l'annonce.
@@ -306,6 +318,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.weather = st;
     this.sky.set(st);
     this.wx.set(st); this.wxWidget.set(st);
+    this.setNuit(!st.isDay);
     this.env = GP.WeatherRules.env(st);
     this.phy = GP.WeatherRules.physics(this.env, this.TUNE);
     // ronces de pluie : elles poussent (1,2 s, visibles) avant de devenir dangereuses

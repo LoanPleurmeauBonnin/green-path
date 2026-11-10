@@ -426,6 +426,63 @@ GP.LevelArt = (function () {
     P(ctx, 38, 3, or); P(ctx, 38, 4, or);
     return o.cv;
   }
+  /** Anneau néon vu en perspective (ellipse épaisse, cœur blanc, halo) : c1 = couleur, c2 = cœur clair. */
+  function neon(ctx, cx, cy, rx, ry, c1, c2, s, halo) {
+    var steps = Math.ceil(ry * 8);
+    function bande(t, couleur, alpha) {
+      ctx.globalAlpha = alpha; ctx.fillStyle = couleur;
+      for (var a = 0; a < steps; a++) { var ang = a / steps * Math.PI * 2; ctx.fillRect(Math.round(cx + Math.cos(ang) * (rx + t)), Math.round(cy + Math.sin(ang) * (ry + t)), 1, 1); }
+      ctx.globalAlpha = 1;
+    }
+    var g = Math.max(3, Math.round(12 * s)), m = Math.max(1, Math.round(5 * s)), k = Math.max(1, Math.round(2 * s)), t;
+    for (t = -g; t <= g; t++) bande(t, c1, halo === undefined ? 0.13 : halo);
+    for (t = -m; t <= m; t++) bande(t, c1, 1);
+    for (t = -k; t <= k; t++) bande(t, c2, 1);
+  }
+  /** Fond de nuit de Buren (largeur 960, raccord horizontal approximatif) : la Loire, la rive éclairée de Nantes et la file d'anneaux néon qui s'éloigne vers l'horizon. */
+  function drawBuren(jour) {
+    var w = 960, h = 240, o = PA.canvas(w, h), ctx = o.ctx, rnd = PA.rng(77), HOR = 168, x, y, i;
+    var K = jour ? { eau: '#5f9fc9', vague: '#8cc4e0', bat: '#b9a98f', toit: '#d6c8ae', fen: ['#7d8da6', '#9fb0c8'], dome: '#a89877', halo: 0.05, refl: 0.1 }
+                 : { eau: '#141d44', vague: '#26346b', bat: '#1a2349', toit: '#2a3668', fen: ['#f4d35e', '#ffe9a0'], dome: '#222d5c', halo: 0.13, refl: 0.18 };
+    R(ctx, 0, HOR, w, h - HOR, K.eau);                                                                       // eau
+    for (i = 0; i < 110; i++) R(ctx, Math.floor(rnd() * w), HOR + 4 + Math.floor(rnd() * (h - HOR - 6)), 8 + Math.floor(rnd() * 18), 1, K.vague);
+    x = 0;
+    while (x < w) {                                                                                              // rive d'en face : immeubles sombres aux fenêtres allumées
+      var bw = 18 + Math.floor(rnd() * 26), bh = 22 + Math.floor(rnd() * 32);
+      R(ctx, x, HOR - bh, bw, bh, K.bat); R(ctx, x, HOR - bh, bw, 2, K.toit);
+      for (y = HOR - bh + 5; y < HOR - 4; y += 7) for (var wx = x + 3; wx < x + bw - 3; wx += 6) if (rnd() < 0.45) R(ctx, wx, y, 2, 3, rnd() < 0.8 ? K.fen[0] : K.fen[1]);
+      x += bw + Math.floor(rnd() * 4);
+    }
+    PA.disc(ctx, 690, HOR - 40, 15, K.dome); R(ctx, 675, HOR - 40, 31, 40, K.dome); R(ctx, 689, HOR - 60, 2, 8, K.dome);   // une coupole
+    var VPX = 905, VPY = 112, couleurs = [['#3d9bff', '#bfe0ff'], ['#4dff9c', '#c9ffe3'], ['#ff4f66', '#ffc2ca']];
+    for (i = 8; i >= 0; i--) {                                                                                   // du plus loin au plus proche
+      var s = Math.pow(0.78, i), cx = VPX - (VPX - 130) * s, cy = VPY + (HOR - VPY) * s * 0.85, ry = 96 * s, rx = ry * 0.78, c = couleurs[i % 3];
+      ctx.globalAlpha = K.refl; ctx.fillStyle = c[0]; ctx.fillRect(Math.round(cx - 2), HOR, Math.max(2, Math.round(5 * s)), h - HOR); ctx.globalAlpha = 1;     // reflet sur l'eau
+      neon(ctx, cx, cy, rx, ry, c[0], c[1], s, K.halo);
+    }
+    return o.cv;
+  }
+  /** Garde-corps du quai (16×16, se répète) : montants et deux lisses en acier, comme le long de la Loire. */
+  function drawGardeCorps() {
+    var o = PA.canvas(16, 16), ctx = o.ctx, k = GP.PAL.k;
+    R(ctx, 0, 3, 16, 3, k); R(ctx, 0, 4, 16, 1, '#aab4c4');          // main courante
+    R(ctx, 0, 9, 16, 3, k); R(ctx, 0, 10, 16, 1, '#8a94a6');         // lisse basse
+    R(ctx, 6, 2, 4, 14, k); R(ctx, 7, 3, 2, 13, '#6f7a8e'); R(ctx, 7, 3, 1, 13, '#c7ced9');   // montant
+    return o.cv;
+  }
+  /** Anneau de jeu en néon (rouge ou bleu), de face : 44×44, anneau de 36 px au centre. */
+  function drawAnneauJeu(rouge) {
+    var o = PA.canvas(52, 52), ctx = o.ctx;
+    neon(ctx, 26, 26, 17, 17, rouge ? '#ff4f66' : '#3d9bff', rouge ? '#ffd0d6' : '#cfe6ff', 0.9);
+    return o.cv;
+  }
+  /** Halo lumineux rond (sert derrière les anneaux de jeu, en mode additif). */
+  function drawHalo() {
+    var o = PA.canvas(64, 64), ctx = o.ctx, g = ctx.createRadialGradient(32, 32, 2, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,0.9)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 64);
+    return o.cv;
+  }
   /** Note de musique lancée par les Muses du théâtre. */
   function drawNote() {
     var o = PA.canvas(10, 12), ctx = o.ctx, k = GP.PAL.k, y = GP.PAL.y;
@@ -491,6 +548,12 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_tapis', drawTapis(false));
     PA.toTexture(scene, 'lv_tapis_g', drawTapis(true));
     PA.toTexture(scene, 'lv_note', drawNote());
+    PA.toTexture(scene, 'lv_fond_buren_nuit', drawBuren(false));
+    PA.toTexture(scene, 'lv_fond_buren_jour', drawBuren(true));
+    PA.toTexture(scene, 'lv_halo', drawHalo());
+    PA.toTexture(scene, 'lv_gardecorps', drawGardeCorps());
+    PA.toTexture(scene, 'lv_anneau_red', drawAnneauJeu(true));
+    PA.toTexture(scene, 'lv_anneau_blue', drawAnneauJeu(false));
     PA.toTexture(scene, 'lv_tour_lu', drawTourLU());
     PA.toTexture(scene, 'lv_salle_herses', drawSalle(22, false));
     PA.toTexture(scene, 'lv_salle_gardes', drawSalle(20, true));
@@ -557,6 +620,7 @@ GP.LevelArt = (function () {
     o.set = function (st) {
       var kind = skyKind(st), rnd = PA.rng(11), FILE = { day: 'jour', cloudy: 'nuageux', grey: 'gris', storm: 'orage', night: 'nuit' }[kind];
       o.state = st;
+      if (opts.farNightKey && o.far) o.far.setTexture(kind === 'night' ? opts.farNightKey : opts.farKey);   // fond propre au lieu : version de nuit ou de jour
       if (SP) {
         o.bands.forEach(function (im, i) { im.setTexture('ciel_' + FILE + '_' + (i + 1)); });
         var starry = kind === 'night' && st.cloud < 70;

@@ -242,47 +242,52 @@ GP.LEVELS['chantiers'] = (function () {
   return L;
 })();
 
-/** NIVEAU 8 — ANNEAUX DE BUREN : anneaux d'élan (rouge : en avant, bleu : en haut), chaque passage change la couleur ; les aligner fait apparaître le paysage. */
+/** NIVEAU 8 — ANNEAUX DE BUREN : de nuit comme de jour, des bornes de couleur (bleu, vert, rouge) allument les passerelles néon de leur couleur au-dessus de la Loire. */
 GP.LEVELS['buren'] = (function () {
   var L = GP.LevelBuilder.create(150, function (L) {
-    // 1. Le quai des Antilles : premier anneau rouge au-dessus de l'eau
+    // 1. Le quai des Antilles : on apprend la borne ; une île au milieu du bras d'eau porte la borne rouge
     L.ground(0, 18, 3);
     L.start(2);
-    L.hint(3, "SAUTE DANS L'ANNEAU ROUGE : ÉLAN VERS L'AVANT");
-    L.deco(6, 'buren_banc_quai', { depth: 4 }); L.deco(10, 'buren_garde_corps_quai', { depth: 4 });
+    L.hint(3, "MARCHE SUR UNE BORNE : LES PASSERELLES DE SA COULEUR S'ALLUMENT");
+    L.deco(6, 'buren_banc_quai', { depth: 4 });
     L.pix(7, 13); L.pix(12, 13);
+    L.borne(15, 'blue');
     L.pond(18, 27, 15);
-    L.ring(20, 10, 'red');
-    // 2. L'anneau bleu : une impulsion vers le haut pour atteindre une passerelle
+    L.cplat(19, 13, 3, 'blue'); L.ground(23, 2, 3); L.borne(23, 'red'); L.cplat(25, 13, 2, 'red');
+    L.pix(20, 11);
+    // 2. Un escalier vert vers une passerelle en inox (pixels en prime)
     L.ground(27, 48, 3);
     L.check(28);
     L.pix(31, 13); L.pix(35, 13);
-    L.hint(34, 'ANNEAU BLEU : IMPULSION VERS LE HAUT');
-    L.ring(38, 9, 'blue'); L.plat(40, 8, 4); L.pix(41, 7); L.pix(42, 7);
+    L.hint(30, "BORNE VERTE : L'ESCALIER VERT S'ALLUME");
+    L.borne(30, 'green'); L.cplat(33, 12, 3, 'green'); L.cplat(36, 10, 3, 'green'); L.plat(40, 8, 4); L.pix(41, 7); L.pix(42, 7);
     L.pix(46, 13); L.pix(50, 13);
     L.check(48);
-    // 3. L'alignement : trois anneaux de même couleur, et le paysage apparaît
-    L.hint(52, 'ALIGNE LES ANNEAUX (MÊME COULEUR) : UN PONT APPARAÎT');
-    var a = L.ring(58, 9, 'red'), b = L.ring(62, 9, 'blue'), c = L.ring(66, 9, 'red');
-    L.align([a, b, c], 75, 14, 13);
-    L.pond(75, 88, 15);
+    // 3. Le quai se poursuit, puis un grand bras d'eau : bleu, puis vert depuis l'île
     L.pix(60, 13); L.pix(64, 13); L.pix(70, 13);
-    L.pix(80, 13); L.pix(85, 13);
-    // 4. La chaîne d'anneaux au-dessus de la Loire
+    L.hint(68, 'PRENDS LA COULEUR DE LA PROCHAINE PASSERELLE');
+    L.borne(72, 'blue');
+    L.pond(75, 88, 15);
+    L.cplat(76, 13, 3, 'blue'); L.ground(80, 2, 3); L.borne(80, 'green'); L.cplat(83, 12, 3, 'green');
+    L.pix(77, 11); L.pix(84, 10);
+    // 4. La traversée finale de la Loire : bleu, vert, rouge
     L.ground(88, 20, 3);
     L.check(89);
-    L.hint(94, 'ENCHAÎNE LES ANNEAUX ROUGES SANS TOUCHER TERRE');
+    L.hint(94, 'BLEU, PUIS VERT, PUIS ROUGE : UNE BORNE PAR ÎLE');
     L.pix(92, 13); L.pix(100, 13);
+    L.borne(105, 'blue');
     L.pond(108, 124, 15);
-    L.ring(111, 10, 'red'); L.ring(116, 10, 'red'); L.ring(121, 10, 'red');
-    L.pix(111, 10); L.pix(116, 10); L.pix(121, 10);
-    // 5. Le grand envol final
+    L.cplat(109, 13, 3, 'blue'); L.ground(113, 2, 3); L.borne(113, 'green'); L.cplat(116, 12, 3, 'green'); L.ground(120, 2, 3); L.borne(120, 'red'); L.cplat(122, 13, 2, 'red');
+    L.pix(110, 11); L.pix(117, 10); L.pix(122, 11);
+    // 5. Le grand quai final
     L.ground(124, 26, 3);
     L.check(125);
     L.deco(132, 'buren_borne', { depth: 4 }); L.deco(140, 'buren_banc_quai', { depth: 4 });
     L.pix(127, 13); L.pix(131, 13); L.pix(135, 13); L.pix(139, 13); L.pix(144, 13);
   });
   L.id = 'buren';
+  L.railing = true;               // garde-corps le long du quai (décor)
+  L.nightFond = true;             // le fond a une version de jour et une de nuit (néon allumé), selon l'heure de la météo
   L.reveal = 'topDown';
   L.abilities = { crouch: true, grab: true };
   L.skin = {
@@ -290,9 +295,8 @@ GP.LEVELS['buren'] = (function () {
     ledge: ['buren_passerelle_inox_g', 'buren_passerelle_inox_m', 'buren_passerelle_inox_d'], bridge: ['buren_passerelle_inox_g', 'buren_passerelle_inox_m', 'buren_passerelle_inox_d']
   };
   L.thornKey = 'buren_obstacle_bornes_pointes'; L.thornText = 'AÏE, LES BORNES À POINTES !';
-  L.sky = { farKey: 'buren_fond_tile_x', farBottom: 236 };
-  L.wxm = { rain: { ring: 0.92 }, sun: { ring: 1.08 } };
-  L.weatherText = { rain: "L'INOX EST MOUILLÉ : ÉLAN RÉDUIT", sun: "LE SOLEIL CHAUFFE L'INOX : ÉLAN PLUS FORT", wind: 'LE VENT SOUFFLE SUR LA LOIRE' };
+  L.sky = { farKey: 'lv_fond_buren_jour', farNightKey: 'lv_fond_buren_nuit', farBottom: 236 };       // la file d'anneaux néon en perspective, au-dessus de la Loire
+    L.weatherText = { rain: 'LA PLUIE ÉTEINT LES BORNES : LA COULEUR NE DURE QUE 5 S', wind: 'LE VENT SOUFFLE SUR LA LOIRE' };
   return L;
 })();
 
