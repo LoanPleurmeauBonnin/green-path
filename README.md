@@ -11,8 +11,8 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
 | La carte du monde | 1 · Jardin des Plantes |
 |---|---|
 | ![Carte du monde](docs/screenshots/carte.png) | ![Niveau du Jardin des Plantes](docs/screenshots/niveau-jardin.png) |
-| **2 · Château** : s'accroupir sous les flèches (ici sous la pluie) | **3 · Cathédrale** : grimper aux colonnes, s'accrocher aux rebords |
-| ![Château sous la pluie](docs/screenshots/niveau-chateau-pluie.png) | ![Cathédrale](docs/screenshots/niveau-cathedrale.png) |
+| **2 · Cathédrale** : grimper aux colonnes, s'accrocher aux rebords | **3 · Château** : du châtelet aux herses à la salle des gardes, en intérieur |
+| ![Cathédrale](docs/screenshots/niveau-cathedrale.png) | ![Château, salle des herses](docs/screenshots/niveau-chateau.png) |
 | **4 · Bouffay** : les étals bougent | **Sur téléphone, en paysage** |
 | ![Bouffay](docs/screenshots/niveau-bouffay.png) | ![Contrôles tactiles](docs/screenshots/mobile-paysage.png) |
 
@@ -32,6 +32,7 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
   | Grand soleil | Jardin : des fleurs deviennent des plateformes (raccourcis) |
 
   Chaque effet est borné : on peut toujours contrer le vent, et chaque niveau reste finissable (vérifié par script sous pluie, vent et neige).
+- **Un décor propre à chaque lieu** : le **Jardin des Plantes** est un vrai parc (rangées d'arbres, magnolias, massifs, hortensias, hautes herbes) où l'on croise des silhouettes colorées inspirées des sculptures de l'été au jardin ; le **Château** se traverse de la cour, avec ses tours de schiste et son logis blanc en tuffeau, jusqu'aux **salles intérieures** (châtelet aux herses, puis salle des gardes avec sa cheminée). Tout est dessiné par code, sans image externe.
 - **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou un des 8 modèles.
 
 ## Les 12 lieux
@@ -92,13 +93,13 @@ puis http://localhost:8123. **Mode test** : ajouter `?dev=1` à l'adresse (W : m
 - Niveaux 5 à 12 à venir.
 
 ## Stack
-Phaser 3.90 (inclus en local), JavaScript natif en scripts classiques (pas de build, compatible `file://`), police Press Start 2P, résolution 480×270 agrandie sans lissage. Tout le décor vient de planches de sprites en texte (une lettre = une couleur d'une palette de 35) transformées en textures au démarrage. Déploiement statique sur Vercel.
+Phaser 3.90 (inclus en local), JavaScript natif en scripts classiques (pas de build, compatible `file://`), police Press Start 2P, résolution 480×270 agrandie sans lissage. Le décor vient de planches de sprites en texte (une lettre = une couleur d'une palette de 35) transformées en textures au démarrage ; les fonds du Jardin et du Château, les silhouettes, les plantes et les salles intérieures sont dessinés par code (`GP.PixelArt`, `js/systems/LevelArt.js`). Déploiement statique sur Vercel.
 
 ```
 index.html               page, icônes, écran « tournez votre téléphone »
 js/config.js             réglages, palette, mode test (?dev=1)
 js/data/                 locations.js (12 lieux), levels.js (niveaux), sprites/ (planches importées), lang/ (fr.js, en.js)
-js/systems/              I18n (FR/EN), Settings (langue, touches), Controls (clavier réaffectable, manette), Cloud + Account (pseudo, sauvegarde, classement Supabase), Sprites, MapArt (carte), LevelArt (ciel, décor), WeatherManager / WeatherFX / WeatherRules (météo en direct → règles de jeu),
+js/systems/              I18n (FR/EN), Settings (langue, touches), Controls (clavier réaffectable, manette), Cloud + Account (pseudo, sauvegarde, classement Supabase), Sprites, MapArt (carte), LevelArt (ciel, décors, fonds de parc et de château, salles intérieures), WeatherManager / WeatherFX / WeatherRules (météo en direct → règles de jeu),
                          PixelCollection (photo à reconstruire), Save / Progression / Stars, Ui (fenêtres, aide, tactile)
 js/scenes/               Boot, Menu, Character (avatar), Options, Score (classement), Map, Game (moteur de plateforme), Result
 assets/                  police, logo et icônes, photos pixélisées (assets/locations/*.js)
@@ -110,4 +111,5 @@ tools/                   import-sprites.js, pixelize.swift, favicon.swift, compa
 - **Florine RACINE** — UX/UI Designer, Game Design · **Loan PLEURMEAU** — Développeur web, IA Ops (ESD Nantes, atelier PATRIMOINE.EXE).
 - **Usage de l'IA** : le code a été écrit avec Claude Code (Anthropic) sous la direction de l'équipe, qui le relit et sait l'expliquer (des *skills* Phaser, lus avant installation, servent de référence pour éviter les bugs 2D courants) ; les planches de sprites de décor ont été générées avec Claude Design puis importées telles quelles ; le sprite de l'avatar vient du fichier Figma de l'équipe.
 - Photo du Palmarium : Pymouss44, CC BY-SA 3.0, via Wikimedia Commons, recadrée et pixélisée. Données météo : Open-Meteo (CC BY 4.0). Police Press Start 2P (OFL). Phaser (MIT).
+- Silhouettes du Jardin : dessins originaux de l'équipe, **inspirés** des sculptures colorées de l'été au Jardin des Plantes (personnages de Jean Jullien, oiseau en topiaire) ; aucune photo ni image des œuvres n'est reprise.
 - Détails, licences et obligations : [CREDITS.md](CREDITS.md).
