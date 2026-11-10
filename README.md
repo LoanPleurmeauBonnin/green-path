@@ -19,7 +19,7 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
 | **4 · Île Feydeau** : la marée monte, les bateaux s'enfoncent, les visages des façades mentent | **5 · Place Graslin** : les Muses lancent des notes, parasols qui font rebondir, projecteurs, rideau à ouvrir |
 |---|---|
 | ![Île Feydeau](docs/screenshots/niveau-feydeau.png) | ![Place Graslin](docs/screenshots/niveau-graslin.png) |
-| **6 · Machines de l'île** : rails qui entraînent, jets de vapeur, araignées qui se figent quand on les regarde, et le **Grand Éléphant** sur lequel on monte pour traverser le canal | **7 · Parc des Chantiers** : conteneurs qui tombent de la grue (l'ombre prévient), chariots |
+| **6 · Machines de l'île** : rails qui entraînent, jets de vapeur, araignées (au sol ou suspendues à un fil) qui se figent quand on les regarde, et le **Grand Éléphant** sur lequel on monte pour traverser le canal | **7 · Parc des Chantiers** : conteneurs qui tombent de la grue (l'ombre prévient), chariots |
 | ![Machines de l'île](docs/screenshots/niveau-machines.png) | ![Parc des Chantiers](docs/screenshots/niveau-chantiers.png) |
 | **8 · Anneaux de Buren** : des **bornes de couleur** allument les passerelles néon de leur couleur au-dessus de la Loire | **9 · Hangar à Bananes** : les pixels pourrissent, la moisissure gagne du terrain |
 | ![Anneaux de Buren](docs/screenshots/niveau-buren.png) | ![Hangar à Bananes](docs/screenshots/niveau-hangar.png) |
@@ -55,7 +55,7 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
   | Château | esprits de la garde plus lents | esprits plus agités | tonneaux plus rapides |
   | Île Feydeau | la marée monte plus haut | la marée reste basse | les bateaux coulent plus vite |
   | Place Graslin | notes de Muse plus lentes | projecteurs plus rapides | parasols : rebond plus haut |
-  | Machines de l'île | jets plus courts | araignées plus rapides | tapis plus vifs |
+  | Machines de l'île | jets plus courts | araignées plus rapides | |
   | Parc des Chantiers | cale plus vive | chariots plus rapides | conteneurs plus fréquents |
   | Anneaux de Buren | la couleur d'une borne ne reste allumée que 5 s | | |
   | Hangar à Bananes | pixels plus lents à pourrir, moisissure plus vive | pixels plus rapides à pourrir, moisissure plus lente | |

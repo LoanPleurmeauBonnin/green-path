@@ -131,26 +131,25 @@ GP.LEVELS['machines'] = (function () {
     // 1. Le parvis : les rails t'entraînent vers l'avant
     L.ground(0, 30, 3);
     L.start(2);
-    L.hint(3, "LES RAILS T'ENTRAÎNENT VERS LA DROITE");
+    L.hint(3, "LA GALERIE DES MACHINES : AVANCE VERS L'ÉLÉPHANT");
     L.deco(5, 'machines_charpente_module', { depth: 1 });
     L.deco(11, 'lv_carrousel', { depth: 2.5 });                  // le Carrousel des Mondes Marins
-    L.belt(0, 30, 1, 45);
     L.pix(10, 13); L.pix(14, 13); L.pix(18, 13);
     L.thorn(26, 1); L.pix(26, 11);
     L.check(28);
     // 2. La galerie de vapeur : le souffle prévient, puis le jet monte
     L.ground(30, 32, 3);
     L.hint(32, 'LE SOUFFLE PRÉVIENT : ATTENDS, PUIS COURS');
-    L.belt(30, 62, -1, 30);                           // un léger recul pendant qu'on attend le souffle
     L.jet(36, 4, 3200, 0); L.jet(43, 4, 3200, 1600); L.jet(51, 4, 3000, 800); L.jet(57, 4, 3000, 2200);
     L.deco(47, 'lv_arbre_herons', { depth: 2.5 });               // l'Arbre aux Hérons
     L.pix(34, 13); L.pix(40, 13); L.pix(47, 13); L.pix(54, 13); L.pix(60, 13);
     L.check(47);
+    L.hanger(40); L.hanger(54);
+    L.hint(38, "UNE ARAIGNÉE DESCEND : REGARDE-LA POUR LA FIGER OU ACCROUPIS-TOI");
     // 3. L'horlogerie : rails à contre-sens, des robots te poursuivent
     L.ground(62, 38, 3);
     L.hint(64, "LES ARAIGNÉES AVANCENT SI TU NE LES REGARDES PAS");
     L.deco(90, 'lv_gardienne', { depth: 2.5 });                  // la Gardienne des Ténèbres (l'araignée)
-    L.belt(62, 80, -1, 50); L.belt(80, 100, 1, 60);
     L.patrol(66, 76, 'araignee', 40); L.patrol(82, 96, 'araignee', 44);
     L.plat(70, 12, 3); L.pix(71, 11); L.plat(86, 12, 3); L.pix(87, 11);
     L.thorn(78, 1); L.pix(78, 11); L.thorn(94, 1); L.pix(94, 11);
@@ -158,13 +157,12 @@ GP.LEVELS['machines'] = (function () {
     L.check(79);
     // 4. La passerelle : jets sous les coursives
     L.ground(100, 22, 3);
-    L.belt(100, 122, 1, 40);
     L.plat(104, 12, 3); L.pix(105, 11); L.plat(110, 11, 3); L.pix(111, 10); L.plat(116, 12, 3); L.pix(117, 11);
     L.jet(108, 4, 3000, 0); L.jet(114, 4, 3000, 1500);
     L.check(101);
+    L.hanger(120);
     // 5. L'esplanade : le Grand Éléphant traverse le canal, on grimpe sur son dos (croupe, dos, toit, oreille, défenses)
     L.ground(122, 10, 3);
-    L.belt(122, 132, -1, 35);
     L.jet(125, 4, 3600, 0); L.jet(128, 4, 3600, 1800);
     L.patrol(123, 127, 'araignee', 36);
     L.hint(129, "MONTE SUR LE GRAND ÉLÉPHANT : IL TRAVERSE LE CANAL");
@@ -186,9 +184,9 @@ GP.LEVELS['machines'] = (function () {
     ledge: ['machines_passerelle_acier_g', 'machines_passerelle_acier_m', 'machines_passerelle_acier_d'], mover: ['machines_passerelle_acier_g', 'machines_passerelle_acier_m', 'machines_passerelle_acier_d']
   };
   L.thornKey = 'lv_toile'; L.thornText = 'COLLÉ DANS UNE TOILE D\'ARAIGNÉE !';      // des toiles d'araignée au sol
-  L.sky = { farKey: 'machines_fond_tile_x', farBottom: 236 };
-  L.wxm = { rain: { jet: 0.75 }, sun: { enemy: 1.25 }, wind: { belt: 1.3 } };
-  L.weatherText = { rain: 'LA PLUIE REFROIDIT LES JETS : PLUS COURTS', sun: 'LE SOLEIL SURCHAUFFE LES ARAIGNÉES : PLUS RAPIDES', wind: 'LE VENT RELANCE LES TAPIS : PLUS VIFS' };
+  L.sky = { farKey: 'lv_fond_hangar', farBottom: 236 };         // la Galerie des Machines : verrière, portiques de béton, plancher clair
+  L.wxm = { rain: { jet: 0.75 }, sun: { enemy: 1.25 } };
+  L.weatherText = { rain: 'LA PLUIE REFROIDIT LES JETS : PLUS COURTS', sun: 'LE SOLEIL SURCHAUFFE LES ARAIGNÉES : PLUS RAPIDES' };
   return L;
 })();
 

@@ -791,6 +791,37 @@ GP.LevelArt = (function () {
     ell(c, 52, 22, 14, 16, bronzeO); ell(c, 52, 22, 10, 12, bronze); ell(c, 52, 22, 6, 8, bronzeO); ell(c, 52, 22, 3, 4, bronze);   // cheveux en spirale de bélier
     return finir(o.cv);
   }
+  /**
+   * Fond de la Galerie des Machines (480×236, se répète) : grande verrière à treillis d'acier, portiques de béton gris, poutres, ouverture lumineuse avec des arbres au bout, plancher clair.
+   * Dessiné d'après des photos du hangar consultées sur Wikimédia Commons (référence uniquement).
+   */
+  function drawFondHangar() {
+    var w = 480, h = 236, o = PA.canvas(w, h), ctx = o.ctx, rnd = PA.rng(61), acier = '#2f3646', beton = '#8d8678', betonC = '#a69f90', betonO = '#6b6558', x, y, i;
+    var verre = ctx.createLinearGradient(0, 0, 0, 78); verre.addColorStop(0, '#e8f1f8'); verre.addColorStop(1, '#c9dcea'); ctx.fillStyle = verre; ctx.fillRect(0, 0, w, 78);   // verrière
+    for (y = 6; y < 78; y += 14) R(ctx, 0, y, w, 1, acier);                                                         // pannes
+    for (x = 0; x < w; x += 40) for (i = 0; i < 78; i++) { P(ctx, x + Math.floor(i * 0.55), i, acier); P(ctx, x + 40 - Math.floor(i * 0.55), i, acier); }   // treillis en croix
+    R(ctx, 0, 76, w, 4, acier); R(ctx, 0, 80, w, 2, '#4a5268');                                                     // grande poutre
+    R(ctx, 0, 82, w, h - 82, '#a9a294');                                                                           // mur du fond de béton
+    for (x = 0; x < w; x += 4) for (y = 82; y < 188; y += 6) if (rnd() < 0.05) P(ctx, x, y, betonO);                  // grain
+    for (i = 0; i < 2; i++) {                                                                                      // ouverture lumineuse avec arbres, une par demi-largeur
+      var ox = i * 240 + 150;
+      R(ctx, ox, 96, 56, 90, '#e8f1f8'); R(ctx, ox, 96, 56, 4, acier);
+      [[8, 170, 14], [28, 176, 16], [44, 172, 12]].forEach(function (t) { PA.disc(ctx, ox + t[0], t[1], t[2], '#3f8a4f'); PA.disc(ctx, ox + t[0] - 3, t[1] - 3, t[2] * 0.6, '#5fae6a'); });
+      R(ctx, ox, 184, 56, 6, betonO);
+    }
+    for (i = 0; i < 8; i++) {                                                                                      // portiques : poteaux de béton et poutres
+      var px = i * 60 + 6;
+      R(ctx, px, 82, 14, 108, beton); R(ctx, px, 82, 4, 108, betonC); R(ctx, px + 11, 82, 3, 108, betonO);
+      R(ctx, px - 3, 104, 20, 6, betonC); R(ctx, px - 3, 104, 20, 1, '#c8c1b0'); R(ctx, px - 3, 109, 20, 1, betonO);
+    }
+    R(ctx, 0, 100, w, 8, beton); R(ctx, 0, 100, w, 2, betonC); R(ctx, 0, 107, w, 1, betonO);                          // poutre longue
+    R(ctx, 0, 138, w, 5, beton); R(ctx, 0, 138, w, 1, betonC);
+    for (i = 0; i < 4; i++) { var ax = i * 120 + 30; R(ctx, ax, 112, 3, 26, acier); R(ctx, ax + 20, 112, 3, 26, acier); seg(ctx, ax + 2, 112, ax + 22, 138, 2, acier); seg(ctx, ax + 22, 112, ax + 2, 138, 2, acier); }   // contreventements d'acier
+    R(ctx, 0, 190, w, h - 190, '#d6c7a2');                                                                         // plancher clair
+    for (y = 190; y < h; y += 7) R(ctx, 0, y, w, 1, '#bfae88');
+    for (x = 0; x < w; x += 30) R(ctx, x, 190, 1, h - 190, '#bfae88');
+    return o.cv;
+  }
   /** Note de musique lancée par les Muses du théâtre. */
   function drawNote() {
     var o = PA.canvas(10, 12), ctx = o.ctx, k = GP.PAL.k, y = GP.PAL.y;
@@ -866,6 +897,7 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_abribus', drawAbribus());
     PA.toTexture(scene, 'lv_arbre_rue', drawArbreRue());
     PA.toTexture(scene, 'lv_fond_nef', drawFondNef());
+    PA.toTexture(scene, 'lv_fond_hangar', drawFondHangar());
     PA.toTexture(scene, 'lv_elephant', drawElephant());
     PA.toTexture(scene, 'lv_carrousel', drawCarrousel());
     PA.toTexture(scene, 'lv_arbre_herons', drawArbreHerons());

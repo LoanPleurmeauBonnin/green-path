@@ -2,7 +2,7 @@
  * Dangers (GP.Dangers) — mécaniques et ennemis des niveaux 4 à 12 (Feydeau, Graslin, Machines, Chantiers, Buren, Hangar,
  * Mémorial, Pommeraye, Tour LU) et esprits de la garde du Château. Un seul fichier, créé par GameScene.makeMechanics() à partir de la définition du niveau
  * (briques de js/data/levels.js : L.patrol, L.tide, L.boat, L.liar, L.faller, L.jet, L.beam, L.spring, L.seq, L.belt,
- * L.cart, L.ring + L.align, L.borne + L.cplat, L.elephant, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
+ * L.cart, L.ring + L.align, L.borne + L.cplat, L.elephant, L.hanger, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
  *
  *   update(dt)          fait vivre tout ce qui bouge (appelé à chaque image)
  *   input(c)            touches de la dernière image (pour la séquence de danse de Graslin)
@@ -181,6 +181,14 @@ GP.Dangers = function (scene) {
     self.cbornes.forEach(function (r) { if (r.halo) r.halo.setAlpha(r.color === c ? 0.8 : 0.25); });
   };
   if (this.cplats.length) this.setColor(this.cstart);
+
+  // ---------- Araignées suspendues (Machines) : elles descendent du plafond au bout d'un fil quand on ne les regarde pas, se figent si on les regarde, remontent quand on s'éloigne ----------
+  this.hangers = (L.hangers || []).map(function (h) {
+    var x = h.x * 16 + 8, yMin = 30, yMax = h.floor * 16 - 12;                                             // son bas s'arrête à hauteur de tête : accroupi, on passe dessous
+    var thread = scene.add.rectangle(x, 0, 1, yMin, 0xdfe6f0, 1).setOrigin(0.5, 0).setDepth(8);
+    var img = scene.add.image(x, yMin, 'lv_araignee').setOrigin(0.5, 1).setDepth(9);
+    return { x: x, yMin: yMin, yMax: yMax, y: yMin, thread: thread, img: img, frozen: false };
+  });
 
   // ---------- Le Grand Éléphant (Machines) : il traverse le canal d'une rive à l'autre ; on grimpe sur lui par la croupe, le dos, le toit, l'oreille puis les défenses ----------
   this.elephants = (L.elephants || []).map(function (e) {
@@ -463,6 +471,16 @@ GP.Dangers.prototype = {
       m.body.setSize(w, 9).setVisible(vis); m.edge.setSize(w, 2).setVisible(vis);
     });
 
+    // araignées suspendues : descente à 45 px/s si le joueur est proche et ne les regarde pas ; figées s'il les regarde ; remontée à 30 px/s sinon
+    this.hangers.forEach(function (h) {
+      var dxh = Math.abs(p.x - h.x), proche = dxh < 110, regard = h.x > p.x ? !p.flipX : p.flipX;
+      h.frozen = proche && regard;
+      if (proche && !regard) h.y = Math.min(h.yMax, h.y + 45 * self.f('enemy') * k);
+      else if (!proche) h.y = Math.max(h.yMin, h.y - 30 * k);
+      h.img.y = h.y; h.thread.setSize(1, h.y);
+      if (h.frozen) h.img.setTint(0x9fb0d0); else h.img.clearTint();
+    });
+
     // Grand Éléphant : va-et-vient lent (il s'arrête à chaque rive), les plateformes de son dos transportent le joueur
     this.elephants.forEach(function (el) {
       var w = Math.PI * 2 / el.period * 1000, ph = self.t / el.period * Math.PI * 2, kk = 0.5 - 0.5 * Math.cos(ph), v = 0.5 * Math.sin(ph) * w;
@@ -528,6 +546,10 @@ GP.Dangers.prototype = {
       e = this.patrols[i];
       var h = e.kind === 'robot' ? 11 : (e.kind === 'araignee' ? 10 : 14), y = e.kind === 'esprit' ? e.img.y - 16 : e.feet - h;
       if (hit(e.img.x - (e.kind === 'araignee' ? 9 : 5), y, e.kind === 'araignee' ? 18 : 10, h)) return e.kind === 'robot' ? 'UN ROBOT T\'A ATTRAPÉ !' : (e.kind === 'araignee' ? 'UNE ARAIGNÉE T\'A ATTRAPÉE !' : 'UN ESPRIT DE LA GARDE !');
+    }
+    for (i = 0; i < this.hangers.length; i++) {
+      e = this.hangers[i];
+      if (hit(e.x - 9, e.y - 10, 18, 10)) return 'UNE ARAIGNÉE T\'A ATTRAPÉE !';
     }
     for (i = 0; i < this.tides.length; i++) {
       e = this.tides[i];
