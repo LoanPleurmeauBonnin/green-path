@@ -1,8 +1,8 @@
 /**
- * Dangers (GP.Dangers) — mécaniques et ennemis des niveaux de la ville (Feydeau, Graslin, Machines, Chantiers, Buren, Hangar)
- * et esprits de la garde du Château. Un seul fichier, créé par GameScene.makeMechanics() à partir de la définition du niveau
+ * Dangers (GP.Dangers) — mécaniques et ennemis des niveaux 4 à 12 (Feydeau, Graslin, Machines, Chantiers, Buren, Hangar,
+ * Mémorial, Pommeraye, Tour LU) et esprits de la garde du Château. Un seul fichier, créé par GameScene.makeMechanics() à partir de la définition du niveau
  * (briques de js/data/levels.js : L.patrol, L.tide, L.boat, L.liar, L.faller, L.jet, L.beam, L.spring, L.seq, L.belt,
- * L.cart, L.ring + L.align, L.pond, L.rot).
+ * L.cart, L.ring + L.align, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
  *
  *   update(dt)          fait vivre tout ce qui bouge (appelé à chaque image)
  *   input(c)            touches de la dernière image (pour la séquence de danse de Graslin)
@@ -16,9 +16,9 @@ GP.Dangers = function (scene) {
   this.s = scene; this.t = 0;
   function has(k) { return scene.textures.exists(k); }
 
-  // ---------- Ennemis : esprits (patrouille), robots (poursuite), danseurs (barrent le passage) ----------
+  // ---------- Ennemis : esprits (patrouille) et robots (poursuite) ----------
   this.patrols = (L.patrols || []).map(function (p) {
-    var key = { esprit: 'lv_esprit', robot: 'lv_robot', danseur: 'lv_danseur' }[p.kind] || 'lv_esprit';
+    var key = { esprit: 'lv_esprit', robot: 'lv_robot' }[p.kind] || 'lv_esprit';
     var feet = (p.y + 1) * 16, img = scene.add.image(p.x0 * 16 + 8, feet, key).setOrigin(0.5, 1).setDepth(9);
     if (p.kind === 'esprit') img.setAlpha(0.85);
     return { img: img, x0: p.x0 * 16 + 8, x1: p.x1 * 16 + 8, feet: feet, kind: p.kind, speed: p.speed || 30, dir: 1, pause: 0, home: p.x0 * 16 + 8, bob: p.x0 * 97 };
@@ -101,7 +101,7 @@ GP.Dangers = function (scene) {
 
   // ---------- Tapis et rouages : le sol entraîne le joueur ----------
   this.belts = (L.belts || []).map(function (b) {
-    var y = L.top(b.x0) * 16, strip = scene.add.tileSprite(b.x0 * 16, y, (b.x1 - b.x0) * 16, 8, 'lv_tapis').setOrigin(0, 0).setDepth(6);
+    var y = L.top(b.x0) * 16, strip = scene.add.tileSprite(b.x0 * 16, y, (b.x1 - b.x0) * 16, 8, b.dir < 0 ? 'lv_tapis_g' : 'lv_tapis').setOrigin(0, 0).setDepth(6);
     return { def: b, strip: strip };
   });
 
@@ -120,8 +120,11 @@ GP.Dangers = function (scene) {
   var RC = { red: 0xff6b5b, blue: 0x6ea8ff };
   this.rcolors = RC;
   this.rings = (L.rings || []).map(function (r) {
-    var key = has('buren_mat_anneau_petit') ? 'buren_mat_anneau_petit' : 'lv_rock';
-    var img = scene.add.image(r.x * 16 + 8, r.y * 16 + 8, key).setDepth(8).setTint(RC[r.color] || RC.red);
+    var key = has('buren_mat_anneau_petit') ? 'buren_mat_anneau_petit' : 'lv_rock', cx = r.x * 16 + 8, cy = r.y * 16 + 8;
+    var col = L.top(r.x) < 17 ? L.top(r.x) * 16 : H;                       // le mât est planté dans le sol, ou au fond de l'eau
+    scene.add.rectangle(cx, cy + 10, 4, col - cy - 10, 0x8a94a6, 1).setOrigin(0.5, 0).setDepth(7);
+    scene.add.rectangle(cx - 1, cy + 10, 1, col - cy - 10, 0xc7ced9, 1).setOrigin(0.5, 0).setDepth(7);
+    var img = scene.add.image(cx, cy, key).setOrigin(0.5, 10 / 64).setCrop(0, 0, 24, 20).setDepth(8).setTint(RC[r.color] || RC.red);   // seule la partie « anneau » du sprite
     return { img: img, x: img.x, y: img.y, color: r.color || 'red', cool: 0 };
   });
   this.aligns = (L.aligns || []).map(function (a) {
@@ -129,6 +132,53 @@ GP.Dangers = function (scene) {
     var img = scene.add.image(a.bridge.x * 16, a.bridge.y * 16, set ? scene.rowTexture('lv_align_' + a.bridge.x, set, n) : 'lv_tileset').setOrigin(0, 0).setDepth(9).setAlpha(0);
     var body = scene.platformBody(img, true); body.enable = false;
     return { def: a, img: img, body: body, shown: false };
+  });
+
+  // ---------- Muses du théâtre : la statue s'éclaire 0,5 s, puis lance une note à hauteur de tête ----------
+  this.muses = (L.muses || []).map(function (m) {
+    var floor = L.top(m.x) * 16, x = m.x * 16 + 8;
+    var img = scene.add.image(x, floor, has('graslin_muse_statue') ? 'graslin_muse_statue' : 'lv_rock').setOrigin(0.5, 1).setDepth(8);
+    if (m.dir > 0) img.setFlipX(true);
+    return { x: x, floor: floor, img: img, dir: m.dir || -1, period: m.period || 2600, t: -(m.offset || 0) };
+  });
+  this.notes = [];
+
+  // ---------- Moisissure : une plaque s'étend sur le sol (visible), reste, puis recule ----------
+  this.molds = (L.molds || []).map(function (m) {
+    var floor = L.top(m.x) * 16;
+    var body = scene.add.rectangle(m.x * 16, floor, 1, 9, 0x6a7a2a, 0.95).setOrigin(0, 1).setDepth(10);
+    var edge = scene.add.rectangle(m.x * 16, floor - 7, 1, 2, 0xa9bd4f, 1).setOrigin(0, 1).setDepth(10);
+    return { x: m.x * 16, w: m.w * 16, floor: floor, period: m.period || 8000, t: -(m.offset || 0), body: body, edge: edge, p: 0 };
+  });
+
+  // ---------- Dalles de verre : elles se fissurent 0,8 s après qu'on s'y pose, tombent, et reviennent 3 s plus tard ----------
+  var glassSet = ['memorial_sol_dalle_verre', 'memorial_sol_dalle_verre', 'memorial_sol_dalle_verre'];
+  this.glasses = (L.glasses || []).map(function (g, i) {
+    var img = scene.add.image(g.x * 16, g.y * 16, scene.rowTexture('lv_glass_' + i, glassSet, g.w)).setOrigin(0, 0).setDepth(9).setAlpha(0.92);
+    return { img: img, body: scene.platformBody(img, true), x: img.x, w: g.w * 16, state: 'solid', timer: 0 };
+  });
+
+  // ---------- Mémoire : une stèle à lire, puis une porte de lumière qui s'ouvre si on rejoue la séquence (sans danger) ----------
+  var WORD = { D: 'BAS', J: 'HAUT' };
+  this.memos = (L.memos || []).map(function (q) {
+    var sfl = L.top(q.stele) * 16, sx = q.stele * 16 + 8, gfl = L.top(q.gate) * 16, gx = q.gate * 16 + 8;
+    scene.add.image(sx, sfl, has('memorial_stele_gravee') ? 'memorial_stele_gravee' : 'lv_rock').setOrigin(0.5, 1).setDepth(7);
+    var glow = scene.add.rectangle(sx, sfl - 28, 6, 6, 0xfff3a0, 0.9).setDepth(8);
+    var barrier = scene.add.image(gx, gfl, 'lv_tileset').setOrigin(0.5, 1).setDisplaySize(10, 56).setVisible(false);
+    scene.platformBody(barrier, false);
+    var gate = scene.add.rectangle(gx, gfl, 10, 56, 0xbfe4ff, 0.55).setOrigin(0.5, 1).setDepth(7);
+    var steleTxt = GP.UI.txt(scene, sx, sfl - 44, ' ' + q.pattern.map(function (c) { return WORD[c]; }).join(' - ') + ' ', GP.PAL.y, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 4 } }).setOrigin(0.5, 1).setDepth(40).setAlpha(0);
+    var gateTxt = GP.UI.txt(scene, gx - 24, gfl - 62, '', GP.PAL.w, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 4 } }).setOrigin(0.5, 1).setDepth(40).setAlpha(0);
+    return { sx: sx, gx: gx, gate: gate, barrier: barrier, steleTxt: steleTxt, gateTxt: gateTxt, glow: glow, pattern: q.pattern, idx: 0, open: false };
+  });
+
+  // ---------- Courants d'air ascendants : gravité très allégée (saut jusqu'à 7 tuiles, on flotte) ----------
+  this.drafts = (L.drafts || []).map(function (d) {
+    var x0 = d.x0 * 16, y0 = d.y0 * 16, w = (d.x1 - d.x0) * 16, h = (d.y1 - d.y0) * 16;
+    var col = scene.add.rectangle(x0, y0, w, h, 0x7fe0d0, 0.16).setOrigin(0, 0).setDepth(12);
+    var sparks = [], n = Math.max(5, Math.round(w / 5)), rnd = GP.PixelArt.rng(d.x0 * 31 + d.y0);
+    for (var i = 0; i < n; i++) sparks.push({ r: scene.add.rectangle(x0 + rnd() * w, y0 + rnd() * h, 2, 3, 0xfff3a0, 0.85).setDepth(12), v: 25 + rnd() * 40 });
+    return { x0: x0, x1: x0 + w, y0: y0, y1: y0 + h, col: col, sparks: sparks };
   });
 
   // ---------- Pourriture : chaque pixel vert mûrit, est jaune (récoltable) puis brunit et s'efface ----------
@@ -152,6 +202,7 @@ GP.Dangers.prototype = {
   /** Après une mort : les anneaux retrouvent leur couleur de départ (le pont déjà apparu reste). */
   reset: function () {
     var self = this;
+    this.s.player.body.setGravityY(0);
     (this.s.L.rings || []).forEach(function (r, i) { var o = self.rings[i]; o.color = r.color; o.img.setTint(self.rcolors[r.color]); o.cool = 0; });
   },
 
@@ -160,6 +211,7 @@ GP.Dangers.prototype = {
     this.edge = { left: c.left && !p.left, right: c.right && !p.right, down: c.down && !p.down, jump: c.jump && !p.jump };
     this.prev = { left: !!c.left, right: !!c.right, down: !!c.down, jump: !!c.jump };
     var self = this;
+    this.memoryInput();
     this.seqs.forEach(function (q) {
       if (q.open) return;
       var pl = self.s.player;
@@ -178,6 +230,24 @@ GP.Dangers.prototype = {
     });
   },
 
+  /** Touches pour les portes de mémoire : BAS (↓) et HAUT (saut). */
+  memoryInput: function () {
+    var self = this, e = this.edge, p = this.s.player;
+    this.memos.forEach(function (q) {
+      if (q.open || !(p.x > q.gx - 90 && p.x < q.gx - 6)) return;
+      var got = e.down ? 'D' : e.jump ? 'J' : null;
+      if (!got) return;
+      if (got === q.pattern[q.idx]) {
+        q.idx++; GP.Sfx.play('step');
+        if (q.idx >= q.pattern.length) {
+          q.open = true; q.barrier.body.enable = false; GP.Sfx.play('confirm');
+          self.s.tweens.add({ targets: q.gate, alpha: 0, duration: 600 });
+          self.s.toast('LA PORTE DE LUMIÈRE S\'OUVRE', GP.PAL.g);
+        }
+      } else { q.idx = 0; GP.Sfx.play('error'); self.s.toast('RELIS LA STÈLE ET RECOMMENCE', GP.PAL.o); }
+    });
+  },
+
   update: function (dt) {
     var self = this, s = this.s, p = s.player, b = p.body, k = dt / 1000, H = s.H;
     this.t += dt;
@@ -192,11 +262,10 @@ GP.Dangers.prototype = {
         if (near) { img.x += Math.sign(dx) * sp * k; e.dir = dx > 0 ? 1 : -1; }
         else img.x += Math.sign(e.home - img.x) * Math.min(Math.abs(e.home - img.x), sp * 0.5 * k);
         img.x = Phaser.Math.Clamp(img.x, e.x0, e.x1);
-      } else if (e.pause > 0) { e.pause -= dt; }
-      else {
+      } else {
         img.x += e.dir * sp * k;
-        if (img.x > e.x1) { img.x = e.x1; e.dir = -1; if (e.kind === 'danseur') e.pause = 700; }
-        else if (img.x < e.x0) { img.x = e.x0; e.dir = 1; if (e.kind === 'danseur') e.pause = 700; }
+        if (img.x > e.x1) { img.x = e.x1; e.dir = -1; }
+        else if (img.x < e.x0) { img.x = e.x0; e.dir = 1; }
       }
       img.setFlipX(e.dir < 0);
       img.y = e.feet - (e.kind === 'esprit' && !GP.reducedMotion ? 3 + Math.sin(e.bob / 400) * 3 : 0);
@@ -306,7 +375,7 @@ GP.Dangers.prototype = {
       if (Math.abs(p.x - r.x) < 8 && Math.abs((b.y + 8) - r.y) < 26) {
         r.cool = 700;
         var dir = b.velocity.x < -5 ? -1 : 1;
-        if (r.color === 'red') { b.setVelocityX(dir * 250 * self.f('ring')); b.setVelocityY(Math.min(b.velocity.y, -110)); s.boost = 700; }
+        if (r.color === 'red') { b.setVelocityX(dir * 250 * self.f('ring')); b.setVelocityY(Math.min(b.velocity.y, -160)); s.boost = 700; }
         else { b.setVelocityY(-400 * self.f('ring')); }
         GP.Sfx.play('select');
         r.color = r.color === 'red' ? 'blue' : 'red'; r.img.setTint(self.rcolors[r.color]);
@@ -317,6 +386,58 @@ GP.Dangers.prototype = {
       var all = a.def.rings.every(function (i) { return self.rings[i].color === self.rings[a.def.rings[0]].color; });
       if (all) { a.shown = true; a.body.enable = true; s.tweens.add({ targets: a.img, alpha: 0.95, duration: 600 }); GP.Sfx.play('unlock'); s.toast('LES ANNEAUX SONT ALIGNÉS : LE PAYSAGE APPARAÎT !', GP.PAL.g); }
     });
+
+    // Muses et notes (à hauteur de tête : s'accroupir ou sauter les évite)
+    this.muses.forEach(function (m) {
+      m.t += dt;
+      var ph = ((m.t % m.period) + m.period) % m.period;
+      if (m.t >= 0 && ph > m.period - 500) m.img.setTint(0xf4d35e); else m.img.clearTint();
+      if (m.t >= 0 && ph < dt) self.notes.push({ img: s.add.image(m.x + m.dir * 9, m.floor - 17, 'lv_note').setDepth(9), vx: m.dir * 85, life: 11 * 16 / 85 * 1000 });
+    });
+    this.notes = this.notes.filter(function (n) {
+      var sp = self.f('note');
+      n.img.x += n.vx * sp * k; n.life -= dt * sp;
+      if (n.life <= 0 || s.solidAt(n.img.x + (n.vx > 0 ? 5 : -5), n.img.y)) { n.img.destroy(); return false; }
+      return true;
+    });
+
+    // moisissure
+    this.molds.forEach(function (m) {
+      m.t += dt * self.f('mold');
+      var ph = ((m.t % m.period) + m.period) % m.period / m.period;
+      m.p = ph < 0.35 ? ph / 0.35 : ph < 0.65 ? 1 : (1 - ph) / 0.35;
+      var w = Math.max(1, m.w * m.p), vis = m.p > 0.02;
+      m.body.setSize(w, 9).setVisible(vis); m.edge.setSize(w, 2).setVisible(vis);
+    });
+
+    // dalles de verre
+    this.glasses.forEach(function (c) {
+      var on = c.state === 'solid' && b.touching.down && b.bottom <= c.img.y + 2 && b.right > c.img.x && b.x < c.img.x + c.w;
+      if (on) { c.state = 'cracking'; c.timer = 800 * self.f('glass'); GP.Sfx.play('step'); c.img.setTint(0xd8ecff); }
+      if (c.state === 'cracking') {
+        c.timer -= dt; c.img.x = c.x + (GP.reducedMotion ? 0 : (Math.floor(c.timer / 60) % 2 ? 1 : -1));
+        if (c.timer <= 0) { c.state = 'gone'; c.timer = 3000 * self.f('glassback'); c.body.enable = false; c.img.x = c.x; s.tweens.add({ targets: c.img, alpha: 0, y: c.img.y + 8, duration: 220 }); }
+      } else if (c.state === 'gone') {
+        c.timer -= dt;
+        if (c.timer <= 0) { c.state = 'solid'; c.body.enable = true; s.tweens.killTweensOf(c.img); c.img.setAlpha(0.92).clearTint().setPosition(c.x, c.body.y); }
+      }
+    });
+
+    // mémoire : la séquence apparaît près de la stèle, un point d'interrogation près de la porte
+    this.memos.forEach(function (q) {
+      var nearS = Math.abs(p.x - q.sx) < 70, nearG = !q.open && p.x > q.gx - 90 && p.x < q.gx - 6;
+      q.steleTxt.setAlpha(nearS ? 1 : 0);
+      if (nearG) q.gateTxt.setText(' ' + q.pattern.map(function (c, i) { return i < q.idx ? '*' : '?'; }).join(' ') + ' ');
+      q.gateTxt.setAlpha(nearG ? 1 : 0);
+    });
+
+    // courants d'air : la gravité est allégée de moitié dedans
+    var inDraft = false;
+    this.drafts.forEach(function (d) {
+      if (p.x > d.x0 && p.x < d.x1 && p.y > d.y0 && p.y < d.y1 + 16) inDraft = true;
+      d.sparks.forEach(function (sp) { sp.r.y -= sp.v * k; if (sp.r.y < d.y0) sp.r.y = d.y1; });
+    });
+    if (this.drafts.length) b.setGravityY(inDraft ? -600 : 0);
 
     // pourriture des pixels
     if (s.L.rot) s.pixels.forEach(function (px) {
@@ -335,8 +456,8 @@ GP.Dangers.prototype = {
     var i, e, b = this.s.player.body, H = this.s.H;
     for (i = 0; i < this.patrols.length; i++) {
       e = this.patrols[i];
-      var w = e.kind === 'danseur' ? 10 : 10, h = e.kind === 'robot' ? 11 : e.kind === 'danseur' ? 22 : 14, y = e.kind === 'esprit' ? e.img.y - 16 : e.feet - h;
-      if (hit(e.img.x - w / 2, y, w, h)) return e.kind === 'robot' ? 'UN ROBOT T\'A ATTRAPÉ !' : e.kind === 'danseur' ? 'UN DANSEUR T\'A BOUSCULÉ !' : 'UN ESPRIT DE LA GARDE !';
+      var h = e.kind === 'robot' ? 11 : 14, y = e.kind === 'esprit' ? e.img.y - 16 : e.feet - h;
+      if (hit(e.img.x - 5, y, 10, h)) return e.kind === 'robot' ? 'UN ROBOT T\'A ATTRAPÉ !' : 'UN ESPRIT DE LA GARDE !';
     }
     for (i = 0; i < this.tides.length; i++) {
       e = this.tides[i];
@@ -353,6 +474,14 @@ GP.Dangers.prototype = {
     for (i = 0; i < this.beams.length; i++) {
       e = this.beams[i];
       if (hit(e.x - 5, 24, 10, H - 24)) return 'LA LUMIÈRE T\'A REPÉRÉ !';
+    }
+    for (i = 0; i < this.notes.length; i++) {
+      e = this.notes[i].img;
+      if (hit(e.x - 4, e.y - 5, 8, 10)) return 'UNE NOTE DE MUSIQUE ! ACCROUPIS-TOI';
+    }
+    for (i = 0; i < this.molds.length; i++) {
+      e = this.molds[i];
+      if (e.p > 0.25 && hit(e.x, e.floor - 9, e.w * e.p, 9)) return 'DE LA MOISISSURE ! CONTOURNE-LA';
     }
     return null;
   }

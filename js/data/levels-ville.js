@@ -1,7 +1,7 @@
 /**
  * Niveaux de la ville : Île Feydeau, Place Graslin, Machines de l'île, Parc des Chantiers, Anneaux de Buren, Hangar à Bananes.
  * Même constructeur que js/data/levels.js (L.ground, L.plat, L.pix…), plus les briques de js/systems/Dangers.js :
- *   L.patrol(x0, x1, 'esprit' | 'robot' | 'danseur', vitesse)   L.tide(x0, x1, ligne basse, ligne haute, période)   L.boat(x, y, w)
+ *   L.patrol(x0, x1, 'esprit' | 'robot', vitesse)   L.muse(x, sens, période, décalage)   L.mold(x, w, période, décalage)   L.glass(x, y, w)   L.memo(stèle, porte, 'DJD')   L.draft(x0, x1, y0, y1)   L.tide(x0, x1, ligne basse, ligne haute, période)   L.boat(x, y, w)
  *   L.liar(x, y, texte)  L.faller(x, y, période, décalage)  L.jet(x, hauteur, période, décalage)  L.beam(x0, x1, vitesse)
  *   L.spring(x)  L.seq(x, 'LRD')  L.belt(x0, x1, sens, vitesse)  L.cart(x, y, w, dx)  L.ring(x, y, couleur)  L.align([anneaux], x, y, w)
  *   L.pond(x0, x1, ligne)  L.rotting()
@@ -75,22 +75,22 @@ GP.LEVELS['feydeau'] = (function () {
   return L;
 })();
 
-/** NIVEAU 5 — PLACE GRASLIN : danseurs masqués qui barrent la place, parasols qui font rebondir, projecteurs, rideau à ouvrir. */
+/** NIVEAU 5 — PLACE GRASLIN : les Muses du théâtre lancent des notes, parasols qui font rebondir, projecteurs, rideau à ouvrir. */
 GP.LEVELS['graslin'] = (function () {
   var L = GP.LevelBuilder.create(132, function (L) {
-    // 1. La place et ses terrasses : un danseur masqué, un premier parasol
+    // 1. La place et ses terrasses : une Muse lance des notes, un premier parasol
     L.ground(0, 34, 3);
     L.start(2);
-    L.hint(3, 'UN DANSEUR MASQUÉ BARRE LA PLACE : SAUTE-LE');
+    L.hint(3, 'LES MUSES LANCENT DES NOTES : ACCROUPIS-TOI OU SAUTE');
     L.deco(5, 'graslin_table_cafe', { depth: 4 }); L.deco(9, 'graslin_lampadaire_ornemente', { depth: 3 }); L.deco(29, 'graslin_table_cafe', { depth: 4 });
-    L.patrol(8, 18, 'danseur', 38);
+    L.muse(16, -1, 2800, 0);                           // une Muse de la place lance ses notes vers toi
     L.pix(6, 13); L.pix(13, 11); L.pix(17, 13);
     L.hint(20, 'LE PARASOL FAIT REBONDIR : SAUTE DESSUS');
     L.spring(22); L.plat(25, 10, 4); L.pix(26, 9); L.pix(27, 9);
     L.check(31);
-    // 2. Le perron : trois marches, trois danseurs
+    // 2. Le perron : trois marches, trois Muses
     L.ground(34, 8, 3); L.ground(42, 8, 4); L.ground(50, 8, 5);
-    L.patrol(35, 41, 'danseur', 34); L.patrol(43, 49, 'danseur', 40); L.patrol(51, 57, 'danseur', 36);
+    L.muse(41, -1, 2500, 0); L.muse(49, -1, 2500, 900); L.muse(57, -1, 2500, 1700);
     L.pix(38, 13); L.pix(46, 12); L.pix(54, 11); L.pix(44, 10); L.pix(52, 9);
     // 3. Le portique : un parasol vers la corniche, puis les projecteurs balaient la nef
     L.ground(58, 72, 6);
@@ -102,11 +102,11 @@ GP.LEVELS['graslin'] = (function () {
     L.beam(77, 89, 0.45); L.beam(91, 103, 0.55);
     L.pix(78, 10); L.pix(82, 10); L.pix(86, 10); L.pix(93, 10); L.pix(97, 10); L.pix(100, 8);
     L.check(105);
-    // 4. Le rideau : rejouer la séquence pour entrer sur scène, dernier danseur
+    // 4. Le rideau : rejouer la séquence pour entrer sur scène, dernière Muse
     L.hint(107, 'REJOUE LA SÉQUENCE : < > V');
     L.seq(111, 'LRD');
     L.deco(122, 'graslin_muse_statue', { depth: 3 });
-    L.patrol(114, 125, 'danseur', 44);
+    L.muse(125, -1, 2300, 0);
     L.pix(113, 10); L.pix(117, 10); L.plat(118, 8, 3); L.pix(119, 7); L.pix(122, 10); L.pix(127, 10);
   });
   L.id = 'graslin';
@@ -120,8 +120,8 @@ GP.LEVELS['graslin'] = (function () {
   L.thornKey = 'graslin_obstacle_chaises'; L.thornText = 'AÏE, DES CHAISES RENVERSÉES !';
   L.sky = { farKey: 'graslin_fond_tile_x', farBottom: 236 };
   L.backdrop = { x: 120, key: 'graslin_theatre_facade', scale: 1, tint: false };
-  L.wxm = { rain: { enemy: 0.75 }, sun: { beam: 1.25 }, wind: { spring: 1.1 } };
-  L.weatherText = { rain: 'LES DANSEURS GLISSENT : PLUS LENTS', sun: 'LES PROJECTEURS BALAIENT PLUS VITE', wind: 'LE VENT GONFLE LES PARASOLS : REBOND PLUS HAUT' };
+  L.wxm = { rain: { note: 0.75 }, sun: { beam: 1.25 }, wind: { spring: 1.1 } };
+  L.weatherText = { rain: 'LA PLUIE ÉTOUFFE LES NOTES : PLUS LENTES', sun: 'LES PROJECTEURS BALAIENT PLUS VITE', wind: 'LE VENT GONFLE LES PARASOLS : REBOND PLUS HAUT' };
   return L;
 })();
 
@@ -133,13 +133,14 @@ GP.LEVELS['machines'] = (function () {
     L.start(2);
     L.hint(3, "LES RAILS T'ENTRAÎNENT VERS LA DROITE");
     L.deco(5, 'machines_charpente_module', { depth: 1 }); L.deco(16, 'machines_engrenage_grand', { depth: 3 });
-    L.belt(8, 20, 1, 50);
+    L.belt(0, 30, 1, 45);
     L.pix(10, 13); L.pix(14, 13); L.pix(18, 13);
     L.thorn(26, 1); L.pix(26, 11);
     L.check(28);
     // 2. La galerie de vapeur : le souffle prévient, puis le jet monte
     L.ground(30, 32, 3);
     L.hint(32, 'LE SOUFFLE PRÉVIENT : ATTENDS, PUIS COURS');
+    L.belt(30, 62, -1, 30);                           // un léger recul pendant qu'on attend le souffle
     L.jet(36, 4, 3200, 0); L.jet(43, 4, 3200, 1600); L.jet(51, 4, 3000, 800); L.jet(57, 4, 3000, 2200);
     L.deco(40, 'machines_tuyau_cuivre', { depth: 3 }); L.deco(54, 'machines_tuyau_cuivre', { depth: 3 });
     L.pix(34, 13); L.pix(40, 13); L.pix(47, 13); L.pix(54, 13); L.pix(60, 13);
@@ -147,7 +148,7 @@ GP.LEVELS['machines'] = (function () {
     // 3. L'horlogerie : rails à contre-sens, des robots te poursuivent
     L.ground(62, 38, 3);
     L.hint(64, 'LES ROBOTS TE POURSUIVENT : SAUTE-LES');
-    L.belt(64, 76, -1, 50); L.belt(80, 92, 1, 60);
+    L.belt(62, 80, -1, 50); L.belt(80, 100, 1, 60);
     L.patrol(66, 76, 'robot', 40); L.patrol(82, 96, 'robot', 44);
     L.plat(70, 12, 3); L.pix(71, 11); L.plat(86, 12, 3); L.pix(87, 11);
     L.thorn(78, 1); L.pix(78, 11); L.thorn(94, 1); L.pix(94, 11);
@@ -155,16 +156,19 @@ GP.LEVELS['machines'] = (function () {
     L.check(79);
     // 4. La passerelle : jets sous les coursives
     L.ground(100, 22, 3);
+    L.belt(100, 122, 1, 40);
     L.plat(104, 12, 3); L.pix(105, 11); L.plat(110, 11, 3); L.pix(111, 10); L.plat(116, 12, 3); L.pix(117, 11);
     L.jet(108, 4, 3000, 0); L.jet(114, 4, 3000, 1500);
     L.check(101);
     // 5. L'esplanade du Grand Éléphant : les jets de sa trompe, un dernier robot
     L.ground(122, 20, 3);
+    L.belt(122, 142, -1, 35);
     L.deco(136, 'machines_animal_mecanique', { depth: 3 });
     L.jet(128, 4, 3600, 0); L.jet(131, 4, 3600, 1800);
     L.patrol(123, 127, 'robot', 36);
     L.pix(124, 13); L.pix(126, 11); L.pix(134, 13); L.pix(138, 13); L.pix(139, 11);
     L.check(122);
+    for (var px = 1; px < 142; px += 2) L.deco(px, 'machines_tuyau_cuivre', { depth: 2, dy: -112 });   // grands tuyaux de cuivre, en continu au-dessus du niveau
   });
   L.id = 'machines';
   L.maxTime = 200;
@@ -270,8 +274,8 @@ GP.LEVELS['buren'] = (function () {
     L.hint(94, 'ENCHAÎNE LES ANNEAUX ROUGES SANS TOUCHER TERRE');
     L.pix(92, 13); L.pix(100, 13);
     L.pond(108, 124, 15);
-    L.ring(111, 10, 'red'); L.ring(116, 11, 'red'); L.ring(121, 12, 'red');
-    L.pix(111, 10); L.pix(116, 11); L.pix(121, 12);
+    L.ring(111, 10, 'red'); L.ring(116, 10, 'red'); L.ring(121, 10, 'red');
+    L.pix(111, 10); L.pix(116, 10); L.pix(121, 10);
     // 5. Le grand envol final
     L.ground(124, 26, 3);
     L.check(125);
@@ -292,7 +296,7 @@ GP.LEVELS['buren'] = (function () {
   return L;
 })();
 
-/** NIVEAU 9 — HANGAR À BANANES : la pourriture. Chaque pixel mûrit : vert, puis jaune (récoltable), puis brun, puis il s'efface avant de repousser. */
+/** NIVEAU 9 — HANGAR À BANANES : la pourriture. Chaque pixel mûrit (vert, jaune récoltable, brun, effacé) et la moisissure gagne du terrain sur le sol. */
 GP.LEVELS['hangar'] = (function () {
   var L = GP.LevelBuilder.create(140, function (L) {
     L.rotting(true);
@@ -317,7 +321,8 @@ GP.LEVELS['hangar'] = (function () {
     // 3. La halle : de la tôle coupante pourrie, des pixels à cueillir entre deux
     L.ground(63, 37, 3);
     L.deco(70, 'hangar_hangar_facade', { depth: 1 }); L.deco(88, 'hangar_conteneur_rouge', { depth: 3 });
-    L.thorn(68, 3); L.pix(69, 11); L.thorn(76, 2); L.pix(76, 11); L.thorn(84, 3); L.pix(85, 11); L.thorn(92, 2); L.pix(92, 11);
+    L.mold(66, 5, 8000, 0); L.mold(76, 4, 8000, 2500); L.mold(86, 5, 8000, 5000); L.mold(94, 4, 8000, 1200);   // la moisissure gagne du terrain, puis recule
+    L.pix(69, 11); L.pix(76, 11); L.pix(85, 11); L.pix(92, 11);
     L.pix(72, 13); L.pix(80, 13); L.pix(88, 13); L.pix(96, 13);
     L.check(78);
     // 4. Les palettes en hauteur
@@ -339,7 +344,186 @@ GP.LEVELS['hangar'] = (function () {
   };
   L.thornKey = 'hangar_obstacle_tole_coupante'; L.thornText = 'AÏE, DE LA TÔLE COUPANTE !';
   L.sky = { farKey: 'hangar_fond_tile_x', farBottom: 236 };
-  L.wxm = { sun: { rot: 1.3 }, rain: { rot: 0.8 } };
-  L.weatherText = { sun: 'LA CHALEUR FAIT POURRIR PLUS VITE', rain: "L'HUMIDITÉ RALENTIT LA POURRITURE" };
+  L.wxm = { sun: { rot: 1.3, mold: 0.8 }, rain: { rot: 0.8, mold: 1.3 } };
+  L.weatherText = { sun: 'LA CHALEUR FAIT POURRIR LES PIXELS PLUS VITE', rain: "L'HUMIDITÉ FAIT POUSSER LA MOISISSURE" };
+  return L;
+})();
+
+/** NIVEAU 10 — MÉMORIAL DE L'ABOLITION DE L'ESCLAVAGE : sobre et sans ennemi. On lit une stèle, puis on rejoue sa séquence (BAS, HAUT) devant une porte de lumière ; dalles de verre qui se fissurent, marée calme. */
+GP.LEVELS['memorial'] = (function () {
+  var L = GP.LevelBuilder.create(176, function (L) {
+    // 1. L'esplanade du quai de la Fosse : lire la première stèle
+    L.ground(0, 36, 3);
+    L.start(2);
+    L.hint(3, 'ICI, ON SE SOUVIENT : PRENDS TON TEMPS');
+    L.deco(5, 'memorial_banc_beton', { depth: 4 }); L.deco(9, 'memorial_lampadaire_sobre', { depth: 3 }); L.deco(30, 'memorial_lampadaire_sobre', { depth: 3 }); L.deco(20, 'memorial_banc_beton', { depth: 4 });
+    L.pix(7, 13); L.pix(11, 13); L.pix(18, 13);
+    L.hint(12, 'LA STÈLE GARDE UNE SÉQUENCE : RETIENS-LA');
+    L.memo(15, 24, 'DJD');
+    L.check(27);
+    L.pix(29, 13);
+    // 2. La descente vers le passage bas : une deuxième séquence, puis des dalles de verre au-dessus de l'eau
+    L.ground(36, 6, 3);
+    L.check(38);
+    L.ground(42, 6, 2);
+    L.ground(48, 8, 1);
+    L.memo(44, 52, 'JJDJ');
+    L.pond(56, 66, 16);
+    L.hint(46, 'LE VERRE SE FISSURE : NE T\'ARRÊTE PAS');
+    L.glass(57, 15, 2); L.glass(61, 15, 3);
+    L.ground(66, 10, 2);
+    L.check(70);
+    L.pix(40, 13); L.pix(46, 14); L.pix(54, 15); L.pix(58, 14); L.pix(62, 14); L.pix(69, 14);
+    // 3. Le couloir de la marée calme : l'eau respire (6 s), les bancs sont au sec
+    L.ground(76, 36, 2);
+    L.hint(78, 'LA MARÉE RESPIRE : MONTE SUR LES BANCS');
+    L.tide(76, 112, 17, 14, 6000);
+    [80, 88, 96, 104].forEach(function (x) { L.plat(x, 13, 3); });
+    L.pix(81, 12); L.pix(97, 12); L.pix(105, 12);
+    L.pix(84, 14); L.pix(92, 14); L.pix(100, 14); L.pix(108, 14);
+    L.check(111);
+    // 4. La traversée des stèles : une longue séquence, puis des dalles de verre
+    L.ground(112, 20, 3);
+    L.memo(114, 126, 'DJJDJ');
+    L.pix(118, 13); L.pix(124, 13);
+    L.check(129);
+    L.pond(132, 147, 15);
+    L.glass(133, 14, 3); L.glass(138, 13, 3); L.glass(143, 14, 3);
+    L.pix(134, 13); L.pix(139, 12); L.pix(144, 13);
+    // 5. La remontée vers la lumière
+    L.ground(147, 6, 3); L.ground(153, 6, 4); L.ground(159, 6, 5); L.ground(165, 11, 6);
+    L.check(148);
+    L.pix(150, 13); L.pix(155, 12); L.pix(161, 11); L.pix(168, 10); L.pix(172, 10);
+    L.hint(166, 'LIBERTÉ');
+  });
+  L.id = 'memorial';
+  L.maxTime = 210;
+  L.reveal = 'bottomUp';
+  L.abilities = { crouch: true, grab: true };
+  L.skin = {
+    top: ['memorial_sol_haut_1', 'memorial_sol_haut_2'], fill: 'memorial_sol_plein', left: 'memorial_sol_gauche', right: 'memorial_sol_droite', block: 'memorial_sol_plein',
+    ledge: ['memorial_passerelle_metal_g', 'memorial_passerelle_metal_m', 'memorial_passerelle_metal_d'], mover: ['memorial_passerelle_metal_g', 'memorial_passerelle_metal_m', 'memorial_passerelle_metal_d']
+  };
+  L.sky = { farKey: 'memorial_fond_tile_x', farBottom: 236 };
+  L.wxm = { rain: { tide: 1, glass: 0.8 }, sun: { tide: -1, glassback: 0.7 } };
+  L.weatherText = { rain: 'LA MARÉE MONTE UN PEU ; LE VERRE CÈDE PLUS VITE', sun: 'LA MARÉE RESTE BASSE ; LE VERRE REVIENT VITE', wind: 'LE VENT SOUFFLE SUR LA LOIRE' };
+  return L;
+})();
+
+/** NIVEAU 11 — PASSAGE POMMERAYE : un niveau vertical sur trois étages reliés par l'escalier monumental ; dalles de verre de la verrière qui se fissurent, lustres qui balancent. */
+GP.LEVELS['pommeraye'] = (function () {
+  var L = GP.LevelBuilder.create(172, function (L) {
+    // 1. La galerie basse : des devantures, un premier lanterneau de verre
+    L.ground(0, 40, 3);
+    L.start(2);
+    L.hint(3, "LE VERRE SE FISSURE : NE T'ARRÊTE PAS");
+    L.deco(6, 'pommeraye_devanture_a', { depth: 1 }); L.deco(14, 'pommeraye_devanture_b', { depth: 1 }); L.deco(24, 'pommeraye_devanture_a', { depth: 1 }); L.deco(36, 'pommeraye_devanture_b', { depth: 1 });
+    L.deco(10, 'pommeraye_pilier_galerie', { depth: 2 }); L.deco(30, 'pommeraye_pilier_galerie', { depth: 2 });
+    L.pix(7, 13); L.pix(8, 13);
+    L.glass(14, 12, 3); L.pix(15, 11);
+    L.glass(20, 11, 3); L.pix(21, 10);
+    L.thorn(27, 2); L.pix(27, 11); L.pix(28, 11);
+    L.check(32);
+    // 2. Le grand escalier : quatre volées, des statues, un lustre qui balance
+    L.ground(40, 8, 4); L.ground(48, 8, 5); L.ground(56, 8, 6); L.ground(64, 8, 7);
+    L.hint(41, 'LES LUSTRES BALANCENT : MONTE DESSUS');
+    L.deco(52, 'pommeraye_statue', { depth: 3 }); L.deco(60, 'pommeraye_statue', { depth: 3 });
+    L.mover(44, 10, 3, 4, 0, 3400);
+    L.pix(42, 12); L.pix(50, 11); L.pix(58, 10); L.pix(66, 9); L.pix(46, 9);
+    L.plat(58, 8, 3); L.pix(59, 7);
+    L.check(49); L.check(56);
+    // 3. La mezzanine : des ponts de verre au-dessus du vide, des balcons en fonte
+    L.ground(64, 22, 7);
+    L.deco(70, 'pommeraye_pilier_galerie', { depth: 2 }); L.deco(80, 'pommeraye_lustre', { depth: 3, dy: -64 });
+    L.pix(74, 9); L.pix(80, 9);
+    L.glass(87, 10, 3); L.glass(92, 10, 3);
+    L.pix(88, 9); L.pix(93, 9);
+    L.ground(96, 36, 7);
+    L.check(98);
+    L.plat(104, 8, 3); L.pix(105, 7);
+    L.mover(112, 7, 3, 5, 0, 3600); L.pix(114, 6);
+    L.pix(100, 9); L.pix(110, 9); L.pix(124, 9);
+    // 4. Sous la verrière : on monte tout en haut, puis un dernier pont de verre
+    L.ground(132, 6, 8); L.ground(138, 6, 9); L.ground(144, 6, 10); L.ground(150, 6, 11);
+    L.check(134);
+    L.pix(135, 7); L.pix(141, 6); L.pix(147, 5); L.pix(152, 4);
+    L.glass(157, 6, 3); L.glass(162, 6, 3);
+    L.pix(158, 5); L.pix(163, 5);
+    L.ground(166, 6, 11);
+    L.pix(168, 4);
+  });
+  L.id = 'pommeraye';
+  L.maxTime = 210;
+  L.reveal = 'bottomUp';
+  L.abilities = { crouch: true, grab: true };
+  L.skin = {
+    top: ['pommeraye_sol_haut_1', 'pommeraye_sol_haut_2'], fill: 'pommeraye_sol_plein', left: 'pommeraye_sol_gauche', right: 'pommeraye_sol_droite', block: 'pommeraye_sol_plein',
+    ledge: ['pommeraye_balcon_galerie_g', 'pommeraye_balcon_galerie_m', 'pommeraye_balcon_galerie_d'], mover: ['pommeraye_balcon_galerie_g', 'pommeraye_balcon_galerie_m', 'pommeraye_balcon_galerie_d']
+  };
+  L.thornKey = 'pommeraye_obstacle_grille_pointes'; L.thornText = 'AÏE, UNE GRILLE À POINTES !';
+  L.sky = { farKey: 'pommeraye_fond_tile_x', farBottom: 236 };
+  L.wxm = { rain: { glass: 0.7 }, sun: { glassback: 0.6 } };
+  L.weatherText = { rain: 'LA PLUIE FRAGILISE LE VERRE : IL CÈDE PLUS VITE', sun: 'LE SOLEIL RÉCHAUFFE LE VERRE : IL REVIENT VITE', wind: 'LE VENT SOUFFLE DANS LA VERRIÈRE' };
+  return L;
+})();
+
+/** NIVEAU 12 — TOUR LU : toutes les mécaniques reprises, puis la nouveauté : le courant d'air ascendant de la coupole (gravité allégée de moitié). Pas de boss. */
+GP.LEVELS['tour-lu'] = (function () {
+  var L = GP.LevelBuilder.create(200, function (L) {
+    // 1. Le quai devant la tour : un parasol, puis un anneau au-dessus du canal
+    L.ground(0, 30, 3);
+    L.start(2);
+    L.hint(3, 'LA TOUR LU : TOUT CE QUE TU AS APPRIS SERT ICI');
+    L.deco(20, 'hangar_conteneur_bleu', { depth: 3 });
+    L.pix(6, 13); L.pix(18, 13); L.pix(25, 13);
+    L.hint(8, 'SAUTE SUR LE PARASOL');
+    L.spring(10); L.plat(13, 10, 4); L.pix(14, 9); L.pix(15, 9);
+    L.check(27);
+    L.pond(30, 39, 15);
+    L.ring(33, 10, 'red');
+    // 2. Les fours : tapis et jets de vapeur
+    L.ground(39, 56, 3);
+    L.check(41);
+    L.hint(43, 'LES FOURS : TAPIS ET JETS DE VAPEUR');
+    L.belt(40, 60, 1, 45); L.belt(60, 80, -1, 50);
+    L.jet(48, 4, 3200, 0); L.jet(54, 4, 3200, 1600); L.jet(66, 4, 3000, 800); L.jet(72, 4, 3000, 2200);
+    L.pix(44, 13); L.pix(51, 13); L.pix(57, 13); L.pix(63, 13); L.pix(69, 13); L.pix(76, 13);
+    L.plat(84, 12, 3); L.pix(85, 11);
+    L.check(88);
+    // 3. La galerie : des dalles de verre et un chariot au-dessus du canal
+    L.pond(95, 127, 15);
+    L.glass(96, 14, 3); L.glass(101, 13, 3); L.glass(106, 14, 3);
+    L.mover(111, 12, 3, 5, 0, 3600);
+    L.glass(118, 13, 3); L.glass(123, 14, 3);
+    L.pix(97, 13); L.pix(102, 12); L.pix(107, 13); L.pix(119, 12); L.pix(124, 13);
+    // 4. La soufflerie du dôme : des courants d'air qui allègent la gravité
+    L.ground(127, 22, 3);
+    L.check(129);
+    L.hint(131, "LE COURANT D'AIR T'ALLÈGE : SAUTE DEDANS");
+    L.draft(141, 146, 1, 14);
+    L.plat(146, 8, 4);
+    L.draft(147, 152, 1, 8);
+    L.plat(152, 3, 4);
+    L.pix(133, 13); L.pix(137, 13); L.pix(143, 9); L.pix(148, 7); L.pix(150, 3); L.pix(154, 2);
+    // 5. La terrasse du sommet : un dernier jet, un dernier tapis
+    L.ground(156, 44, 14);
+    L.check(158);
+    L.belt(160, 176, -1, 40);
+    L.jet(166, 4, 3200, 0); L.jet(172, 4, 3200, 1600);
+    L.deco(188, 'hangar_conteneur_bleu', { depth: 3 });
+    L.pix(162, 2); L.pix(169, 2); L.pix(176, 2); L.pix(182, 2); L.pix(190, 2);
+  });
+  L.id = 'tour-lu';
+  L.backdrop = { x: 28, key: 'lv_tour_lu', scale: 1, tint: false };   // la tour se dresse derrière le quai de départ
+  L.maxTime = 240;
+  L.reveal = 'topDown';
+  L.abilities = { crouch: true, grab: true };
+  L.skin = {
+    top: ['hangar_sol_haut_1', 'hangar_sol_haut_2'], fill: 'hangar_sol_plein', left: 'hangar_sol_gauche', right: 'hangar_sol_droite', block: 'hangar_sol_plein',
+    ledge: ['pommeraye_balcon_galerie_g', 'pommeraye_balcon_galerie_m', 'pommeraye_balcon_galerie_d'], mover: ['pommeraye_balcon_galerie_g', 'pommeraye_balcon_galerie_m', 'pommeraye_balcon_galerie_d']
+  };
+  L.sky = { farKey: 'hangar_fond_tile_x', farBottom: 236 };
+  L.wxm = { rain: { belt: 1.3 }, sun: { jet: 1.2 }, wind: { spring: 1.1 } };
+  L.weatherText = { rain: 'LA PLUIE RELANCE LES TAPIS : PLUS VIFS', sun: 'LA CHALEUR ALLONGE LES JETS DE VAPEUR', wind: 'LE VENT GONFLE LE PARASOL : REBOND PLUS HAUT' };
   return L;
 })();

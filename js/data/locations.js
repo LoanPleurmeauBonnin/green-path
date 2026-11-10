@@ -95,21 +95,21 @@ GP.LOCATIONS = [
   {
     id: 'memorial', name: "Mémorial de l'abolition de l'esclavage",
     sprite: 'memorial_monument_memorial',
-    playable: false,
+    playable: true, level: 'memorial', parTime: 150,
     notice: "Mémorial au bord de la Loire rappelant le rôle de Nantes dans la traite négrière et l'histoire de son abolition. Il mêle quai, verre et textes gravés.",
     element: { label: 'Plaques de verre du quai', verify: true }, verify: true
   },
   {
     id: 'pommeraye', name: 'Passage Pommeraye',
     sprite: 'pommeraye_monument_pommeraye',
-    playable: false,
+    playable: true, level: 'pommeraye', parTime: 150,
     notice: "Galerie commerçante ouverte en 1843, sur trois niveaux reliés par un escalier monumental. Verrière, statues et décors en font un passage couvert célèbre.",
     element: { label: 'Verrière et escalier', verify: false }, verify: false
   },
   {
     id: 'tour-lu', name: 'Tour LU',
     sprite: '',
-    playable: false,
+    playable: true, level: 'tour-lu', parTime: 200,
     notice: "Tour de l'ancienne biscuiterie LU, face au château. Avec sa coupole, elle signalait l'usine au bord de l'eau ; le bâtiment accueille aujourd'hui une scène culturelle, le Lieu Unique.",
     element: { label: 'La tour et sa coupole', verify: true }, verify: true
   }

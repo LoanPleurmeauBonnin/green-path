@@ -16,13 +16,17 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
 | **4 · Bouffay** : les étals bougent | **Sur téléphone, en paysage** |
 | ![Bouffay](docs/screenshots/niveau-bouffay.png) | ![Contrôles tactiles](docs/screenshots/mobile-paysage.png) |
 
-| **4 · Île Feydeau** : la marée monte, les bateaux s'enfoncent, les visages des façades mentent | **5 · Place Graslin** : danseurs masqués, parasols qui font rebondir, projecteurs, rideau à ouvrir |
+| **4 · Île Feydeau** : la marée monte, les bateaux s'enfoncent, les visages des façades mentent | **5 · Place Graslin** : les Muses lancent des notes, parasols qui font rebondir, projecteurs, rideau à ouvrir |
 |---|---|
 | ![Île Feydeau](docs/screenshots/niveau-feydeau.png) | ![Place Graslin](docs/screenshots/niveau-graslin.png) |
 | **6 · Machines de l'île** : rails qui entraînent, jets de vapeur, petits robots qui poursuivent | **7 · Parc des Chantiers** : conteneurs qui tombent de la grue (l'ombre prévient), chariots |
 | ![Machines de l'île](docs/screenshots/niveau-machines.png) | ![Parc des Chantiers](docs/screenshots/niveau-chantiers.png) |
-| **8 · Anneaux de Buren** : anneaux d'élan, à aligner pour faire apparaître le paysage | **9 · Hangar à Bananes** : les pixels pourrissent, à récolter quand ils sont jaunes |
+| **8 · Anneaux de Buren** : anneaux d'élan, à aligner pour faire apparaître le paysage | **9 · Hangar à Bananes** : les pixels pourrissent, la moisissure gagne du terrain |
 | ![Anneaux de Buren](docs/screenshots/niveau-buren.png) | ![Hangar à Bananes](docs/screenshots/niveau-hangar.png) |
+| **10 · Mémorial** : sobre, sans ennemi : une stèle à lire, une porte de lumière, du verre qui se fissure | **11 · Passage Pommeraye** : l'escalier monumental, la verrière, les ponts de verre |
+| ![Mémorial](docs/screenshots/niveau-memorial.png) | ![Passage Pommeraye](docs/screenshots/niveau-pommeraye.png) |
+| **12 · Tour LU** : tout ce qu'on a appris, puis le courant d'air ascendant de la coupole | |
+| ![Tour LU](docs/screenshots/niveau-tourlu.png) | |
 
 ## Le concept
 - **Une archive qui se reconstruit** : chaque niveau cache des pixels. Chacun ramassé révèle un morceau de la photo du lieu (48×32 cases, 16 couleurs), dans un ordre propre au lieu : le Jardin des Plantes pousse **du bas vers le haut**, comme une plante.
@@ -49,13 +53,16 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
   | Cathédrale | gargouilles plus fréquentes | | |
   | Château | esprits de la garde plus lents | esprits plus agités | tonneaux plus rapides |
   | Île Feydeau | la marée monte plus haut | la marée reste basse | les bateaux coulent plus vite |
-  | Place Graslin | danseurs plus lents | projecteurs plus rapides | parasols : rebond plus haut |
+  | Place Graslin | notes de Muse plus lentes | projecteurs plus rapides | parasols : rebond plus haut |
   | Machines de l'île | jets plus courts | robots plus rapides | tapis plus vifs |
   | Parc des Chantiers | cale plus vive | chariots plus rapides | conteneurs plus fréquents |
   | Anneaux de Buren | élan réduit (−8 %) | élan renforcé (+8 %) | |
-  | Hangar à Bananes | pourriture plus lente | pourriture plus rapide | |
+  | Hangar à Bananes | pixels plus lents à pourrir, moisissure plus vive | pixels plus rapides à pourrir, moisissure plus lente | |
+  | Mémorial | marée un peu plus haute, verre plus fragile | marée basse, verre qui revient vite | |
+  | Passage Pommeraye | verre plus fragile | verre qui revient plus vite | |
+  | Tour LU | tapis plus vifs | jets de vapeur plus longs | parasol : rebond plus haut |
 - **Un décor propre à chaque lieu** : le **Jardin des Plantes** est un vrai parc (rangées d'arbres, magnolias, massifs, hortensias, hautes herbes) où l'on croise des silhouettes colorées inspirées des sculptures de l'été au jardin ; le **Château** se traverse de la cour, avec ses tours de schiste et son logis blanc en tuffeau, jusqu'aux **salles intérieures** (châtelet aux herses, puis salle des gardes avec sa cheminée). Tout est dessiné par code, sans image externe.
-- **Un danger propre à chaque lieu** : ronces et mauvaises herbes au Jardin, gargouilles à la Cathédrale, esprits de la garde au Château, eau qui monte et visages menteurs à l'Île Feydeau, danseurs masqués et projecteurs à Graslin, jets et petits robots aux Machines, conteneurs qui tombent aux Chantiers, anneaux à aligner à Buren, pourriture au Hangar. Un signe (ombre, souffle, tremblement) précède toujours le danger.
+- **Un danger propre à chaque lieu** : ronces et mauvaises herbes au Jardin, gargouilles à la Cathédrale, esprits de la garde au Château, eau qui monte et visages menteurs à l'Île Feydeau, Muses qui lancent des notes et projecteurs à Graslin, jets et petits robots aux Machines, conteneurs qui tombent aux Chantiers, anneaux à aligner à Buren, pourriture des pixels et moisissure au Hangar, une stèle à lire et rien d'hostile au Mémorial, verre qui se fissure à la Pommeraye, courant d'air qui allège la gravité à la Tour LU. Un signe (ombre, souffle, tremblement) précède toujours le danger.
 - **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou un des 8 modèles.
 
 ## Les 12 lieux
@@ -67,14 +74,14 @@ L'ordre suit la séquence de la page [« Arpenter la ligne verte »](https://www
 | 2 | Cathédrale Saint-Pierre-et-Saint-Paul | ✅ jouable | **grimper** aux colonnes, **s'accrocher** aux rebords, gargouilles, corniches qui s'effritent |
 | 3 | Château des ducs de Bretagne | ✅ jouable | **s'accroupir** sous les flèches, tonneaux, herses, douves |
 | 4 | Île Feydeau | ✅ jouable | **la marée monte** (se mettre au sec), **bateaux qui s'enfoncent**, **visages sculptés qui mentent** (faux indices) |
-| 5 | Place Graslin | ✅ jouable | **parasols** qui font rebondir, **danseurs masqués** qui barrent la place, **projecteurs** qui balaient, **rideau** à ouvrir en rejouant une séquence |
+| 5 | Place Graslin | ✅ jouable | **parasols** qui font rebondir, **Muses** qui lancent des notes, **projecteurs** qui balaient, **rideau** à ouvrir en rejouant une séquence |
 | 6 | Machines de l'île (Grand Éléphant) | ✅ jouable | **rails et tapis** qui entraînent, **jets de vapeur** (le souffle prévient), **petits robots** qui poursuivent |
 | 7 | Parc des Chantiers (Grue Titan) | ✅ jouable | **conteneurs qui tombent** (l'ombre prévient), **chariots** qui avancent quand on monte dessus, cale qui entraîne en arrière |
 | 8 | Anneaux de Buren | ✅ jouable | **anneaux d'élan** (rouge : en avant, bleu : en haut), les **aligner** fait apparaître un pont |
-| 9 | Hangar à Bananes | ✅ jouable | **pourriture** : chaque pixel est vert, jaune (à récolter), brun, puis s'efface avant de repousser |
-| 10 | Mémorial de l'abolition de l'esclavage | à venir | |
-| 11 | Passage Pommeraye | à venir | |
-| 12 | Tour LU (Lieu Unique) | à venir | |
+| 9 | Hangar à Bananes | ✅ jouable | **pourriture** : chaque pixel est vert, jaune (à récolter), brun, puis s'efface avant de repousser ; **moisissure** qui gagne du terrain sur le sol |
+| 10 | Mémorial de l'abolition de l'esclavage | ✅ jouable | niveau **sobre, sans ennemi** : lire une **stèle** puis rejouer sa séquence (bas, haut) devant une porte de lumière, **verre** qui se fissure, marée calme |
+| 11 | Passage Pommeraye | ✅ jouable | niveau **vertical** : escalier monumental, **verre** de la verrière qui se fissure (0,8 s), lustres qui balancent |
+| 12 | Tour LU (Lieu Unique) | ✅ jouable | toutes les mécaniques reprises, puis le **courant d'air ascendant** de la coupole (saut jusqu'à 7 tuiles) ; pas de boss |
 
 *Un niveau « Bouffay » (étals mobiles) existe dans `js/data/levels.js` mais n'est rattaché à aucun lieu pour l'instant.*
 
@@ -115,7 +122,7 @@ puis http://localhost:8123. **Mode test** : ajouter `?dev=1` à l'adresse (W : m
 - **Hors ligne, le jeu reste entièrement jouable** (météo, sauvegarde locale ; le classement affiche la dernière version vue ; la sauvegarde en ligne repart au retour du réseau) : si le réseau coupe, le jeu garde **la dernière météo reçue** (widget « HORS LIGNE · IL Y A N MIN ») ; si aucune n'a jamais été reçue, météo neutre sans effet ([data/fallback.json](data/fallback.json)). La progression est gardée dans le navigateur (`localStorage`).
 - La météo est redemandée toutes les 5 min, et dès que le réseau revient.
 - Images à reconstruire : photo pixélisée validée pour le Jardin des Plantes ; pour les autres lieux, le monument de la planche de sprites en attendant des photos Commons validées.
-- Niveaux 10 à 12 (Mémorial, Pommeraye, Tour LU) à venir. Les niveaux 4 à 9 sont un premier jet : positions, temps cibles et difficulté à régler au test croisé ; aucun n'a encore été joué à la main de bout en bout (les mécaniques et l'accessibilité des pixels ont été vérifiées par script).
+- Les 12 lieux sont jouables. Les niveaux 4 à 12 sont un premier jet : positions, temps cibles et difficulté à régler au test croisé ; aucun n'a encore été joué à la main de bout en bout (les mécaniques et l'accessibilité des pixels ont été vérifiées par script).
 
 ## Stack
 Phaser 3.90 (inclus en local), JavaScript natif en scripts classiques (pas de build, compatible `file://`), police Press Start 2P, résolution 480×270 agrandie sans lissage. Le décor vient de planches de sprites en texte (une lettre = une couleur d'une palette de 35) transformées en textures au démarrage ; les fonds du Jardin et du Château, les silhouettes, les plantes et les salles intérieures sont dessinés par code (`GP.PixelArt`, `js/systems/LevelArt.js`). Déploiement statique sur Vercel.
@@ -123,8 +130,8 @@ Phaser 3.90 (inclus en local), JavaScript natif en scripts classiques (pas de bu
 ```
 index.html               page, icônes, écran « tournez votre téléphone »
 js/config.js             réglages, palette, mode test (?dev=1)
-js/data/                 locations.js (12 lieux), levels.js (niveaux 1 à 3 et Bouffay), levels-ville.js (niveaux 4 à 9), sprites/ (planches importées), lang/ (fr.js, en.js)
-js/systems/              Dangers (ennemis et pièges des niveaux de la ville), I18n (FR/EN), Settings (langue, touches), Controls (clavier réaffectable, manette), Cloud + Account (pseudo, sauvegarde, classement Supabase), Sprites, MapArt (carte), LevelArt (ciel, décors, fonds de parc et de château, salles intérieures), WeatherManager / WeatherFX / WeatherRules (météo en direct → règles de jeu),
+js/data/                 locations.js (12 lieux), levels.js (niveaux 1 à 3 et Bouffay), levels-ville.js (niveaux 4 à 12), sprites/ (planches importées), lang/ (fr.js, en.js)
+js/systems/              Dangers (ennemis, pièges et mécaniques des niveaux 4 à 12), I18n (FR/EN), Settings (langue, touches), Controls (clavier réaffectable, manette), Cloud + Account (pseudo, sauvegarde, classement Supabase), Sprites, MapArt (carte), LevelArt (ciel, décors, fonds de parc et de château, salles intérieures), WeatherManager / WeatherFX / WeatherRules (météo en direct → règles de jeu),
                          PixelCollection (photo à reconstruire), Save / Progression / Stars, Ui (fenêtres, aide, tactile)
 js/scenes/               Boot, Menu, Character (avatar), Options, Score (classement), Map, Game (moteur de plateforme), Result
 assets/                  police, logo et icônes, photos pixélisées (assets/locations/*.js)

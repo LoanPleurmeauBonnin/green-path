@@ -382,16 +382,6 @@ GP.LevelArt = (function () {
     R(ctx, 0, 12, 16, 4, k); R(ctx, 1, 13, 14, 2, '#5d6475'); for (var x = 2; x < 15; x += 3) P(ctx, x, 13, '#9aa2ae');
     return o.cv;
   }
-  /** Danseur masqué de la place Graslin (masque blanc, costume violet, bras écartés). */
-  function drawDanseur() {
-    var o = PA.canvas(18, 26), ctx = o.ctx, k = GP.PAL.k, v = GP.PAL.p;
-    R(ctx, 5, 0, 8, 3, k); R(ctx, 6, 1, 6, 2, GP.PAL.r);                                             // chapeau
-    PA.disc(ctx, 9, 7, 5, k); PA.disc(ctx, 9, 7, 4, GP.PAL.w); R(ctx, 6, 6, 2, 2, k); R(ctx, 10, 6, 2, 2, k); R(ctx, 8, 9, 3, 1, k);     // masque
-    R(ctx, 5, 11, 8, 9, k); R(ctx, 6, 12, 6, 7, v); R(ctx, 8, 13, 2, 5, GP.PAL.y);                    // costume
-    R(ctx, 0, 12, 6, 3, k); R(ctx, 1, 13, 5, 1, v); R(ctx, 12, 12, 6, 3, k); R(ctx, 12, 13, 5, 1, v); // bras
-    R(ctx, 6, 20, 3, 6, k); R(ctx, 10, 20, 3, 6, k); R(ctx, 7, 20, 1, 5, v); R(ctx, 11, 20, 1, 5, v);   // jambes
-    return o.cv;
-  }
   /** Conteneur de chantier qui tombe de la grue. */
   function drawConteneur() {
     var o = PA.canvas(34, 22), ctx = o.ctx, k = GP.PAL.k, c = '#c4562e', cl = '#e07a4a';
@@ -408,11 +398,38 @@ GP.LevelArt = (function () {
     R(ctx, 0, 0, 18, 4, k); R(ctx, 1, 1, 16, 2, GP.PAL.y);
     return o.cv;
   }
-  /** Tapis roulant ou rail de rouages : chevrons jaunes sur fond sombre (16×8, à répéter). */
-  function drawTapis() {
+  /** Tapis roulant ou rail de rouages : chevrons jaunes sur fond sombre (16×8, à répéter). gauche = chevrons vers la gauche. */
+  function drawTapis(gauche) {
     var o = PA.canvas(16, 8), ctx = o.ctx, k = GP.PAL.k;
     R(ctx, 0, 0, 16, 8, '#3a4258'); R(ctx, 0, 0, 16, 1, k); R(ctx, 0, 7, 16, 1, k);
-    for (var i = 0; i < 2; i++) { var x = 2 + i * 8; P(ctx, x, 2, '#f4d35e'); P(ctx, x + 1, 3, '#f4d35e'); P(ctx, x + 2, 4, '#f4d35e'); P(ctx, x + 1, 5, '#f4d35e'); P(ctx, x, 6, '#f4d35e'); }
+    for (var i = 0; i < 2; i++) {
+      var x = 2 + i * 8, d = gauche ? -1 : 1, c = gauche ? x + 2 : x;      // pointe du chevron à gauche ou à droite
+      P(ctx, c, 2, '#f4d35e'); P(ctx, c + d, 3, '#f4d35e'); P(ctx, c + 2 * d, 4, '#f4d35e'); P(ctx, c + d, 5, '#f4d35e'); P(ctx, c, 6, '#f4d35e');
+    }
+    return o.cv;
+  }
+  /** La Tour LU : fût de briques, bandeaux blancs, coupole turquoise et or (dessin original, forme générale seulement). */
+  function drawTourLU() {
+    var o = PA.canvas(76, 176), ctx = o.ctx, k = GP.PAL.k, brique = '#b5523b', joint = '#8a3b2a', blanc = '#e6dfc9', turq = '#3fb5a6', turqD = '#2a8a80', or = '#f4d35e';
+    var x, y;
+    R(ctx, 19, 52, 38, 124, k); R(ctx, 20, 52, 36, 124, brique);                                              // fût
+    for (y = 54; y < 176; y += 6) { R(ctx, 20, y, 36, 1, joint); for (x = ((y / 6) % 2) * 4 + 22; x < 56; x += 8) R(ctx, x, y, 1, 6, joint); }
+    [66, 100, 134].forEach(function (yy) { R(ctx, 17, yy, 42, 5, k); R(ctx, 18, yy + 1, 40, 3, blanc); });   // bandeaux blancs
+    [74, 84, 108, 118, 142, 152].forEach(function (yy) { R(ctx, 33, yy, 10, 8, k); R(ctx, 34, yy + 1, 8, 6, '#2b3a55'); R(ctx, 38, yy + 1, 1, 6, k); });   // fenêtres
+    R(ctx, 15, 48, 46, 6, k); R(ctx, 16, 49, 44, 4, blanc);                                                  // corniche sous la coupole
+    PA.disc(ctx, 38, 40, 21, k); PA.disc(ctx, 38, 40, 20, turq);                                              // coupole
+    ctx.clearRect(0, 41, 76, 8);
+    R(ctx, 17, 41, 42, 7, k); R(ctx, 18, 41, 40, 6, turq);
+    for (x = 20; x < 58; x += 6) R(ctx, x, 22, 1, 25, turqD);                                                // nervures
+    R(ctx, 17, 36, 42, 2, or);                                                                                // bague dorée
+    R(ctx, 33, 14, 10, 10, k); R(ctx, 34, 15, 8, 8, turq); R(ctx, 36, 6, 4, 9, k); R(ctx, 37, 7, 2, 8, or);   // lanterne et flèche
+    P(ctx, 38, 3, or); P(ctx, 38, 4, or);
+    return o.cv;
+  }
+  /** Note de musique lancée par les Muses du théâtre. */
+  function drawNote() {
+    var o = PA.canvas(10, 12), ctx = o.ctx, k = GP.PAL.k, y = GP.PAL.y;
+    R(ctx, 6, 0, 2, 9, k); R(ctx, 7, 0, 3, 3, k); R(ctx, 7, 1, 2, 1, y); PA.disc(ctx, 4, 9, 3, k); PA.disc(ctx, 4, 9, 2, y); R(ctx, 6, 1, 1, 8, y);
     return o.cv;
   }
   /** Fond du Jardin des Plantes : rangées d'arbres, claires au loin puis plus foncées (raccord horizontal, largeur 320). */
@@ -469,10 +486,12 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_fond_chateau', drawFondChateau());
     PA.toTexture(scene, 'lv_esprit', drawEsprit());
     PA.toTexture(scene, 'lv_robot', drawRobot());
-    PA.toTexture(scene, 'lv_danseur', drawDanseur());
     PA.toTexture(scene, 'lv_conteneur', drawConteneur());
     PA.toTexture(scene, 'lv_rideau', drawRideau());
-    PA.toTexture(scene, 'lv_tapis', drawTapis());
+    PA.toTexture(scene, 'lv_tapis', drawTapis(false));
+    PA.toTexture(scene, 'lv_tapis_g', drawTapis(true));
+    PA.toTexture(scene, 'lv_note', drawNote());
+    PA.toTexture(scene, 'lv_tour_lu', drawTourLU());
     PA.toTexture(scene, 'lv_salle_herses', drawSalle(22, false));
     PA.toTexture(scene, 'lv_salle_gardes', drawSalle(20, true));
     PA.toTexture(scene, 'lv_fence', drawFence(false));

@@ -34,6 +34,7 @@ GP.LevelBuilder = {
       width: width, rows: 17, grid: new Int8Array(width * 17),
       plats: [], thorns: [], pixels: [], checks: [], hints: [], deco: [], startX: 2, startRow: 13,
       climbs: [], crumbles: [], gargoyles: [], slits: [], gates: [], barrels: [], movers: [], rainThorns: [], sunPlats: [],
+      muses: [], molds: [], glasses: [], memos: [], drafts: [],
       patrols: [], tides: [], boats: [], liars: [], fallers: [], jets: [], beams: [], springs: [], seqs: [], belts: [], carts: [], rings: [], aligns: [], ponds: [],
       rot: false, wxm: {},
       abilities: {}, skin: null
@@ -63,7 +64,7 @@ GP.LevelBuilder = {
       rainThorn: function (x) { L.rainThorns.push({ x: x, y: L.top(x) - 1 }); },
       sunPlat: function (x, y, w) { L.sunPlats.push({ x: x, y: y, w: w || 1 }); },
       // --- niveaux de la ville (voir js/systems/Dangers.js) ---
-      patrol: function (x0, x1, kind, speed) { L.patrols.push({ x0: x0, x1: x1, y: L.top(x0) - 1, kind: kind, speed: speed }); },           // 'esprit', 'robot', 'danseur'
+      patrol: function (x0, x1, kind, speed) { L.patrols.push({ x0: x0, x1: x1, y: L.top(x0) - 1, kind: kind, speed: speed }); },           // 'esprit', 'robot'
       tide: function (x0, x1, low, high, period) { L.tides.push({ x0: x0, x1: x1, low: low, high: high, period: period || 9000 }); },        // eau qui monte (lignes basse et haute)
       boat: function (x, y, w) { L.boats.push({ x: x, y: y, w: w || 2 }); },                                                                  // bateau qui s'enfonce
       liar: function (x, y, text, blur) { L.liars.push({ x: x, y: y, text: text, blur: blur }); },                                            // visage qui ment
@@ -76,6 +77,11 @@ GP.LevelBuilder = {
       cart: function (x, y, w, dx) { L.carts.push({ x: x, y: y, w: w, dx: dx }); },                                                           // chariot qui avance quand on monte dessus
       ring: function (x, y, color) { L.rings.push({ x: x, y: y, color: color || 'red' }); return L.rings.length - 1; },                       // anneau d'élan
       align: function (rings, bx, by, bw) { L.aligns.push({ rings: rings, bridge: { x: bx, y: by, w: bw } }); },                              // anneaux alignés : un pont apparaît
+      muse: function (x, dir, period, offset) { L.muses.push({ x: x, dir: dir || -1, period: period, offset: offset }); },                    // Muse (statue) qui lance des notes
+      mold: function (x, w, period, offset) { L.molds.push({ x: x, w: w, period: period, offset: offset }); },                                // moisissure qui gagne du terrain
+      glass: function (x, y, w) { L.glasses.push({ x: x, y: y, w: w }); },                                                                    // dalle de verre qui se fissure
+      memo: function (stele, gate, pattern) { L.memos.push({ stele: stele, gate: gate, pattern: pattern.split('') }); },                       // stèle à lire, porte à ouvrir de mémoire (D = bas, J = haut)
+      draft: function (x0, x1, y0, y1) { L.drafts.push({ x0: x0, x1: x1, y0: y0, y1: y1 }); },                                               // courant d'air ascendant (gravité allégée)
       pond: function (x0, x1, row) { L.ponds.push({ x0: x0, x1: x1, row: row }); },                                                           // eau décorative
       rotting: function (on) { L.rot = on !== false; },                                                                                       // pixels qui mûrissent puis pourrissent
       /** Verdure au hasard, seulement là où il n'y a ni objet de jeu ni trou. */
