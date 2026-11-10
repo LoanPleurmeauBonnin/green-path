@@ -31,6 +31,8 @@
     <p>VEUILLEZ TOURNER<br>VOTRE TÉLÉPHONE</p>
     <p class="small">GREEN PATH SE JOUE EN PAYSAGE</p>
   </div>
+  <!-- Fenêtre pseudo / code de sauvegarde (HTML : vrai champ de saisie, copier-coller) : voir js/systems/Account.js -->
+  <div id="acct" role="dialog" aria-modal="true" hidden></div>
   <!-- iPhone / iPad (Safari) : pas de plein écran possible dans le navigateur ; une seule fois, on explique comment. -->
   <div id="ios-tip" role="note" hidden><span id="ios-tip-text"></span></div>
   <noscript><p class="msg">Green Path nécessite JavaScript.</p></noscript>
@@ -42,6 +44,8 @@
   <script src="js/systems/I18n.js"></script>
   <script src="js/systems/Settings.js"></script>
   <script src="js/systems/Controls.js"></script>
+  <script src="js/systems/Cloud.js"></script>
+  <script src="js/systems/Account.js"></script>
   <script src="js/data/sprites/palette.js"></script>
   <script src="js/data/sprites/commun.js"></script>
   <script src="js/data/sprites/carte.js"></script>
@@ -74,6 +78,7 @@
   <script src="js/scenes/MenuScene.js"></script>
   <script src="js/scenes/CharacterScene.js"></script>
   <script src="js/scenes/OptionsScene.js"></script>
+  <script src="js/scenes/ScoreScene.js"></script>
   <script src="js/scenes/MapScene.js"></script>
   <script src="js/scenes/GameScene.js"></script>
   <script src="js/scenes/ResultScene.js"></script>

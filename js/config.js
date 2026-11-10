@@ -19,6 +19,9 @@ GP.Config = {
   /** Outils de test (météo simulée W, fin de niveau K) : actifs seulement si l'adresse contient ?dev=1. */
   DEV_TOOLS: /[?&]dev=1\b/.test((window.location && window.location.search) || ""),
   /** Météo réelle (Open-Meteo) : Nantes, centre-ville. */
+  /** Supabase (comptes « pseudo seul », sauvegarde, classement). La clé « publishable » est faite pour être publique ;
+   *  aucune clé secrète n'est utilisée. Voir supabase/README.md. url vide = fonctions en ligne désactivées (mode invité). */
+  CLOUD: { url: 'https://jvmswcgkfgnjxccmfksd.supabase.co', key: 'sb_publishable_ji86dnYkwOQHBjqBgSQxuQ_Vc5jKeas', timeoutMs: 4000 },
   WEATHER: { lat: 47.2184, lon: -1.5536, tz: 'Europe/Paris', timeoutMs: 4000, refreshMin: 5, cacheKey: 'greenpath.weather' }
 };
 

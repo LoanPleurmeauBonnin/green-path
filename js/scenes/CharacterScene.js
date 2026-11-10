@@ -156,6 +156,7 @@ GP.Scenes.Character = class CharacterScene extends Phaser.Scene {
   // ---------- sortie ----------
   validate() {
     GP.Progression.setCharacter(this.cfg);
+    if (GP.Cloud) GP.Cloud.schedulePush();
     GP.Character.build(this, this.cfg);
     GP.Sfx.play('unlock');
     this.leave(this.from === 'start' ? 'Map' : 'Menu');

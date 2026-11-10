@@ -16,6 +16,10 @@ Projet noté (ESD Nantes B3, atelier PATRIMOINE.EXE / NANTES 001). **Gel fonctio
 - Zone de jeu : hauteur 270, **largeur variable** (`GP.Config.WIDTH`, 480 à 640). Écrans à mise en page fixe (menu, options, avatar, résultat) : `GP.Config.DW` (480) + `GP.UI.backdrop(scene)` ; fenêtres : `GP.UI.modal` (centrées automatiquement). HUD et ciel : ancrés aux bords, fonds en `tileSprite`.
 - Textures : **ne jamais supprimer une texture ou une animation qu'un sprite utilise encore** (écran noir) : `GP.PixelArt.toTexture` met à jour sur place. Images larges : morceaux de 2048 px max (`LevelArt.CHUNK`, limite des téléphones).
 
+## Supabase (pseudo, sauvegarde, classement)
+- Projet `green-path` (eu-west-3). **Pas de Supabase Auth** : pseudo + code secret, tables fermées (RLS sans politique), cinq fonctions `gp_*` (voir `supabase/README.md` et `supabase/schema.sql`). Clé publique dans `js/config.js` (`GP.Config.CLOUD`) ; **jamais de clé service_role dans le dépôt**.
+- Le jeu doit marcher sans compte et hors ligne : tout appel réseau passe par `GP.Cloud` (délai 4 s, échec silencieux). Modifier le schéma : migration via l'outil Supabase puis mise à jour de `supabase/schema.sql` et de la notice de confidentialité (`js/data/lang/*.js`, `docs/confidentialite.md`).
+
 ## Branches et dépôt
 - Dépôt `LoanPleurmeauBonnin/green-path` (public), collaboratrice : Floflodesiles (conception et construction des niveaux : `js/data/levels.js`, `docs/niveaux.md`). Travailler sur une branche (`fix/...`, `feat/...`) et ouvrir une PR vers `main` ; ne pas fusionner ni pousser sur `main` sans accord. Garder les changements du moteur (`GameScene.js`) petits pour éviter les conflits avec les niveaux.
 - Skills Phaser locaux dans `.claude/skills/` (non versionnés) : `phaser-core`, `phaser-arcade-physics` (Apache-2.0, `gamedev-skills/awesome-gamedev-agent-skills`), relus avant installation.
