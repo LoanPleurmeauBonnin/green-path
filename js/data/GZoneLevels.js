@@ -1,6 +1,38 @@
 /** Adaptations explicites des documents de conception au moteur existant, sans exécuter leurs textes. */
 GP.GZoneLevels = (function () {
   var ids = ['jardin-des-plantes', 'cathedrale', 'chateau', 'feydeau', 'graslin', 'machines', 'chantiers', 'buren', 'hangar', 'pommeraye', 'memorial', 'tour-lu'];
+
+  /**
+   * ÉQUILIBRAGE DE LA DIFFICULTÉ (novembre 2026). Ajustements d'obstacles par-dessus les documents importés :
+   * gzones.js est un fichier généré, on n'y touche pas. Mesure et détail : tools/balance.cjs et docs/equilibrage.md.
+   *   retirer : obstacles supprimés { sprite, x, y }   ajouter : obstacles posés sur un sol plat et dégagé (vérifié par tests/balance.test.js)
+   *   vitesse : facteur sur la vitesse des ennemis en patrouille (oiseaux, tonneaux)
+   * Intention : un début plus doux (1 à 3), le pic du niveau 6 écrêté, des niveaux 7 à 12 plus vifs. Le Mémorial (11) reste
+   * sans ennemi ni pointe : sa difficulté vient des séquences de dalles et de la marée (GZoneRuntime).
+   */
+  var BALANCE = {
+    1: { vitesse: 0.85, retirer: [{ sprite: 'commun_ronces_2', x: 44, y: 14 }, { sprite: 'commun_pointes_fer_1', x: 102, y: 14 }] },
+    2: { vitesse: 0.85, retirer: [{ sprite: 'cathedrale_cierge_flamme', x: 28, y: 21 }, { sprite: 'cathedrale_cierge_flamme', x: 40, y: 21 }] },
+    3: { vitesse: 0.9 },
+    6: { retirer: [{ sprite: 'vapeur', x: 61, y: 10 }, { sprite: 'vapeur', x: 139, y: 13 }] },
+    7: { vitesse: 1.1, ajouter: [{ sprite: 'chantiers_obstacle_ferraille', x: 194, y: 14, kind: 'mortel' },
+      { sprite: 'chantiers_obstacle_ferraille', x: 204, y: 14, kind: 'mortel' }] },
+    8: { vitesse: 1.1 },
+    9: { vitesse: 1.1, ajouter: [{ sprite: 'hangar_obstacle_tole_coupante', x: 92, y: 12, kind: 'mortel' }] },
+    10: { vitesse: 1.1 },
+    12: { vitesse: 1.1 }
+  };
+  function balance(d) {
+    var b = BALANCE[d.num];
+    if (!b || d.equilibre) return;
+    d.equilibre = true;
+    (b.retirer || []).forEach(function (r) {
+      d.dangers = d.dangers.filter(function (h) { return !(h.sprite === r.sprite && h.x === r.x && h.y === r.y); });
+    });
+    (b.ajouter || []).forEach(function (h) { d.dangers.push(Object.assign({}, h)); });
+    if (b.vitesse) (d.ennemis || []).forEach(function (e) { if (e.vitesse) e.vitesse = Math.round(e.vitesse * b.vitesse * 100) / 100; });
+  }
+  GP.GZONES.forEach(balance);
   function make(d, id) {
     var L = GP.LevelBuilder.create(d.largeur, function () {}, d.hauteur);
     L.id = id; L.gzone = d; L.revision = 'gzones-1-' + d.sourceHash.slice(0, 12);
@@ -73,5 +105,5 @@ GP.GZoneLevels = (function () {
   });
   GP.LAST_PLAYABLE = 11;
   GP.Config.ROUTE_VERSION = 'gzones-1';
-  return { ids: ids, make: make };
+  return { ids: ids, make: make, balance: BALANCE };
 })();

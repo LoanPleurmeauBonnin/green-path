@@ -215,7 +215,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
 
   // ---------- héros ----------
   makeHero() {
-    var x = this.travel.x, y = this.travel.y;
+    var x = this.travel.x, y = this.travel.y + this.heroDrop(this.travel.x);
     this.heroShadow = this.add.image(x, y, 'shadow').setDepth(19);
     this.hero = this.add.sprite(x, y, 'hero_idle').setOrigin(0.5, 1).setDepth(20);
     this.cameras.main.centerOn(x, GP.Config.HEIGHT / 2);
@@ -227,8 +227,18 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
   startIdle() { this.hero.play('hero-idle'); }
   stopIdle() { this.hero.stop(); }
 
+  /**
+   * Descente sur le piédestal : près d'une étape, les pieds de l'avatar passent du bord haut du disque à son centre
+   * (là où est le chiffre), progressivement sur la largeur du piédestal (28 px). Ailleurs, il marche sur la ligne.
+   */
+  heroDrop(x) {
+    var near = 99;
+    for (var i = 0; i < this.locs.length; i++) near = Math.min(near, Math.abs(x - this.nx(i)));
+    return near >= 14 ? 0 : Math.round(7 * (1 - near / 14));
+  }
+
   placeHero(x) {
-    var y = this.travel.y;   // surface logique partagée, piédestaux inclus
+    var y = this.travel.y + this.heroDrop(x);   // surface logique partagée, piédestaux inclus
     this.hero.setPosition(x, y); this.heroShadow.setPosition(x, y);
   }
 

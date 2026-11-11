@@ -28,9 +28,49 @@ GP.GZoneArt = (function () {
       for(var yy=y;yy<y+h;yy+=im.height)for(var xx=x;xx<x+w;xx+=im.width)c.drawImage(im,xx,yy);
       c.restore();
     }
+    // Cases occupées par les masses : elles servent à repérer les bords visibles d'un bloc (côtés, dessous).
+    // Hors du niveau = plein, pour ne pas dessiner de rebord sur le bord de l'écran.
+    var cells={};
+    plan.masses.forEach(function(p){
+      for(var i=0;i<(p.w||1);i++)for(var j=Math.floor(p.y);j<Math.ceil(p.bottom);j++)cells[(p.x+i)+','+j]=true;
+    });
+    function solid(x,y){return x<0||x>=L.width||y<0||y>=L.rows||!!cells[x+','+y];}
+    /** Matériau d'une masse : tuiles du dessus et du corps ; sprites de bord dédiés quand la planche en fournit. */
+    function material(p){
+      if(p.style==='herbe'&&!p.top_sprite)return {
+        top:['commun_herbe_haut_1','commun_herbe_haut_2','commun_herbe_haut_3'],fill:['commun_terre_1','commun_terre_2','commun_terre_3'],
+        cornerL:'commun_herbe_haut_gauche',cornerR:'commun_herbe_haut_droite',sideL:'commun_terre_gauche',sideR:'commun_terre_droite',under:'commun_terre_bas'};
+      var mat=(d.tuiles||{})[p.tuiles]||{},top=p.top_sprite||mat.haut,fill=p.fill_sprite||mat.plein||'gz_soil';
+      return {top:[].concat(top||fill),fill:[].concat(fill),under:p.bas_sprite};
+    }
+    /** Liseré d'un côté sans sprite dédié : trait d'encre, puis reflet (gauche) ou ombre (droite), comme les bords des planches. */
+    function rim(tx,ty,th,right,top){
+      var y0=top?ty+1:ty;
+      c.fillStyle=GP.PAL.k;c.fillRect(right?tx+15:tx,ty,1,th);
+      c.fillStyle=right?'rgba(0,0,0,0.22)':'rgba(255,255,255,0.2)';c.fillRect(right?tx+14:tx+1,y0,1,th-(y0-ty));
+    }
+    /** Un bloc case par case : tuiles variées, dessus, côtés exposés et dessous arrondis au lieu d'une coupe franche. */
+    function drawMass(p,m){
+      var w=p.w||1,px=p.x*16,py=p.y*16,ph=(p.bottom-p.y)*16;
+      for(var cx=0;cx<w;cx++)for(var cy=0;cy*16<ph;cy++){
+        var X=p.x+cx,Y=Math.floor(p.y+cy),tx=px+cx*16,ty=py+cy*16,th=Math.min(16,ph-cy*16),top=cy===0;
+        var exL=!solid(X-1,Y),exR=!solid(X+1,Y),exT=!solid(X,Y-1),exB=cy*16+16>=ph&&!solid(X,Y+1);
+        var id=m.fill[(X*7+Y*3)%m.fill.length],spriteL=false,spriteR=false;
+        if(top)id=m.top[(X*7+Y*3)%m.top.length];
+        if(exL&&(top?m.cornerL:m.sideL)){id=top?m.cornerL:m.sideL;spriteL=true;}
+        else if(exR&&(top?m.cornerR:m.sideR)){id=top?m.cornerR:m.sideR;spriteR=true;}
+        if(exB&&m.under)id=m.under;
+        put(id,tx,ty,16,th);
+        if(exL&&!spriteL)rim(tx,ty,th,false,top);
+        if(exR&&!spriteR)rim(tx,ty,th,true,top);
+        // Coins du dessus arrondis (un pixel) là où le sprite n'a pas déjà son propre arrondi.
+        if(top&&exT&&exL&&!spriteL)c.clearRect(tx,ty,1,1);
+        if(top&&exT&&exR&&!spriteR)c.clearRect(tx+15,ty,1,1);
+        // Dessous d'un bloc suspendu sans sprite dédié : trait d'encre et ombre.
+        if(exB&&!m.under){c.fillStyle=GP.PAL.k;c.fillRect(tx,ty+th-1,16,1);c.fillStyle='rgba(0,0,0,0.22)';c.fillRect(tx,ty+th-2,16,1);}
+      }
+    }
     plan.masses.forEach(function (p) {
-      var mat=(d.tuiles||{})[p.tuiles]||{}, top=p.top_sprite||(p.style==='herbe'?'gz_grass':mat.haut), fill=p.fill_sprite||mat.plein||'gz_soil';
-      if(Array.isArray(top))top=top[0];if(Array.isArray(fill))fill=fill[0];
       var x=p.x*16,y=p.y*16,w=(p.w||1)*16,h=(p.bottom-p.y)*16;
       if(h<=0)return;
       // Une pile haute dans une infrastructure industrielle est une ossature, pas une aiguille de terre herbeuse.
@@ -39,13 +79,7 @@ GP.GZoneArt = (function () {
         c.fillStyle=GP.PAL.m;c.fillRect(x+2,y,2,h);c.fillRect(x+w-4,y,2,h);c.fillRect(x,y,w,3);
         for(var yy=y+12;yy<y+h-20;yy+=24){c.fillStyle=GP.PAL.e;c.fillRect(x+2,yy,w-4,2);
           for(var t=0;t<20;t++){var xx=Math.round((w-8)*t/20);c.fillRect(x+4+xx,yy+t,1,1);c.fillRect(x+w-5-xx,yy+t,1,1);}}
-      }else if(p.style==='herbe'&&!p.top_sprite){
-        // Sol d'herbe du Jardin : vraies tuiles de la planche « commun », variées colonne par colonne.
-        for(var cx=0;cx<(p.w||1);cx++)for(var cy=0;cy*16<h;cy++){
-          var v=((p.x+cx)*7+cy*3)%3+1;
-          put(cy===0?'commun_herbe_haut_'+v:'commun_terre_'+v,x+cx*16,y+cy*16,16,16);
-        }
-      }else{put(fill,x,y,w,h);put(top||fill,x,y,w,Math.min(16,h));}
+      }else drawMass(p,material(p));
     });
     L.roofs.forEach(function(r){
       c.fillStyle=GP.PAL.k;c.fillRect(r.x,r.y,r.w,r.h);

@@ -1,8 +1,9 @@
 /**
  * Settings (GP.Settings) — réglages du joueur gardés dans le navigateur (clé « greenpath.settings »), à part de la
- * sauvegarde de progression : langue et touches. Rien n'est envoyé nulle part.
+ * sauvegarde de progression : langue, touches et animations. Rien n'est envoyé nulle part.
  *
  *   GP.Settings.lang                'fr' | 'en'
+ *   GP.Settings.motion              'auto' (système) | 'on' | 'reduced' → GP.reducedMotion
  *   GP.Settings.keys                { left: [code, …], right, jump, up, down } (codes de touches Phaser)
  *   GP.Settings.set({ lang: 'en' }) / GP.Settings.setKey(action, slot, code) / GP.Settings.resetKeys()
  *   GP.Settings.clearAll()          efface réglages, sauvegarde et météo mémorisée
@@ -22,6 +23,13 @@ GP.Settings = (function () {
   var S = {
     DEFAULT_KEYS: DEFAULT_KEYS, RESERVED: RESERVED, ACTIONS: ['left', 'right', 'jump', 'up', 'down'],
     lang: 'fr', keys: clone(DEFAULT_KEYS),
+    /** Animations : 'auto' (suit le système), 'on' (activées) ou 'reduced' (réduites). */
+    motion: 'auto',
+
+    /** Applique le réglage ANIMATIONS à GP.reducedMotion (lu par les scènes à leur création). */
+    applyMotion: function () {
+      GP.reducedMotion = this.motion === 'auto' ? !!GP.systemReducedMotion : this.motion === 'reduced';
+    },
 
     load: function () {
       var st = storage(), d = null;
@@ -29,6 +37,8 @@ GP.Settings = (function () {
       // langue par défaut : français, ou anglais si le navigateur n'est pas en français
       var nav = (navigator.language || 'fr').slice(0, 2).toLowerCase();
       this.lang = d && (d.lang === 'fr' || d.lang === 'en') ? d.lang : (nav === 'fr' ? 'fr' : 'en');
+      this.motion = d && (d.motion === 'on' || d.motion === 'reduced') ? d.motion : 'auto';
+      this.applyMotion();
       this.keys = clone(DEFAULT_KEYS);
       if (d && d.keys) this.ACTIONS.forEach(function (a) {
         var k = d.keys[a];
@@ -40,9 +50,13 @@ GP.Settings = (function () {
     save: function () {
       if (GP.Prompts) GP.Prompts.refresh();
       var st = storage(); if (!st) return;
-      try { st.setItem(KEY, JSON.stringify({ lang: this.lang, keys: this.keys })); } catch (e) { /* stockage plein ou bloqué */ }
+      try { st.setItem(KEY, JSON.stringify({ lang: this.lang, keys: this.keys, motion: this.motion })); } catch (e) { /* stockage plein ou bloqué */ }
     },
-    set: function (o) { if (o.lang) { this.lang = o.lang; if (GP.I18n) GP.I18n.setLang(o.lang); } this.save(); },
+    set: function (o) {
+      if (o.lang) { this.lang = o.lang; if (GP.I18n) GP.I18n.setLang(o.lang); }
+      if (o.motion === 'auto' || o.motion === 'on' || o.motion === 'reduced') { this.motion = o.motion; this.applyMotion(); }
+      this.save();
+    },
 
     /** Action qui utilise déjà ce code de touche (ou null). */
     owner: function (code) {
@@ -79,6 +93,7 @@ GP.Settings = (function () {
       if (GP.Cloud) GP.Cloud.clearLocal();
       if (GP.Progression) GP.Progression.reset();
       this.keys = clone(DEFAULT_KEYS);
+      this.motion = 'auto'; this.applyMotion();
       var nav = (navigator.language || 'fr').slice(0, 2).toLowerCase();
       this.lang = nav === 'fr' ? 'fr' : 'en';
       if (GP.I18n) GP.I18n.setLang(this.lang);

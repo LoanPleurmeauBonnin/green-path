@@ -77,11 +77,13 @@ Ronces, pointes, flèches, gouttes, tonneaux ou chute = une mort : retour à la 
 
 **Reprise locale** : les fragments d'un niveau en cours et la dernière lanterne sont maintenant sauvegardés. Après fermeture ou rafraîchissement, le niveau reprend à ce point sûr, image partiellement reconstruite, temps et morts conservés. Une partie terminée se rejoue depuis le début. Les reprises intra-niveau restent sur cet appareil, contrairement aux résultats terminés qui peuvent être synchronisés avec un compte facultatif.
 
+Le bouton **PAUSE** à l'écran n'existe que sur écran tactile : au clavier c'est Échap, à la manette Start.
+
 Sur téléphone, le jeu se joue **en paysage** : tenu en portrait, un écran demande de le tourner et le jeu se met en pause.
 
 ## Options, langues, manette, plein écran
 - **Langues** : français (source) et anglais. Bouton **FR/EN** en haut à droite de l'accueil (touche L), ou **OPTIONS → LANGUE**. Un navigateur non français démarre en anglais.
-- **OPTIONS** : langue, son, plein écran, **touches réaffectables** (3 emplacements par action : gauche, droite, sauter, grimper, s'accroupir ; Échap, Entrée, H et M restent réservées), état de la manette, confidentialité, effacement de ses données.
+- **OPTIONS** : langue, son, plein écran, **animations** (Auto = suit le système, Activées ou Réduites ; en mouvement réduit l'avatar de l'accueil attend au milieu de la ligne), **touches réaffectables** (3 emplacements par action : gauche, droite, sauter, grimper, s'accroupir ; Échap, Entrée, H et M restent réservées), état de la manette, confidentialité, effacement de ses données.
 - **Deux groupes Options** : JEU ET COMMANDES / DONNÉES ET AIDE, clic ou Tab (LB/RB à la manette). **À propos** propose trois rubriques distinctes : Crédits, Confidentialité, Sources et licences, avec pages de lecture et retour à l'écran d'origine.
 - **Manette** (API Gamepad, aucune installation) : branche-la et appuie sur un bouton. Croix ou stick = bouger ; A = sauter / valider ; B = retour ; Start = pause. Elle pilote aussi les menus.
 - **Dernier périphérique utilisé** : une vraie touche ou un clic réaffiche le clavier ; une nouvelle pression manette ou un stick engagé réaffiche ses boutons, sans fermer l'écran ouvert. Connexion seule et dérive du stick ne basculent pas l'interface. Y = aide, LB/RB = pages ; X = son sur la carte/en jeu, aperçu dans l'avatar, rejouer au résultat. Les libellés Sony sont adaptés si le modèle est reconnu. Le livre affiche les touches de jeu réellement configurées ; les menus gardent leur navigation propre.
@@ -120,6 +122,7 @@ Recette automatisée reproductible et limites : [tests/README.md](tests/README.m
 - Si l'API coupe, le jeu garde **la dernière météo reçue** (widget « HORS LIGNE ») ; sinon météo **NEUTRE** sans effet ([data/fallback.json](data/fallback.json), copie documentaire des valeurs JS, non chargée par le moteur). Le widget affiche deux lignes ; le mode test indique « TEST · SIMULATION ». Les réponses incomplètes ou non numériques sont rejetées. Progression dans `localStorage`, ou en mémoire jusqu'à fermeture si le stockage est bloqué.
 - La météo est redemandée toutes les 5 min, et dès que le réseau revient.
 - Images à reconstruire : photo pixélisée validée pour le Jardin des Plantes ; pour les autres lieux, le monument de la planche de sprites en attendant des photos Commons validées.
+- **Difficulté** : courbe d'obstacles rééquilibrée le 11 novembre ([docs/equilibrage.md](docs/equilibrage.md), `node tools/balance.cjs`), mesurée sur les données et **jamais validée par des joueurs**.
 - Douze versions de travail et trois boss ; Bouffay reste détaché. Aucun nouvel atlas ni illustration-récompense finale ajouté. Les outils de test et le sélecteur de développement restent exclus de la publication Vercel.
 - La provenance/licence de la référence de l'avatar reste à clarifier avant diffusion large. Les notices secondaires demandent encore une vérification documentaire.
 - Le mode tactile est conçu pour le paysage ; le canvas n'est pas entièrement accessible aux lecteurs d'écran. Les tests de fenêtre responsive ne remplacent pas un vrai essai iOS/Android.
@@ -137,7 +140,7 @@ node tools/compare-figma.js
 ```
 Tests Phaser reproductibles et procédures offline/responsive : [tests/README.md](tests/README.md). Il n'existe pas de commande de build : le livrable est le dossier statique. Aucun déploiement ni changement de base distant n'a été exécuté pendant l'audit. Pour Vercel : conserver `vercel.json`, publier uniquement avec l'accord de l'équipe ; augmenter la version de cache de `sw.js` lors d'une nouvelle livraison de fichiers. Un ancien onglet doit être fermé pour laisser la nouvelle copie s'activer.
 
-Dernière recette locale : 39 tests Node ; par format 1920×1080, 1366×768 et 844×390, 73 contrôles de régression + 97 de polish + 24 du socle, tous réussis. Neuf diagnostics géométriques réussis. Les simulations DOM/Gamepad et fenêtres CSS ne remplacent ni un test humain ni un appareil réel. `js/data/tuning.js` centralise les valeurs existantes sans changer arbitrairement la difficulté.
+Dernière recette locale : 57 tests Node (dont l'équilibrage) ; par format 1920×1080, 1366×768 et 844×390, 73 contrôles de régression + 97 de polish + 24 du socle, tous réussis. Neuf diagnostics géométriques réussis. Les simulations DOM/Gamepad et fenêtres CSS ne remplacent ni un test humain ni un appareil réel. `js/data/tuning.js` centralise les valeurs existantes sans changer arbitrairement la difficulté.
 
 ## Stack
 Phaser 3.90 (inclus en local), JavaScript natif en scripts classiques (pas de build, compatible `file://`), police Press Start 2P, résolution 480×270 agrandie sans lissage. Le décor vient de planches de sprites en texte (une lettre = une couleur d'une palette de 35) transformées en textures au démarrage ; les fonds du Jardin et du Château, les silhouettes, les plantes et les salles intérieures sont dessinés par code (`GP.PixelArt`, `js/systems/LevelArt.js`). Déploiement statique sur Vercel.
