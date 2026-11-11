@@ -166,3 +166,13 @@
 **Écarts avec le plan fourni** : le sol est coupé sous le premier pont pour que le bassin se voie ; les oiseaux volent 1,625 tuile au-dessus du sol (le plan disait 2 : à cette hauteur le moteur ne touche pas un joueur debout, donc l'accroupi n'aurait servi à rien) ; les appuis du Palmarium suivent le sprite (topiaires à 2,7 tuiles du sol au lieu de 2).
 
 **Recette exécutée** : 74 tests Node, faisabilité (arrivée, 15 pixels, 3 lanternes), contrôle à l'écran des cinq zones, oiseau éprouvé en jeu (debout touché, accroupi sauf pendant 7 s). **Non réalisé** : aucune traversée humaine complète ; le rythme des jets et le final (ronce, oiseau, jet) restent à jouer.
+
+## Mercredi 11 novembre 2026 (suite 8) — carte postale de fin de partie
+
+**Demande** : le butin de fin de partie décrit dans [spec-carte-postale.md](spec-carte-postale.md) : une carte postale de Nantes reconstruite, unique car elle garde l'avatar, les étoiles, la date et la **météo réelle de Nantes au moment de la fin**.
+
+**Réalisé** : `js/systems/Postcard.js` (enregistrement de la fin de partie, phrase, rendu 1800 × 1200, téléchargement), `js/scenes/PostcardScene.js` (aperçu, phrase en texte normal, champ du pseudo, TÉLÉCHARGER MA CARTE, REJOUER), bouton MA CARTE du menu, suite de l'écran de fin après le dernier niveau. Rendu net : illustration dessinée en 600 × 400 puis agrandie ×3 sans lissage ; texte dessiné directement en grand, par multiples de 8 px ; ciel, nuages, soleil et lune du jeu ; fond de texte clair sous un ciel clair, sombre sous un ciel sombre.
+
+**Choix** : la fin de partie vit dans sa propre clé (`greenpath.postcard`), **hors de la sauvegarde envoyée au serveur** : la carte et son pseudo ne quittent jamais le navigateur (test dédié). Une météo de secours n'est jamais présentée comme réelle : la phrase omet alors le ciel. Le total d'étoiles suit le nombre de niveaux jouables (variante « N lieux de Nantes reconstruits » si moins de 12). Un joueur qui avait fini avant la mise en ligne reçoit sa carte à la première ouverture de MA CARTE.
+
+**Recette exécutée** : tests Node (phrase, ciel, singulier, sans météo, pseudo, fichier, première fin qui fait foi, cloud) ; contrôle à l'écran dans Chrome : écran de fin → carte, neuf météos en clair et sombre, saisie du pseudo sans déclencher le téléchargement, nom de fichier `green-path-nantes-AAAA-MM-JJ.png`, aucune erreur console. **Non réalisé** : essai sur iOS/Android (champ du pseudo, téléchargement) ; le critère « revoir plus tard garde la météo » n'est vérifié que par test Node, pas par une vraie reprise jouée.

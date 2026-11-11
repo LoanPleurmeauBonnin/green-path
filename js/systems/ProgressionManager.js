@@ -67,7 +67,7 @@ GP.Progression = {
 
   setCurrent: function (i) { this.data.current = i; this.persist(); },
 
-  reset: function () { GP.Save.reset(); this.data = GP.Save.defaults(); this.justCompleted = null; },
+  reset: function () { GP.Save.reset(); if (GP.Postcard) GP.Postcard.clear(); this.data = GP.Save.defaults(); this.justCompleted = null; },
 
   get muted() { return this.data.muted; },
   set muted(v) { this.data.muted = !!v; this.persist(); }

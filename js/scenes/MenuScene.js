@@ -125,11 +125,12 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     this.mode = 'main';
     var list = [{ label: has ? 'CONTINUER' : 'COMMENCER', action: function () { self.start(); } }];
     list.push({ label: "PERSONNALISER L'AVATAR", action: function () { self.openCreator('menu'); } });
+    if (GP.Postcard.allDone()) list.push({ label: 'MA CARTE', action: function () { self.goTo('Postcard'); } });   // la carte postale de fin de partie
     if (has) list.push({ label: 'RÉINITIALISER', action: function () { self.buildConfirm(); } });
     list.push({ label: 'CLASSEMENT', action: function () { self.goTo('Score'); } });
     list.push({ label: 'OPTIONS', action: function () { self.goTo('Options'); } });
     list.push({ label: 'CRÉDITS', action: function () { self.buildCredits(); } });
-    this.setItems(list, 116, 23);
+    this.setItems(list, list.length > 6 ? 112 : 116, list.length > 6 ? 21 : 23);
   }
 
   buildConfirm() {

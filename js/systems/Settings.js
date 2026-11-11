@@ -89,7 +89,7 @@ GP.Settings = (function () {
     /** Efface tout ce que le jeu garde dans le navigateur (RGPD : droit à l'effacement). */
     clearAll: function () {
       var st = storage();
-      if (st) try { ['greenpath.save', 'greenpath.save.corrupt', 'greenpath.weather', 'greenpath.iostip', KEY].forEach(function (k) { st.removeItem(k); }); } catch (e) { /* ignoré */ }
+      if (st) try { ['greenpath.save', 'greenpath.save.corrupt', 'greenpath.weather', 'greenpath.iostip', 'greenpath.postcard', KEY].forEach(function (k) { st.removeItem(k); }); } catch (e) { /* ignoré */ }
       if (GP.Cloud) GP.Cloud.clearLocal();
       if (GP.Progression) GP.Progression.reset();
       this.keys = clone(DEFAULT_KEYS);
