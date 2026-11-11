@@ -19,7 +19,7 @@ GP.Ed = (function () {
 
   var S = {
     online: false, idx: -1, id: null, doc: null, last: '', undo: [], redo: [], dirty: false, sel: null, tool: 'select', snap: 0.5, showGrid: true, space: false,
-    cat: 'decor', brush: null, mat: 'herbe', vis: {}, cursor: null, scene: null, buildError: null, version: 0, mode: 'level', msg: '', msgKind: '', search: '', all: false
+    report: null, checking: false, cat: 'decor', brush: null, mat: 'herbe', vis: {}, cursor: null, scene: null, buildError: null, version: 0, mode: 'level', msg: '', msgKind: '', search: '', all: false
   };
   var UI = {};   // éléments du DOM
 
@@ -184,7 +184,7 @@ GP.Ed = (function () {
   function load(id) {
     var i = GZ_ORDER.indexOf(id); if (i < 0) return;
     if (S.dirty && S.id && !confirm('Des modifications ne sont pas publiées (elles restent dans le brouillon). Changer de niveau ?')) { refreshTop(); return; }
-    S.idx = i; S.id = id; S.undo = []; S.redo = []; S.sel = null; S.dirty = false;
+    S.idx = i; S.id = id; S.undo = []; S.redo = []; S.sel = null; S.dirty = false; S.report = null;
     var base = clone(GP.GZONES[i]); delete base.__edit;
     var draft = null; try { draft = JSON.parse(localStorage.getItem(draftKey(id))); } catch (e) { draft = null; }
     if (draft && draft.doc && JSON.stringify(draft.doc) !== JSON.stringify(base) && !GP.Content.checkLevel(draft.doc, i) &&
@@ -205,6 +205,64 @@ GP.Ed = (function () {
     return true;
   }
   function stripped() { var d = clone(S.doc); delete d.__edit; return d; }
+  // ---------- Contrôle : faisabilité (simulation du joueur) et cohérence (lint) ----------
+  /** Lance le contrôle du document courant ; résout { issues, solver, ms }. Les erreurs bloquent la publication. */
+  function check() {
+    var json = S.last, d = JSON.parse(json);
+    S.checking = true; refreshTop();
+    var issues = GP.Lint.check(d), roofs = [];
+    try { var c = clone(d); c.refonte = c.retouche = c.equilibre = true; roofs = GP.GZoneLevels.make(c, S.id).roofs || []; } catch (e) { issues.push({ level: 'erreur', code: 'construction', msg: 'Le niveau ne peut pas être construit : ' + e.message }); }
+    d.roofs = roofs;
+    return new Promise(function (resolve) {
+      var done = false, w = null;
+      function finish(solver, ms, err) {
+        if (done) return; done = true; if (w) w.terminate();
+        if (solver) {
+          if (!solver.exit) issues.push({ level: 'erreur', code: 'arrivee-inatteignable', msg: 'L’arrivée est inatteignable : le joueur ne peut pas finir le niveau.', list: 'arrivee', x: d.arrivee.declencheur.x, y: d.arrivee.declencheur.y });
+          solver.missing.forEach(function (m) {
+            var id = m.split('@')[0], idx = d.pixels.findIndex(function (p) { return String(p.id) === id; }), p = d.pixels[idx] || {};
+            issues.push({ level: 'erreur', code: 'pixel-inatteignable', msg: 'Le pixel ' + m + ' est inatteignable.', list: 'pixels', i: idx, x: p.x, y: p.y });
+          });
+          solver.lights.forEach(function (m) { var xy = m.split(','), idx = d.checkpoints.findIndex(function (c) { return c.x === +xy[0] && c.y === +xy[1]; });
+            issues.push({ level: 'erreur', code: 'lanterne-inatteignable', msg: 'La lanterne (' + m + ') est inatteignable.', list: 'checkpoints', i: idx, x: +xy[0], y: +xy[1] }); });
+        } else issues.push({ level: 'avertissement', code: 'simulation', msg: 'La simulation du joueur n’a pas pu tourner (' + (err || 'indisponible') + ') : la faisabilité n’est pas vérifiée.' });
+        S.checking = false;
+        S.report = { json: json, at: Date.now(), issues: issues, solver: solver, ms: ms };
+        refreshTop(); refreshInspector(); refreshStatus();
+        resolve(S.report);
+      }
+      try {
+        w = new Worker('js/editor/solvability-worker.js');
+        w.onmessage = function (e) { if (e.data.ok) finish(e.data.result, e.data.ms); else finish(null, 0, e.data.error); };
+        w.onerror = function (e) { finish(null, 0, e.message); };
+        w.postMessage({ doc: d });
+        setTimeout(function () { finish(null, 0, 'délai dépassé (60 s)'); }, 60000);
+      } catch (e) { finish(null, 0, e.message); }
+    });
+  }
+  function reportFresh() { return !!S.report && S.report.json === S.last; }
+  function counts(r) { return { err: r.issues.filter(function (i) { return i.level === 'erreur'; }).length, warn: r.issues.filter(function (i) { return i.level !== 'erreur'; }).length }; }
+  /** Garde-fou : un niveau qui a des erreurs de faisabilité ne se publie pas sans une confirmation explicite. Résout vrai si on peut publier. */
+  function guard() {
+    var p = reportFresh() ? Promise.resolve(S.report) : check();
+    return p.then(function (r) {
+      var c = counts(r);
+      if (!c.err) return c.warn ? confirm('Le contrôle signale ' + c.warn + ' avertissement(s) (voir le panneau Contrôle). Publier quand même ?') : true;
+      return new Promise(function (resolve) {
+        var list = el('div', { class: 'list' });
+        r.issues.filter(function (i) { return i.level === 'erreur'; }).forEach(function (i) { list.appendChild(el('div', { text: '✖ ' + i.msg })); });
+        var m = modal('Publication bloquée : ' + c.err + ' erreur(s)', el('div', {}, [el('p', { text: 'Les joueurs pourraient être bloqués ou perdre leur progression. Corrige ces erreurs (clique-les dans le panneau Contrôle pour les voir dans le niveau), puis republie.' }), list]),
+          [btn('Publier malgré tout', function () { m.close(); resolve(confirm('Dernière confirmation : publier un niveau qui a des erreurs de faisabilité ?')); }, 'danger')]);
+        document.querySelector('#ed-modal .row .btn:last-child').addEventListener('click', function () { resolve(false); });
+      });
+    });
+  }
+  function goTo(issue) {
+    if (issue.list && issue.i !== undefined && issue.i >= 0) select({ list: issue.list, i: issue.i });
+    else if (issue.list === 'spawn' || issue.list === 'arrivee') select({ list: issue.list });
+    if (S.scene && issue.x !== undefined) S.scene.centerOn(issue.x, issue.y);
+  }
+
   function test() {
     if (!validate()) return;
     var data = { level: S.id, doc: stripped(), textures: GP.TexEd ? GP.TexEd.drafts() : {} };
@@ -214,6 +272,10 @@ GP.Ed = (function () {
   function publish() {
     if (!S.online) { say('Hors ligne : impossible de publier.', 'warn'); return; }
     if (!validate()) return;
+    say('Contrôle avant publication…', '');
+    guard().then(function (ok) { if (ok) doPublish(); else say('Publication annulée.', 'warn'); });
+  }
+  function doPublish() {
     if (!confirm('Publier « ' + S.doc.nom + ' » ? Tous les joueurs joueront cette version (tu pourras revenir à l’original ou à une version précédente).')) return;
     say('Publication…', '');
     GP.Cloud.rpc('gp_level_save', { p_code: GP.Cloud.code, p_level: S.id, p_doc: stripped() }).then(function (r) {
@@ -295,6 +357,9 @@ GP.Ed = (function () {
     top.appendChild(sel);
     top.appendChild(btn('↶', undo, '', 'Annuler (Ctrl+Z)')); top.appendChild(btn('↷', redo, '', 'Rétablir (Ctrl+Y)'));
     top.appendChild(el('span', { class: 'sep' }));
+    var rep = S.report, chip = S.checking ? '… contrôle' : !rep ? 'Vérifier' : !reportFresh() ? 'Revérifier' : counts(rep).err ? '✖ ' + counts(rep).err + ' erreur(s)' : counts(rep).warn ? '⚠ ' + counts(rep).warn + ' avertissement(s)' : '✔ Faisable';
+    var cb = btn(chip, function () { if (!S.checking) check(); }, rep && reportFresh() ? (counts(rep).err ? 'danger' : counts(rep).warn ? '' : 'on') : '', 'Simule un joueur du départ à l’arrivée (pixels, lanternes) et contrôle la cohérence du niveau');
+    top.appendChild(cb);
     top.appendChild(btn('▶ Tester', test, '', 'Joue ce brouillon dans un nouvel onglet (rien n’est publié ni enregistré)'));
     top.appendChild(btn('Publier', publish, 'primary', 'Tous les joueurs jouent cette version'));
     top.appendChild(btn('Original', resetOriginal, 'danger', 'Revenir au niveau d’origine'));
@@ -411,6 +476,13 @@ GP.Ed = (function () {
       R.appendChild(add);
       R.appendChild(el('div', { class: 'row' }, [btn('Dupliquer', dupSel), btn('Supprimer', removeSel, 'danger')]));
     } else R.appendChild(el('p', { class: 'hint', text: 'Clique un objet du niveau pour modifier ses propriétés.' }));
+    if (S.report) {
+      R.appendChild(el('h3', { text: 'Contrôle' + (reportFresh() ? '' : ' (périmé)') }));
+      var rl = el('div', { class: 'list', style: 'max-height:200px' });
+      if (!S.report.issues.length) rl.appendChild(el('div', { text: '✔ Aucun problème. Faisable (' + S.report.solver.farthest + ' tuiles atteintes, ' + (S.report.ms / 1000).toFixed(1) + ' s).' }));
+      S.report.issues.forEach(function (i) { rl.appendChild(el('div', { style: i.level === 'erreur' ? 'color:#f08a7a' : 'color:#e8c872', onclick: function () { goTo(i); } }, [el('span', { text: (i.level === 'erreur' ? '✖ ' : '⚠ ') + i.msg })])); });
+      R.appendChild(rl);
+    }
     R.appendChild(el('h3', { text: 'Niveau' }));
     var lg = el('div', { class: 'grid2' });
     var nom = el('input', { type: 'text', value: d.nom || '' }); nom.addEventListener('change', function () { d.nom = nom.value; commit(); refreshTop(); });
@@ -463,7 +535,7 @@ GP.Ed = (function () {
     set cursor(v) { S.cursor = v; }, get cursor() { return S.cursor; }, set buildError(v) { S.buildError = v; }, get buildError() { return S.buildError; },
     ids: IDS, order: GZ_ORDER, allSprites: allSprites, thumb: thumb, el: el, btn: btn, modal: modal, clone: clone, say: say,
     get online() { return S.online; }, get mode() { return S.mode; },
-    undo: undo, redo: redo, select: select, commit: commit, removeSel: removeSel, placeAt: placeAt, addBlock: addBlock, layerOn: layerOn, refreshStatus: refreshStatus,
+    check: check, guard: guard, get report() { return S.report; }, reportFresh: reportFresh, undo: undo, redo: redo, select: select, commit: commit, removeSel: removeSel, placeAt: placeAt, addBlock: addBlock, layerOn: layerOn, refreshStatus: refreshStatus,
     refreshAll: refreshAll, refreshLeft: refreshLeft, setMode: setMode,
 
     init: function (online) {

@@ -80,7 +80,7 @@ test('Éditeur : editor.html charge les mêmes scripts que index.html jusqu’à
   const idx = scripts(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')), ed = scripts(fs.readFileSync(path.join(ROOT, 'editor.html'), 'utf8'));
   const base = idx.slice(0, idx.indexOf('js/scenes/BootScene.js') + 1);
   assert.deepEqual(ed.slice(0, base.length), base);
-  assert.deepEqual(ed.slice(base.length), ['js/editor/EditorScene.js', 'js/editor/EditorUI.js', 'js/editor/TextureEditor.js', 'js/editor/editor-main.js']);
+  assert.deepEqual(ed.slice(base.length), ['js/systems/Lint.js', 'js/editor/EditorScene.js', 'js/editor/EditorUI.js', 'js/editor/TextureEditor.js', 'js/editor/editor-main.js']);
   assert.ok(idx.indexOf('js/systems/Content.js') > idx.indexOf('js/data/GZoneLevels.js'), 'Content.js après GZoneLevels.js');
   assert.ok(!/editor/.test(fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8').replace(/greenpath-offline[^']*/, '')) || true);
 });
@@ -98,4 +98,23 @@ test('Supabase : chaque fonction appelée par le jeu ou l’éditeur existe dans
   assert.equal(writes.length, 6);
   for (const w of writes) assert.ok(w.includes('gp_admin_id'), 'contrôle admin : ' + w.slice(0, 40));
   assert.ok(!/profiles/.test(sql.split('create function public.gp_content_get')[1].split('$$;')[0].replace(/'/g, '')) || true);
+});
+
+test('Contrôle : cohérence (lint) et faisabilité (simulation) sur un niveau sain et un niveau cassé', () => {
+  const G = context(['js/data/sprites/commun.js', 'js/systems/Lint.js']); G.Solvability = require('../js/systems/Solvability.js');
+  const ok = clone(G.GZONES[0]);
+  assert.equal(G.Lint.check(ok).filter(i => i.level === 'erreur').length, 0);
+  const r = G.Solvability.solve(ok);
+  assert.ok(r.exit && r.missing.length === 0 && r.lights.length === 0, 'le jardin est faisable');
+  // un départ dans la matière et un pixel enterré sont des erreurs
+  const bad = clone(ok); bad.spawn = { x: 5, y: 16 }; bad.pixels.push({ id: 99, x: 5, y: 16 });
+  const codes = G.Lint.check(bad).map(i => i.code);
+  assert.ok(codes.includes('depart-solide') && codes.includes('pixel-solide'), codes.join());
+  // supprimer le sol sous la première moitié du niveau rend l'arrivée inatteignable
+  const cut = clone(ok); cut.plateformes = cut.plateformes.filter(p => !(p.type === 'masse' && p.x >= 40 && p.x < 90));
+  const r2 = G.Solvability.solve(cut);
+  assert.ok(!r2.exit, 'sans sol, l’arrivée est inatteignable');
+  // un objet qui flotte est signalé
+  const fl = clone(ok); fl.decor.push({ sprite: 'commun_fleur_rouge', x: 30, y: 6 });
+  assert.ok(G.Lint.check(fl).some(i => i.code === 'flottant'));
 });
