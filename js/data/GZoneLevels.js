@@ -32,6 +32,30 @@ GP.GZoneLevels = (function () {
     (b.ajouter || []).forEach(function (h) { d.dangers.push(Object.assign({}, h)); });
     if (b.vitesse) (d.ennemis || []).forEach(function (e) { if (e.vitesse) e.vitesse = Math.round(e.vitesse * b.vitesse * 100) / 100; });
   }
+  /**
+   * RETOUCHES DE GÉOMÉTRIE : corrections de faisabilité et de lisibilité par-dessus les documents importés (gzones.js reste
+   * intact). Chaque retouche est vérifiée par `node tools/solvability.cjs` : un niveau doit être finissable, pixels compris.
+   *   retirer : ids de plateformes supprimées · modifier : { id: propriétés } · ajouter : plateformes ajoutées
+   */
+  var REPAIRS = {
+    // Cathédrale : les montants de la porte des toits étaient des murs pleins de 4 tuiles sur le chemin du joueur (la porte
+    // se traverse entre eux, elle ne se contourne pas). Ils deviennent des jambages de décor ; le linteau reste au-dessus.
+    2: { modifier: { p23: { fond: true }, p24: { fond: true } } },
+    // Feydeau : le pilier du balcon secret (une colonne pleine de 3 tuiles posée sur le tablier) barrait l'entrée du balcon depuis
+    // les bateaux, donc le niveau était infinissable après x=132. Il devient un pilier de décor.
+    4: { modifier: { p37: { fond: true } } }
+  };
+  function repair(d) {
+    var r = REPAIRS[d.num];
+    if (!r || d.retouche) return;
+    d.retouche = true;
+    (r.retirer || []).forEach(function (id) { d.plateformes = d.plateformes.filter(function (p) { return p.id !== id; }); });
+    Object.keys(r.modifier || {}).forEach(function (id) {
+      d.plateformes.forEach(function (p) { if (p.id === id) Object.assign(p, r.modifier[id]); });
+    });
+    (r.ajouter || []).forEach(function (p) { d.plateformes.push(Object.assign({}, p)); });
+  }
+  GP.GZONES.forEach(repair);
   GP.GZONES.forEach(balance);
   function make(d, id) {
     var L = GP.LevelBuilder.create(d.largeur, function () {}, d.hauteur);
@@ -105,5 +129,5 @@ GP.GZoneLevels = (function () {
   });
   GP.LAST_PLAYABLE = 11;
   GP.Config.ROUTE_VERSION = 'gzones-1';
-  return { ids: ids, make: make, balance: BALANCE };
+  return { ids: ids, make: make, balance: BALANCE, repairs: REPAIRS };
 })();

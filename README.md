@@ -139,6 +139,7 @@ Node.js 18+ pour les tests seulement (aucune installation npm) :
 ```bash
 node --test tests/*.test.js
 node tools/compare-figma.js
+node tools/solvability.cjs   # chaque niveau est-il finissable ? (docs/methode-niveaux.md)
 ```
 Tests Phaser reproductibles et procédures offline/responsive : [tests/README.md](tests/README.md). Il n'existe pas de commande de build : le livrable est le dossier statique. Aucun déploiement ni changement de base distant n'a été exécuté pendant l'audit. Pour Vercel : conserver `vercel.json`, publier uniquement avec l'accord de l'équipe ; augmenter la version de cache de `sw.js` lors d'une nouvelle livraison de fichiers. Un ancien onglet doit être fermé pour laisser la nouvelle copie s'activer.
 
