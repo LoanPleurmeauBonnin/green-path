@@ -165,7 +165,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       var t = GP.UI.txt(self, h.x * 16 + 8, h.y * 16 - 4, '', GP.PAL.w, { backgroundColor: GP.PAL.d, padding: { x: 3, y: 4 }, align: 'center', wordWrap: { width: Math.min(360, GP.Config.WIDTH - 24) } })
         .setOrigin(0.5, 1).setDepth(40).setAlpha(0);
       GP.Prompts.bind(self, t, ' ' + h.text + ' ');
-      return { x: h.x * 16 + 8, text: t, shown: false };
+      return { x: h.x * 16 + 8, top: h.y * 16 - 4, low: (h.y + 1) * 16 + 4, text: t, shown: false };
     });
     this.pixels = L.pixels.map(function (p) {
       var img = S.has('commun_pixel') ? S.add(self, p.x * 16 + 8, p.y * 16 + 8, 'commun_pixel') : self.add.image(p.x * 16 + 8, p.y * 16 + 8, 'lv_pixel');
@@ -838,6 +838,9 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.signs.forEach(function (s) {
       var cam = self.cameras.main;
       s.text.x = Phaser.Math.Clamp(s.x, cam.scrollX + s.text.width / 2 + 6, cam.scrollX + GP.Config.WIDTH - s.text.width / 2 - 6);
+      // Panneau très haut dans le niveau : le texte passerait sous le HUD, on le met sous le panneau (dans le sol).
+      var under = s.top - s.text.height - cam.scrollY < 56;
+      s.text.setOrigin(0.5, under ? 0 : 1); s.text.y = under ? s.low : s.top;
       var near = Math.abs(p.x - s.x) < 40;
       if (near !== s.shown) { s.shown = near; self.tweens.add({ targets: s.text, alpha: near ? 1 : 0, duration: 160 }); }
     });
