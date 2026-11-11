@@ -26,7 +26,8 @@ GP.LOCATIONS = [
   {
     id: 'jardin-des-plantes', name: 'Jardin des Plantes',
     sprite: 'jardin_monument_jardin',
-    playable: true, level: 'jardin-des-plantes', parTime: 90,
+    playable: true, level: 'jardin-des-plantes', parTime: GP.Tuning.parTimes['jardin-des-plantes'],
+    grammar: "VARIATION VÉGÉTALE : la photo se révèle du sol vers le ciel, au centre puis sur les côtés. C'est une métaphore de croissance, pas une simulation botanique. La pluie active les ronces ; le soleil ouvre des fleurs-plateformes.",
     notice: "Jardin botanique de Nantes, face à la gare. Serres, camélias et grands arbres en font un havre de verdure en plein centre-ville. Premier pas de la ligne verte.",
     summary: [
       "Le Jardin des Plantes est le jardin botanique de Nantes. Il s'ouvre juste en face de la gare : on y passe en quelques pas du parvis, de ses arrêts de tram et de ses façades de verre, à l'ombre des grands arbres.",
@@ -39,15 +40,17 @@ GP.LOCATIONS = [
   {
     id: 'cathedrale', name: 'Cathédrale Saint-Pierre-et-Saint-Paul',
     sprite: 'cathedrale_monument_cathedrale',
-    playable: true, level: 'cathedrale', parTime: 110,
+    playable: true, level: 'cathedrale', parTime: GP.Tuning.parTimes.cathedrale,
+    grammar: "VARIATION VERTICALE : les colonnes répétées deviennent des zones d'escalade et les corniches des appuis. L'image remonte ligne par ligne. Les gargouilles évoquent l'évacuation de l'eau : sous la pluie, les gouttes tombent plus souvent.",
     notice: "Édifice gothique dont la construction débute en 1434 et s'achève au XIXe siècle. Elle abrite le tombeau de François II. Sa nef de pierre blanche est très haute.",
     element: { label: 'Façade et deux tours', verify: false }, verify: false
   },
   {
     id: 'chateau', name: 'Château des ducs de Bretagne',
     sprite: 'chateau_monument_chateau',
-    playable: true, level: 'chateau', parTime: 100,
-    notice: "Forteresse des ducs de Bretagne, reconstruite à la fin du XVe siècle par François II puis Anne de Bretagne. Ses remparts de tuffeau abritent aujourd'hui le musée d'histoire de Nantes.",
+    playable: true, level: 'chateau', parTime: GP.Tuning.parTimes.chateau,
+    grammar: "SOURCE PRINCIPALE : les murs, les tours et les portes du Château deviennent masse, élévation et seuils à franchir. La reconstruction révèle l'assise, la courtine centrale puis les tours latérales. Les herses imposent une alternance passage / attente. C'est une traduction ludique, pas une reconstitution historique.",
+    notice: "Forteresse des ducs de Bretagne, reconstruite à la fin du XVe siècle par François II puis Anne de Bretagne. Ses remparts entourent un palais résidentiel. Le site abrite aujourd'hui le musée d'histoire de Nantes.",
     element: { label: 'Remparts et tours', verify: false }, verify: false
   },
   {

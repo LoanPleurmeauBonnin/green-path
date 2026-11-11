@@ -6,7 +6,7 @@
 GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
   constructor() { super('Options'); }
 
-  init(data) { this.startSel = (data && data.sel) || 0; this.startMode = (data && data.mode) || 'main'; }
+  init(data) { this.startSel = (data && data.sel) || 0; this.startMode = (data && data.mode) || 'main'; this.group = data && data.group === 1 ? 1 : 0; }
 
   txt(x, y, s, color) {
     return this.add.text(x, y, s, { fontFamily: GP.Config.FONT, fontSize: '8px', color: color || GP.PAL.w });
@@ -27,11 +27,19 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     kb.on('keydown-DOWN', function () { self.move(1); });
     kb.on('keydown-LEFT', function () { self.side(-1); });
     kb.on('keydown-RIGHT', function () { self.side(1); });
-    kb.on('keydown-ENTER', function () { self.activate(); });
-    kb.on('keydown-SPACE', function () { self.activate(); });
+    kb.on('keydown-ENTER', function (ev) { self.activate(ev); });
+    kb.on('keydown-SPACE', function (ev) { self.activate(ev); });
     kb.on('keydown-ESC', function () { self.back(); });
     kb.on('keydown', function (ev) { self.onAnyKey(ev); });
+    kb.addCapture(9);
+    kb.on('keydown-TAB', function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); self.cycleGroup(ev && ev.shiftKey ? -1 : 1); });
+    kb.on('keydown-PAGEUP', function () { self.cycleGroup(-1); });
+    kb.on('keydown-PAGEDOWN', function () { self.cycleGroup(1); });
     this.events.once('shutdown', function () { kb.removeAllListeners(); GP.Pad.capture = false; });
+    GP.Prompts.watch(this, function () {
+      if (self.capturing) return;
+      if (self.mode === 'keys') self.build(); else self.refresh();
+    });
   }
 
   // ---------- lignes ----------
@@ -44,7 +52,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     ];
     if (this.mode === 'keys') return this.keyRows();
     var fsOk = this.fsSupported(), isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-    return [
+    var rows = [
       { label: 'LANGUE', value: function () { return GP.I18n.lang === 'fr' ? 'FRANÇAIS' : 'ENGLISH'; }, arrows: true,
         act: function () { self.lang(); }, left: function () { self.lang(); }, right: function () { self.lang(); } },
       { label: 'SON', value: function () { return GP.Progression.muted ? 'COUPÉ' : 'ACTIVÉ'; }, arrows: true,
@@ -53,17 +61,23 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
         act: function () { self.fullscreen(); } },
       { label: 'COMPTE', value: function () { return GP.Cloud.isAccount ? GP.Cloud.pseudo : 'INVITÉ'; },
         act: function () { GP.Account.open({ mode: GP.Cloud.isAccount ? 'manage' : 'choose', onDone: function () { if (self.sys && self.sys.isActive()) self.build(); } }); } },
-      { label: 'TOUCHES', value: function () { return '>'; }, act: function () { self.mode = 'keys'; self.sel = 0; self.slot = 0; self.build(); } },
+      { label: 'COMMANDES', value: function () { return GP.Prompts.name(); }, act: function () { self.mode = 'keys'; self.sel = 0; self.slot = 0; self.build(); } },
       { label: 'MANETTE', value: function () { return GP.Pad.connected ? 'DÉTECTÉE' : 'NON DÉTECTÉE'; }, act: function () {} },
       { label: 'CONFIDENTIALITÉ', value: function () { return '>'; }, act: function () { self.privacy(); } },
-      { label: 'EFFACER MES DONNÉES', value: function () { return ''; }, act: function () { self.confirm = true; self.sel = 1; self.build(); } },
-      { label: 'RETOUR', value: function () { return ''; }, act: function () { self.leave(); } }
+      { label: 'EFFACER MES DONNÉES', value: function () { return ''; }, act: function () { self.confirm = true; self.sel = 1; self.build(); } }
     ];
+    return this.group === 0 ? rows.slice(0, 5) : rows.slice(5);
   }
 
   /** Écran des touches : une ligne par action, 3 emplacements, puis « par défaut » et retour. */
   keyRows() {
     var self = this, names = { left: 'GAUCHE', right: 'DROITE', jump: 'SAUTER', up: 'GRIMPER', down: "S'ACCROUPIR" };
+    if (GP.Prompts.device === 'gamepad') {
+      var padRows = GP.Settings.ACTIONS.map(function (a) { return { label: names[a], value: function () { return GP.Prompts.format('{' + a + '}'); } }; });
+      padRows.push({ label: 'CLAVIER', value: function () { return 'APPUYER SUR UNE TOUCHE'; } });
+      padRows.push({ label: 'RETOUR', act: function () { self.mode = 'main'; self.sel = 4; self.build(); } });
+      return padRows;
+    }
     var rows = GP.Settings.ACTIONS.map(function (a) { return { action: a, label: names[a], keys: true }; });
     rows.push({ label: 'TOUCHES PAR DÉFAUT', act: function () { GP.Settings.resetKeys(); self.toast('TOUCHES PAR DÉFAUT'); self.build(); } });
     rows.push({ label: 'RETOUR', act: function () { self.mode = 'main'; self.sel = 4; self.build(); } });
@@ -75,9 +89,17 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     this.layer.forEach(function (o) { o.destroy(); }); this.layer = [];
     this.rowsList = this.rows();
     this.sel = Math.max(0, Math.min(this.sel, this.rowsList.length - 1));
-    this.title.setText(this.confirm ? 'EFFACER LES DONNÉES DE CE NAVIGATEUR ?' : (this.mode === 'keys' ? 'TOUCHES' : 'OPTIONS'));
-    var top = this.mode === 'keys' && !this.confirm ? 56 : (this.confirm ? 100 : 30), step = this.mode === 'keys' && !this.confirm ? 24 : (this.confirm ? 26 : 22);
-    if (this.mode === 'keys' && !this.confirm) {
+    this.title.setText(this.confirm ? 'EFFACER LES DONNÉES DE CE NAVIGATEUR ?' : (this.mode === 'keys' ? (GP.Prompts.device === 'gamepad' ? 'COMMANDES MANETTE' : 'TOUCHES') : 'OPTIONS'));
+    var top = this.mode === 'keys' && !this.confirm ? 56 : (this.confirm ? 100 : 66), step = this.mode === 'keys' && !this.confirm ? 26 : 28;
+    if (this.mode === 'main' && !this.confirm) {
+      ['JEU ET COMMANDES', 'DONNÉES ET AIDE'].forEach(function (label, i) {
+        var tab = GP.UI.button(self, 60 + i * 184 + GP.Config.DX, 32, 176, label, function () { self.group = i; self.sel = 0; self.build(); }, { height: 20 });
+        tab.hover(self.group === i); self.layer = self.layer.concat(tab.objs);
+      });
+      var back = GP.UI.button(this, 170 + GP.Config.DX, 224, 140, '', function () { self.leave(); });
+      GP.Prompts.bind(this, back.label, 'RETOUR {back}'); this.layer = this.layer.concat(back.objs);
+    }
+    if (this.mode === 'keys' && !this.confirm && GP.Prompts.device !== 'gamepad') {
       ['ACTION', 'TOUCHE 1', 'TOUCHE 2', 'TOUCHE 3'].forEach(function (h, i) { self.layer.push(self.txt(i ? 207 + (i - 1) * 83 : 70, 38, h, P.m).setOrigin(i ? 0.5 : 0, 0)); });
     }
     if (this.confirm && GP.Cloud.isAccount) this.layer.push(this.txt(W / 2, 60, "TON COMPTE EN LIGNE N'EST PAS SUPPRIMÉ : OPTIONS > COMPTE.", P.o).setOrigin(0.5, 0));
@@ -117,12 +139,17 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
         c.cell.setStrokeStyle(2, GP.int(sel ? P.g : P.k)).setFillStyle(GP.int(sel ? P.G : P.k), sel ? 0.95 : 0.6);
       });
     });
-    var h = this.capturing ? 'APPUIE SUR UNE TOUCHE (ÉCHAP : ANNULER)' : (this.mode === 'keys' && !this.confirm ? 'ENTRÉE : CHANGER   SUPPR : VIDER' : (this.confirm ? '' : 'HAUT/BAS  < > CHANGER  ENTRÉE'));
-    this.hint.setText(h);
-    if (!this.confirm && this.mode === 'main' && this.sel === 5) this.hint.setText((GP.Pad.connected ? '' : 'APPUIE SUR UN BOUTON DE LA MANETTE.  ') + 'MANETTE : STICK OU CROIX = BOUGER, A = SAUTER / VALIDER, START = PAUSE, B = RETOUR');
+    var h = this.capturing ? 'APPUIE SUR UNE TOUCHE (ÉCHAP : ANNULER)' : this.confirm ? '{confirm} VALIDER  {back} RETOUR' :
+      (this.mode === 'keys' && GP.Prompts.device !== 'gamepad' ? '{confirm} CHANGER  SUPPR : VIDER  {back} RETOUR' :
+        this.mode === 'main' ? '{navY} CHOISIR  {confirm} VALIDER\n{sections} RUBRIQUES  {back} RETOUR' : '{navY} CHOISIR  {navX} CHANGER  {confirm} VALIDER  {back} RETOUR');
+    this.hint.setText(GP.Prompts.format(h));
   }
 
   // ---------- actions ----------
+  cycleGroup(dir) {
+    if (this.mode !== 'main' || this.capturing || this.confirm || this.modal) return;
+    this.group = (this.group + dir + 2) % 2; this.sel = 0; GP.Sfx.play('step'); this.build();
+  }
   move(d) {
     if (this.capturing || this.modal) return;
     this.sel = (this.sel + d + this.rowsList.length) % this.rowsList.length; GP.Sfx.play('step'); this.refresh();
@@ -133,10 +160,10 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     if (r.keys) { this.slot = (this.slot + d + 3) % 3; GP.Sfx.play('step'); this.refresh(); return; }
     var f = d < 0 ? r.left : r.right; if (f) f();
   }
-  activate() {
+  activate(ev) {
     if (this.modal || this.capturing) return;
     var r = this.rowsList[this.sel];
-    if (r.keys) { this.capturing = { row: this.sel, slot: this.slot }; GP.Pad.capture = true; GP.Sfx.play('select'); this.refresh(); return; }
+    if (r.keys) { this.captureEvent = ev; this.capturing = { row: this.sel, slot: this.slot }; GP.Pad.capture = true; GP.Sfx.play('select'); this.refresh(); return; }
     if (r.act) { GP.Sfx.play('confirm'); r.act(); }
   }
   back() {
@@ -158,7 +185,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
   /** Touche pressée pendant une réaffectation. */
   onAnyKey(ev) {
     var c = this.capturing;
-    if (!c) return;
+    if (!c || ev === this.captureEvent) return;
     var code = ev.keyCode, row = this.rowsList[c.row];
     if (ev.preventDefault) ev.preventDefault();
     if (code === 27) { this.endCapture(); return; }
@@ -172,7 +199,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     GP.Sfx.play('select');
     GP.Settings.set({ lang: GP.I18n.lang === 'fr' ? 'en' : 'fr' });
     this.input.keyboard.removeAllListeners();
-    this.scene.restart({ sel: this.sel });
+    this.scene.restart({ sel: this.sel, group: this.group });
   }
   sound() { GP.Progression.muted = !GP.Progression.muted; GP.Sfx.play('select'); this.refresh(); }
 
@@ -188,8 +215,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
   }
 
   privacy() {
-    var self = this;
-    this.modal = GP.UI.pagedText(this, 'CONFIDENTIALITÉ', [1, 2, 3, 4, 5, 6].map(function (i) { return GP.L('privacy' + i); }), { onClose: function () { self.modal = null; } });
+    this.scene.start('About', { section: 1, returnTo: 'Options', returnData: { group: this.group, sel: this.sel } });
   }
 
   toast(msg) {

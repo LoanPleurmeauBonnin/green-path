@@ -50,4 +50,4 @@ Puis http://localhost:8123 (ajouter `?dev=1` pour les raccourcis de test : W/N m
 `node tools/compare-figma.js` contrôle l'avatar ; `tools/bot.js` (console) parcourt un niveau.
 
 ## Déploiement
-Vercel, projet `green-path` (https://green-path-sepia.vercel.app). `.vercelignore` exclut `docs` et `tools`. **Ne déployer qu'avec l'accord de l'utilisateur** (`npx vercel --prod`). Ne jamais commiter ni pousser sans accord.
+Vercel, projet `green-path` (https://green-path-game.vercel.app). `.vercelignore` exclut notamment `docs`, `tools`, `tests`, `supabase` et les fichiers `.env*`. **Ne déployer qu'avec l'accord de l'utilisateur** (`npx vercel --prod`). Ne jamais commiter ni pousser sans accord.

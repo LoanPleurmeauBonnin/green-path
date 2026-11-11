@@ -57,6 +57,9 @@ GP.Scenes.Boot = class BootScene extends Phaser.Scene {
     // ----- Carte -----
     GP.MapArt.build(this);
 
-    this.scene.start('Menu');
+    if (GP.Config.DEV_LEVEL) {
+      GP.Weather.simIndex = -1; GP.Weather.nextSim();
+      this.scene.start('Game', { index: GP.LOCATIONS.findIndex(function (l) { return l.id === GP.Config.DEV_LEVEL; }) });
+    } else this.scene.start('Menu');
   }
 };

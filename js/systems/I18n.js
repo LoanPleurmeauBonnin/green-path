@@ -45,6 +45,7 @@ GP.I18n = (function () {
     GP.LOCATIONS.forEach(function (l) {
       var p = places[l.id]; if (!p) return;
       if (p.notice && l.notice) w[l.notice] = p.notice;
+      if (p.grammar && l.grammar) w[l.grammar] = p.grammar;
       if (p.summary && l.summary) l.summary.forEach(function (para, i) { if (p.summary[i]) w[para] = p.summary[i]; });
     });
   }
@@ -62,7 +63,7 @@ GP.I18n = (function () {
     },
     /** Noms de touches (GAUCHE, ESPACE…) : le nom français est traduit comme n'importe quelle phrase. */
     keyName: function (code) {
-      var K = Phaser.Input.Keyboard.KeyCodes, names = { 37: 'GAUCHE', 38: 'HAUT', 39: 'DROITE', 40: 'BAS', 32: 'ESPACE', 16: 'MAJ', 17: 'CTRL', 18: 'ALT', 8: 'EFFACER', 46: 'SUPPR', 9: 'TAB' };
+      var K = Phaser.Input.Keyboard.KeyCodes, names = { 13: 'ENTRÉE', 27: 'ÉCHAP', 37: 'GAUCHE', 38: 'HAUT', 39: 'DROITE', 40: 'BAS', 32: 'ESPACE', 16: 'MAJ', 17: 'CTRL', 18: 'ALT', 8: 'EFFACER', 46: 'SUPPR', 9: 'TAB' };
       if (!code) return '-';
       if (names[code]) return tr(names[code]);
       for (var k in K) if (K[k] === code) return k.length > 1 && /^(ZERO|ONE|TWO|THREE|FOUR|FIVE|SIX|SEVEN|EIGHT|NINE)$/.test(k) ? String(['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE'].indexOf(k)) : k;

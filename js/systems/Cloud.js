@@ -11,7 +11,27 @@
 GP.Cloud = (function () {
   var KEY = 'greenpath.cloud', SBKEY = 'greenpath.scoreboard', CFG = GP.Config.CLOUD;
   var ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // sans 0 O 1 I : lisible à la main
-  var st = { pseudo: null, code: null, choice: null, dirty: false }, timer = null;
+  var st = { pseudo: null, code: null, choice: null, dirty: false }, timer = null, revision = 0;
+  function pseudoOK(p) { return typeof p === 'string' && /^[A-Za-z0-9_-]{3,16}$/.test(p); }
+  function codeOK(c) { return typeof c === 'string' && /^[A-Z0-9]{20,64}$/.test(c); }
+  function bounded(n, max) { return typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= max; }
+  function rows(data) {
+    if (!Array.isArray(data)) return [];
+    return data.slice(0, 50).filter(function (r) {
+      return r && pseudoOK(r.pseudo) && bounded(r.rank, 1000000000) && bounded(r.total_stars, 192) &&
+        bounded(r.levels, 64) && bounded(r.total_time_ms, 2304000000);
+    });
+  }
+  function validResponse(name, j) {
+    if (name === 'gp_scoreboard') return Array.isArray(j);
+    if (!j || typeof j !== 'object' || typeof j.ok !== 'boolean') return false;
+    if (!j.ok) return typeof j.error === 'string' && j.error.length < 80;
+    if (name === 'gp_register' || name === 'gp_login') {
+      if (!pseudoOK(j.pseudo)) return false;
+      if (name === 'gp_login' && (!Array.isArray(j.progress) || j.progress.length > 64)) return false;
+    }
+    return true;
+  }
 
   function store() { try { return window.localStorage; } catch (e) { return null; } }
   function load() {
@@ -19,8 +39,8 @@ GP.Cloud = (function () {
     st = { pseudo: null, code: null, choice: null, dirty: false };
     try { d = s && JSON.parse(s.getItem(KEY)); } catch (e) { d = null; }
     if (d && typeof d === 'object') {
-      st.pseudo = typeof d.pseudo === 'string' ? d.pseudo : null;
-      st.code = typeof d.code === 'string' && d.code.length >= 20 ? d.code : null;
+      st.pseudo = pseudoOK(d.pseudo) ? d.pseudo : null;
+      st.code = codeOK(d.code) ? d.code : null;
       st.choice = d.choice === 'account' || d.choice === 'guest' ? d.choice : null;
       st.dirty = !!d.dirty;
       if (!st.pseudo || !st.code) { st.pseudo = st.code = null; if (st.choice === 'account') st.choice = null; }
@@ -42,7 +62,7 @@ GP.Cloud = (function () {
         method: 'POST', headers: { apikey: CFG.key, 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}),
         signal: ctrl ? ctrl.signal : undefined
       }).then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
-        .then(function (j) { fin({ ok: true, data: j }); })
+        .then(function (j) { fin(validResponse(name, j) ? { ok: true, data: j } : { ok: false, error: 'server' }); })
         .catch(function () { fin({ ok: false, error: 'offline' }); });
     });
   }
@@ -73,8 +93,13 @@ GP.Cloud = (function () {
   function merge(remote) {
     var d = GP.Progression.data;
     (remote.progress || []).forEach(function (g) {
+      if (!g || typeof g !== 'object') return;
       var loc = GP.LOCATIONS.filter(function (l) { return l.id === g.level && l.playable; })[0];
       if (!loc) return;
+      // Validation avant la fusion : une valeur distante invalide ne doit pas effacer un record local.
+      if (!bounded(g.pixels, 1000) || !bounded(g.stars, 3) ||
+          (g.best_time_ms !== null && !bounded(g.best_time_ms, 36000000)) ||
+          (g.deaths !== null && !bounded(g.deaths, 100000))) return;
       var cur = d.completed[g.level], t = g.best_time_ms ? g.best_time_ms / 1000 : null;
       var m = { pixels: Math.max(cur ? cur.pixels : 0, g.pixels || 0), rate: 1, stars: Math.max(cur ? cur.stars || 0 : 0, g.stars || 0),
         time: cur && cur.time && (!t || cur.time < t) ? cur.time : t,
@@ -111,6 +136,7 @@ GP.Cloud = (function () {
 
     /** Crée le compte : { ok, pseudo, code } ou { ok:false, error: pseudo_taken | pseudo_invalid | offline | no_crypto }. */
     register: function (pseudo) {
+      if (!pseudoOK(pseudo)) return Promise.resolve({ ok: false, error: 'pseudo_invalid' });
       var code = makeCode();
       if (!code) return Promise.resolve({ ok: false, error: 'no_crypto' });
       return rpc('gp_register', { p_pseudo: pseudo, p_code: code }).then(function (r) {
@@ -125,6 +151,7 @@ GP.Cloud = (function () {
     /** Retrouve un compte avec son pseudo et son code (sur un autre appareil) ; fusionne la progression. */
     restore: function (pseudo, code) {
       var c = normCode(code);
+      if (!pseudoOK(pseudo) || !codeOK(c)) return Promise.resolve({ ok: false, error: 'not_found' });
       return rpc('gp_login', { p_pseudo: pseudo, p_code: c }).then(function (r) {
         if (!r.ok) return r;
         if (!r.data.ok) return { ok: false, error: r.data.error };
@@ -138,26 +165,29 @@ GP.Cloud = (function () {
     /** Envoie progression et avatar (différé de 1,5 s pour regrouper). Silencieux si pas de compte ou hors ligne. */
     schedulePush: function () {
       if (!this.isAccount) return;
+      revision++;
       st.dirty = true; save();
       clearTimeout(timer); timer = setTimeout(function () { api.push(); }, 1500);
     },
     push: function () {
       if (!this.isAccount) return Promise.resolve({ ok: false, error: 'no_account' });
+      var rev = revision, code = st.code;
       return rpc('gp_save', { p_code: st.code, p_avatar: GP.Progression.data.character, p_progress: payload() }).then(function (r) {
-        if (r.ok && r.data.ok) { st.dirty = false; save(); api.lastSync = Date.now(); return { ok: true }; }
+        if (r.ok && r.data.ok) { if (code === st.code && rev === revision) { st.dirty = false; save(); api.lastSync = Date.now(); } return { ok: true }; }
         if (r.ok && r.data.error === 'not_found') return { ok: false, error: 'not_found' };   // compte supprimé côté serveur
         return { ok: false, error: r.ok ? r.data.error : r.error };
       });
     },
 
     /** Oublie le compte sur cet appareil (la sauvegarde reste en ligne). */
-    forget: function () { st.pseudo = st.code = null; st.choice = 'guest'; st.dirty = false; save(); },
+    forget: function () { clearTimeout(timer); revision++; st.pseudo = st.code = null; st.choice = 'guest'; st.dirty = false; save(); },
 
     /** Supprime le compte en ligne (pseudo, avatar, progression) puis l'oublie ici. */
     deleteAccount: function () {
       if (!this.isAccount) return Promise.resolve({ ok: true });
       return rpc('gp_delete', { p_code: st.code }).then(function (r) {
         if (!r.ok) return r;
+        if (!r.data.ok) return { ok: false, error: r.data.error };
         api.forget(); return { ok: true };
       });
     },
@@ -167,16 +197,17 @@ GP.Cloud = (function () {
       return rpc('gp_scoreboard', { p_limit: limit || 20 }).then(function (r) {
         var s = store();
         if (r.ok && Array.isArray(r.data)) {
-          try { if (s) s.setItem(SBKEY, JSON.stringify({ time: Date.now(), rows: r.data })); } catch (e) { /* ignoré */ }
-          return { ok: true, rows: r.data, source: 'live', age: 0 };
+          var clean = rows(r.data);
+          try { if (s) s.setItem(SBKEY, JSON.stringify({ time: Date.now(), rows: clean })); } catch (e) { /* ignoré */ }
+          return { ok: true, rows: clean, source: 'live', age: 0 };
         }
         var c = null; try { c = s && JSON.parse(s.getItem(SBKEY)); } catch (e) { c = null; }
-        if (c && Array.isArray(c.rows)) return { ok: true, rows: c.rows, source: 'cache', age: Date.now() - c.time };
+        if (c && Array.isArray(c.rows) && bounded(c.time, Date.now())) return { ok: true, rows: rows(c.rows), source: 'cache', age: Date.now() - c.time };
         return { ok: false, error: 'offline' };
       });
     },
     /** Efface ce que le jeu garde de ses échanges en ligne dans ce navigateur. */
-    clearLocal: function () { st = { pseudo: null, code: null, choice: null, dirty: false }; var s = store(); try { if (s) { s.removeItem(KEY); s.removeItem(SBKEY); } } catch (e) { /* ignoré */ } },
+    clearLocal: function () { clearTimeout(timer); revision++; st = { pseudo: null, code: null, choice: null, dirty: false }; var s = store(); try { if (s) { s.removeItem(KEY); s.removeItem(SBKEY); } } catch (e) { /* ignoré */ } },
     rpc: rpc
   };
   return api;

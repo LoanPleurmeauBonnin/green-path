@@ -86,13 +86,14 @@ GP.WeatherFX = (function () {
     makeTextures(scene);
     var W = opts.width || GP.Config.WIDTH, H = opts.height || GP.Config.HEIGHT, D = opts.depth || 30;
     var fx = { state: null, clouds: [], drops: [], lights: [] };
+    fx.exposureAt = opts.exposureAt || function () { return 1; };
 
     fx.tint = scene.add.rectangle(0, 0, W, H, 0xffffff, 1).setOrigin(0).setDepth(D + 1).setBlendMode(Phaser.BlendModes.MULTIPLY);
     fx.tintColor = 0xffffff;
     (opts.lights || []).forEach(function (p) {
       fx.lights.push(scene.add.image(p[0], p[1], 'wx_glow').setScale(p[2] || 1).setDepth(D + 2).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0));
     });
-    fx.rain = scene.add.graphics().setDepth(D + 3);
+    fx.rain = scene.add.graphics().setDepth(opts.rainDepth === undefined ? D + 3 : opts.rainDepth);
     fx.fog = scene.add.rectangle(0, 0, W, H, 0xf4f7f2, 1).setOrigin(0).setDepth(D + 4).setAlpha(0);
     // caméra qui défile (niveaux) : filtre, pluie et brume restent collés à l'écran ; les halos restent dans le monde
     if (opts.fixed) [fx.tint, fx.rain, fx.fog].forEach(function (o) { o.setScrollFactor(0); });
@@ -156,14 +157,22 @@ GP.WeatherFX = (function () {
       if (!fx.drops.length) return;
       var slant = Math.max(-1.2, Math.min(1.2, wv.x * wv.speed / 30));
       var fall = fx.snow ? 22 : 190, speedK = GP.reducedMotion ? 0.6 : 1;
-      g.fillStyle(fx.snow ? 0xf4f7f2 : (st.isDay ? 0x7fa8d8 : 0xa8c0e4), 0.9);
+      var color = fx.snow ? 0xf4f7f2 : (st.isDay ? 0x7fa8d8 : 0xa8c0e4);
+      var lastAlpha = -1;
       fx.drops.forEach(function (d) {
         var vy = fall * d.v * speedK * dt;
         d.y += vy;
         d.x += (fx.snow ? slant * 0.5 + Math.sin((time / 600) + d.v * 10) * 0.3 : slant) * vy;
         if (d.y > H) { d.y -= H + 6; d.x = Math.random() * W; }
         if (d.x > W) d.x -= W; if (d.x < 0) d.x += W;
-        for (var k = 0; k < d.len; k++) g.fillRect(Math.round(d.x - slant * k), Math.round(d.y - k), 1, 1);
+        for (var k = 0; k < d.len; k++) {
+          var x = Math.round(d.x - slant * k), y = Math.round(d.y - k);
+          var alpha = fx.exposureAt(x, y, fx.snow);
+          if (alpha > 0) {
+            if (alpha !== lastAlpha) { g.fillStyle(color, 0.9 * alpha); lastAlpha = alpha; }
+            g.fillRect(x, y, 1, 1);
+          }
+        }
       });
     };
 
@@ -175,50 +184,41 @@ GP.WeatherFX = (function () {
   }
 
   // ---------- Widget (température, condition, icône, source) ----------
-  // Source des données : EN DIRECT (réseau, rafraîchi toutes les 5 min), HORS LIGNE · IL Y A N MIN (réseau coupé :
-  // dernière donnée reçue), HORS LIGNE (rien n'a jamais été reçu : valeurs neutres), TEST (météo simulée).
+  // Deux lignes : condition (NEUTRE si secours), puis EN DIRECT / HORS LIGNE / TEST.
+  // L'état conserve la provenance exacte et l'âge du cache sans imposer une troisième ligne au HUD.
   var SOURCE = {
     live: { color: GP.PAL.g }, stale: { color: GP.PAL.o }, fallback: { color: GP.PAL.o }, sim: { color: GP.PAL.p }
   };
-  function sourceLines(st) {
-    if (st.source === 'sim') return ['TEST : ' + (st.simName || ''), ''];
-    if (st.source === 'live') return ['EN DIRECT', ''];
-    if (st.source === 'stale') {
-      var m = Math.max(1, Math.round((Date.now() - st.time) / 60000));
-      return ['HORS LIGNE', m >= 120 ? 'IL Y A ' + Math.round(m / 60) + ' H' : 'IL Y A ' + m + ' MIN'];
-    }
-    return ['HORS LIGNE', 'MÉTÉO NEUTRE'];
-  }
-
-  /** Widget météo (fixe à l'écran) : icône, température, condition, source sur une ou deux lignes. Textes à 8 px. */
-  function widget(scene, x, y, depth) {
-    var w = 154, h = 38, D = depth || 50;
+  /** Deux lignes, largeur mesurée après traduction, ancrage droit optionnel. */
+  function widget(scene, x, y, depth, opts) {
+    opts = opts || {};
+    var w = 0, h = 26, D = depth || 50;
     var bg = scene.add.graphics().setDepth(D);
-    bg.fillStyle(GP.int(GP.PAL.k), 1); bg.fillRect(x, y, w, h);
-    bg.fillStyle(GP.int(GP.PAL.d), 1); bg.fillRect(x + 2, y + 2, w - 4, h - 4);
-    var icon = scene.add.image(x + 12, y + 14, 'wx_part').setDepth(D + 1);
-    function t(yy, c) { return scene.add.text(x + 24, y + yy, '', { fontFamily: GP.Config.FONT, fontSize: '8px', color: c }).setDepth(D + 1); }
-    var t1 = t(5, GP.PAL.w), t2 = t(16, GP.PAL.m), t3 = t(26, GP.PAL.m);
+    var icon = scene.add.image(0, y + 9, 'wx_part').setDepth(D + 1);
+    function t(yy, c) { return scene.add.text(0, y + yy, '', { fontFamily: GP.Config.FONT, fontSize: '8px', color: c }).setDepth(D + 1); }
+    var t1 = t(4, GP.PAL.w), t2 = t(15, GP.PAL.m);
     t1.setText('…');
-    var all = [bg, icon, t1, t2, t3];
+    var all = [bg, icon, t1, t2];
     all.forEach(function (o) { o.setScrollFactor(0); });
-    var last = null;
-    function draw() {
-      if (!last) return;
-      var lines = sourceLines(last), c = (SOURCE[last.source] || SOURCE.fallback).color;
-      t2.setText(lines[0]).setColor(c); t3.setText(lines[1]).setColor(c);
-    }
-    // l'âge « IL Y A N MIN » avance tout seul
-    var ev = scene.time.addEvent({ delay: 30000, loop: true, callback: draw });
-    return {
+    var api = {
       objects: all, height: h,
+      get width() { return w; },
       set: function (st) {
-        last = st;
         icon.setTexture('wx_' + st.icon);
-        t1.setText(st.temp + '° ' + st.label);
-        draw();
+        // NEUTRE signale le secours (valeurs locales), contrairement à une observation météo en cache.
+        t1.setText(st.temp + '°C ' + GP.t(st.source === 'fallback' ? 'NEUTRE' : st.label));
+        var source = st.source === 'live' ? 'EN DIRECT' : st.source === 'sim' ? 'TEST · SIMULATION' : 'HORS LIGNE';
+        api.source = st.source;
+        t2.setText(source).setColor((SOURCE[st.source] || SOURCE.fallback).color);
+        w = Math.ceil(Math.max(22 + t1.width, 6 + t2.width) + 6);
+        var left = opts.right ? x - w : x;
+        bg.clear(); bg.fillStyle(GP.int(GP.PAL.k), 1); bg.fillRect(left, y, w, h);
+        bg.fillStyle(GP.int(GP.PAL.d), 1); bg.fillRect(left + 2, y + 2, w - 4, h - 4);
+        icon.x = left + 10; t1.x = left + 22; t2.x = left + 6;
+        api.left = left;
       }
     };
+    return api;
   }
 
   return { apply: apply, widget: widget, makeTextures: makeTextures, tintFor: tintFor, particleCount: particleCount };

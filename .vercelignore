@@ -2,5 +2,7 @@ docs
 .claude
 .DS_Store
 tools
+tests
 CLAUDE.md
 supabase
+.env*

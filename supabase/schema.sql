@@ -72,16 +72,30 @@ language plpgsql security definer set search_path = ''
 as $$
 declare pid uuid; e jsonb;
 begin
+  if p_code is null or char_length(p_code) not between 20 and 64 then
+    return jsonb_build_object('ok', false, 'error', 'code_invalid');
+  end if;
+  if p_progress is not null and octet_length(p_progress::text) > 64000 then
+    return jsonb_build_object('ok', false, 'error', 'progress_invalid');
+  end if;
   select id into pid from public.profiles where code_hash = public.gp_hash(coalesce(p_code, ''));
   if pid is null then return jsonb_build_object('ok', false, 'error', 'not_found'); end if;
   if p_avatar is not null and (jsonb_typeof(p_avatar) <> 'object' or octet_length(p_avatar::text) > 2000) then
     return jsonb_build_object('ok', false, 'error', 'avatar_invalid');
   end if;
-  if p_progress is not null and (jsonb_typeof(p_progress) <> 'array' or jsonb_array_length(p_progress) > 64) then
+  if p_progress is not null and jsonb_typeof(p_progress) <> 'array' then
+    return jsonb_build_object('ok', false, 'error', 'progress_invalid');
+  end if;
+  if p_progress is not null and jsonb_array_length(p_progress) > 64 then
     return jsonb_build_object('ok', false, 'error', 'progress_invalid');
   end if;
   update public.profiles set avatar = coalesce(p_avatar, avatar), updated_at = now() where id = pid;
   for e in select * from jsonb_array_elements(coalesce(p_progress, '[]'::jsonb)) loop
+    if jsonb_typeof(e) <> 'object' or e->>'level' is null or e->>'level' not in
+      ('jardin-des-plantes', 'cathedrale', 'chateau', 'feydeau', 'graslin', 'machines',
+       'chantiers', 'buren', 'hangar', 'memorial', 'pommeraye', 'tour-lu') then
+      raise check_violation;
+    end if;
     insert into public.progress as g (profile_id, level, stars, pixels, best_time_ms, deaths)
     values (pid, left(e->>'level', 40), least(greatest(coalesce((e->>'stars')::int, 0), 0), 3),
             least(greatest(coalesce((e->>'pixels')::int, 0), 0), 1000),
@@ -98,6 +112,10 @@ begin
       updated_at = now();
   end loop;
   return jsonb_build_object('ok', true);
+exception
+  when invalid_text_representation or numeric_value_out_of_range or check_violation or not_null_violation then
+    -- Le bloc est annulé : aucune écriture partielle, aucun détail PostgreSQL divulgué.
+    return jsonb_build_object('ok', false, 'error', 'progress_invalid');
 end $$;
 
 create function public.gp_scoreboard(p_limit integer default 20)

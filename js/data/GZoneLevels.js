@@ -1,0 +1,77 @@
+/** Adaptations explicites des documents de conception au moteur existant, sans exécuter leurs textes. */
+GP.GZoneLevels = (function () {
+  var ids = ['jardin-des-plantes', 'cathedrale', 'chateau', 'feydeau', 'graslin', 'machines', 'chantiers', 'buren', 'hangar', 'pommeraye', 'memorial', 'tour-lu'];
+  function make(d, id) {
+    var L = GP.LevelBuilder.create(d.largeur, function () {}, d.hauteur);
+    L.id = id; L.gzone = d; L.revision = 'gzones-1-' + d.sourceHash.slice(0, 12);
+    L.startX = d.spawn.x; L.startRow = d.spawn.y;
+    // Les objets du document sont bas-gauche ; le moteur historique centre les objets en X.
+    L.pixels = d.pixels.map(function (p) { return { x: p.x, y: p.y }; });
+    // Rapprocher d'une tuile le dernier anneau du petit palier : marge de déclenchement cohérente avec le corps 8×16.
+    if(d.num===8)L.pixels.forEach(function(p){if(p.x===176&&p.y===5)p.x=175;});
+    L.checks = d.checkpoints.map(function (p) { return { x: p.x, y: p.y }; });
+    L.hints = d.signes.map(function (p) {
+      var text=p.texte||'OBSERVE LE PASSAGE AVANT DE T’ENGAGER';
+      text=text.replace(/↓/g,'{down}').replace(/↑/g,'{up}');
+      if(/Saute/.test(text))text='{jump} : '+text;
+      return {x:p.x,y:p.y,text:text};
+    });
+    L.abilities = { crouch: true, grab: d.num >= 2, climb: d.num >= 2 };
+    L.reveal = id === 'cathedrale' ? 'bottomUp' : id === 'jardin-des-plantes' ? 'bottomUp' : 'bottomUp';
+    L.zones = d.zones.map(function (z) { return { x: z.x[0], end: z.x[1], name: z.nom.toUpperCase() }; });
+    L.exit = { x: d.arrivee.declencheur.x, y: d.arrivee.declencheur.y + 1, key: 'signes_arche_arrivee' };
+    L.water = d.dangers.filter(function (p) { return p.kind === 'eau_mortelle'; }).map(function (p) { return { x: p.x, y: p.y, w: p.w || 1, h: 1 }; });
+    (d.eau || []).forEach(function (p) { L.water.push({ x: p.x, y: p.y, w: p.w, h: d.hauteur - p.y }); });
+    L.sky = { farKey: d.num === 12 ? 'carte_batiments_lointains' : (d.fond.couches[0] || {}).sprite, farBottom: 236 };
+    L.roofs = [];
+    function roof(x, end, y, wind) {
+      var r = { x: x * 16, y: y * 16, w: (end - x) * 16, h: 8 };
+      L.roofs.push(r); L.shelters.push({ id: id + '-couvert-' + L.roofs.length, x: r.x, y: r.y + r.h, w: r.w,
+        h: d.hauteur * 16 - r.y - r.h, rain: 1, snow: 1, wind: wind });
+    }
+    // Couvertures bâties visibles, pas un cercle sec suivant le héros.
+    if (d.num === 2) roof(17, 95, 2, 1);
+    if (d.num === 6) roof(38, 80, 1, 0.75);
+    if (d.num === 9) roof(44, 230, 1, 0.9);
+    if (d.num === 10) roof(0, 210, 1, 1);
+    if (d.num === 11) roof(88, 134, 4, 1);
+    if (d.num === 12) { roof(48, 146, 1, 0.9); }
+    if (d.boss) {
+      var n = d.num === 12 ? 4 : 3;
+      L.boss = { kind: d.num === 6 ? 'elephant' : d.num === 9 ? 'mould' : 'vortex', phases: n,
+        start: d.num === 6 ? 160 : d.num === 9 ? 176 : 195, end: d.largeur,
+        floor: d.num === 9 ? 19 : 16,
+        goals: d.num === 6 ? d.valves : d.num === 9 ? d.lampes_uv :
+          [{ x: 202, y: 6 }, { x: 248, y: 6 }, { x: 216, y: 5 }, { x: 232, y: 5 }] };
+    }
+    return L;
+  }
+  var old = {}; GP.LOCATIONS.forEach(function (l) { old[l.id] = l; });
+  GP.LevelPrototypes = Object.assign({}, GP.LEVELS); // socle conservé, pas supprimé
+  GP.LOCATIONS = ids.map(function (id, i) {
+    var loc = old[id], d = GP.GZONES[i];
+    loc.playable = true; loc.level = id;
+    GP.Tuning.parTimes[id] = GP.Tuning.parTimes[id] || d.temps_ref_s;
+    loc.parTime = GP.Tuning.parTimes[id];
+    var rules = [
+      'VARIATION VÉGÉTALE : allées, bassins et topiaires deviennent des appuis. Les jets sont cycliques et peuvent geler sous la neige. L’image se reconstruit par groupes de cellules.',
+      'VARIATION VERTICALE : parvis, nef, galeries et toits. Colonnes et rebords permettent de monter ; la nef couverte protège des précipitations et du vent.',
+      null,
+      'SÉRIE DE FAÇADES : balcons portés, quais et bateaux flotteurs. Les balcons inclinés entraînent le joueur et les bateaux s’enfoncent sous son poids.',
+      'RYTHME NÉOCLASSIQUE : perron, colonnes et fronton. Les parasols donnent un rebond et les lustres oscillent ; une interprétation ludique, pas une restitution du théâtre.',
+      'MOUVEMENT INDUSTRIEL : passerelles, engrenages et bielles. Esquiver les jets puis activer trois valves calme l’Éléphant mécanique.',
+      'LEVAGE : cales, rails, pylônes et flèche de grue. Les chariots démarrent sous le poids du joueur ; les tôles restent exposées aux intempéries.',
+      'SÉRIE ET ÉLAN : les anneaux cadrent le quai et donnent des impulsions annoncées par des flèches. Leur propulsion est une convention de jeu, pas une propriété de l’œuvre.',
+      'TRAVÉES ET CIRCULATION : portes et conteneurs mobiles structurent le hangar couvert. Trois lampes UV neutralisent une moisissure fictive dans l’épreuve finale.',
+      'TROIS STRATES : galerie, escalier et coursives sous une verrière. Lustres mobiles et dalles fragiles sont des conventions ludiques ; le passage est abrité.',
+      'MÉMOIRE ET LECTURE : des séquences de hauteurs indiquent les dalles solides. La montée d’eau est une métaphore lente, pas une simulation de la marée réelle.',
+      'ASCENSION FINALE : strates de la tour, horloge et coupole. Les courants ascendants donnent accès aux quatre lanternes qui dissipent le Vortex fictif.'
+    ];
+    if (rules[i]) loc.grammar = rules[i];
+    if (id !== 'chateau') GP.LEVELS[id] = make(d, id); // conserver le Château déjà adapté et testé
+    return loc;
+  });
+  GP.LAST_PLAYABLE = 11;
+  GP.Config.ROUTE_VERSION = 'gzones-1';
+  return { ids: ids, make: make };
+})();

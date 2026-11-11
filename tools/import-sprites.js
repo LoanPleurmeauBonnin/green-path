@@ -10,6 +10,7 @@
  * Vérifie : palette identique sur toutes les planches, aucune lettre inconnue, tailles des lignes, ids uniques.
  */
 var fs = require('fs'), path = require('path');
+var input = require('./lib/sprite-input');
 var src = process.argv[2] || path.join(process.env.HOME, 'Downloads/sprites/export');
 var htmlDir = process.argv[3] || path.dirname(src);
 var out = path.join(__dirname, '..', 'js', 'data', 'sprites');
@@ -18,18 +19,18 @@ fs.mkdirSync(out, { recursive: true });
 // 1. Palette : lue dans les planches HTML (table PAL), doit être la même partout
 var pal = null;
 fs.readdirSync(htmlDir).filter(function (f) { return /^Planche .*\.dc\.html$/.test(f); }).forEach(function (f) {
-  var m = fs.readFileSync(path.join(htmlDir, f), 'utf8').match(/PAL\s*=\s*(\{[^}]*\})/);
-  if (!m) return;
-  var p = Function('return ' + m[1])();
+  var p = input.palette(fs.readFileSync(path.join(htmlDir, f), 'utf8'));
+  if (!p) return;
   if (pal && JSON.stringify(p) !== JSON.stringify(pal)) throw new Error('Palette différente dans ' + f);
   pal = p;
 });
 if (!pal) throw new Error('Palette PAL introuvable dans ' + htmlDir);
 
 // 2. Planches
-var ids = {}, total = 0;
+var ids = Object.create(null), total = 0, outputs = [];
 fs.readdirSync(src).filter(function (f) { return /\.json$/.test(f); }).sort().forEach(function (f) {
   var j = JSON.parse(fs.readFileSync(path.join(src, f), 'utf8')), sheet = j.sheet || path.basename(f, '.json');
+  j.sheet = sheet; input.sheet(j);
   j.sprites.forEach(function (s) {
     if (ids[s.id]) throw new Error('id en double : ' + s.id);
     ids[s.id] = sheet;
@@ -46,9 +47,10 @@ fs.readdirSync(src).filter(function (f) { return /\.json$/.test(f); }).sort().fo
   });
   var js = '/* Planche « ' + sheet + ' » — sprites générés avec Claude Design, importés par tools/import-sprites.js. Ne pas modifier à la main. */\n' +
     'window.GP = window.GP || {};\nGP.SPRITES = GP.SPRITES || {};\nGP.SPRITES[' + JSON.stringify(sheet) + '] = ' + JSON.stringify(j.sprites) + ';\n';
-  fs.writeFileSync(path.join(out, sheet + '.js'), js);
+  outputs.push({ sheet: sheet, js: js });
   console.log('  ' + sheet + ' : ' + j.sprites.length + ' sprites');
 });
+outputs.forEach(function (o) { fs.writeFileSync(path.join(out, o.sheet + '.js'), o.js); });
 fs.writeFileSync(path.join(out, 'palette.js'),
   '/* Palette commune des planches de sprites (40 couleurs, « . » = transparent). */\nwindow.GP = window.GP || {};\nGP.SPRITE_PAL = ' + JSON.stringify(pal, null, 0) + ';\n');
 console.log(total + ' sprites, palette de ' + Object.keys(pal).length + ' couleurs → ' + out);

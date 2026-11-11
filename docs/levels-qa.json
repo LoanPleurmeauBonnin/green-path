@@ -1,0 +1,3558 @@
+{
+  "kind": "controlled-browser-components",
+  "formats": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "levels": [
+        {
+          "id": "jardin-des-plantes",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 15
+        },
+        {
+          "id": "cathedrale",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-cathedrale-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 18
+        },
+        {
+          "id": "chateau",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 20
+        },
+        {
+          "id": "feydeau",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 20
+        },
+        {
+          "id": "graslin",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 22
+        },
+        {
+          "id": "machines",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-machines-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "boss-telegraph-safe",
+              "ok": true
+            },
+            {
+              "name": "boss-attack-contact",
+              "ok": true
+            },
+            {
+              "name": "boss-retry-phase",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "boss-blocks-exit",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-0",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-0",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-0",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-1",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-1",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-1",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-2",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-2",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-2",
+              "ok": true
+            },
+            {
+              "name": "boss-complete",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": "elephant",
+          "fragments": 24
+        },
+        {
+          "id": "chantiers",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 24
+        },
+        {
+          "id": "buren",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 25
+        },
+        {
+          "id": "hangar",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-hangar-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "boss-telegraph-safe",
+              "ok": true
+            },
+            {
+              "name": "boss-attack-contact",
+              "ok": true
+            },
+            {
+              "name": "boss-retry-phase",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "boss-blocks-exit",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-0",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-0",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-0",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-1",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-1",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-1",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-2",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-2",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-2",
+              "ok": true
+            },
+            {
+              "name": "boss-complete",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": "mould",
+          "fragments": 26
+        },
+        {
+          "id": "pommeraye",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-pommeraye-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 26
+        },
+        {
+          "id": "memorial",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-memorial-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 25
+        },
+        {
+          "id": "tour-lu",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-tour-lu-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "boss-telegraph-safe",
+              "ok": true
+            },
+            {
+              "name": "boss-attack-contact",
+              "ok": true
+            },
+            {
+              "name": "boss-retry-phase",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "boss-blocks-exit",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-0",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-0",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-0",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-1",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-1",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-1",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-2",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-2",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-2",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-3",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-3",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-3",
+              "ok": true
+            },
+            {
+              "name": "boss-complete",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": "vortex",
+          "fragments": 30
+        }
+      ],
+      "suites": {
+        "regression": {
+          "passed": 73,
+          "total": 73,
+          "failed": []
+        },
+        "polish": {
+          "passed": 97,
+          "total": 97,
+          "failed": []
+        },
+        "flow": {
+          "passed": 44,
+          "total": 44,
+          "failed": []
+        }
+      }
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "levels": [
+        {
+          "id": "jardin-des-plantes",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 15
+        },
+        {
+          "id": "cathedrale",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-cathedrale-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 18
+        },
+        {
+          "id": "chateau",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 20
+        },
+        {
+          "id": "feydeau",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 20
+        },
+        {
+          "id": "graslin",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 22
+        },
+        {
+          "id": "machines",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-machines-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "boss-telegraph-safe",
+              "ok": true
+            },
+            {
+              "name": "boss-attack-contact",
+              "ok": true
+            },
+            {
+              "name": "boss-retry-phase",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "boss-blocks-exit",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-0",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-0",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-0",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-1",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-1",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-1",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-2",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-2",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-2",
+              "ok": true
+            },
+            {
+              "name": "boss-complete",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": "elephant",
+          "fragments": 24
+        },
+        {
+          "id": "chantiers",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 24
+        },
+        {
+          "id": "buren",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 25
+        },
+        {
+          "id": "hangar",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-hangar-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "boss-telegraph-safe",
+              "ok": true
+            },
+            {
+              "name": "boss-attack-contact",
+              "ok": true
+            },
+            {
+              "name": "boss-retry-phase",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "boss-blocks-exit",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-0",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-0",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-0",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-1",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-1",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-1",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-2",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-2",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-2",
+              "ok": true
+            },
+            {
+              "name": "boss-complete",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": "mould",
+          "fragments": 26
+        },
+        {
+          "id": "pommeraye",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-pommeraye-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 26
+        },
+        {
+          "id": "memorial",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-memorial-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 25
+        },
+        {
+          "id": "tour-lu",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-tour-lu-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "boss-telegraph-safe",
+              "ok": true
+            },
+            {
+              "name": "boss-attack-contact",
+              "ok": true
+            },
+            {
+              "name": "boss-retry-phase",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "boss-blocks-exit",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-0",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-0",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-0",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-1",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-1",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-1",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-2",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-2",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-2",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-3",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-3",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-3",
+              "ok": true
+            },
+            {
+              "name": "boss-complete",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": "vortex",
+          "fragments": 30
+        }
+      ],
+      "suites": {
+        "regression": {
+          "passed": 73,
+          "total": 73,
+          "failed": []
+        },
+        "polish": {
+          "passed": 97,
+          "total": 97,
+          "failed": []
+        },
+        "flow": {
+          "passed": 44,
+          "total": 44,
+          "failed": []
+        }
+      }
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "levels": [
+        {
+          "id": "jardin-des-plantes",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 15
+        },
+        {
+          "id": "cathedrale",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-cathedrale-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 18
+        },
+        {
+          "id": "chateau",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 20
+        },
+        {
+          "id": "feydeau",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 20
+        },
+        {
+          "id": "graslin",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 22
+        },
+        {
+          "id": "machines",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-machines-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "boss-telegraph-safe",
+              "ok": true
+            },
+            {
+              "name": "boss-attack-contact",
+              "ok": true
+            },
+            {
+              "name": "boss-retry-phase",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "boss-blocks-exit",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-0",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-0",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-0",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-1",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-1",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-1",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-2",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-2",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-2",
+              "ok": true
+            },
+            {
+              "name": "boss-complete",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": "elephant",
+          "fragments": 24
+        },
+        {
+          "id": "chantiers",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 24
+        },
+        {
+          "id": "buren",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 25
+        },
+        {
+          "id": "hangar",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-hangar-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "boss-telegraph-safe",
+              "ok": true
+            },
+            {
+              "name": "boss-attack-contact",
+              "ok": true
+            },
+            {
+              "name": "boss-retry-phase",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "boss-blocks-exit",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-0",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-0",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-0",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-1",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-1",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-1",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-2",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-2",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-2",
+              "ok": true
+            },
+            {
+              "name": "boss-complete",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": "mould",
+          "fragments": 26
+        },
+        {
+          "id": "pommeraye",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-pommeraye-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 26
+        },
+        {
+          "id": "memorial",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-memorial-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": null,
+          "fragments": 25
+        },
+        {
+          "id": "tour-lu",
+          "checks": [
+            {
+              "name": "charged",
+              "ok": true
+            },
+            {
+              "name": "isolated",
+              "ok": true
+            },
+            {
+              "name": "physical-jump",
+              "ok": true
+            },
+            {
+              "name": "weather-0",
+              "ok": true
+            },
+            {
+              "name": "weather-1",
+              "ok": true
+            },
+            {
+              "name": "weather-2",
+              "ok": true
+            },
+            {
+              "name": "weather-3",
+              "ok": true
+            },
+            {
+              "name": "weather-4",
+              "ok": true
+            },
+            {
+              "name": "weather-5",
+              "ok": true
+            },
+            {
+              "name": "weather-6",
+              "ok": true
+            },
+            {
+              "name": "weather-7",
+              "ok": true
+            },
+            {
+              "name": "weather-8",
+              "ok": true
+            },
+            {
+              "name": "exact-collision",
+              "ok": true
+            },
+            {
+              "name": "shelter-tour-lu-couvert-1",
+              "ok": true
+            },
+            {
+              "name": "moving-body",
+              "ok": true
+            },
+            {
+              "name": "no-endpoint-ghosts",
+              "ok": true
+            },
+            {
+              "name": "jump-from-platform",
+              "ok": true
+            },
+            {
+              "name": "boss-telegraph-safe",
+              "ok": true
+            },
+            {
+              "name": "boss-attack-contact",
+              "ok": true
+            },
+            {
+              "name": "boss-retry-phase",
+              "ok": true
+            },
+            {
+              "name": "collection-not-finish",
+              "ok": true
+            },
+            {
+              "name": "boss-blocks-exit",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-0",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-0",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-0",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-1",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-1",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-1",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-2",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-2",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-2",
+              "ok": true
+            },
+            {
+              "name": "boss-recovery-3",
+              "ok": true
+            },
+            {
+              "name": "boss-goal-3",
+              "ok": true
+            },
+            {
+              "name": "boss-saved-3",
+              "ok": true
+            },
+            {
+              "name": "boss-complete",
+              "ok": true
+            },
+            {
+              "name": "exit",
+              "ok": true
+            },
+            {
+              "name": "result",
+              "ok": true
+            }
+          ],
+          "boss": "vortex",
+          "fragments": 30
+        }
+      ],
+      "suites": {
+        "regression": {
+          "passed": 73,
+          "total": 73,
+          "failed": []
+        },
+        "polish": {
+          "passed": 97,
+          "total": 97,
+          "failed": []
+        },
+        "flow": {
+          "passed": 44,
+          "total": 44,
+          "failed": []
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "consoleErrors": [],
+  "missing": [],
+  "cloudWrites": []
+}

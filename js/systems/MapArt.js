@@ -8,7 +8,7 @@
  *
  * Textures créées :
  *   lm_<id>, lm_<id>_gris   monument dessiné par code (secours si le lieu n'a pas de sprite), 32×28
- *   world_map               le terrain de la carte (WIDTH × 270)
+  *   world_map_0…            terrain de la carte en morceaux de 2048 px maximum
  */
 GP.MapArt = (function () {
   var PA = GP.PixelArt, T = 16;
@@ -57,6 +57,27 @@ GP.MapArt = (function () {
   function inGap(x) { var c = Math.floor(x / T); return c >= 0 && c < COLS && COLUMNS[c].kind === 'gap'; }
   /** Haut du talus d'herbe derrière le chemin (pour poser le décor) à l'abscisse x. */
   function vergeY(x) { return pathY(x) - 4; }
+
+  var pedestal = null;
+  /** Surface du piédestal dérivée de son contour opaque, partagée par le modèle et le sprite. */
+  function walkY(x) {
+    var base = pathY(x) - 1, i = Math.round((x - X0) / GAP);
+    if (i < 0 || i >= TOPS.length) return base;
+    if (!pedestal && GP.SPRITES && GP.SPRITES.carte) {
+      var s = GP.SPRITES.carte.filter(function (v) { return v.id === 'carte_piedestal_disponible'; })[0];
+      if (s) {
+        pedestal = { w: s.w, h: s.h, top: [] };
+        for (var cx = 0; cx < s.w; cx++) {
+          var top = 0; while (top < s.h && s.rows[top][cx] === '.') top++;
+          pedestal.top.push(top);
+        }
+      }
+    }
+    if (!pedestal) return base;
+    var column = Math.floor(x - (nodeX(i) - pedestal.w / 2));
+    if (column < 0 || column >= pedestal.w) return base;
+    return Math.min(base, pathY(nodeX(i)) + 6 - pedestal.h + pedestal.top[column]);
+  }
 
   // ---------- Monuments (32×28) ----------
   var LM = {
@@ -202,23 +223,25 @@ GP.MapArt = (function () {
     var o = PA.canvas(WIDTH, H), ctx = o.ctx, rnd = PA.rng(77);
     function put(key, x, y) { var im = img(scene, key); if (im) ctx.drawImage(im, x, y); }
     /** Dessine seulement dans la bande [y, y + h) de la colonne x. */
-    function clip(x, y, h, fn) { ctx.save(); ctx.beginPath(); ctx.rect(x, y, T, h); ctx.clip(); fn(); ctx.restore(); }
+    function clip(x, y, h, fn, w) { ctx.save(); ctx.beginPath(); ctx.rect(x, y, w || T, h); ctx.clip(); fn(); ctx.restore(); }
     // eau (toute la largeur, derrière le quai)
     for (var x = 0; x < WIDTH; x += T) { put('carte_eau_surface', x, WATER + 6); for (var y = WATER + 22; y < H; y += T) put('carte_eau_profonde', x, y); }
     COLUMNS.forEach(function (col, c) {
       var x = c * T;
       if (col.kind === 'gap') return;
-      // Chaque couche est découpée à sa bande : la terre ne remonte jamais au-dessus du chemin,
-      // et du talus on ne garde que l'herbe (pas sa terre), sinon on voit des bandes marron sur les pentes.
-      clip(x, col.top + T, WATER - col.top - T, function () {
-        for (var y = WATER - 2 * T; y > col.top; y -= T) put('carte_falaise_a', x, y);   // terre sous le chemin
-        put('carte_falaise_b', x, WATER - T);                                           // pierre du quai
-      });
-      put('carte_falaise_pied', x, WATER);                                              // pied du quai dans l'eau
-      clip(x, col.top - 6, 7, function () { put('carte_plateau_herbe_haut_' + (1 + (c % 3)), x, col.top - 6); });   // talus d'herbe
-      var tile = col.kind === 'up' ? 'carte_chemin_pente_montante' : col.kind === 'down' ? 'carte_chemin_pente_descendante'
-        : 'carte_chemin_plat_' + (1 + Math.floor(rnd() * 3));
-      put(tile, x, col.top);
+      // Même profil pour herbe, route et terre : bandes de 1 px translatées, sans lissage ni UV flottants.
+      var grass = img(scene, 'carte_plateau_herbe_haut_' + (1 + c % 3));
+      var road = img(scene, 'carte_chemin_plat_' + (1 + Math.floor(rnd() * 3)));
+      for (var dx = 0; dx < T; dx++) {
+        var surface = vergeY(x + dx);
+        clip(x + dx, surface + T, WATER - surface - T, function () {
+          for (var y = WATER - 2 * T; y > surface; y -= T) put('carte_falaise_a', x, y);
+          put('carte_falaise_b', x, WATER - T);
+        }, 1);
+        if (grass) ctx.drawImage(grass, dx, 0, 1, 7, x + dx, surface - 6, 1, 7);
+        if (road) ctx.drawImage(road, dx, 0, 1, T, x + dx, surface, 1, T);
+      }
+      put('carte_falaise_pied', x, WATER);
       // bord de falaise au-dessus d'un bras d'eau
       var left = c > 0 && COLUMNS[c - 1].kind === 'gap', right = c < COLS - 1 && COLUMNS[c + 1].kind === 'gap';
       if (left || right) { ctx.fillStyle = GP.PAL.k; ctx.fillRect(right ? x + T - 1 : x, col.top + 1, 1, WATER + 9 - col.top); }
@@ -245,8 +268,8 @@ GP.MapArt = (function () {
       PA.toTexture(scene, 'lm_' + l.id, cv);
       PA.toTexture(scene, 'lm_' + l.id + '_gris', toGrey(cv));
     });
-    PA.toTexture(scene, 'world_map', drawWorld(scene));
+    GP.MapArt.worldKeys = GP.LevelArt.chunks(scene, 'world_map', drawWorld(scene));
   }
 
-  return { build: build, nodeX: nodeX, pathY: pathY, vergeY: vergeY, inGap: inGap, monument: monument, WIDTH: WIDTH, WATER: WATER, GAP: GAP, BRIDGES: BRIDGES };
+  return { build: build, nodeX: nodeX, pathY: pathY, walkY: walkY, vergeY: vergeY, inGap: inGap, monument: monument, WIDTH: WIDTH, WATER: WATER, GAP: GAP, BRIDGES: BRIDGES, columns: COLUMNS };
 })();

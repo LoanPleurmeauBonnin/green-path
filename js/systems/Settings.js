@@ -38,6 +38,7 @@ GP.Settings = (function () {
       if (GP.I18n) GP.I18n.setLang(this.lang);
     },
     save: function () {
+      if (GP.Prompts) GP.Prompts.refresh();
       var st = storage(); if (!st) return;
       try { st.setItem(KEY, JSON.stringify({ lang: this.lang, keys: this.keys })); } catch (e) { /* stockage plein ou bloqué */ }
     },
@@ -74,7 +75,7 @@ GP.Settings = (function () {
     /** Efface tout ce que le jeu garde dans le navigateur (RGPD : droit à l'effacement). */
     clearAll: function () {
       var st = storage();
-      if (st) try { ['greenpath.save', 'greenpath.save.corrupt', 'greenpath.weather', KEY].forEach(function (k) { st.removeItem(k); }); } catch (e) { /* ignoré */ }
+      if (st) try { ['greenpath.save', 'greenpath.save.corrupt', 'greenpath.weather', 'greenpath.iostip', KEY].forEach(function (k) { st.removeItem(k); }); } catch (e) { /* ignoré */ }
       if (GP.Cloud) GP.Cloud.clearLocal();
       if (GP.Progression) GP.Progression.reset();
       this.keys = clone(DEFAULT_KEYS);

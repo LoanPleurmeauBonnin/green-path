@@ -50,7 +50,9 @@ GP.Progression = {
       if (prev.time && (!cur.time || prev.time < cur.time)) cur.time = prev.time;
       if (prev.deaths !== null && prev.deaths !== undefined && (cur.deaths === null || prev.deaths < cur.deaths)) cur.deaths = prev.deaths;
     } else this.justCompleted = loc.id;
+    cur.stars = Math.max(cur.stars, GP.Stars.compute(cur, loc));   // cohérent avec les records par critère du bilan
     this.data.completed[loc.id] = cur;
+    delete this.data.runs[loc.id];
     var next = i + 1, unlockedNew = false;
     if (next <= GP.LAST_PLAYABLE && this.data.unlocked < next) { this.data.unlocked = next; unlockedNew = true; }
     this.persist();
