@@ -833,25 +833,118 @@ GP.LevelArt = (function () {
     return o.cv;
   }
   /** Fond de l'intérieur du théâtre Graslin (480×236, se répète) : salle bleue et or, plafond peint, trois rangs de balcons à loges séparées par des cloisons basses, pilastres dorés, rideaux rouges, parquet. */
-  function drawFondTheatre() {
-    var w = 480, h = 236, o = PA.canvas(w, h), ctx = o.ctx, rnd = PA.rng(88), x, y, i;
-    var bleu = '#27396e', bleuO = '#1d2b55', or = '#e0b64a', orO = '#a8801f', rouge = '#8a2331';
-    R(ctx, 0, 0, w, h, bleu);
-    var ciel = ctx.createLinearGradient(0, 0, 0, 62); ciel.addColorStop(0, '#9fc0e8'); ciel.addColorStop(1, '#c9dcf2'); ctx.fillStyle = ciel; ctx.fillRect(0, 0, w, 62);   // plafond peint
-    for (i = 0; i < 9; i++) { var cx = rnd() * w, cy = 10 + rnd() * 36; PA.disc(ctx, cx, cy, 12 + rnd() * 8, '#eef4fb'); PA.disc(ctx, cx + 14, cy + 3, 9, '#e1ebf7'); }
-    R(ctx, 0, 60, w, 4, orO); R(ctx, 0, 62, w, 3, or); R(ctx, 0, 65, w, 2, orO);                                  // corniche dorée
-    [[72, 104], [104, 136], [136, 168]].forEach(function (nv, n) {                                                 // trois rangs de balcons
-      var top = nv[0], bot = nv[1];
-      R(ctx, 0, bot - 8, w, 8, bleuO); R(ctx, 0, bot - 9, w, 2, or); R(ctx, 0, bot - 7, w, 1, orO);                // balcon doré
-      for (x = 0; x < w; x += 6) R(ctx, x, bot - 6, 2, 5, orO);                                                    // balustres
-      for (x = 0; x < w; x += 40) R(ctx, x + 18, top + 4, 3, bot - top - 12, or);                                  // cloisons basses des loges
-      for (x = 8; x < w; x += 80) { R(ctx, x, top + 3, 10, bot - top - 12, rouge); R(ctx, x, top + 3, 10, 2, '#b8404f'); }   // rideaux rouges
-      for (x = 14; x < w; x += 40) if (rnd() < 0.5) { R(ctx, x + 6, top + 10, 8, 10, '#3a4f8f'); PA.disc(ctx, x + 10, top + 8, 4, '#efc8a0'); }   // un spectateur dans sa loge
-    });
-    for (i = 0; i < 4; i++) { var px = i * 120 + 4; R(ctx, px, 66, 10, 160, or); R(ctx, px, 66, 3, 160, '#f2d57e'); R(ctx, px + 8, 66, 2, 160, orO); }      // pilastres dorés
-    R(ctx, 0, 168, w, 22, bleuO); for (x = 0; x < w; x += 24) R(ctx, x, 170, 14, 18, '#34478a');                 // soubassement lambrissé
-    R(ctx, 0, 190, w, h - 190, '#8a5a30'); for (y = 190; y < h; y += 7) R(ctx, 0, y, w, 1, '#6a4220'); for (x = 0; x < w; x += 20) R(ctx, x, 190, 1, h - 190, '#6a4220');   // parquet
+  // Les trois lieux intérieurs du théâtre Graslin, d'après des photos de la salle (Wikimédia Commons, référence seulement) : crème, or, rouge sombre, fauteuils vert-bleu, rangées de petites lumières blanches.
+  var CREME = '#e8d9b0', CREME_O = '#c9b588', OR = '#d9a93c', OR_C = '#f2d57e', OR_O = '#a8801f', ROUGE = '#8a2331', ROUGE_C = '#b8404f', SOMBRE = '#241618';
+  function lumiere(ctx, x, y) { R(ctx, x - 1, y - 1, 3, 3, 'rgba(255,240,190,0.45)'); R(ctx, x, y, 1, 1, '#fffbe8'); }   // petite lampe blanche et son halo
+  /** Foyer (480×236) : galerie de promenade crème et or, pilastres, hautes portes éclairées, lustres, tapis rouge. */
+  function drawFondFoyer() {
+    var w = 480, h = 236, o = PA.canvas(w, h), ctx = o.ctx, x, y, i;
+    R(ctx, 0, 0, w, h, CREME); for (y = 0; y < 190; y += 12) R(ctx, 0, y, w, 1, '#d8c89c');
+    R(ctx, 0, 0, w, 20, OR_O); R(ctx, 0, 20, w, 3, OR); R(ctx, 0, 23, w, 2, OR_O);                                  // frise dorée sous le plafond
+    for (x = 8; x < w; x += 60) { R(ctx, x, 22, 4, 4, OR); R(ctx, x + 2, 26, 1, 4, OR_O); }                           // pendentifs
+    for (i = 0; i < 4; i++) {                                                                                     // hautes portes-fenêtres éclairées, entre des pilastres dorés
+      var px = i * 120;
+      R(ctx, px, 26, 8, 164, OR); R(ctx, px, 26, 2, 164, OR_C); R(ctx, px + 6, 26, 2, 164, OR_O);
+      R(ctx, px + 22, 62, 76, 128, OR_O); R(ctx, px + 25, 66, 70, 124, '#f6e7b8'); R(ctx, px + 25, 66, 70, 14, '#fff4cc');
+      PA.disc(ctx, px + 60, 66, 35, '#f6e7b8'); R(ctx, px + 25, 66, 70, 2, OR);
+      R(ctx, px + 59, 66, 2, 124, OR); R(ctx, px + 25, 120, 70, 2, OR);
+      R(ctx, px + 22, 60, 76, 4, OR); lumiere(ctx, px + 60, 56);
+    }
+    for (i = 0; i < 2; i++) { var lx = 120 + i * 240; R(ctx, lx, 25, 1, 22, OR_O); R(ctx, lx - 14, 47, 29, 3, OR); for (x = -12; x <= 12; x += 6) { R(ctx, lx + x, 50, 2, 8, OR_C); lumiere(ctx, lx + x + 1, 60); } PA.disc(ctx, lx, 46, 5, OR); }   // lustres
+    R(ctx, 0, 168, w, 22, '#6a1f2b'); R(ctx, 0, 168, w, 2, OR); for (x = 0; x < w; x += 20) R(ctx, x + 4, 172, 12, 14, '#7d2a38');   // soubassement de velours rouge
+    R(ctx, 0, 190, w, h - 190, '#efe4c8'); for (x = 0; x < w; x += 28) for (y = 190; y < h; y += 14) { R(ctx, x + ((y / 14) % 2 ? 14 : 0), y, 14, 14, '#d3c6a4'); }   // dallage clair
+    R(ctx, 0, 192, w, 24, ROUGE); R(ctx, 0, 192, w, 2, OR);                                                          // tapis rouge
     return o.cv;
+  }
+  /** Salle (480×236) : trois étages de balcons ondulés à devant crème orné d'or, rangées de petites lumières, loges sombres, plafond peint en haut, fauteuils vert-bleu en bas. */
+  function drawFondSalle() {
+    var w = 480, h = 236, o = PA.canvas(w, h), ctx = o.ctx, rnd = PA.rng(31), x, y, i, n;
+    R(ctx, 0, 0, w, h, SOMBRE);
+    var pl = ctx.createLinearGradient(0, 0, 0, 56); pl.addColorStop(0, '#d9c3a0'); pl.addColorStop(0.5, '#e8b9a0'); pl.addColorStop(1, '#8fa8c8'); ctx.fillStyle = pl; ctx.fillRect(0, 0, w, 56);   // plafond peint
+    for (i = 0; i < 8; i++) { var cx = rnd() * w, cy = 8 + rnd() * 36; PA.disc(ctx, cx, cy, 10 + rnd() * 8, 'rgba(250,236,214,0.85)'); PA.disc(ctx, cx + 12, cy + 3, 8, 'rgba(240,222,196,0.8)'); }
+    R(ctx, 0, 54, w, 4, OR_O); R(ctx, 0, 56, w, 3, OR); R(ctx, 0, 59, w, 2, OR_O);                                  // corniche dorée
+    var etages = [[62, 98], [100, 136], [138, 174]];
+    etages.forEach(function (e, k) {
+      var top = e[0], bot = e[1];
+      for (x = 0; x < w; x += 40) { R(ctx, x + 18, top + 6, 4, bot - top - 10, '#3a2326'); }                         // cloisons des loges
+      for (x = 0; x < w; x += 4) { var off = Math.round(2 * Math.sin(x / 480 * Math.PI * 4)); R(ctx, x, bot - 14 + off, 4, 14, CREME); R(ctx, x, bot - 14 + off, 4, 2, OR_C); R(ctx, x, bot - 3 + off, 4, 3, OR_O); }   // devant de balcon ondulé
+      for (x = 0; x < w; x += 20) { var o2 = Math.round(2 * Math.sin(x / 480 * Math.PI * 4)); R(ctx, x + 6, bot - 11 + o2, 8, 6, OR); R(ctx, x + 8, bot - 10 + o2, 4, 4, CREME_O); }   // médaillons dorés
+      for (x = 10; x < w; x += 20) lumiere(ctx, x, top + 2 + (k === 0 ? 2 : 0));                                    // rangée de petites lumières
+      for (x = 8; x < w; x += 80) { R(ctx, x, top + 4, 7, bot - top - 20, ROUGE); R(ctx, x, top + 4, 7, 2, ROUGE_C); }   // rideaux de loge
+    });
+    for (x = 0; x < w; x += 120) { R(ctx, x, 62, 6, 112, OR); R(ctx, x, 62, 2, 112, OR_C); }                          // colonnettes dorées
+    R(ctx, 0, 174, w, 62, '#1a0f11');
+    var sg = drawSieges(); for (x = 0; x < w; x += 60) ctx.drawImage(sg, x, 150);   // les grands fauteuils sont dans le décor du fond (le sol reste dégagé)
+    ctx.fillStyle = 'rgba(26,15,17,0.35)'; ctx.fillRect(0, 150, w, 42);               // un peu assombris : le personnage et les pixels ressortent
+    return o.cv;
+  }
+  /** Scène (480×236) : arc de scène doré, grands rideaux rouges ouverts de chaque côté, décor peint au fond, lampes de rampe. */
+  function drawFondScene() {
+    var w = 480, h = 236, o = PA.canvas(w, h), ctx = o.ctx, x, y, i;
+    R(ctx, 0, 0, w, h, SOMBRE);
+    var d = ctx.createLinearGradient(0, 30, 0, 190); d.addColorStop(0, '#9cc0e6'); d.addColorStop(1, '#f0dcc0'); ctx.fillStyle = d; ctx.fillRect(90, 30, 300, 160);   // décor peint : ciel
+    PA.disc(ctx, 330, 90, 14, '#f8e8a8');
+    for (x = 90; x < 390; x += 2) { var hy = 150 + Math.round(10 * Math.sin(x / 30)); R(ctx, x, hy, 2, 190 - hy, '#6a9a5a'); }   // collines peintes
+    for (i = 0; i < 6; i++) { var tx = 120 + i * 48; R(ctx, tx, 96, 10, 70, '#efe4c8'); R(ctx, tx - 3, 92, 16, 5, '#d8c89c'); R(ctx, tx - 3, 164, 16, 5, '#d8c89c'); }   // colonnes peintes
+    R(ctx, 0, 0, w, 30, ROUGE); for (x = 0; x < w; x += 6) { R(ctx, x, 24, 3, 8, ROUGE_C); } R(ctx, 0, 30, w, 3, OR); for (x = 4; x < w; x += 12) R(ctx, x, 33, 2, 6, OR_O);   // lambrequin rouge à franges d'or
+    [[0, 90], [390, 90]].forEach(function (c) {                                                                   // grands rideaux relevés
+      for (x = 0; x < c[1]; x++) { var sh = (x % 14 < 7) ? ROUGE : '#6e1a28'; R(ctx, c[0] + x, 33, 1, 157 - Math.round(Math.abs(Math.sin((x + c[0]) / 14)) * 6), sh); }
+    });
+    R(ctx, 84, 33, 8, 157, OR); R(ctx, 84, 33, 2, 157, OR_C); R(ctx, 388, 33, 8, 157, OR); R(ctx, 394, 33, 2, 157, OR_O);   // montants dorés de l'arc
+    R(ctx, 0, 190, w, h - 190, '#8a5a30'); for (y = 190; y < h; y += 7) R(ctx, 0, y, w, 1, '#6a4220'); for (x = 0; x < w; x += 24) R(ctx, x, 190, 1, h - 190, '#6a4220');   // plancher de la scène
+    for (x = 20; x < w; x += 40) lumiere(ctx, x, 188);                                                            // lampes de rampe
+    return o.cv;
+  }
+  /** Rangée de deux grands fauteuils de théâtre vus de face (64×42, plus hauts que le personnage) : dossier arrondi en velours vert-bleu capitonné, liseré d'or, assise, accoudoirs de bois. */
+  function drawSieges() {
+    var o = PA.canvas(64, 42), ctx = o.ctx;
+    for (var i = 0; i < 2; i++) {
+      var x = i * 32 + 2;
+      R(ctx, x, 6, 28, 26, '#2f7f7a'); R(ctx, x + 3, 2, 22, 5, '#2f7f7a'); R(ctx, x + 6, 0, 16, 3, '#2f7f7a');          // dossier arrondi
+      R(ctx, x, 6, 28, 2, OR); R(ctx, x + 3, 2, 22, 1, OR); R(ctx, x + 6, 0, 16, 1, OR);                              // liseré d'or
+      R(ctx, x + 4, 11, 20, 16, '#3a9690'); for (var cx = x + 6; cx < x + 24; cx += 6) for (var cy = 13; cy < 27; cy += 6) R(ctx, cx, cy, 2, 2, '#245f5b');   // capiton
+      R(ctx, x - 1, 24, 30, 10, '#245f5b'); R(ctx, x - 1, 24, 30, 2, '#4aa59f');                                      // assise
+      R(ctx, x - 3, 16, 5, 22, '#5a3a22'); R(ctx, x - 3, 16, 5, 2, '#7a5232'); R(ctx, x + 26, 16, 5, 22, '#5a3a22'); R(ctx, x + 26, 16, 5, 2, '#7a5232');   // accoudoirs
+      R(ctx, x + 1, 36, 5, 6, '#3a2616'); R(ctx, x + 22, 36, 5, 6, '#3a2616');                                         // pieds
+    }
+    return finir(o.cv);
+  }
+  /** Balcon de théâtre (w tuiles × 28) : balustrade dorée, tablette, devant crème à médaillons d'or, dessous doré. Habille une plateforme dont le dessus est à 8 px du haut. */
+  function drawBalcon(wt) {
+    var w = wt * 16, o = PA.canvas(w, 28), ctx = o.ctx, x;
+    R(ctx, 0, 0, w, 2, OR_C); for (x = 1; x < w - 1; x += 5) R(ctx, x, 2, 2, 6, OR);                                  // main courante et balustres
+    R(ctx, 0, 8, w, 3, OR); R(ctx, 0, 8, w, 1, OR_C);                                                               // tablette = la plateforme
+    R(ctx, 0, 11, w, 13, CREME); R(ctx, 0, 11, w, 1, CREME_O);
+    for (x = 4; x < w - 6; x += 12) { R(ctx, x, 14, 8, 6, OR); R(ctx, x + 2, 15, 4, 4, CREME_O); R(ctx, x, 14, 8, 1, OR_C); }   // médaillons dorés
+    R(ctx, 0, 24, w, 4, OR_O); R(ctx, 0, 24, w, 1, OR);
+    return finir(o.cv);
+  }
+  /** Sol du foyer (576×16) : dallage damier crème et gris, tapis rouge au milieu. */
+  function drawSolFoyer() {
+    var o = PA.canvas(576, 16), ctx = o.ctx, x;
+    for (x = 0; x < 576; x += 16) { R(ctx, x, 0, 16, 16, (x / 16) % 2 ? '#d3c6a4' : '#efe4c8'); }
+    R(ctx, 0, 0, 576, 2, '#b9ab85'); R(ctx, 0, 3, 576, 7, ROUGE); R(ctx, 0, 3, 576, 1, OR); R(ctx, 0, 9, 576, 1, OR);
+    return o.cv;
+  }
+  /** Sol de la salle (768×16) : moquette rouge sombre, galon doré, motifs. */
+  function drawSolSalle() {
+    var o = PA.canvas(768, 16), ctx = o.ctx, x;
+    R(ctx, 0, 0, 768, 16, '#5e1a26'); R(ctx, 0, 0, 768, 2, OR); R(ctx, 0, 2, 768, 1, OR_O);
+    for (x = 4; x < 768; x += 16) { R(ctx, x, 7, 8, 2, '#7d2a38'); R(ctx, x + 2, 5, 4, 6, '#7d2a38'); }
+    return o.cv;
+  }
+  /** Plancher de la scène (384×16) : lames de bois, joints, bord clair devant. */
+  function drawSolScene() {
+    var o = PA.canvas(384, 16), ctx = o.ctx, x;
+    R(ctx, 0, 0, 384, 16, '#9a6a3a'); R(ctx, 0, 0, 384, 2, '#c4905a'); R(ctx, 0, 7, 384, 1, '#6a4220'); R(ctx, 0, 14, 384, 2, '#5e3a1a');
+    for (x = 12; x < 384; x += 36) { R(ctx, x, 2, 1, 5, '#6a4220'); R(ctx, x + 18, 8, 1, 6, '#6a4220'); }
+    return o.cv;
+  }
+  /** Lampe de rampe (10×14) : pied de cuivre et globe lumineux. */
+  function drawRampe() {
+    var o = PA.canvas(10, 14), ctx = o.ctx;
+    R(ctx, 4, 6, 2, 8, '#6a4a1a'); R(ctx, 2, 12, 6, 2, '#6a4a1a'); PA.disc(ctx, 5, 4, 4, '#fff1a8'); PA.disc(ctx, 5, 4, 2, '#ffffff');
+    return finir(o.cv);
   }
   /** Héron mécanique en vol (30×20, tourné vers la droite) : corps d'acier gris-bleu, longues ailes, cou tendu et long bec jaune, pattes qui pendent. */
   function drawHeronVol() {
@@ -1126,7 +1219,8 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_arbre_rue', drawArbreRue());
     PA.toTexture(scene, 'lv_fond_nef', drawFondNef());
     PA.toTexture(scene, 'lv_fond_hangar', drawFondHangar());
-    PA.toTexture(scene, 'lv_fond_theatre', drawFondTheatre());
+    [3, 5].forEach(function (n) { PA.toTexture(scene, 'lv_balcon_' + n, drawBalcon(n)); }); PA.toTexture(scene, 'lv_sol_foyer', drawSolFoyer()); PA.toTexture(scene, 'lv_sol_salle', drawSolSalle()); PA.toTexture(scene, 'lv_sol_scene', drawSolScene()); PA.toTexture(scene, 'lv_rampe', drawRampe());
+    PA.toTexture(scene, 'lv_fond_foyer', drawFondFoyer()); PA.toTexture(scene, 'lv_fond_salle', drawFondSalle()); PA.toTexture(scene, 'lv_fond_scene', drawFondScene());
     PA.toTexture(scene, 'lv_elephant', drawElephant());
     PA.toTexture(scene, 'lv_carrousel', drawCarrousel());
     PA.toTexture(scene, 'lv_arbre_herons', drawArbreHerons());

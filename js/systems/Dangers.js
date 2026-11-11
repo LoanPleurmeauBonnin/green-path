@@ -87,6 +87,14 @@ GP.Dangers = function (scene) {
     return { def: b, cone: cone, core: core, x: b.x0 * 16, ph: i * 1.7 };
   });
 
+  // ---------- Projecteurs « 1-2-3 soleil » : trois projecteurs en haut de l'écran ; ils chauffent doucement, puis allumés il faut rester immobile (au sol), éteints on peut avancer ----------
+  this.spot = null;
+  if (L.spotZone) {
+    var SW = GP.Config.WIDTH, gfx = scene.add.graphics().setScrollFactor(0).setDepth(32.5), nuit = scene.add.rectangle(0, 0, SW, H, 0x000000, 0).setOrigin(0).setScrollFactor(0).setDepth(31.5);   // au-dessus du filtre de nuit (31) pour que le jaune reste vif
+    var lab = GP.UI.txt(scene, SW / 2, 78, '', GP.PAL.w, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 4 } }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(40).setAlpha(0);
+    this.spot = { zone: L.spotZone, gfx: gfx, nuit: nuit, lab: lab, xs: [SW * 0.18, SW * 0.5, SW * 0.82], phase: 'off', t: 2500, k: 0, n: 0, grace: 0 };
+  }
+
   // ---------- Ressorts (parasols de café) : on rebondit à 4,5 tuiles ----------
   this.springs = (L.springs || []).map(function (sp) {
     var floor = (sp.y + 1) * 16, x = sp.x * 16 + 8;
@@ -378,6 +386,36 @@ GP.Dangers.prototype = {
     var self = this, s = this.s, p = s.player, b = p.body, k = dt / 1000, H = s.H;
     this.t += dt;
     var onGround = b.blocked.down || b.touching.down;
+
+    // projecteurs « 1-2-3 soleil » : off (on avance) → warn (ça chauffe) → on (immobile au sol sinon repéré)
+    var sp = this.spot;
+    if (sp) {
+      var actif = p.x > sp.zone.x0 * 16 && p.x < sp.zone.x1 * 16 && !s.dying && !s.finished;
+      if (!actif) { sp.phase = 'off'; sp.t = 2000; sp.grace = 0; }
+      else {
+        sp.t -= dt;
+        if (sp.t <= 0) {
+          if (sp.phase === 'off') { sp.phase = 'warn'; sp.t = 900; }
+          else if (sp.phase === 'warn') { sp.phase = 'on'; sp.t = [1800, 2200, 1600][sp.n % 3]; sp.grace = 350; sp.n++; }
+          else { sp.phase = 'off'; sp.t = [3400, 2600, 4000][sp.n % 3] * self.f('spot'); }
+        }
+        if (sp.phase === 'on') {
+          sp.grace -= dt;
+          if (sp.grace <= 0 && onGround && (Math.abs(b.velocity.x) > 18 || b.velocity.y < -60)) { sp.phase = 'off'; sp.t = 2500; s.die('REPÉRÉ PAR LE PROJECTEUR !'); }
+        }
+      }
+      var cible = sp.phase === 'on' ? 0.62 : sp.phase === 'warn' ? 0.22 : 0;
+      sp.k += (cible - sp.k) * Math.min(1, dt / 160);
+      sp.gfx.clear();
+      sp.xs.forEach(function (lx) {
+        sp.gfx.fillStyle(0xffd21a, Math.min(1, sp.k * 0.95)).fillTriangle(lx, 14, lx - 56, H, lx + 56, H);            // faisceau d'un jaune uni, assez transparent pour qu'on voie le personnage
+        sp.gfx.fillStyle(0x6a6a70, 1).fillRect(lx - 6, 6, 12, 8); sp.gfx.fillStyle(sp.phase === 'off' ? 0x8a8a90 : 0xffe04a, 1).fillRect(lx - 4, 12, 8, 3);
+      });
+      sp.nuit.setAlpha(sp.k * 0.3);
+      p.setDepth(sp.k > 0.05 ? 33 : 20);   // le personnage passe devant le faisceau : on le voit toujours
+      var txt = !actif ? '' : sp.phase === 'on' ? 'NE BOUGE PAS !' : sp.phase === 'warn' ? 'LE PROJECTEUR CHAUFFE…' : '';
+      sp.lab.setText(txt).setAlpha(txt ? 1 : 0);
+    }
 
     // ennemis
     this.patrols.forEach(function (e) {

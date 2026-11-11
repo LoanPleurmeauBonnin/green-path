@@ -52,6 +52,7 @@ GP.LevelBuilder = {
       pixRow: function (x, y, n) { for (var i = 0; i < n; i++) L.pixels.push({ x: x + i, y: y }); },
       check: function (x) { L.checks.push({ x: x, y: L.top(x) - 1 }); },
       hint: function (x, text) { L.hints.push({ x: x, y: L.top(x) - 1, text: text }); },
+      balcon: function (x, y, w) { api.plat(x, y, w); L.deco.push({ x: x, y: y, key: 'lv_balcon_' + w, dx: (w - 1) * 8, dy: 3, depth: 5 }); },   // balcon de théâtre : plateforme à sauter, habillée d'un devant crème et or et d'une balustrade
       deco: function (x, key, o) { o = o || {}; L.deco.push({ x: x, y: L.top(x) - 1, key: key, dx: o.dx || 0, dy: o.dy || 0, depth: o.depth }); },
       start: function (x) { L.startX = x; L.startRow = L.top(x) - 1; },
       climb: function (x, top, bottom) { L.climbs.push({ x: x, top: top, bottom: bottom === undefined ? L.top(x) - 1 : bottom }); },
@@ -70,6 +71,7 @@ GP.LevelBuilder = {
       liar: function (x, y, text, blur) { L.liars.push({ x: x, y: y, text: text, blur: blur }); },                                            // visage qui ment
       faller: function (x, y, period, offset, key, msg) { L.fallers.push({ x: x, y: y, period: period, offset: offset, key: key, msg: msg }); },   // objet suspendu qui tombe (conteneur par défaut ; key : autre sprite, ex. caisse de bananes)                            // conteneur qui tombe
       jet: function (x, h, period, offset) { L.jets.push({ x: x, h: h, period: period, offset: offset }); },                                  // jet de vapeur ou d'eau
+      spots: function (x0, x1) { L.spotZone = { x0: x0, x1: x1 }; },   // projecteurs « 1-2-3 soleil » : allumés on s'arrête, éteints on avance (entre les tuiles x0 et x1)
       beam: function (x0, x1, speed) { L.beams.push({ x0: x0, x1: x1, speed: speed }); },                                                     // projecteur qui balaie
       spring: function (x) { L.springs.push({ x: x, y: L.top(x) - 1 }); },                                                                    // parasol qui fait rebondir
       seq: function (x, pattern) { L.seqs.push({ x: x, pattern: pattern.split('') }); },                                                      // rideau à ouvrir (séquence L R D J)

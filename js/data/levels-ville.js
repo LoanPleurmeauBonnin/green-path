@@ -79,21 +79,19 @@ GP.LEVELS['feydeau'] = (function () {
 GP.LEVELS['graslin'] = (function () {
   // Parcours dans l'ordre du théâtre : parvis, escalier d'honneur à double révolution, foyer, salle (balcons en arc), scène et rideau.
   var L = GP.LevelBuilder.create(184, function (L) {
-    // 1. Le parvis et ses terrasses : une Muse lance des notes, un premier parasol
+    // 1. Le parvis et ses terrasses : un premier parasol
     L.ground(0, 34, 3);
     L.start(2);
-    L.hint(3, 'LES MUSES LANCENT DES NOTES : ACCROUPIS-TOI OU SAUTE');
+    L.hint(3, 'BIENVENUE À L\'OPÉRA GRASLIN : MONTE VERS LE THÉÂTRE');
     L.deco(5, 'graslin_table_cafe', { depth: 4 }); L.deco(9, 'graslin_lampadaire_ornemente', { depth: 3 }); L.deco(29, 'graslin_table_cafe', { depth: 4 });
     L.deco(12, 'lv_fountain', { depth: 3 });                                  // la fontaine de la place Graslin
     [1, 4, 8, 15, 19, 26, 32].forEach(function (bx) { L.deco(bx, 'feydeau_bollard', { depth: 4 }); });   // les bornes noires du parvis
-    L.muse(16, -1, 2800, 0);
     L.pix(6, 13); L.pix(13, 11); L.pix(17, 13);
     L.hint(20, 'LE PARASOL FAIT REBONDIR : SAUTE DESSUS');
     L.spring(22); L.plat(25, 10, 4); L.pix(26, 9); L.pix(27, 9);
     L.check(31);
     // 2. Le péristyle et le perron : les marches montent vers l'escalier d'honneur
     L.ground(34, 6, 4); L.ground(40, 6, 5); L.ground(46, 6, 6);
-    L.muse(41, -1, 2500, 0);
     L.pix(38, 12); L.pix(44, 11); L.pix(50, 10);
     // 3. L'escalier à double révolution : deux volées symétriques, on choisit son côté, elles se rejoignent au foyer
     L.ground(52, 8, 7);
@@ -101,33 +99,34 @@ GP.LEVELS['graslin'] = (function () {
     L.hint(55, "DEUX VOLÉES SYMÉTRIQUES : CHOISIS TON CÔTÉ");
     L.deco(56, 'lv_portes_theatre', { depth: 1 });                // les portes de l'Opéra Graslin : on entre dans le théâtre
     L.ground(60, 16, 5);                                    // volée basse : la plus sûre, une Muse la garde
-    L.muse(70, -1, 2500, 900);
     L.pix(62, 11); L.pix(66, 11); L.pix(72, 11);
     L.plat(61, 8, 3); L.plat(66, 7, 3); L.plat(71, 8, 3);   // volée haute : en l'air, plus de pixels
     L.pix(62, 7); L.pix(67, 6); L.pix(72, 7);
     // 4. Le foyer : longue galerie de promenade, les projecteurs balaient
     L.ground(76, 36, 7);
+    L.deco(76, 'lv_sol_foyer', { dx: 35 * 8, dy: 15, depth: 5 });   // dallage et tapis rouge du foyer
     L.check(78);
-    L.hint(80, "LES PROJECTEURS BALAIENT : PASSE QUAND ILS S'ÉLOIGNENT");
+    L.hint(77, "LES PROJECTEURS S'ALLUMENT : ARRÊTE-TOI ! ÉTEINTS : AVANCE");   // 1-2-3 soleil
+    L.spots(76, 184);
     L.deco(84, 'graslin_colonne_corinthienne', { depth: 2 }); L.deco(98, 'graslin_colonne_corinthienne', { depth: 2 }); L.deco(108, 'graslin_colonne_corinthienne', { depth: 2 });
-    L.beam(79, 92, 0.36); L.beam(97, 110, 0.4);          // projecteurs plus lents et plus espacés : le foyer reste passable
     L.pix(82, 9); L.pix(88, 9); L.pix(94, 9); L.pix(101, 9); L.pix(107, 9);
     L.check(110);
     // 5. La salle : le parterre, et les balcons en arc de cercle au-dessus (le haut rapporte plus)
     L.ground(112, 48, 5);
+    L.deco(112, 'lv_sol_salle', { dx: 47 * 8, dy: 15, depth: 5 });   // moquette rouge de la salle
+    L.deco(156, 'lv_rampe', { depth: 6 }); L.deco(158, 'lv_rampe', { depth: 6 });   // lampes de rampe, au pied de la scène
     L.hint(113, "LES BALCONS FORMENT UN ARC : LE HAUT RAPPORTE PLUS");
-    L.muse(120, -1, 2400, 0); L.muse(148, -1, 2400, 1200);
-    L.plat(116, 10, 3); L.plat(120, 8, 3); L.plat(124, 6, 3); L.plat(130, 5, 5); L.plat(137, 6, 3); L.plat(141, 8, 3); L.plat(145, 10, 3);
+    L.balcon(116, 10, 3); L.balcon(120, 8, 3); L.balcon(124, 6, 3); L.balcon(130, 5, 5); L.balcon(137, 6, 3); L.balcon(141, 8, 3); L.balcon(145, 10, 3);   // les balcons du théâtre : on saute d'un balcon à l'autre
     L.pix(117, 9); L.pix(121, 7); L.pix(125, 5); L.pix(132, 4); L.pix(138, 5); L.pix(142, 7); L.pix(146, 9);
     L.pix(114, 11); L.pix(128, 11); L.pix(135, 11); L.pix(153, 11);
     L.check(130);
     // 6. La scène : rejouer la séquence pour ouvrir le rideau, dernière Muse
     L.ground(160, 24, 6);
+    L.deco(160, 'lv_sol_scene', { dx: 23 * 8, dy: 15, depth: 5 });   // le plancher de la scène
     L.check(161);
     L.hint(162, 'REJOUE LA SÉQUENCE : < > V');
     L.seq(168, 'LRD');
     L.deco(178, 'graslin_muse_statue', { depth: 3 });
-    L.muse(181, -1, 2300, 0);
     L.pix(165, 10); L.pix(172, 10); L.pix(176, 10); L.pix(182, 9);
   });
   L.id = 'graslin';
@@ -140,10 +139,10 @@ GP.LEVELS['graslin'] = (function () {
   };
   L.thornKey = 'graslin_obstacle_chaises'; L.thornText = 'AÏE, DES CHAISES RENVERSÉES !';
   L.sky = { farKey: 'lv_fond_graslin', farBottom: 236 };         // immeubles de la place, d'après des vues de Graslin
-  L.farSwitch = [[0, 'lv_fond_graslin'], [58, 'lv_fond_theatre', 'OPÉRA GRASLIN : ON ENTRE DANS LE THÉÂTRE']];   // à l'intérieur (dès l'escalier d'honneur) : la salle bleue et or
+  L.farSwitch = [[0, 'lv_fond_graslin'], [58, 'lv_fond_foyer', 'OPÉRA GRASLIN : ON ENTRE DANS LE THÉÂTRE'], [112, 'lv_fond_salle', 'LA SALLE : LES BALCONS ET LES FAUTEUILS'], [160, 'lv_fond_scene', 'LA SCÈNE']];   // le foyer crème et or, la salle aux balcons, la scène aux rideaux rouges
   L.backdrop = { x: 27, key: 'lv_facade_graslin', scale: 1, tint: false };   // la façade à huit colonnes derrière le parvis
-  L.wxm = { rain: { note: 0.75 }, sun: { beam: 1.25 }, wind: { spring: 1.1 } };
-  L.weatherText = { rain: 'LA PLUIE ÉTOUFFE LES NOTES : PLUS LENTES', sun: 'LES PROJECTEURS BALAIENT PLUS VITE', wind: 'LE VENT GONFLE LES PARASOLS : REBOND PLUS HAUT' };
+  L.wxm = { rain: { spot: 1.2 }, sun: { spot: 0.8 }, wind: { spring: 1.1 } };
+  L.weatherText = { rain: 'LA PLUIE ÉTOUFFE LES PROJECTEURS : PLUS ESPACÉS', sun: 'LES PROJECTEURS S\'ALLUMENT PLUS SOUVENT', wind: 'LE VENT GONFLE LES PARASOLS : REBOND PLUS HAUT' };
   return L;
 })();
 
