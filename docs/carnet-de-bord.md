@@ -156,3 +156,13 @@
 **Château** : la première fosse (sèche, avec des marches) devient une vraie douve comme la seconde, donc deux ponts-levis, deux douves ; les herses font toute la largeur du passage (sprite répété deux fois, 4 tuiles) ; la flèche des meurtrières est plus grosse (empennage rouge, pointe claire) ; un tonneau de plus sur le tablier (x=118 à 124).
 
 **Recette exécutée** : tests Node ; contrôle à l'écran des douves, des herses ouvertes et baissées, de la flèche. **Non réalisé** : tonneau ajouté non éprouvé à la main (le Château n'est pas dans le contrôleur de faisabilité) ; arbres tronqués, toit et piliers de la Cathédrale, plateformes mobiles du niveau 5 ; aucun playtest humain.
+
+## Mercredi 11 novembre 2026 (suite 7) — refonte du niveau 1, Jardin des Plantes
+
+**Constat (retour de l'équipe)** : pixel offert sur le point de départ, premier bassin mortel sans avertissement, jets d'eau avant l'oiseau, pixel à l'aplomb d'un jet, panneau d'accroupi collé à l'oiseau, 60 tuiles sans lanterne, fin sans tension.
+
+**Refonte** (`GZoneLevels.js`, table `REDESIGNS` ; `gzones.js` reste intact) : ordre d'apprentissage course → saut → ronces → eau (premier bassin sous un pont) → plateformes hautes sans danger (Palmarium avancé en zone 3) → oiseau (panneau 3 tuiles avant, sol plat) → jet d'eau (d'abord au sec) → traversée des pontons → combinaison finale au Grand Marronnier. Trois lanternes (x = 42, 85, 115), 15 pixels, aucun sur le départ. Les collisions du buisson, des topiaires et de la serre sont mesurées sur les sprites.
+
+**Écarts avec le plan fourni** : le sol est coupé sous le premier pont pour que le bassin se voie ; les oiseaux volent 1,625 tuile au-dessus du sol (le plan disait 2 : à cette hauteur le moteur ne touche pas un joueur debout, donc l'accroupi n'aurait servi à rien) ; les appuis du Palmarium suivent le sprite (topiaires à 2,7 tuiles du sol au lieu de 2).
+
+**Recette exécutée** : 74 tests Node, faisabilité (arrivée, 15 pixels, 3 lanternes), contrôle à l'écran des cinq zones, oiseau éprouvé en jeu (debout touché, accroupi sauf pendant 7 s). **Non réalisé** : aucune traversée humaine complète ; le rythme des jets et le final (ronce, oiseau, jet) restent à jouer.

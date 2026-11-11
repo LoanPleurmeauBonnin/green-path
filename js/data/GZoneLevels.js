@@ -11,7 +11,7 @@ GP.GZoneLevels = (function () {
    * sans ennemi ni pointe : sa difficulté vient des séquences de dalles et de la marée (GZoneRuntime).
    */
   var BALANCE = {
-    1: { vitesse: 0.85, retirer: [{ sprite: 'commun_ronces_2', x: 44, y: 14 }, { sprite: 'commun_pointes_fer_1', x: 102, y: 14 }] },
+    1: {},   // refonte : obstacles et vitesses réglés dans REDESIGNS
     2: { vitesse: 0.85, retirer: [{ sprite: 'cathedrale_cierge_flamme', x: 28, y: 21 }, { sprite: 'cathedrale_cierge_flamme', x: 40, y: 21 }] },
     3: { vitesse: 0.9 },
     // Feydeau : les pointes se superposaient aux mouettes (îlot x=56, balcons x=137 et 145) ou aux piliers (x=68) : retirées.
@@ -41,8 +41,7 @@ GP.GZoneLevels = (function () {
    *   retirer : ids de plateformes supprimées · modifier : { id: propriétés } · ajouter : plateformes ajoutées
    */
   var REPAIRS = {
-    // Jardin : chaque danger est présenté par un panneau AVANT sa première rencontre (skill level-design : enseigner avant de tester).
-    1: { signes: [{ x: 26, y: 14, texte: 'Les ronces piquent : saute !' }, { x: 59, y: 14, texte: "Les jets d'eau montent puis retombent : traverse quand ils sont bas." }] },
+    // Jardin : entièrement redessiné, voir REDESIGNS (ses panneaux sont dans la refonte).
     // Cathédrale : les montants de la porte des toits étaient des murs pleins de 4 tuiles sur le chemin du joueur (la porte
     // se traverse entre eux, elle ne se contourne pas). Ils deviennent des jambages de décor ; le linteau reste au-dessus.
     // + panneaux avant les cierges, les colonnes et les gargouilles.
@@ -81,6 +80,88 @@ GP.GZoneLevels = (function () {
     // Tour LU : seule mécanique nouvelle, le courant d'air ; puis le but de l'arène. (Le reste est un rappel des niveaux précédents.)
     12: { signes: [{ x: 145, y: 4, texte: "Courant d'air : entre dedans pour t'élever, tu retomberas tout doucement." }, { x: 190, y: 5, texte: "Allume les quatre lanternes hautes avec les courants d'air pour dissiper le Vortex." }] }
   };
+  /**
+   * REFONTES : un niveau entièrement redessiné remplace ici la géométrie du document importé (gzones.js reste intact : fond,
+   * météo et image à reconstruire sont conservés). Contrôle : `node tools/solvability.cjs 1` et tests/levels.test.js.
+   *
+   * 1 · Jardin des Plantes (11 novembre 2026). Ordre d'apprentissage : course → saut → ronces → eau (d'abord sous un pont) →
+   * plateformes hautes sans danger (Palmarium) → oiseau (accroupi) → jet d'eau (d'abord au sec) → combinaison finale.
+   * Trois lanternes (x = 42, 85, 115). Les collisions des décors (buisson, topiaires, serre) sont mesurées sur les sprites.
+   */
+  var PONT = ['commun_pont_planches_g', 'commun_pont_planches_m', 'commun_pont_planches_d'];
+  function herbe(id, x, y, w) { return { id: id, type: 'masse', style: 'herbe', x: x, y: y, w: w, grab: false }; }
+  function sol(id, x, w) { return { id: id, type: 'masse', style: 'herbe', x: x, y: 15, w: w }; }
+  function pave(id, x, y, w, note) { return { id: id, type: 'masse', x: x, y: y, w: w, top_sprite: 'jardin_pave_haut_1', fill_sprite: 'jardin_pave_plein', note: note }; }
+  function pont(id, x, w) { return { id: id, type: 'pont', x: x, y: 15, w: w, sprite_set: PONT }; }
+  function pad(id, x, y, w) { return { id: id + '_pad', type: 'pad', x: x, y: y, w: w, solid: 'top', sur: id }; }
+  function eau(x, w) { return { sprite: 'jardin_bassin_surface', x: x, y: 16, w: w, kind: 'eau_mortelle', note: 'chute = retour checkpoint' }; }
+  function jet(x, y, decalage) { return { sprite: 'jardin_jet_eau', x: x, y: y, kind: 'cyclique', cycle: { periode_s: 3, actif_s: 1, decalage_s: decalage, hauteur_tuiles: 4, top_y: y - 3, frame_actif: 1 } }; }
+  // Un oiseau touche le joueur debout et passe au-dessus du joueur accroupi : il vole 1,625 tuile au-dessus de la surface
+  // (zone de contact de l'oiseau : 4 px dans la tête du joueur debout, 2 px au-dessus du joueur accroupi).
+  function oiseau(id, x1, x2, surface) { return { id: id, sprite: 'ciel_oiseau', type: 'patrouille_horizontale', x1: x1, x2: x2, y: surface - 1.625, vitesse: 2.6, touche: 'debout', esquive: 'accroupi' }; }
+  var REDESIGNS = {
+    1: {
+      temps_ref_s: 75,
+      spec: { pixels: 15, checkpoints: 3, obstacles_mortels: 3, boss: null },
+      zones: [{ n: 1, nom: 'Sortie de Gare & Entrée du Parc', x: [0, 24] }, { n: 2, nom: 'Les Allées Fleuries & Petits Bassins', x: [24, 55] },
+        { n: 3, nom: 'Le Palmarium et les Topiaires', x: [55, 86] }, { n: 4, nom: "Les Bassins à Jets d'Eau", x: [86, 114] },
+        { n: 5, nom: 'Le Grand Marronnier & Arche Finale', x: [114, 140] }],
+      plateformes: [
+        pave('p1', 0, 15, 14), sol('p2', 14, 23), pont('p3', 37, 3), sol('p4', 40, 5), sol('p5', 47, 4), sol('p6', 53, 37),
+        pave('p7', 90, 15, 3, 'margelle du jet au sec'), sol('p8', 93, 3),
+        pont('p9', 96, 4), pave('p10', 100, 16, 2, "pilier du jet d'eau"), pont('p11', 104, 4), pave('p12', 108, 16, 2, "pilier du jet d'eau"), pont('p13', 111, 3),
+        sol('p14', 114, 26),
+        herbe('m1', 19, 13, 3), herbe('m2', 31, 13, 3), herbe('m3', 81, 13, 3),
+        herbe('m4', 120, 14, 2), herbe('m5', 122, 12, 7), herbe('m6', 129, 13, 2), herbe('m7', 131, 11, 3),
+        pad('buisson1', 15.25, 14.2, 1.25), pad('topiaire_tete', 57.5, 12.3125, 1.25),
+        { id: 'serre1_g', type: 'pad', x: 61, y: 10.625, w: 1.25, solid: 'top', sur: 'serre1' },
+        { id: 'serre1_c', type: 'pad', x: 63.25, y: 9, w: 1.5, solid: 'top', sur: 'serre1' },
+        { id: 'serre1_d', type: 'pad', x: 65.9, y: 10.625, w: 1.25, solid: 'top', sur: 'serre1' },
+        pad('topiaire_oiseau', 68.875, 12.5625, 1.25)
+      ],
+      dangers: [
+        { sprite: 'commun_ronces_1', x: 27, y: 14, kind: 'mortel' }, { sprite: 'commun_ronces_1', x: 30, y: 14, kind: 'mortel' },
+        eau(37, 3), eau(45, 2), eau(51, 2),
+        jet(91, 14, 0),
+        eau(96, 4), jet(100.25, 15, 0), eau(102, 2), eau(104, 4), jet(108.25, 15, 1.5), eau(110, 1), eau(111, 3),
+        { sprite: 'commun_ronces_2', x: 123, y: 11, kind: 'mortel' }, jet(129.25, 12, 0.75)
+      ],
+      ennemis: [
+        oiseau('oiseau_sol', 75, 79, 15), oiseau('oiseau_massif', 80, 84, 13), oiseau('oiseau_final', 125, 128, 12),
+        { id: 'papillon_serre', sprite: 'ciel_papillon', type: 'ambiance', x: 64, y: 5, inoffensif: true }
+      ],
+      pixels: [[16, 13], [20, 11], [27, 12], [32, 11], [46, 12], [52, 12], [60, 11], [64, 7], [68, 9], [77, 14], [82, 10], [98, 13], [106, 13], [117, 13], [131, 9]]
+        .map(function (p, i) { return { id: i + 1, sprite: 'commun_pixel', x: p[0], y: p[1], difficulte: [7, 8, 10].indexOf(i) >= 0 ? 'risque' : 'facile', detail_image: Math.floor(i / 5) + 1 }; }),
+      checkpoints: [42, 85, 115].map(function (x, i) { return { id: i + 1, x: x, y: 14, sprite_off: 'commun_lanterne_eteinte', sprite_on: 'commun_lanterne_allumee' }; }),
+      signes: [
+        { sprite: 'signes_panneau_saut', x: 13, y: 14, texte: 'Saute sur les buissons et les massifs pour attraper les pixels.' },
+        { sprite: 'signes_panneau_saut', x: 24, y: 14, texte: 'Attention aux ronces : saute par-dessus !' },
+        { sprite: 'signes_panneau_fleches', x: 72, y: 14, texte: 'Maintiens ↓ pour passer sous les oiseaux.' },
+        { sprite: 'signes_panneau_fleches', x: 88, y: 14, texte: "Observe le jet d'eau et passe quand il retombe." }
+      ],
+      decor: [
+        { sprite: 'jardin_gare_batiment', x: 0, y: 14, layer: 'sol' },
+        { sprite: 'commun_buisson_a', x: 15, y: 14, id: 'buisson1' }, { sprite: 'commun_fleur_rouge', x: 17.5, y: 14 },
+        { sprite: 'jardin_massif_fleurs_a', x: 19.5, y: 12 }, { sprite: 'jardin_lampadaire_parc', x: 22.75, y: 14 },
+        { sprite: 'commun_touffe_herbe', x: 28.5, y: 14 }, { sprite: 'jardin_massif_fleurs_b', x: 31.5, y: 12 },
+        { sprite: 'jardin_banc_parc', x: 34.75, y: 14 }, { sprite: 'commun_fleur_jaune', x: 40.5, y: 14 }, { sprite: 'jardin_massif_fleurs_c', x: 43, y: 14 },
+        { sprite: 'jardin_pin_parasol', x: 47.1, y: 14 }, { sprite: 'jardin_arbre_feuillu_clair', x: 53.2, y: 14 },
+        { sprite: 'jardin_topiaire_tete_endormie', x: 56, y: 14, id: 'topiaire_tete' }, { sprite: 'jardin_palmarium_serre', x: 60.5, y: 14, id: 'serre1' },
+        { sprite: 'jardin_topiaire_oiseau', x: 68, y: 14, id: 'topiaire_oiseau' },
+        { sprite: 'commun_fleur_rouge', x: 73.5, y: 14 }, { sprite: 'jardin_massif_fleurs_a', x: 81.5, y: 12 },
+        { sprite: 'jardin_lampadaire_parc', x: 86.5, y: 14 }, { sprite: 'commun_touffe_herbe', x: 94, y: 14 },
+        { sprite: 'jardin_arbre_marronnier', x: 116.25, y: 14 }, { sprite: 'commun_fleur_jaune', x: 119.2, y: 14 },
+        { sprite: 'commun_touffe_herbe', x: 126.5, y: 11 }, { sprite: 'commun_fleur_rouge', x: 134.5, y: 14 }
+      ],
+      pedagogie: [{ x: [72, 80], texte: 'Oiseau à hauteur de tête sur sol plat : apprendre ↓ (panneau x=72).' }, { x: [86, 93], texte: "Jet d'eau au sec avant la traversée des pontons." }]
+    }
+  };
+  function redesign(d) {
+    var r = REDESIGNS[d.num];
+    if (!r || d.refonte) return;
+    d.refonte = true; Object.assign(d, JSON.parse(JSON.stringify(r)));
+    d.sourceHash = 'refonte' + d.num + '-20261111-' + d.sourceHash;   // nouvelle révision : les parties en cours de l'ancien tracé sont écartées
+  }
   function repair(d) {
     var r = REPAIRS[d.num];
     if (!r || d.retouche) return;
@@ -93,6 +174,7 @@ GP.GZoneLevels = (function () {
     (r.deplacer || []).forEach(function (m) { d.pixels.forEach(function (p) { if (p.x === m.de.x && p.y === m.de.y) { p.x = m.vers.x; p.y = m.vers.y; } }); });
     (r.signes || []).forEach(function (s) { d.signes.push(Object.assign({ sprite: 'signes_panneau_saut' }, s)); });
   }
+  GP.GZONES.forEach(redesign);
   GP.GZONES.forEach(repair);
   GP.GZONES.forEach(balance);
   function make(d, id) {
@@ -167,5 +249,5 @@ GP.GZoneLevels = (function () {
   });
   GP.LAST_PLAYABLE = 11;
   GP.Config.ROUTE_VERSION = 'gzones-1';
-  return { ids: ids, make: make, balance: BALANCE, repairs: REPAIRS };
+  return { ids: ids, make: make, balance: BALANCE, repairs: REPAIRS, redesigns: REDESIGNS };
 })();
