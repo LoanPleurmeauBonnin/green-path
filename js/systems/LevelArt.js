@@ -587,7 +587,7 @@ GP.LevelArt = (function () {
    * murs ocre et verrière à nervures de métal tout en haut. Dessiné d'après des vues du passage consultées sur Wikipédia (référence uniquement).
    */
   function drawFondPommeraye() {
-    var w = 480, h = 236, o = PA.canvas(w, h), ctx = o.ctx, k = '#2b2230', i, x, n;
+    var w = 480, h = 272, o = PA.canvas(w, h), ctx = o.ctx, k = '#2b2230', i, x, n;
     var mur = '#d6ae6e', murO = '#b88c52', murC = '#e8c98c', arcO = '#6b4a2f', arcL = '#f4d9a0', fer = '#3b3040', pierre = '#eae6dc', pierreO = '#b8b2a4';
     R(ctx, 0, 0, w, h, mur);
     var verre = ctx.createLinearGradient(0, 0, 0, 38); verre.addColorStop(0, '#cfe6f6'); verre.addColorStop(1, '#a9cde6');
@@ -615,6 +615,9 @@ GP.LevelArt = (function () {
       R(ctx, 0, bot - 6, w, 2, k); for (x = 0; x < w; x += 6) R(ctx, x, bot - 12, 2, 6, fer);                  // balustrade de fer
       R(ctx, 0, bot - 12, w, 2, fer); R(ctx, 0, bot - 4, w, 4, murO);
     });
+    // niveau inférieur du passage, visible par les ouvertures du plancher : sol de dalles sombres, devantures éclairées et lampes
+    R(ctx, 0, 236, w, 36, '#4a2a22'); for (x = 0; x < w; x += 24) { R(ctx, x, 236, 12, 12, '#5d352b'); R(ctx, x + 12, 248, 12, 12, '#5d352b'); R(ctx, x, 260, 12, 12, '#5d352b'); }
+    R(ctx, 0, 234, w, 3, k); for (x = 12; x < w; x += 60) { R(ctx, x, 238, 26, 18, '#f4d9a0'); R(ctx, x, 238, 26, 3, '#c0453a'); R(ctx, x + 2, 244, 22, 10, '#fff3c8'); }   // vitrines allumées en contrebas
     return o.cv;
   }
   /** Façade d'immeuble (hôtel d'armateur de Feydeau, immeubles de la place Graslin) : pierre claire, fenêtres, balcons de fer, mascarons, toit d'ardoise à lucarnes. */
@@ -944,6 +947,64 @@ GP.LevelArt = (function () {
     R(ctx, 34, 13, 20, 3, '#6f7684'); R(ctx, 41, 14, 6, 2, k);                                                      // chariot du crochet
     return o.cv;
   }
+  /** Façade de boutique du passage (64×56) : auvent rayé, enseigne avec une icône, vitrine et porte. kind : 'boulangerie', 'chaussettes' ou 'sacs'. */
+  function drawBoutique(kind) {
+    var o = PA.canvas(64, 56), ctx = o.ctx, k = '#2b2230', i;
+    var C = { boulangerie: ['#c0453a', '#f4ecd0', '#8a5a30'], chaussettes: ['#3f62b8', '#f4f4fa', '#2f4a96'], sacs: ['#3f8a4f', '#f4ecd0', '#2e6a3a'], vetements: ['#8b4fb8', '#f4ecd0', '#5e3a8a'], chapeaux: ['#e8873a', '#f4f4fa', '#9a5a20'] }[kind];
+    R(ctx, 0, 0, 64, 56, k); R(ctx, 1, 1, 62, 55, '#e8d6a8');                                                     // cadre de pierre
+    R(ctx, 3, 3, 58, 11, C[2]); R(ctx, 3, 3, 58, 2, k); R(ctx, 3, 12, 58, 2, k);                                  // enseigne
+    if (kind === 'boulangerie') { R(ctx, 8, 6, 14, 4, '#e8b24a'); R(ctx, 8, 6, 14, 1, '#f4d060'); for (i = 0; i < 3; i++) R(ctx, 11 + i * 4, 7, 1, 2, '#8a5a30'); R(ctx, 32, 5, 4, 6, '#d89a4a'); R(ctx, 36, 6, 4, 5, '#e8b24a'); R(ctx, 40, 5, 4, 6, '#d89a4a'); }   // baguette et croissants
+    else if (kind === 'chaussettes') { [[10, '#c0453a'], [26, '#f4d35e'], [42, '#3fbfb0']].forEach(function (s) { R(ctx, s[0], 5, 4, 7, s[1]); R(ctx, s[0], 10, 8, 3, s[1]); R(ctx, s[0], 6, 4, 1, '#f4f4fa'); R(ctx, s[0], 8, 4, 1, '#f4f4fa'); }); }   // chaussettes rayées
+    else if (kind === 'vetements') { [[8, '#c0453a'], [26, '#3fbfb0'], [44, '#f4d35e']].forEach(function (s) { R(ctx, s[0], 5, 3, 3, s[1]); R(ctx, s[0] + 9, 5, 3, 3, s[1]); R(ctx, s[0] + 3, 6, 6, 6, s[1]); R(ctx, s[0] + 1, 8, 10, 1, '#f4f4fa'); }); }   // chemises et robes
+    else if (kind === 'chapeaux') { [[8, '#2b2e3a'], [27, '#c0453a'], [46, '#f4d35e']].forEach(function (s) { R(ctx, s[0] + 3, 4, 8, 5, s[1]); R(ctx, s[0], 9, 14, 2, s[1]); R(ctx, s[0] + 3, 8, 8, 1, '#f4f4fa'); }); }   // chapeaux
+    else { [[10, '#c0453a'], [28, '#f4d35e'], [46, '#3f62b8']].forEach(function (s) { R(ctx, s[0], 7, 9, 5, s[1]); R(ctx, s[0] + 2, 4, 1, 3, k); R(ctx, s[0] + 6, 4, 1, 3, k); R(ctx, s[0] + 2, 4, 5, 1, k); }); }   // sacs à main
+    for (i = 0; i < 8; i++) { R(ctx, 3 + i * 8, 14, 8, 8, i % 2 ? C[1] : C[0]); R(ctx, 3 + i * 8, 21, 8, 2, k); }   // auvent rayé
+    R(ctx, 5, 24, 36, 30, k); R(ctx, 6, 25, 34, 28, '#fff3c8'); R(ctx, 6, 25, 34, 3, '#fffbe8');                    // vitrine éclairée
+    if (kind === 'boulangerie') { for (i = 0; i < 4; i++) { R(ctx, 8 + i * 8, 38, 6, 3, '#c98a42'); R(ctx, 8 + i * 8, 37, 6, 1, '#e8b870'); } R(ctx, 7, 44, 32, 2, '#8a5a30'); for (i = 0; i < 5; i++) { R(ctx, 8 + i * 6, 40, 4, 4, '#d89a4a'); } }
+    else if (kind === 'vetements') { for (i = 0; i < 4; i++) { var vc = ['#c0453a', '#3fbfb0', '#f4d35e', '#8b6bb8'][i]; R(ctx, 9 + i * 8, 28, 2, 3, '#7a5a3a'); R(ctx, 8 + i * 8, 30, 4, 12, vc); R(ctx, 7 + i * 8, 40, 6, 6, vc); } R(ctx, 7, 46, 32, 2, '#8a5a30'); }   // mannequins en robes
+    else if (kind === 'chapeaux') { for (i = 0; i < 4; i++) { var hc = ['#2b2e3a', '#c0453a', '#3f62b8', '#f4d35e'][i]; R(ctx, 10 + i * 8, 34, 5, 4, hc); R(ctx, 8 + i * 8, 38, 9, 2, hc); R(ctx, 12 + i * 8, 40, 1, 6, '#7a5a3a'); } R(ctx, 7, 46, 32, 2, '#8a5a30'); }   // chapeaux sur des présentoirs
+    else if (kind === 'chaussettes') { for (i = 0; i < 5; i++) { var cc = ['#c0453a', '#3f62b8', '#f4d35e', '#3fbfb0', '#8b6bb8'][i]; R(ctx, 8 + i * 6, 30, 3, 8, cc); R(ctx, 8 + i * 6, 35, 5, 3, cc); } R(ctx, 7, 46, 32, 2, '#8a5a30'); }
+    else { for (i = 0; i < 4; i++) { var bc = ['#c0453a', '#3f62b8', '#f4d35e', '#8b6bb8'][i]; R(ctx, 8 + i * 8, 36, 7, 6, bc); R(ctx, 10 + i * 8, 33, 1, 3, k); R(ctx, 13 + i * 8, 33, 1, 3, k); R(ctx, 10 + i * 8, 33, 4, 1, k); } R(ctx, 7, 46, 32, 2, '#8a5a30'); }
+    R(ctx, 44, 24, 16, 32, k); R(ctx, 45, 25, 14, 30, '#6a4a2a'); R(ctx, 47, 27, 10, 12, '#9fc0e0'); R(ctx, 56, 42, 2, 2, '#f4d35e');   // porte vitrée et poignée
+    return o.cv;
+  }
+  /** Tapis rouge à liseré doré (16×4) posé sur le sol de la galerie. */
+  function drawTapisRouge() {
+    var o = PA.canvas(16, 4), ctx = o.ctx;
+    R(ctx, 0, 0, 16, 4, '#8a1f2b'); R(ctx, 0, 0, 16, 1, '#e0b64a'); R(ctx, 0, 3, 16, 1, '#6a1520'); R(ctx, 4, 1, 8, 1, '#a82a38');
+    return o.cv;
+  }
+  /** Portes du théâtre Graslin (64×64) : double porte de bois sombre sous un fronton doré aux deux masques, rideaux rouges de chaque côté. */
+  function drawPortesTheatre() {
+    var o = PA.canvas(64, 64), ctx = o.ctx, k = '#2b2230', or = '#e0b64a';
+    R(ctx, 0, 0, 64, 64, k); R(ctx, 1, 1, 62, 63, '#cfc7b2'); R(ctx, 3, 3, 58, 12, '#27396e'); R(ctx, 3, 3, 58, 2, or); R(ctx, 3, 13, 58, 2, or);       // fronton bleu et or
+    PA.disc(ctx, 22, 9, 4, '#f4e6b0'); PA.disc(ctx, 42, 9, 4, '#f4e6b0'); R(ctx, 20, 9, 1, 1, k); R(ctx, 24, 9, 1, 1, k); R(ctx, 40, 9, 1, 1, k); R(ctx, 44, 9, 1, 1, k); R(ctx, 21, 11, 3, 1, k); R(ctx, 41, 10, 3, 1, k);   // les deux masques
+    R(ctx, 6, 18, 14, 46, '#8a2331'); R(ctx, 44, 18, 14, 46, '#8a2331'); for (var i = 0; i < 4; i++) { R(ctx, 8 + i * 3, 18, 1, 46, '#a8404f'); R(ctx, 46 + i * 3, 18, 1, 46, '#a8404f'); }   // rideaux rouges
+    R(ctx, 20, 20, 24, 44, k); R(ctx, 21, 21, 11, 43, '#5a3820'); R(ctx, 32, 21, 11, 43, '#5a3820'); R(ctx, 30, 40, 2, 4, or); R(ctx, 33, 40, 2, 4, or); R(ctx, 23, 24, 6, 8, '#7a4e2a'); R(ctx, 35, 24, 6, 8, '#7a4e2a');   // double porte
+    return o.cv;
+  }
+  /**
+   * Façade du théâtre Graslin (208×132) : péristyle de huit colonnes corinthiennes, entablement, huit statues sur l'attique, et grandes toiles colorées tendues entre les colonnes
+   * (jaune, vert, bleu, violet, rouge…) comme sur les photos de la place. Dessinée d'après des photos (Wikimédia Commons), référence uniquement.
+   */
+  function drawFacadeGraslin() {
+    var o = PA.canvas(208, 132), ctx = o.ctx, k = '#2b2230', pierre = '#e8dcc0', pierreO = '#c9bb98', pierreC = '#f4ecd6', i, x, y;
+    var toiles = ['#d8c93a', '#2f9a5a', '#2f5fc0', '#2b3a90', '#7a2f8a', '#a02a3a', '#e0a030'];
+    R(ctx, 8, 14, 192, 14, k); R(ctx, 9, 15, 190, 12, pierre); R(ctx, 9, 15, 190, 2, pierreC); R(ctx, 9, 25, 190, 2, pierreO);                         // attique
+    for (i = 0; i < 8; i++) { var sx = 16 + i * 24; R(ctx, sx + 4, 4, 5, 11, '#f4f4fa'); PA.disc(ctx, sx + 6, 4, 3, '#f4f4fa'); R(ctx, sx + 3, 8, 7, 2, '#f4f4fa'); R(ctx, sx + 4, 10, 1, 5, pierreO); }   // huit Muses sur le toit
+    R(ctx, 4, 28, 200, 8, k); R(ctx, 5, 29, 198, 6, pierre); R(ctx, 5, 29, 198, 1, pierreC); R(ctx, 5, 33, 198, 2, pierreO);                         // entablement
+    for (x = 8; x < 200; x += 6) R(ctx, x, 30, 2, 3, pierreO);                                                                                          // denticules
+    R(ctx, 6, 36, 196, 4, pierreO);                                                                                                                        // architrave
+    for (i = 0; i < 7; i++) { var tx = 22 + i * 24; R(ctx, tx, 40, 20, 78, toiles[i]); R(ctx, tx, 40, 20, 3, 'rgba(255,255,255,0.25)'); for (y = 44; y < 118; y += 10) R(ctx, tx + 2, y, 16, 1, 'rgba(0,0,0,0.12)'); }   // toiles tendues
+    for (i = 0; i < 8; i++) {                                                                                                                           // huit colonnes corinthiennes
+      var cx = 12 + i * 24;
+      R(ctx, cx, 40, 10, 78, k); R(ctx, cx + 1, 40, 8, 78, pierre); R(ctx, cx + 1, 40, 2, 78, pierreC); R(ctx, cx + 7, 40, 2, 78, pierreO);
+      for (y = 44; y < 114; y += 4) R(ctx, cx + 3, y, 1, 3, pierreO);                                                                                  // cannelures
+      R(ctx, cx - 2, 38, 14, 5, k); R(ctx, cx - 1, 39, 12, 3, pierreC); R(ctx, cx - 2, 116, 14, 4, k); R(ctx, cx - 1, 117, 12, 2, pierre);          // chapiteau et base
+    }
+    for (i = 0; i < 4; i++) { R(ctx, 0, 120 + i * 3, 208, 3, i % 2 ? pierreO : pierre); R(ctx, 0, 120 + i * 3, 208, 1, k); }                              // marches
+    return o.cv;
+  }
   /** Note de musique lancée par les Muses du théâtre. */
   function drawNote() {
     var o = PA.canvas(10, 12), ctx = o.ctx, k = GP.PAL.k, y = GP.PAL.y;
@@ -1034,6 +1095,10 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_caisse_bananes', drawCaisseBananes());
     PA.toTexture(scene, 'lv_regime', drawRegime());
     PA.toTexture(scene, 'lv_peau', drawPeau());
+    PA.toTexture(scene, 'lv_facade_graslin', drawFacadeGraslin());
+    ['boulangerie', 'chaussettes', 'sacs', 'vetements', 'chapeaux'].forEach(function (b) { PA.toTexture(scene, 'lv_boutique_' + b, drawBoutique(b)); });
+    PA.toTexture(scene, 'lv_tapis_rouge', drawTapisRouge());
+    PA.toTexture(scene, 'lv_portes_theatre', drawPortesTheatre());
     PA.toTexture(scene, 'lv_fond_hangar_quai', drawFondHangarQuai());
     PA.toTexture(scene, 'lv_rails', drawRails());
     PA.toTexture(scene, 'lv_corten', drawCorten());

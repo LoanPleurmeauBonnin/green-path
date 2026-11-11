@@ -84,6 +84,8 @@ GP.LEVELS['graslin'] = (function () {
     L.start(2);
     L.hint(3, 'LES MUSES LANCENT DES NOTES : ACCROUPIS-TOI OU SAUTE');
     L.deco(5, 'graslin_table_cafe', { depth: 4 }); L.deco(9, 'graslin_lampadaire_ornemente', { depth: 3 }); L.deco(29, 'graslin_table_cafe', { depth: 4 });
+    L.deco(12, 'lv_fountain', { depth: 3 });                                  // la fontaine de la place Graslin
+    [1, 4, 8, 15, 19, 26, 32].forEach(function (bx) { L.deco(bx, 'feydeau_bollard', { depth: 4 }); });   // les bornes noires du parvis
     L.muse(16, -1, 2800, 0);
     L.pix(6, 13); L.pix(13, 11); L.pix(17, 13);
     L.hint(20, 'LE PARASOL FAIT REBONDIR : SAUTE DESSUS');
@@ -97,6 +99,7 @@ GP.LEVELS['graslin'] = (function () {
     L.ground(52, 8, 7);
     L.check(54);
     L.hint(55, "DEUX VOLÉES SYMÉTRIQUES : CHOISIS TON CÔTÉ");
+    L.deco(56, 'lv_portes_theatre', { depth: 1 });                // les portes de l'Opéra Graslin : on entre dans le théâtre
     L.ground(60, 16, 5);                                    // volée basse : la plus sûre, une Muse la garde
     L.muse(70, -1, 2500, 900);
     L.pix(62, 11); L.pix(66, 11); L.pix(72, 11);
@@ -137,8 +140,8 @@ GP.LEVELS['graslin'] = (function () {
   };
   L.thornKey = 'graslin_obstacle_chaises'; L.thornText = 'AÏE, DES CHAISES RENVERSÉES !';
   L.sky = { farKey: 'lv_fond_graslin', farBottom: 236 };         // immeubles de la place, d'après des vues de Graslin
-  L.farSwitch = [[0, 'lv_fond_graslin'], [58, 'lv_fond_theatre', 'ON ENTRE DANS LE THÉÂTRE']];   // à l'intérieur (dès l'escalier d'honneur) : la salle bleue et or
-  L.backdrop = { x: 26, key: 'graslin_theatre_facade', scale: 1, tint: false };   // la façade à huit colonnes derrière le parvis
+  L.farSwitch = [[0, 'lv_fond_graslin'], [58, 'lv_fond_theatre', 'OPÉRA GRASLIN : ON ENTRE DANS LE THÉÂTRE']];   // à l'intérieur (dès l'escalier d'honneur) : la salle bleue et or
+  L.backdrop = { x: 27, key: 'lv_facade_graslin', scale: 1, tint: false };   // la façade à huit colonnes derrière le parvis
   L.wxm = { rain: { note: 0.75 }, sun: { beam: 1.25 }, wind: { spring: 1.1 } };
   L.weatherText = { rain: 'LA PLUIE ÉTOUFFE LES NOTES : PLUS LENTES', sun: 'LES PROJECTEURS BALAIENT PLUS VITE', wind: 'LE VENT GONFLE LES PARASOLS : REBOND PLUS HAUT' };
   return L;
@@ -469,9 +472,10 @@ GP.LEVELS['pommeraye'] = (function () {
     // 1. La galerie basse : des devantures, un premier lanterneau de verre
     L.ground(0, 40, 3);
     L.start(2);
+    for (var tx = 1; tx < 40; tx++) L.deco(tx, 'lv_tapis_rouge', { depth: 5, dy: 1 });                                   // tapis rouge de la galerie basse
     L.hint(3, "LE VERRE SE FISSURE : NE T'ARRÊTE PAS");
-    L.deco(6, 'pommeraye_devanture_a', { depth: 1 }); L.deco(14, 'pommeraye_devanture_b', { depth: 1 }); L.deco(24, 'pommeraye_devanture_a', { depth: 1 }); L.deco(36, 'pommeraye_devanture_b', { depth: 1 });
-    L.deco(10, 'pommeraye_pilier_galerie', { depth: 2 }); L.deco(30, 'pommeraye_pilier_galerie', { depth: 2 });
+    L.deco(3, 'lv_boutique_boulangerie', { depth: 1 }); L.deco(9, 'lv_boutique_vetements', { depth: 1 }); L.deco(18, 'lv_boutique_chaussettes', { depth: 1 }); L.deco(24, 'lv_boutique_chapeaux', { depth: 1 }); L.deco(30, 'lv_boutique_sacs', { depth: 1 }); L.deco(36, 'lv_boutique_vetements', { depth: 1 });   // les boutiques du passage
+    L.deco(12, 'pommeraye_pilier_galerie', { depth: 2 }); L.deco(21, 'pommeraye_pilier_galerie', { depth: 2 }); L.deco(27, 'pommeraye_pilier_galerie', { depth: 2 });
     L.pix(7, 13); L.pix(8, 13);
     L.glass(14, 12, 3); L.pix(15, 11);
     L.glass(20, 11, 3); L.pix(21, 10);
@@ -479,6 +483,7 @@ GP.LEVELS['pommeraye'] = (function () {
     L.check(32);
     // 2. Le grand escalier : quatre volées, des statues, un lustre qui balance
     L.ground(40, 8, 4); L.ground(48, 8, 5); L.ground(56, 8, 6); L.ground(64, 8, 7);
+    for (var sx = 40; sx < 72; sx++) L.deco(sx, 'lv_tapis_rouge', { depth: 5, dy: 1 });                              // tapis rouge sur les marches du grand escalier
     L.hint(41, 'LES LUSTRES BALANCENT : MONTE DESSUS');
     L.deco(52, 'pommeraye_statue', { depth: 3 }); L.deco(60, 'pommeraye_statue', { depth: 3 });
     L.mover(44, 10, 3, 4, 0, 3400);
@@ -490,11 +495,13 @@ GP.LEVELS['pommeraye'] = (function () {
     L.ground(64, 22, 7);
     L.hint(69, 'LES STATUES AVANCENT SI TU NE LES REGARDES PAS');
     L.patrol(72, 84, 'statue', 32);
-    L.deco(70, 'pommeraye_pilier_galerie', { depth: 2 }); L.deco(80, 'pommeraye_lustre', { depth: 3, dy: -64 });
+    L.deco(70, 'pommeraye_pilier_galerie', { depth: 2 }); L.deco(76, 'lv_boutique_sacs', { depth: 1 }); L.deco(82, 'lv_boutique_chapeaux', { depth: 1 }); L.deco(80, 'pommeraye_lustre', { depth: 3, dy: -64 });
     L.pix(74, 9); L.pix(80, 9);
     L.glass(87, 10, 3); L.glass(92, 10, 3);
     L.pix(88, 9); L.pix(93, 9);
     L.ground(96, 36, 7);
+    for (var mx = 97; mx < 131; mx++) L.deco(mx, 'lv_tapis_rouge', { depth: 5, dy: 1 });                                // tapis rouge de la mezzanine
+    L.deco(99, 'lv_boutique_vetements', { depth: 1 }); L.deco(105, 'lv_boutique_boulangerie', { depth: 1 }); L.deco(115, 'lv_boutique_chaussettes', { depth: 1 }); L.deco(121, 'lv_boutique_chapeaux', { depth: 1 }); L.deco(127, 'lv_boutique_sacs', { depth: 1 });
     L.check(98);
     L.patrol(106, 122, 'statue', 34);
     L.plat(104, 8, 3); L.pix(105, 7);
@@ -502,6 +509,7 @@ GP.LEVELS['pommeraye'] = (function () {
     L.pix(100, 9); L.pix(110, 9); L.pix(124, 9);
     // 4. Sous la verrière : on monte tout en haut, puis un dernier pont de verre
     L.ground(132, 6, 8); L.ground(138, 6, 9); L.ground(144, 6, 10); L.ground(150, 6, 11);
+    for (var ux = 132; ux < 156; ux++) L.deco(ux, 'lv_tapis_rouge', { depth: 5, dy: 1 });                              // tapis rouge sur la dernière montée
     L.check(134);
     L.gargoyle(100, 0, 2400); L.gargoyle(120, 0, 2000); L.gargoyle(140, 0, 2200); L.gargoyle(160, 0, 2600);   // vitres cassées de la verrière : l'eau goutte sous la pluie
     L.pix(135, 7); L.pix(141, 6); L.pix(147, 5); L.pix(152, 4);
@@ -519,7 +527,7 @@ GP.LEVELS['pommeraye'] = (function () {
     ledge: ['pommeraye_balcon_galerie_g', 'pommeraye_balcon_galerie_m', 'pommeraye_balcon_galerie_d'], mover: ['pommeraye_balcon_galerie_g', 'pommeraye_balcon_galerie_m', 'pommeraye_balcon_galerie_d']
   };
   L.thornKey = 'pommeraye_obstacle_grille_pointes'; L.thornText = 'AÏE, UNE GRILLE À POINTES !';
-  L.sky = { farKey: 'lv_fond_pommeraye', farBottom: 236 };        // galerie à trois niveaux et verrière, dessinée d'après des vues du passage
+  L.sky = { farKey: 'lv_fond_pommeraye', farBottom: 272 };        // galerie à trois niveaux et verrière, dessinée d'après des vues du passage
   L.gargoyleKey = 'lv_fuite'; L.rainOnly = true;   // la verrière laisse passer la pluie par ses vitres cassées
   L.wxm = { rain: { glass: 0.7 }, sun: { glassback: 0.6 } };
   L.weatherText = { rain: 'LA PLUIE FRAGILISE LE VERRE ET GOUTTE PAR LES VITRES CASSÉES', sun: 'LE SOLEIL RÉCHAUFFE LE VERRE : IL REVIENT VITE', wind: 'LE VENT SOUFFLE DANS LA VERRIÈRE' };
