@@ -124,3 +124,11 @@
 **Corrections** : neuf panneaux (2 + 4 + 3) placés sur sol plat avant la première rencontre, avec traduction anglaise. Géométrie inchangée, faisabilité toujours à 0 pixel hors d'atteinte pour les niveaux 4, 5 et 6.
 
 **Recette exécutée** : tests Node ; contrôle à l'écran de Graslin (parasol, français) et de Feydeau (mouette, anglais). **Non réalisé** : densité de pointes des Machines (zones 2 et 3) non retouchée ; aucun playtest humain ; niveaux 7 à 12 non repris.
+
+## Mercredi 11 novembre 2026 (nuit, suite 3) — niveaux 7 à 9 : un panneau par idée
+
+**Constat** : aux Chantiers, ni la ferraille, ni l'oiseau bas (accroupi), ni l'ascenseur, ni la vapeur cyclique n'étaient annoncés ; à Buren, le sens des anneaux (rouge en avant, bleu vers le haut), les bornes, l'oiseau bas et l'anneau clignotant étaient à deviner ; au Hangar, ni la tôle, ni les portes coulissantes, ni le tonneau roulant.
+
+**Corrections** : onze panneaux (4 + 4 + 3) sur sol plat avant la première rencontre, avec traduction anglaise. Géométrie inchangée, faisabilité à 0 pixel hors d'atteinte pour les niveaux 7, 8 et 9.
+
+**Recette exécutée** : tests Node ; contrôle à l'écran du panneau de l'ascenseur (Chantiers, anglais). **Non réalisé** : les autres panneaux de 7 à 9 non vérifiés à l'écran ; la densité de tôles du Hangar (zones 2 et 4) non retouchée ; niveaux 10 à 12 non repris ; aucun playtest humain.
