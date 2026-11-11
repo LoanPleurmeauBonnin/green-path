@@ -132,3 +132,11 @@
 **Corrections** : onze panneaux (4 + 4 + 3) sur sol plat avant la première rencontre, avec traduction anglaise. Géométrie inchangée, faisabilité à 0 pixel hors d'atteinte pour les niveaux 7, 8 et 9.
 
 **Recette exécutée** : tests Node ; contrôle à l'écran du panneau de l'ascenseur (Chantiers, anglais). **Non réalisé** : les autres panneaux de 7 à 9 non vérifiés à l'écran ; la densité de tôles du Hangar (zones 2 et 4) non retouchée ; niveaux 10 à 12 non repris ; aucun playtest humain.
+
+## Mercredi 11 novembre 2026 (nuit, suite 4) — niveaux 10 à 12 : un panneau par idée
+
+**Constat** : Pommeraye annonçait les dalles de verre mais pas l'oiseau bas ni le lustre qui se balance ; le Mémorial n'annonçait pas la marée qui recouvre le sol ; la Tour LU n'avait aucun panneau, alors que le courant d'air (seule mécanique nouvelle du dernier niveau) se découvrait sans explication.
+
+**Corrections** : cinq panneaux (2 + 1 + 2) sur sol plat, avec traduction anglaise : oiseau bas et lustre (Pommeraye), marée (Mémorial, un seul panneau sobre pour garder le recueillement), courant d'air et but de l'arène (Tour LU). Un panneau placé très haut dans le niveau (courant d'air, x=145) passait sous le HUD : le texte se place maintenant sous le panneau quand il n'y a pas la place au-dessus (`GameScene`, 4 lignes). Géométrie inchangée, faisabilité à 0 pixel hors d'atteinte pour les niveaux 10, 11 et 12.
+
+**Bilan des douze niveaux** : chaque idée (pointes, oiseau bas, ressort, anneau, engrenage, vapeur, ascenseur, portes, courant d'air…) est désormais annoncée avant sa première rencontre. **Non réalisé** : aucun playtest humain ; densités de pointes des Machines et de tôles du Hangar non retouchées ; Château, ennemis, pièges cycliques et courants d'air toujours hors du contrôleur de faisabilité.

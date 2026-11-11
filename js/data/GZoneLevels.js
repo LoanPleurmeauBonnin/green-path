@@ -65,7 +65,13 @@ GP.GZoneLevels = (function () {
       { x: 56, y: 11, texte: 'Les oiseaux volent bas : maintiens ↓ pour passer dessous.' }, { x: 149, y: 9, texte: "L'anneau change de couleur : attends la bonne avant de sauter." }] },
     // Hangar : tôle coupante, portes coulissantes, tonneau roulant.
     9: { signes: [{ x: 21, y: 18, texte: 'La tôle coupe : saute par-dessus.' }, { x: 93, y: 12, texte: 'La porte se ferme par intermittence : passe quand elle est ouverte.' },
-      { x: 124, y: 8, texte: 'Le tonneau roule : saute au bon moment.' }] }
+      { x: 124, y: 8, texte: 'Le tonneau roule : saute au bon moment.' }] },
+    // Pommeraye : oiseau bas et lustre qui se balance, annoncés avant le grand escalier.
+    10: { signes: [{ x: 58, y: 14, texte: 'Les oiseaux volent bas : maintiens ↓ pour passer dessous.' }, { x: 62, y: 13, texte: 'Le lustre se balance : saute dessus quand il approche.' }] },
+    // Mémorial : la marée recouvre le sol par moments (le recueillement reste : un seul panneau, sobre).
+    11: { signes: [{ x: 84, y: 12, texte: 'La marée recouvre le sol par moments : avance quand elle est basse.' }] },
+    // Tour LU : seule mécanique nouvelle, le courant d'air ; puis le but de l'arène. (Le reste est un rappel des niveaux précédents.)
+    12: { signes: [{ x: 145, y: 4, texte: "Courant d'air : entre dedans pour t'élever, tu retomberas tout doucement." }, { x: 190, y: 5, texte: "Allume les quatre lanternes hautes avec les courants d'air pour dissiper le Vortex." }] }
   };
   function repair(d) {
     var r = REPAIRS[d.num];
