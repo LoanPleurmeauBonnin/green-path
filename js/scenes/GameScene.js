@@ -40,7 +40,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.deaths = 0; this.time_ms = 0; this.paused = false; this.finished = false; this.invuln = 0;
     this.introMs = 1700;   // bandeau d'introduction : le joueur attend, le chrono ne tourne pas encore
     this.dying = false; this.crouching = false; this.climbing = null; this.hanging = null;
-    this.coyote = 0; this.buffer = 0; this.jumping = false;
+    this.coyote = 0; this.buffer = 0; this.jumping = false; this.lastVy = 0; this.hangReleased = false;
     this.alive = true;
     this.events.once('shutdown', function () { self.alive = false; });
 
@@ -561,10 +561,18 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.jumpWasDown = jumpDown; this.upWasDown = up;
     var dir = (right ? 1 : 0) - (left ? 1 : 0), onGround = b.blocked.down || b.touching.down;
 
+    // --- tolérances invisibles (Celeste) : coin de plafond au sommet du saut, bord de mur frôlé de justesse ---
+    if (!onGround && !this.hanging && !this.climbing) {
+      if (b.blocked.up && this.lastVy < -40 && U.headCorner) this.headCorner(dir);
+      else if (dir && U.ledgeAssist && (dir > 0 ? b.blocked.right : b.blocked.left) && b.velocity.y > -100) this.ledgeAssist(dir);
+    }
+
     // --- accroché à un rebord : ↑ ou saut pour se hisser, ↓ pour lâcher ---
     if (this.hanging) {
-      b.setVelocity(0, 0);
-      if (upPressed || jumpPressed) {
+      b.setVelocity(0, 0); b.setGravityY(0);
+      // se hisser : ↑, saut, ou pousser de nouveau vers le mur (après l'avoir relâché depuis l'accroche)
+      if (dir !== this.hangDir) this.hangReleased = true;
+      if (upPressed || jumpPressed || (this.hangReleased && dir === this.hangDir)) {
         var h = this.hanging; this.hanging = null; b.setAllowGravity(true);
         b.reset(h.x, h.top); this.jumpWasDown = true; this.upLock = true;
       } else if (down) { this.hanging = null; b.setAllowGravity(true); b.setVelocityX(-this.hangDir * 40); }
@@ -603,6 +611,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.buffer = jumpPressed ? U.buffer : this.buffer - dt;
     if (onGround) this.jumping = false;
     if (this.gz && this.gz.justBoosted) { this.buffer = 0; this.coyote = 0; this.jumping = true; }
+    // accroupi : le saut se relève d'abord (s'il y a la place sous le plafond), puis saute
+    if (this.buffer > 0 && this.coyote > 0 && this.crouching) this.setCrouch(false);
     if (this.buffer > 0 && this.coyote > 0 && !this.crouching) {
       b.setVelocityY(U.jump); this.buffer = 0; this.coyote = 0; this.jumping = true;
       GP.Sfx.play('step');
@@ -613,8 +623,56 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     // --- s'accrocher à un rebord : en l'air, contre un mur, les mains à hauteur de son sommet ---
     if (this.ab.grab && !onGround && b.velocity.y > -80 && dir && (this.gz || (dir > 0 ? b.blocked.right : b.blocked.left))) this.tryGrab(dir);
 
+    // demi-gravité près du sommet : tant que le saut est maintenu, on flotte un peu (viser l'atterrissage est plus facile)
+    var apex = !onGround && !this.hanging && jumpDown && Math.abs(b.velocity.y) < U.apexThreshold;
+    b.setGravityY(apex ? -(1 - U.apexGravityMult) * GP.Tuning.worldGravity : 0);
+
     this.animate(onGround);
     this.afterMove(dt);
+  }
+
+  /**
+   * Coin de plafond : le sommet du saut frôle l'angle d'un bloc. Au lieu d'un arrêt net, on glisse la tête de 1 à 4 px sur
+   * le côté (d'abord dans le sens de la marche) dès qu'une place est libre, et on garde la vitesse verticale.
+   */
+  headCorner(dir) {
+    var p = this.player, b = p.body, max = this.TUNE.headCorner, order = dir ? [dir, -dir] : [1, -1];
+    for (var k = 1; k <= max; k++) {
+      for (var i = 0; i < order.length; i++) {
+        var x = b.x + order[i] * k;
+        if (this.boxFree(x, b.y - 1, b.width, b.height)) {
+          p.x += order[i] * k; b.updateFromGameObject(); b.setVelocityY(this.lastVy);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Bord de mur frôlé : en l'air, poussé contre un mur dont le dessus est à 8 px au plus sous les pieds (là où l'accroche ne
+   * se déclenche pas encore), on monte dessus au lieu de buter.
+   */
+  ledgeAssist(dir) {
+    var p = this.player, b = p.body, N = this.TUNE.ledgeAssist, fx = dir > 0 ? b.right + 1 : b.x - 2;
+    for (var d = 0; d <= N; d++) {
+      var y = b.bottom - 1 - d;
+      if (!this.solidAt(fx, y) || this.solidAt(fx, y - 1)) continue;
+      var lift = b.bottom - y;                      // y = première ligne pleine du rebord
+      for (var yy = y - 1; yy >= y - b.height; yy -= 4) if (this.solidAt(fx, yy)) return false;   // pas de place sur le rebord
+      if (!this.boxFree(b.x, b.y - lift, b.width, b.height)) return false;
+      var vx = b.velocity.x, vy = b.velocity.y;
+      p.y -= lift; b.updateFromGameObject(); b.setVelocity(Math.max(Math.abs(vx), 40) * dir, Math.max(vy, 0));
+      return true;
+    }
+    return false;
+  }
+
+  /** Vrai si le rectangle (x, y, w, h) ne touche aucun bloc plein (échantillons aux coins et au milieu des côtés). */
+  boxFree(x, y, w, h) {
+    var xs = [x + 0.5, x + w / 2, x + w - 0.5], ys = [y + 0.5, y + h / 2, y + h - 0.5];
+    for (var i = 0; i < xs.length; i++) for (var j = 0; j < ys.length; j++) if (this.solidAt(xs[i], ys[j])) return false;
+    return true;
   }
 
   tryGrab(dir) {
@@ -626,7 +684,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
         if (!s.body.enable || s.grab === false || Math.abs((dir > 0 ? body.right : body.x) - edge) > 7 || body.y < s.body.y - 8 || body.y > s.body.y + 12) continue;
         var x = edge + dir * 8;
         if (this.solidAt(x, s.body.y - 8)) continue;
-        this.hanging = { x: x, top: s.body.y }; this.hangDir = dir;
+        this.hanging = { x: x, top: s.body.y }; this.hangDir = dir; this.hangReleased = false;
         body.setAllowGravity(false); body.setVelocity(0, 0); body.reset(this.player.x, s.body.y + 14); this.jumping = false;
         return;
       }
@@ -638,7 +696,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       if (!this.solidAt(c * 16 + 8, top + 8) || this.solidAt(c * 16 + 8, top - 8) || this.solidAt(b.x + 4, top - 8)) continue;
       if (b.y < top - 8 || b.y > top + 12) continue;
       this.hanging = { x: c * 16 + 8, top: top };
-      this.hangDir = dir;
+      this.hangDir = dir; this.hangReleased = false;
       b.setAllowGravity(false); b.setVelocity(0, 0);
       b.reset(this.player.x, top + 14);
       this.jumping = false;
@@ -656,6 +714,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
 
   afterMove(dt) {
     var p = this.player;
+    this.lastVy = p.body.velocity.y;   // avant la prochaine collision : sert à la correction de coin de plafond
     // invulnérabilité : transparence fixe (pas de clignotement)
     if (this.invuln > 0) { this.invuln -= dt; if (this.invuln <= 0) p.setAlpha(1); }
     this.checkWorld();

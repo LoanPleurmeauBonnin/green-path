@@ -111,8 +111,7 @@ GP.GZoneRuntime = (function () {
   };
   Runtime.prototype.on=function(s){var b=this.g.player.body;return s.body.enable&&b.right>s.body.x+1&&b.x<s.body.right-1&&Math.abs(b.bottom-s.body.y)<4&&(b.blocked.down||b.touching.down);};
   Runtime.prototype.update=function(dt){
-    var self=this,g=this.g,b=g.player.body,env=g.env,d=this.d;this.time+=dt;this.immune=Math.max(0,this.immune-dt);this.impulseMs=Math.max(0,this.impulseMs-dt);this.justBoosted=false;g.surfaceMotion=0;
-    this.surfaces.forEach(function(s){
+    var self=this,g=this.g,b=g.player.body,env=g.env,d=this.d;this.time+=dt;this.immune=Math.max(0,this.immune-dt);this.impulseMs=Math.max(0,this.impulseMs-dt);this.justBoosted=false;g.surfaceMotion=0;    this.surfaces.forEach(function(s){
       var m=s.mechanic,on=self.on(s), nx=s.x,ny=s.y;
       if(m.type==='flotteur'){
         var max=(env.snow?0.5:m.enfonce_tuiles||1.5)*16;s.progress=Phaser.Math.Clamp(s.progress+(on?dt/(m.duree_s||1.5)/1000:-dt/(m.remonte_s||2)/1000),0,1);ny+=max*s.progress;
@@ -131,8 +130,7 @@ GP.GZoneRuntime = (function () {
       var dx=nx-s.body.x,dy=ny-s.body.y;
       if(on&&(Math.abs(dx)>0.001||Math.abs(dy)>0.001)){
         var vx=b.velocity.x,vy=b.velocity.y;
-        b.reset(g.player.x+dx,g.player.y+dy);b.setVelocity(vx,vy);b.touching.down=true;
-      }
+        b.reset(g.player.x+dx,g.player.y+dy);b.setVelocity(vx,vy);b.touching.down=true;      }
       s.obj.setPosition(nx,ny);s.body.updateFromGameObject();if(s.img)s.img.setPosition(nx,ny);
       s.visuals.forEach(function(v){v.img.setPosition(nx+v.dx,ny+v.dy);});
       var fragile=m.fragile||(m.type==='fragile'?{cede_apres_s:0.8,regenere_apres_s:3}:null);

@@ -22,7 +22,12 @@
 <body>
   <div id="game" role="region" aria-label="Green Path — jeu de plateforme" aria-describedby="instructions"></div>
   <p id="instructions" class="sr-only">Flèches pour naviguer, Entrée pour valider. En jeu : gauche et droite pour courir, Espace pour sauter, haut pour grimper, bas pour s'accroupir. Échap : pause. H sur la carte : aide. Le jeu reste visuel et n'est pas entièrement accessible aux lecteurs d'écran.</p>
-  <p id="loading">CHARGEMENT…</p>
+  <div id="loading" role="status" aria-label="Chargement">
+    <span class="ld-title">GREEN PATH</span>
+    <span class="ld-sub">NANTES</span>
+    <span class="ld-line" aria-hidden="true"></span>
+    <span class="ld-text">CHARGEMENT…</span>
+  </div>
   <!-- Téléphone tenu en portrait : on demande de le tourner (le jeu est en pause). -->
   <div id="rotate" role="alertdialog" aria-live="assertive" aria-label="Veuillez tourner votre téléphone">
     <svg class="rotate-icon" viewBox="0 0 16 16" width="96" height="96" shape-rendering="crispEdges" aria-hidden="true">

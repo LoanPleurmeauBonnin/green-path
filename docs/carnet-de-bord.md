@@ -88,3 +88,13 @@
 **Équilibrage** : voir [equilibrage.md](equilibrage.md). Début plus doux, pic du niveau 6 écrêté, ennemis +10 % aux niveaux 7 à 12, Mémorial durci sans ennemi ni pointe (leurres de plus en plus lisibles à retenir, marée plus lourde). `tools/balance.cjs` et `tests/balance.test.js`.
 
 **Recette exécutée** : 57 tests Node ; contrôles dans le navigateur local (menu, onglets, Options, carte, Jardin, Chantiers). **Non réalisé** : aucun playtest humain, pas de test sur téléphone physique ; les neuf diagnostics géométriques n'ont pas été relancés (Playwright absent) ; les douze niveaux n'ont pas tous été revus à l'écran.
+
+## Mercredi 11 novembre 2026 (soir) — chargement, compte, cache, sol, ressenti
+
+**Demandes** : écran de chargement et fenêtre de compte hors direction artistique ; ancienne version qui restait en cache ; sprites tronqués ; avatar et décors qui flottent ; revoir les déplacements avec le dossier `REA`.
+
+**Causes et corrections** : le service worker servait son cache d'abord et son nom ne changeait pas → réseau d'abord (copie locale hors ligne ou après 4 s), nom de cache changé à chaque publication (`tools/bump-sw.cjs`), rechargement unique à la mise à jour ; chargement et compte étaient en pixels fixes → échelle `--u` (un pixel de jeu en pixels d'écran) pour avoir la taille de texte du reste du jeu ; les tuiles d'herbe ont leur première rangée presque vide, donc le trait du sol était 1 px sous la collision (vérifié pixel par pixel : un pixel vide entre les pieds et l'herbe) → tuile remontée d'un pixel ; sur la carte, un arbre recouvrait le monument (tronqué) → distance minimale aux monuments.
+
+**Ressenti** : réglage `feel-1`, voir [ressenti.md](ressenti.md) : demi-gravité à l'apex, correction de coin de plafond, rebord frôlé, saut depuis l'accroupi, hisser en poussant vers le mur ; conservation de la vitesse des plateformes essayée et écartée.
+
+**Recette exécutée** : 60 tests Node ; essais scriptés dans le navigateur (saut, coin de plafond, rebord, accroupi, marche de la Cathédrale). **Non réalisé** : aucun playtest humain ; niveaux 7 à 12 non rejoués ; la « troncature » exacte vue sur les captures n'a pas pu être identifiée au-delà du décor sur la carte.
