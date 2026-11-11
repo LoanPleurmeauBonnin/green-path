@@ -38,3 +38,8 @@ test('Ressenti : les aides restent plus petites que la zone morte de l’accroch
   assert.ok(P.ledgeAssist >= 0 && P.ledgeAssist <= 8, 'l’accroche commence à 8 px sous le rebord');
   assert.ok(P.apexGravityMult > 0 && P.apexGravityMult <= 1 && P.apexThreshold <= 120);
 });
+
+test('Ressenti : la marche automatique reste plus petite que la zone morte de l’accroche (rampes en tranches de 4 px)', () => {
+  const P = tuning().player;
+  assert.ok(P.stepUp >= 4 && P.stepUp <= 8, 'stepUp = ' + P.stepUp);
+});

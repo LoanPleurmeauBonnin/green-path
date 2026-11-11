@@ -14,6 +14,7 @@ GP.GZoneLevels = (function () {
     1: { vitesse: 0.85, retirer: [{ sprite: 'commun_ronces_2', x: 44, y: 14 }, { sprite: 'commun_pointes_fer_1', x: 102, y: 14 }] },
     2: { vitesse: 0.85, retirer: [{ sprite: 'cathedrale_cierge_flamme', x: 28, y: 21 }, { sprite: 'cathedrale_cierge_flamme', x: 40, y: 21 }] },
     3: { vitesse: 0.9 },
+    5: { retirer: [{ sprite: 'commun_pointes_fer_1', x: 155, y: 5 }] },
     6: { retirer: [{ sprite: 'vapeur', x: 61, y: 10 }, { sprite: 'vapeur', x: 139, y: 13 }] },
     7: { vitesse: 1.1, ajouter: [{ sprite: 'chantiers_obstacle_ferraille', x: 194, y: 14, kind: 'mortel' },
       { sprite: 'chantiers_obstacle_ferraille', x: 204, y: 14, kind: 'mortel' }] },
@@ -43,7 +44,10 @@ GP.GZoneLevels = (function () {
     // Cathédrale : les montants de la porte des toits étaient des murs pleins de 4 tuiles sur le chemin du joueur (la porte
     // se traverse entre eux, elle ne se contourne pas). Ils deviennent des jambages de décor ; le linteau reste au-dessus.
     // + panneaux avant les cierges, les colonnes et les gargouilles.
-    2: { modifier: { p23: { fond: true }, p24: { fond: true } },
+    // + l'escalier (p9 à p16) était fait de piles d'une tuile, traitées comme des plateformes à sens unique : on les traversait. Il devient
+    // une vraie pente continue (rampe, 45°) qui se monte en marchant.
+    2: { retirer: ['p9', 'p10', 'p11', 'p12', 'p13', 'p14', 'p15', 'p16'], ajouter: [{ type: 'rampe', id: 'rampe1', x0: 50, y0: 22, x1: 58, y1: 14, top_sprite: 'cathedrale_pierre_haut', fill_sprite: 'cathedrale_pierre_blanche_pleine_2' }],
+      modifier: { p23: { fond: true }, p24: { fond: true } },
       signes: [{ x: 24, y: 21, texte: 'Cierges et pointes : saute par-dessus.' }, { x: 27, y: 21, texte: 'Maintiens ↑ contre une colonne pour y grimper.' },
         { x: 92, y: 7, texte: 'La gargouille crache : passe entre deux jets.' }] },
     // Feydeau : le pilier du balcon secret (une colonne pleine de 3 tuiles posée sur le tablier) barrait l'entrée du balcon depuis
@@ -52,7 +56,9 @@ GP.GZoneLevels = (function () {
     4: { modifier: { p37: { fond: true } },
       signes: [{ x: 26, y: 13, texte: 'Les pointes piquent : saute par-dessus.' }, { x: 39, y: 10, texte: 'Les mouettes rasent les balcons : maintiens ↓ pour passer dessous.' }] },
     // Graslin : aucun panneau dans le document d'origine. Un par idée, avant sa première rencontre : parasol, chaises, tonneau, lustre.
-    5: { signes: [{ x: 11, y: 19, texte: 'Saute sur un parasol : il te fait rebondir.' }, { x: 22, y: 13, texte: 'Chaises et pointes piquent : saute par-dessus.' },
+    // Les pixels des fosses à pointes (x=123 et 144, au fond) sont remontés sur les lustres ; celui de x=30 s'éloigne des chaises.
+    5: { deplacer: [{ de: { x: 123, y: 19.25 }, vers: { x: 123, y: 6.25 } }, { de: { x: 144, y: 19.25 }, vers: { x: 144, y: 4.25 } }, { de: { x: 30, y: 16.25 }, vers: { x: 29, y: 16.25 } }],
+      signes: [{ x: 11, y: 19, texte: 'Saute sur un parasol : il te fait rebondir.' }, { x: 22, y: 13, texte: 'Chaises et pointes piquent : saute par-dessus.' },
       { x: 62, y: 14, texte: 'Le tonneau roule : saute au bon moment.' }, { x: 117, y: 7, texte: 'Le lustre oscille : saute dessus quand il approche.' }] },
     // Machines : dents (avant la première), vapeur cyclique, piston.
     6: { signes: [{ x: 22, y: 13, texte: 'Les dents des engrenages piquent : saute par-dessus.' }, { x: 33, y: 11, texte: 'La vapeur jaillit par intermittence : passe quand elle retombe.' },
@@ -82,6 +88,7 @@ GP.GZoneLevels = (function () {
       d.plateformes.forEach(function (p) { if (p.id === id) Object.assign(p, r.modifier[id]); });
     });
     (r.ajouter || []).forEach(function (p) { d.plateformes.push(Object.assign({}, p)); });
+    (r.deplacer || []).forEach(function (m) { d.pixels.forEach(function (p) { if (p.x === m.de.x && p.y === m.de.y) { p.x = m.vers.x; p.y = m.vers.y; } }); });
     (r.signes || []).forEach(function (s) { d.signes.push(Object.assign({ sprite: 'signes_panneau_saut' }, s)); });
   }
   GP.GZONES.forEach(repair);

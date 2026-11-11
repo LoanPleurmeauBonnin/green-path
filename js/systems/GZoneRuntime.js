@@ -1,10 +1,11 @@
 /** Géométrie exacte en pixels et mécanismes des GZones. Les chaînes de conception ne sont jamais évaluées. */
 GP.GZoneRuntime = (function () {
   function plan(L) {
-    var d=L.gzone, p={masses:[],surfaces:[],visuals:[],columns:[],galleries:[]}, all=d.plateformes, ids={};
+    var d=L.gzone, p={masses:[],ramps:[],surfaces:[],visuals:[],columns:[],galleries:[]}, all=d.plateformes, ids={};
     all.forEach(function(a){if(a.id&&a.type)ids[a.id]=a;});
     all.forEach(function(a){
       if(!a.type){p.visuals.push(Object.assign({},a));return;}
+      if(a.type==='rampe'){p.ramps.push(Object.assign({},a));return;}   // rampe : pente continue, en marches de 4 px
       if(a.type==='masse'){
         var b=Object.assign({},a,{bottom:a.fill_to===undefined?(a.to===undefined?d.hauteur:a.to):a.fill_to});
         b.decorative=!!a.fond||!!a.pilier;
@@ -52,6 +53,7 @@ GP.GZoneRuntime = (function () {
       if(p.bottom<=p.y||p.decorative)return;
       var b=self.box(p.x*16,p.y*16,(p.w||1)*16,(p.bottom-p.y)*16,p.oneWay);b.grab=p.grab!==false;self.solids.push(b);
     });
+    (this.plan.ramps||[]).forEach(function(r){GP.GZoneRuntime.rampSlices(r,d.hauteur).forEach(function(s){var b=self.box(s.x,s.y,s.w,s.h,false);b.grab=false;self.solids.push(b);});});
     L.roofs.forEach(function(r){self.solids.push(self.box(r.x,r.y,r.w,r.h,false));});
     this.plan.surfaces.forEach(function(p,i){
       if(!Number.isFinite(p.y))return;
@@ -86,6 +88,8 @@ GP.GZoneRuntime = (function () {
       var h={def:p,x:p.x*16,y:(p.y+1)*16,w:w,h:Math.min(info?info.h:12,16),phase:i*0.37};
       h.graphics=g.add.graphics().setDepth(10);
       if(key)h.img=g.add.image(h.x,h.y,key).setOrigin(0,1).setDepth(8);
+      // Jet d'eau : la planche a trois images (deux jets, une fontaine au repos) ; on les montre au lieu d'un rectangle.
+      if(h.img&&p.sprite==='jardin_jet_eau'&&g.textures.exists(p.sprite+'_2')){h.jet=true;h.img.setTexture(p.sprite+'_2');}
       self.hazards.push(h);
     });
     (d.ennemis||[]).forEach(function(e){
@@ -93,7 +97,7 @@ GP.GZoneRuntime = (function () {
       var img=g.add.image((e.x===undefined?e.x1:e.x)*16,(e.y===undefined?e.y1:e.y)*16+16,key).setOrigin(0,1).setDepth(10);
       self.enemies.push({def:e,img:img,dir:1});
     });
-    this.boosts=(d.boosts||[]).map(function(b){var key=GP.GZoneArt.key(g,b.sprite);if(key)g.add.image(b.x*16,(b.y+1)*16,key).setOrigin(0,1).setDepth(8);return {x:b.x*16,y:(b.top===undefined?b.y:b.top)*16,w:(b.w||2)*16,boost:b.hauteur||4.5,cooldown:0};});
+    this.boosts=(d.boosts||[]).map(function(b){var key=GP.GZoneArt.key(g,b.sprite),im=key?g.add.image(b.x*16,(b.y+1)*16,key).setOrigin(0,1).setDepth(8):null;return {img:im,x:b.x*16,y:(b.top===undefined?b.y:b.top)*16,w:(b.w||2)*16,boost:b.hauteur||4.5,cooldown:0};});
     this.rings=(d.anneaux||[]).map(function(r){
       var x=(r.cx===undefined?r.x:r.cx)*16,y=(r.cy===undefined?r.y:r.cy)*16;
       if(r.id==='r12'&&d.num===8)x=175*16;
@@ -152,6 +156,7 @@ GP.GZoneRuntime = (function () {
         var height=p.boost;
         if(d.num===5){height=env.sun?5:env.rain?3.8:p.boost;if(env.snow&&!p.snowCleared){height=2.5;p.snowCleared=true;}}
         b.setVelocityY(-Math.sqrt(2*GP.Tuning.worldGravity*height*16));g.jumping=true;self.justBoosted=true;p.cooldown=400;
+        self.squash(p.img);
       }
     });
     this.rings.forEach(function(r){
@@ -189,6 +194,11 @@ GP.GZoneRuntime = (function () {
     });
     if(this.boss)this.boss.update(dt);
   };
+  /** Toile qui s'écrase puis se détend quand on rebondit dessus (pas d'animation en mouvement réduit). */
+  Runtime.prototype.squash=function(img){
+    if(!img||GP.reducedMotion)return;var tw=this.g.tweens;tw.killTweensOf(img);img.setScale(1);
+    tw.add({targets:img,scaleY:0.7,duration:70,ease:'Quad.easeOut',onComplete:function(){tw.add({targets:img,scaleY:1,duration:260,ease:'Back.easeOut'});}});
+  };
   Runtime.prototype.hit=function(r){var b=this.g.player.body;return this.g.invuln<=0&&!this.g.dying&&b.x<r.x+r.w&&b.right>r.x&&b.y<r.y+r.h&&b.bottom>r.y;};
   Runtime.prototype.hazard=function(h,dt){
     var g=this.g,p=h.def,c=p.cycle||{},cyc=p.kind==='cyclique',period=(c.periode_s||3)*1000;
@@ -211,15 +221,27 @@ GP.GZoneRuntime = (function () {
     var on=!cyc||phase<active;
     if(cyc){
       var height=(c.hauteur_tuiles||3)*16,y=c.top_y===undefined?h.y-height:c.top_y*16;
-      var box=c.direction?{x:h.x-(c.portee_tuiles||3)*16,y:h.y-15,w:(c.portee_tuiles||3)*16,h:4}:{x:h.x+3,y:y,w:10,h:height};
+      var box=c.direction?{x:h.x-(c.portee_tuiles||3)*16,y:h.y-15,w:(c.portee_tuiles||3)*16,h:4}:h.jet?{x:h.x+8,y:y+8,w:8,h:height-8}:{x:h.x+3,y:y,w:10,h:height};
+      if(c.direction&&h.img)h.img.x=h.x+((phase>period-warning&&!GP.reducedMotion)?(Math.floor(this.time/60)%2?1:-1):0);
+      if(h.jet&&!g.env.snow)h.img.setTexture(p.sprite+(on?(GP.reducedMotion||Math.floor(this.time/180)%2?'_0':'_1'):'_2'));
       if(p.sprite==='jardin_jet_eau'&&g.env.snow){
         if(!h.ice)h.ice=this.box(h.x,y,32,5,true);h.ice.body.enable=true;h.graphics.fillStyle(GP.int(GP.PAL.l));h.graphics.fillRect(h.x,y,32,5);on=false;
       }else if(h.ice)h.ice.body.enable=false;
-      if(on){h.graphics.fillStyle(GP.int(p.sprite==='vapeur'?GP.PAL.c:GP.PAL.l),0.85);h.graphics.fillRect(box.x,box.y,box.w,box.h);if(this.hit(box))g.die('OBSERVE LE SIGNAL AVANT LE JET !');}
+      if(on&&c.direction){var nb=Math.ceil(box.w/10),tt=GP.reducedMotion?0:this.time;
+        for(var bi=0;bi<nb;bi++){var bx=box.x+box.w-((tt*0.15+bi*10)%box.w)-5;h.graphics.fillStyle(GP.int(bi%2?GP.PAL.l:GP.PAL.f),0.95);h.graphics.fillRect(bx,box.y+(bi%2),6,3);}
+        if(this.hit(box))g.die('OBSERVE LE SIGNAL AVANT LE JET !');}
+      else if(on){if(!h.jet){h.graphics.fillStyle(GP.int(p.sprite==='vapeur'?GP.PAL.c:GP.PAL.l),0.85);h.graphics.fillRect(box.x,box.y,box.w,box.h);}if(this.hit(box))g.die('OBSERVE LE SIGNAL AVANT LE JET !');}
       else if(phase>period-warning){h.graphics.fillStyle(GP.int(GP.PAL.y));h.graphics.fillRect(h.x,h.y-4,10,3);}
       return;
     }
     if(this.hit({x:h.x+2,y:h.y-8,w:Math.max(8,h.w-4),h:8}))g.die('ATTENTION À L’OBSTACLE !');
   };
-  return Object.assign(Runtime,{plan:plan});
+  /** Une rampe (x0,y0)→(x1,y1), en tuiles, devient des tranches de 4 px : chaque tranche monte de 4 px au plus pour un angle de 45°,
+   *  franchies en marchant grâce à l'aide de marche (GameScene.ledgeAssist, TUNE.stepUp). Le dessin suit les mêmes tranches. */
+  function rampSlices(r,H){
+    var x0=r.x0*16,n=Math.round((r.x1-r.x0)*16/4),bot=(r.bottom||H)*16,out=[];
+    for(var i=0;i<n;i++){var t=(i+0.5)/n,y=Math.round((r.y0+(r.y1-r.y0)*t)*16);out.push({x:x0+i*4,y:y,w:4,h:bot-y});}
+    return out;
+  }
+  return Object.assign(Runtime,{plan:plan,rampSlices:rampSlices});
 })();

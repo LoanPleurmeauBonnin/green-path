@@ -7,6 +7,7 @@ GP.Sfx = {
   tones: {
     step:    [[330, 0.05, 'square']],
     select:  [[440, 0.06, 'square'], [660, 0.08, 'square']],
+    pixel:   [[988, 0.05, 'square'], [1319, 0.10, 'square']],   // pixel ramassé : deux notes aiguës, plus claires que « select »
     confirm: [[523, 0.07, 'square'], [659, 0.07, 'square'], [784, 0.12, 'square']],
     back:    [[330, 0.06, 'square'], [220, 0.09, 'square']],
     error:   [[160, 0.12, 'sawtooth']],

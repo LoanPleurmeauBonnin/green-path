@@ -138,7 +138,7 @@ test('Assets : scripts syntaxiquement valides, liens locaux présents, 447 sprit
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
   for (const m of html.matchAll(/(?:src|href)="([^"#]+)"/g)) assert.ok(fs.existsSync(path.join(ROOT, m[1])), m[1]);
   fs.readdirSync(path.join(ROOT, 'js/data/sprites')).forEach(f => c.load('js/data/sprites/' + f));
-  const sprites = Object.values(c.GP.SPRITES).flat(); assert.equal(sprites.length, 447);
+  const sprites = Object.values(c.GP.SPRITES).flat(); assert.equal(new Set(sprites.map(s => s.id)).size, 447);   // les « retouches » redessinent des sprites existants (même identifiant)
   sprites.forEach(s => (s.frames_rows || [s.rows]).forEach(rows => {
     assert.equal(rows.length, s.h, s.id); rows.forEach(row => {
       assert.equal(row.length, s.w, s.id); for (const ch of row) assert.ok(ch === '.' || c.GP.SPRITE_PAL[ch], s.id + ':' + ch);

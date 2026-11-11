@@ -34,6 +34,9 @@ function world(d) {
       fill(solid, p.x * 16, p.y * 16, (p.w || 1) * 16, h * 16, 1);
       if (p.grab === false) fill(noGrab, p.x * 16, p.y * 16, (p.w || 1) * 16, h * 16, 1);
       else { edges.push({ x: p.x * 16, y: p.y * 16, side: 1, solid: true }); edges.push({ x: (p.x + (p.w || 1)) * 16, y: p.y * 16, side: -1, solid: true }); }
+    } else if (p.type === 'rampe') {   // tranches de 4 px, comme GZoneRuntime.rampSlices ; pas d'accroche sur une rampe
+      const n = Math.round((p.x1 - p.x0) * 16 / 4);
+      for (let i = 0; i < n; i++) { const y = Math.round((p.y0 + (p.y1 - p.y0) * (i + 0.5) / n) * 16); fill(solid, p.x0 * 16 + i * 4, y, 4, d.hauteur * 16 - y, 1); fill(noGrab, p.x0 * 16 + i * 4, y, 4, d.hauteur * 16 - y, 1); }
     } else if (p.type === 'pont' || p.type === 'galerie') {
       const m = p.mecanique || {};
       if (m.type === 'chariot') path(m.de, m.vers, p.w || 1, 4);
