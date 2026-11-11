@@ -14,7 +14,7 @@ GP.Lint = (function () {
     return sizes[id] || { w: T, h: T };
   }
   // objets qui ne reposent pas sur le sol : ciel, suspendus, incrustés, ambiance
-  var FLOATING_OK = /ciel_|lustre|banderole|drapeau|suspen|guirlande|fenetre|vitrail|rosace|papillon|oiseau|mouette|anneau|courant|vapeur|fumee|nuage|pixel|lune|soleil|etoile|enseigne|horloge|cloche|lanterne_haute|arche|cable|chaine|grue_fleche/i;
+  var FLOATING_OK = /ciel_|lustre|banderole|drapeau|suspen|guirlande|fenetre|vitrail|rosace|papillon|oiseau|mouette|anneau|courant|vapeur|fumee|nuage|pixel|lune|soleil|etoile|enseigne|horloge|cloche|lanterne_haute|arche|cable|chaine|grue_fleche|bateau|gabare|contrefort|pinacle|clocheton/i;
 
   /** Les surfaces portantes (haut des blocs, ponts, appuis, colonnes, rampes) : { x0, x1, y } en tuiles. */
   function surfaces(d) {
@@ -65,7 +65,7 @@ GP.Lint = (function () {
         if ((pair[0] === 'checkpoints' || pair[0] === 'dangers') && o.kind !== 'eau_mortelle' && inSolid(d, x + 0.5, y + 0.5)) add('erreur', 'objet-solide', 'Un ' + pair[1] + ' est dans la matière (x ' + x + ', y ' + y + ').', pair[0], i, o);
         // flottants : lanternes, panneaux, dangers au sol et décors qui ne sont pas suspendus
         var grounded = pair[0] === 'checkpoints' || pair[0] === 'signes' || (pair[0] === 'dangers' && o.kind !== 'eau_mortelle' && o.kind !== 'cyclique') || pair[0] === 'decor';
-        if (grounded && o.layer !== 'inlay' && !FLOATING_OK.test(o.sprite || '') && o.kind !== 'eau_mortelle') {
+        if (grounded && o.layer !== 'inlay' && o.layer !== 'fond' && !FLOATING_OK.test(o.sprite || '') && o.kind !== 'eau_mortelle') {
           var ok = supported(sf, x, x + w, y + 1) || supported(sf, x, x + w, y + 1.5) || supported(sf, x, x + w, y + 0.5);
           // posé sur un autre décor du même plan (banc sur un perron, objet sur un appui) : accepté si un appui existe sous le décor
           if (!ok) add('avertissement', 'flottant', 'Un ' + pair[1] + ' semble flotter : rien ne le porte (x ' + x + ', y ' + y + ', ' + (o.sprite || '') + ').', pair[0], i, o);
@@ -93,7 +93,7 @@ GP.Lint = (function () {
     // un panneau avant la première rencontre de chaque danger ou ennemi
     var firsts = {};
     (d.dangers || []).concat((d.ennemis || []).filter(function (e) { return !e.inoffensif && e.type !== 'ambiance'; })).forEach(function (h) {
-      var x = h.x !== undefined ? h.x : h.x1, key = (h.sprite || '') + '|' + (h.kind || h.type || '');
+      var x = h.x !== undefined ? h.x : h.x1, key = (h.sprite || '').replace(/_?\d+$/, '') + '|' + (h.kind || h.type || '');
       if (h.kind === 'eau_mortelle') key = 'eau';
       if (firsts[key] === undefined || x < firsts[key].x) firsts[key] = { x: x, h: h };
     });
