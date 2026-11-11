@@ -829,6 +829,121 @@ GP.LevelArt = (function () {
     for (x = 0; x < w; x += 30) R(ctx, x, 190, 1, h - 190, '#bfae88');
     return o.cv;
   }
+  /** Fond de l'intérieur du théâtre Graslin (480×236, se répète) : salle bleue et or, plafond peint, trois rangs de balcons à loges séparées par des cloisons basses, pilastres dorés, rideaux rouges, parquet. */
+  function drawFondTheatre() {
+    var w = 480, h = 236, o = PA.canvas(w, h), ctx = o.ctx, rnd = PA.rng(88), x, y, i;
+    var bleu = '#27396e', bleuO = '#1d2b55', or = '#e0b64a', orO = '#a8801f', rouge = '#8a2331';
+    R(ctx, 0, 0, w, h, bleu);
+    var ciel = ctx.createLinearGradient(0, 0, 0, 62); ciel.addColorStop(0, '#9fc0e8'); ciel.addColorStop(1, '#c9dcf2'); ctx.fillStyle = ciel; ctx.fillRect(0, 0, w, 62);   // plafond peint
+    for (i = 0; i < 9; i++) { var cx = rnd() * w, cy = 10 + rnd() * 36; PA.disc(ctx, cx, cy, 12 + rnd() * 8, '#eef4fb'); PA.disc(ctx, cx + 14, cy + 3, 9, '#e1ebf7'); }
+    R(ctx, 0, 60, w, 4, orO); R(ctx, 0, 62, w, 3, or); R(ctx, 0, 65, w, 2, orO);                                  // corniche dorée
+    [[72, 104], [104, 136], [136, 168]].forEach(function (nv, n) {                                                 // trois rangs de balcons
+      var top = nv[0], bot = nv[1];
+      R(ctx, 0, bot - 8, w, 8, bleuO); R(ctx, 0, bot - 9, w, 2, or); R(ctx, 0, bot - 7, w, 1, orO);                // balcon doré
+      for (x = 0; x < w; x += 6) R(ctx, x, bot - 6, 2, 5, orO);                                                    // balustres
+      for (x = 0; x < w; x += 40) R(ctx, x + 18, top + 4, 3, bot - top - 12, or);                                  // cloisons basses des loges
+      for (x = 8; x < w; x += 80) { R(ctx, x, top + 3, 10, bot - top - 12, rouge); R(ctx, x, top + 3, 10, 2, '#b8404f'); }   // rideaux rouges
+      for (x = 14; x < w; x += 40) if (rnd() < 0.5) { R(ctx, x + 6, top + 10, 8, 10, '#3a4f8f'); PA.disc(ctx, x + 10, top + 8, 4, '#efc8a0'); }   // un spectateur dans sa loge
+    });
+    for (i = 0; i < 4; i++) { var px = i * 120 + 4; R(ctx, px, 66, 10, 160, or); R(ctx, px, 66, 3, 160, '#f2d57e'); R(ctx, px + 8, 66, 2, 160, orO); }      // pilastres dorés
+    R(ctx, 0, 168, w, 22, bleuO); for (x = 0; x < w; x += 24) R(ctx, x, 170, 14, 18, '#34478a');                 // soubassement lambrissé
+    R(ctx, 0, 190, w, h - 190, '#8a5a30'); for (y = 190; y < h; y += 7) R(ctx, 0, y, w, 1, '#6a4220'); for (x = 0; x < w; x += 20) R(ctx, x, 190, 1, h - 190, '#6a4220');   // parquet
+    return o.cv;
+  }
+  /** Héron mécanique en vol (30×20, tourné vers la droite) : corps d'acier gris-bleu, longues ailes, cou tendu et long bec jaune, pattes qui pendent. */
+  function drawHeronVol() {
+    var o = PA.canvas(30, 20), c = o.ctx;
+    poly(c, [[6, 8], [14, 1], [22, 6], [18, 10]], '#8fa0b8');                                                      // aile levée
+    poly(c, [[4, 10], [12, 17], [20, 12], [16, 9]], '#6f7a8e');                                                    // aile basse
+    ell(c, 14, 10, 8, 4, '#aab8c8');                                                                               // corps
+    seg(c, 21, 9, 25, 6, 3, '#aab8c8'); ell(c, 26, 5, 2.4, 2, '#cfd8e4'); poly(c, [[27, 4], [30, 5], [27, 6]], '#f4d35e');   // cou, tête, long bec
+    seg(c, 8, 12, 3, 16, 1.5, '#f4d35e'); seg(c, 10, 12, 5, 18, 1.5, '#f4d35e');                                  // pattes
+    return finir(o.cv);
+  }
+  // ---------- Bananes : vraies bananes en croissant (jaune, bouts bruns, queue verte), formes lissées puis contour pixel ----------
+  function courbe(ctx, x0, y0, cx, cy, x1, y1, w, col) { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(cx, cy, x1, y1); ctx.stroke(); }
+  /** Une banane en croissant d'un point à un autre (cx, cy : courbure) : liseré brun, corps jaune, reflet clair, bout brun et queue verte. */
+  function banane(ctx, x0, y0, cx, cy, x1, y1, w) {
+    courbe(ctx, x0, y0, cx, cy, x1, y1, w + 2.4, '#8a6a14');                                                       // liseré qui sépare les bananes entre elles
+    courbe(ctx, x0, y0, cx, cy, x1, y1, w, '#f4d35e');
+    courbe(ctx, x0 + 0.8, y0 + 0.6, cx - 1, cy + 0.4, x1 + 0.4, y1 - 1, Math.max(1, w * 0.3), '#fff0a0');            // reflet
+    ell(ctx, x1, y1, w * 0.45, w * 0.45, '#5a3a14');                                                                // bout brun
+    ell(ctx, x0, y0, w * 0.42, w * 0.42, '#8aa63a');                                                                // queue verte
+  }
+  /** Caisse de bananes (36×28) : caisse de bois à lattes, étiquette verte avec une banane peinte, et des bananes en croissant bien distinctes qui dépassent. */
+  function drawCaisseBananes() {
+    var o = PA.canvas(26, 21), c = o.ctx;
+    c.scale(0.72, 0.72);                                                                                           // dessinée en 36×28 puis réduite : plus petite (retour de l'équipe)
+    banane(c, 3, 13, 9, 1, 17, 11, 5); banane(c, 11, 12, 18, 0, 26, 11, 5); banane(c, 19, 12, 27, 1, 33, 12, 5); banane(c, 8, 14, 17, 4, 30, 13, 4);   // bananes qui dépassent
+    c.fillStyle = '#d8b078'; c.fillRect(1, 13, 34, 15); c.fillStyle = '#f0cf98'; c.fillRect(1, 13, 34, 3);               // caisse
+    c.fillStyle = '#a5723f'; c.fillRect(1, 19, 34, 1); c.fillRect(1, 24, 34, 1); c.fillRect(3, 13, 2, 15); c.fillRect(31, 13, 2, 15);   // lattes et montants
+    c.fillStyle = '#3f8a4f'; c.fillRect(10, 16, 16, 9); banane(c, 13, 20, 18, 25, 23, 20, 3);                            // étiquette verte, banane peinte
+    return finir(o.cv);
+  }
+  /** Régime de bananes suspendu (32×42) : tige brune en haut et quatre grosses bananes en croissant, bien séparées, qui pendent en éventail. */
+  function drawRegime() {
+    var o = PA.canvas(32, 42), c = o.ctx;
+    c.fillStyle = '#6b4e2a'; c.fillRect(14, 0, 4, 9);
+    [[-3, -12], [-1, -4], [1, 4], [3, 12]].forEach(function (k) { banane(c, 16, 9, 16 + k[1] * 1.7, 22, 16 + k[0] * 4.2, 38, 5); });
+    ell(c, 16, 10, 6, 3.4, '#8aa63a');
+    return finir(o.cv);
+  }
+  /** Peau de banane façon Mario Kart (24×32) : une banane jaune bien ronde, dressée, dont la peau s'ouvre en trois pans au pied (deux sur les côtés, un devant) ; bout brun en haut. */
+  function drawPeau() {
+    var o = PA.canvas(26, 34), c = o.ctx;
+    poly(c, [[11, 23], [3, 22], [0, 29], [5, 31], [11, 27]], '#f4d35e'); poly(c, [[10, 24.5], [4, 24], [2, 28], [5, 29.5], [10, 27]], '#fff3b8');        // pan gauche, retombant (intérieur crème)
+    poly(c, [[15, 23], [23, 22], [26, 29], [21, 31], [15, 27]], '#f4d35e'); poly(c, [[16, 24.5], [22, 24], [24, 28], [21, 29.5], [16, 27]], '#fff3b8');   // pan droit
+    poly(c, [[8, 26], [18, 26], [19, 32], [13, 33.5], [7, 32]], '#ffe680'); poly(c, [[10, 27.5], [16, 27.5], [16.5, 31], [13, 32], [9.5, 31]], '#fff6cc');   // pan de devant
+    courbe(c, 13, 25, 7, 20, 8, 13, 8, '#f4d35e'); courbe(c, 8, 14, 9, 7, 16, 3, 6, '#f4d35e'); ell(c, 8, 14, 3.6, 3.6, '#f4d35e');                  // corps : base ronde puis courbe qui s'effile vers le haut
+    courbe(c, 10.5, 24, 6, 20, 6.5, 14, 2.2, '#fff0a0'); courbe(c, 6.6, 13, 7.5, 8, 13, 4, 1.6, '#fff0a0');                                          // reflet
+    courbe(c, 15.5, 24, 10, 20, 11.5, 14, 2, '#d8b030');                                                                                           // côté ombré
+    ell(c, 17, 2.6, 2.4, 2, '#6b4e2a'); c.fillStyle = '#6b4e2a'; c.fillRect(17, 0, 3, 2);                                                           // bout brun
+    return finir(o.cv);
+  }
+  /**
+   * Fond du Hangar à Bananes (480×236, se répète) vu du quai des Antilles : long hangar blanc et bas à toit sombre, grue Titan grise à treillis, Anneaux de Buren au loin, Loire.
+   * D'après des photos du lieu consultées sur Wikimédia Commons (référence uniquement). Le haut est transparent : le ciel de la météo reste visible.
+   */
+  function drawFondHangarQuai() {
+    var w = 480, h = 236, o = PA.canvas(w, h), ctx = o.ctx, k = '#2b2e3a', acier = '#8a90a0', x, y, i;
+    R(ctx, 0, 196, w, 40, '#5d86b0'); R(ctx, 0, 196, w, 2, '#9fc0e0'); for (x = 0; x < w; x += 22) R(ctx, x + (x % 3) * 4, 204 + (x % 5) * 3, 10, 1, '#7fa6cc');   // la Loire
+    for (x = 0; x < w; x += 30) R(ctx, x, 188 - (x % 7), 26, 10, '#a7b3c4');                                          // rive lointaine
+    [[60, 150], [330, 130]].forEach(function (g) {                                                                  // grues Titan grises (mât à treillis, flèche, contrepoids)
+      var gx = g[0], gh = g[1];
+      R(ctx, gx, 196 - gh, 6, gh, acier); R(ctx, gx + 14, 196 - gh, 6, gh, acier);
+      for (y = 196 - gh; y < 196; y += 14) { for (i = 0; i < 14; i++) { P(ctx, gx + 6 + Math.floor(i * 8 / 14), y + i, acier); P(ctx, gx + 14 - Math.floor(i * 8 / 14), y + i, acier); } }
+      R(ctx, gx - 46, 196 - gh - 8, 112, 5, acier); R(ctx, gx - 46, 196 - gh - 3, 112, 1, k); R(ctx, gx + 20, 196 - gh - 18, 3, 14, acier);   // flèche
+      for (i = 0; i < 12; i++) { P(ctx, gx - 46 + i * 9, 196 - gh - 8 + (i % 2) * 4, k); }
+      R(ctx, gx + 42, 196 - gh - 14, 22, 10, '#6f7684'); R(ctx, gx - 40, 196 - gh - 3, 2, 22, k); R(ctx, gx - 42, 196 - gh + 19, 6, 4, k);   // contrepoids, câble et crochet
+    });
+    var rx = 240, ry = 168;                                                                                         // un anneau de Buren (cercle d'acier)
+    for (i = 0; i < 360; i += 3) { var a = i * Math.PI / 180; for (var t = 0; t < 3; t++) P(ctx, Math.round(rx + Math.cos(a) * (22 - t)), Math.round(ry + Math.sin(a) * (30 - t)), t === 0 ? '#e8edf5' : '#cfd6e2'); }
+    R(ctx, 0, 170, w, 28, '#ece9e2'); R(ctx, 0, 168, w, 3, k); R(ctx, 0, 171, w, 1, '#c9c5bb');                         // le long hangar blanc et son toit sombre
+    for (x = 8; x < w; x += 20) { R(ctx, x, 178, 12, 9, k); R(ctx, x + 1, 179, 10, 7, '#7f95ab'); R(ctx, x + 6, 179, 1, 7, k); }   // baies vitrées
+    R(ctx, 0, 190, w, 8, '#4a4f5c'); R(ctx, 140, 173, 54, 6, '#c0453a'); R(ctx, 142, 174, 50, 1, '#f4d35e');             // soubassement sombre et enseigne
+    return o.cv;
+  }
+  /** Rails encastrés dans le pavage du quai (16×4) : rail clair et traverses sombres. */
+  function drawRails() {
+    var o = PA.canvas(16, 4), ctx = o.ctx;
+    R(ctx, 0, 0, 16, 1, '#c9cfdb'); R(ctx, 0, 1, 16, 1, '#6f7684'); R(ctx, 1, 2, 2, 2, '#4a4f5c'); R(ctx, 9, 2, 2, 2, '#4a4f5c');
+    return o.cv;
+  }
+  /** Garde-corps en acier corten du quai (32×18) : poutre rouille à tranche claire sur deux poteaux. */
+  function drawCorten() {
+    var o = PA.canvas(32, 18), ctx = o.ctx, k = '#2b1a10';
+    R(ctx, 3, 5, 4, 13, k); R(ctx, 4, 5, 2, 13, '#7a3a20'); R(ctx, 25, 5, 4, 13, k); R(ctx, 26, 5, 2, 13, '#7a3a20');
+    R(ctx, 0, 1, 32, 6, k); R(ctx, 0, 2, 32, 4, '#a0502c'); R(ctx, 0, 2, 32, 1, '#c8703c'); R(ctx, 0, 5, 32, 1, '#7a3a20');
+    return o.cv;
+  }
+  /** Flèche de grue grise vue de côté (88×16) : deux membrures et treillis en zigzag ; les caisses de bananes sont suspendues dessous. */
+  function drawFlecheGrue() {
+    var o = PA.canvas(88, 16), ctx = o.ctx, k = '#2b2e3a', a = '#8a90a0', i;
+    R(ctx, 0, 0, 88, 3, k); R(ctx, 0, 1, 88, 1, '#b4bac8'); R(ctx, 0, 11, 88, 3, k); R(ctx, 0, 12, 88, 1, a);
+    for (i = 0; i < 88; i += 8) { for (var t = 0; t < 8; t++) { P(ctx, i + t, 3 + Math.floor(t * 8 / 8), k); P(ctx, i + 8 - t, 3 + Math.floor(t * 8 / 8), a); } }
+    R(ctx, 34, 13, 20, 3, '#6f7684'); R(ctx, 41, 14, 6, 2, k);                                                      // chariot du crochet
+    return o.cv;
+  }
   /** Note de musique lancée par les Muses du théâtre. */
   function drawNote() {
     var o = PA.canvas(10, 12), ctx = o.ctx, k = GP.PAL.k, y = GP.PAL.y;
@@ -906,6 +1021,7 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_arbre_rue', drawArbreRue());
     PA.toTexture(scene, 'lv_fond_nef', drawFondNef());
     PA.toTexture(scene, 'lv_fond_hangar', drawFondHangar());
+    PA.toTexture(scene, 'lv_fond_theatre', drawFondTheatre());
     PA.toTexture(scene, 'lv_elephant', drawElephant());
     PA.toTexture(scene, 'lv_carrousel', drawCarrousel());
     PA.toTexture(scene, 'lv_arbre_herons', drawArbreHerons());
@@ -915,6 +1031,14 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_plaque', drawPlaque());
     PA.toTexture(scene, 'lv_araignee', drawAraignee());
     PA.toTexture(scene, 'lv_toile', drawToile());
+    PA.toTexture(scene, 'lv_caisse_bananes', drawCaisseBananes());
+    PA.toTexture(scene, 'lv_regime', drawRegime());
+    PA.toTexture(scene, 'lv_peau', drawPeau());
+    PA.toTexture(scene, 'lv_fond_hangar_quai', drawFondHangarQuai());
+    PA.toTexture(scene, 'lv_rails', drawRails());
+    PA.toTexture(scene, 'lv_corten', drawCorten());
+    PA.toTexture(scene, 'lv_fleche_grue', drawFlecheGrue());
+    PA.toTexture(scene, 'lv_heron_vol', drawHeronVol());
     PA.toTexture(scene, 'lv_fond_pommeraye', drawFondPommeraye());
     PA.toTexture(scene, 'lv_fond_feydeau', drawFondFeydeau());
     PA.toTexture(scene, 'lv_fond_graslin', drawFondGraslin());

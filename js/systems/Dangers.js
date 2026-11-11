@@ -2,7 +2,7 @@
  * Dangers (GP.Dangers) — mécaniques et ennemis des niveaux 4 à 12 (Feydeau, Graslin, Machines, Chantiers, Buren, Hangar,
  * Mémorial, Pommeraye, Tour LU) et esprits de la garde du Château. Un seul fichier, créé par GameScene.makeMechanics() à partir de la définition du niveau
  * (briques de js/data/levels.js : L.patrol, L.tide, L.boat, L.liar, L.faller, L.jet, L.beam, L.spring, L.seq, L.belt,
- * L.cart, L.ring + L.align, L.borne + L.cplat, L.elephant, L.hanger, L.crane, L.plaque, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
+ * L.cart, L.ring + L.align, L.borne + L.cplat, L.elephant, L.hanger, L.crane, L.plaque, L.regime, L.peau, L.caisse, L.pond, L.rot, L.muse, L.mold, L.glass, L.memo, L.draft).
  *
  *   update(dt)          fait vivre tout ce qui bouge (appelé à chaque image)
  *   input(c)            touches de la dernière image (pour la séquence de danse de Graslin)
@@ -15,10 +15,18 @@ GP.Dangers = function (scene) {
   var L = scene.L, S = GP.Sprites, self = this, H = scene.H;
   this.s = scene; this.t = 0;
   function has(k) { return scene.textures.exists(k); }
+  /** Hauteur réellement dessinée d'une image (dernière ligne non transparente) : sert à poser un objet exactement sur le sol, sans espace sous le dessin. */
+  function realBottom(img) {
+    var src = img.texture.getSourceImage(), cv = document.createElement('canvas'); cv.width = src.width; cv.height = src.height;
+    var cx = cv.getContext('2d'); cx.drawImage(src, 0, 0);
+    var d = cx.getImageData(0, 0, src.width, src.height).data;
+    for (var y = src.height - 1; y >= 0; y--) for (var x = 0; x < src.width; x++) if (d[(y * src.width + x) * 4 + 3] > 0) return y + 1;
+    return src.height;
+  }
 
   // ---------- Ennemis : esprits (patrouille), robots (poursuite), araignées et statues (elles n'avancent que si on ne les regarde pas, comme les anges qui pleurent) ----------
   this.patrols = (L.patrols || []).map(function (p) {
-    var key = { esprit: 'lv_esprit', robot: 'lv_robot', araignee: 'lv_araignee', statue: L.statueKey || 'pommeraye_statue' }[p.kind] || 'lv_esprit';
+    var key = { esprit: 'lv_esprit', robot: 'lv_robot', araignee: 'lv_araignee', oiseau: 'lv_heron_vol', statue: L.statueKey || 'pommeraye_statue' }[p.kind] || 'lv_esprit';
     var feet = (p.y + 1) * 16, img = scene.add.image(p.x0 * 16 + 8, feet, key).setOrigin(0.5, 1).setDepth(9);
     if (p.kind === 'esprit') img.setAlpha(0.85);
     return { img: img, x0: p.x0 * 16 + 8, x1: p.x1 * 16 + 8, feet: feet, kind: p.kind, speed: p.speed || 30, dir: 1, pause: 0, home: p.x0 * 16 + 8, bob: p.x0 * 97 };
@@ -57,9 +65,9 @@ GP.Dangers = function (scene) {
   this.fallers = (L.fallers || []).map(function (f) {
     var floor = L.top(f.x) * 16, x = f.x * 16 + 8, y0 = f.y * 16;
     var cable = scene.add.rectangle(x, 0, 2, y0, 0x14182e, 1).setOrigin(0.5, 0).setDepth(8);
-    var img = scene.add.image(x, y0, 'lv_conteneur').setOrigin(0.5, 0).setDepth(9);
-    var shadow = scene.add.rectangle(x, floor - 1, 34, 3, 0x14182e, 0.55).setDepth(6).setVisible(false);
-    return { x: x, y0: y0, floor: floor, period: f.period || 3600, t: -(f.offset || 0), state: 'hang', img: img, cable: cable, shadow: shadow, vy: 0 };
+    var img = scene.add.image(x, y0, f.key || 'lv_conteneur').setOrigin(0.5, 0).setDepth(9);
+    var shadow = scene.add.rectangle(x, floor - 1, img.width, 3, 0x14182e, 0.55).setDepth(6).setVisible(false);
+    return { x: x, y0: y0, floor: floor, period: f.period || 3600, t: -(f.offset || 0), state: 'hang', img: img, cable: cable, shadow: shadow, vy: 0, h: realBottom(img), w: img.width, msg: f.msg || 'UN CONTENEUR TOMBE !' };
   });
 
   // ---------- Jets (vapeur, eau) : un souffle les annonce, puis la colonne est dangereuse 1,2 s ----------
@@ -191,14 +199,36 @@ GP.Dangers = function (scene) {
     return { x: x, img: img, halo: halo, txt: txt, lit: false };
   });
 
+  // ---------- Régimes de bananes (Hangar) : suspendus à une corde, ils se balancent ; au plus bas ils passent à hauteur de tête (accroupi, on passe dessous) ----------
+  this.regimes = (L.regimes || []).map(function (r) {
+    var px = r.x * 16 + 8, py = 12, len = r.floor * 16 - 33 - py;                       // au plus bas, le bas du régime est à 12 px du sol : accroupi (10 px) on passe dessous
+    var rope = scene.add.line(0, 0, px, py, px, py + len, 0x6b4e2a, 1).setOrigin(0, 0).setLineWidth(1).setDepth(8);
+    var img = scene.add.image(px, py + len, 'lv_regime').setOrigin(0.5, 0.5).setDepth(9);
+    return { px: px, py: py, len: len, rope: rope, img: img, def: r };
+  });
+
+  // ---------- Peaux de banane (Hangar), comme dans Mario : on marche dessus, on glisse tout droit sans contrôle ; les peaux fixes sont visibles ----------
+  this.peaux = (L.peaux || []).map(function (q) {
+    return { x: q.x * 16 + 8, img: scene.add.image(q.x * 16 + 8, L.top(q.x) * 16, 'lv_peau').setOrigin(0.5, 1).setDepth(7), cool: 0 };
+  });
+
+  // ---------- Piles de caisses de bananes (Hangar) : un escalier de caisses ; le dessus de chaque pile est une plateforme ----------
+  this.caisses = (L.caisses || []).map(function (q) {
+    var cx = q.x * 16 + 8, fl = q.floor * 16, topY = fl - 23 * q.tiers + 3, t;
+    for (t = 1; t <= q.tiers; t++) scene.add.image(cx, fl - 23 * t, 'lv_caisse_bananes').setOrigin(0.5, 0).setDepth(8 - t * 0.01);
+    var pl = scene.add.image(cx - 13, topY, 'lv_tileset').setOrigin(0, 0).setDisplaySize(26, 4).setVisible(false);
+    scene.platformBody(pl, true);
+    return { x: cx, topY: topY };
+  });
+
   // ---------- Grue des Chantiers : un conteneur suspendu à un câble, sous un chariot qui roule sur la flèche ; on monte dessus pour franchir le vide ----------
   this.cranes = (L.cranes || []).map(function (c) {
-    var x0 = c.x * 16, y0 = c.y * 16, cw = 50;
+    var x0 = c.x * 16, y0 = c.y * 16, cw = c.key ? scene.textures.get(c.key).getSourceImage().width : 50;
     scene.add.rectangle(x0 - 6, 0, Math.abs(c.dx) * 16 + cw + 12, 7, 0xf4d35e, 1).setOrigin(0, 0).setDepth(8);               // flèche jaune au-dessus du niveau
     scene.add.rectangle(x0 - 6, 6, Math.abs(c.dx) * 16 + cw + 12, 2, 0x8a6d1a, 1).setOrigin(0, 0).setDepth(8);
     var trolley = scene.add.rectangle(x0 + cw / 2, 3, 12, 9, 0x2b2e3a, 1).setDepth(9);
     var cable = scene.add.rectangle(x0 + cw / 2, 8, 2, y0, 0x2b2e3a, 1).setOrigin(0.5, 0).setDepth(8);
-    var img = scene.add.image(x0, y0, 'lv_conteneur_long').setOrigin(0, 0).setDepth(9);
+    var img = scene.add.image(x0, y0, c.key || 'lv_conteneur_long').setOrigin(0, 0).setDepth(9);
     var pl = scene.add.image(x0, y0, 'lv_tileset').setOrigin(0, 0).setDisplaySize(cw, 4).setVisible(false);
     scene.physics.add.existing(pl);
     var b = pl.body; b.setAllowGravity(false); b.setImmovable(true); b.checkCollision.down = false; b.checkCollision.left = false; b.checkCollision.right = false;
@@ -280,6 +310,7 @@ GP.Dangers.prototype = {
   reset: function () {
     var self = this;
     this.s.player.body.setGravityY(0);
+    this.s.slideMs = 0;
     if (this.cplats.length) this.setColor(this.cstart);
     (this.s.L.rings || []).forEach(function (r, i) { var o = self.rings[i]; o.color = r.color; o.img.setTexture('lv_anneau_' + r.color); if (o.halo) o.halo.setTint(self.rcolors[r.color]); o.cool = 0; });
   },
@@ -312,7 +343,7 @@ GP.Dangers.prototype = {
   memoryInput: function () {
     var self = this, e = this.edge, p = this.s.player;
     this.memos.forEach(function (q) {
-      if (q.open || !(p.x > q.gx - 90 && p.x < q.gx - 6)) return;
+      if (q.open || !(p.x > Math.min(q.sx, q.gx) - 24 && p.x < q.gx - 6)) return;   // de la stèle jusqu'à la porte
       var got = e.down ? 'D' : e.jump ? 'J' : null;
       if (!got) return;
       if (got === q.pattern[q.idx]) {
@@ -338,10 +369,14 @@ GP.Dangers.prototype = {
       if (e.kind === 'araignee' || e.kind === 'statue') {
         var ax = p.x - img.x, proche = Math.abs(ax) < 170 && Math.abs(p.y - e.feet) < 50;
         var regard = ax > 0 ? p.flipX : !p.flipX;                                  // le joueur tourne la tête vers elle ?
-        e.frozen = proche && regard;
+        e.frozen = proche && (regard || Math.abs(ax) < 18);                          // tant qu'on la croise (à moins de 18 px), elle reste figée : pas de mort injuste
         if (proche && !regard) { img.x += Math.sign(ax) * sp * k; e.dir = ax > 0 ? 1 : -1; }
         img.x = Phaser.Math.Clamp(img.x, e.x0, e.x1);
         if (e.frozen) img.setTint(0x9fb0d0); else img.clearTint();               // figée : teinte de pierre
+      } else if (e.kind === 'oiseau') {
+        img.x += e.dir * sp * k;                                                                       // le héron va et vient, et plonge régulièrement à hauteur de tête
+        if (img.x > e.x1) { img.x = e.x1; e.dir = -1; } else if (img.x < e.x0) { img.x = e.x0; e.dir = 1; }
+        img.y = e.feet - 6 - 34 * (0.5 - 0.5 * Math.cos((self.t + e.bob) / 2800 * Math.PI * 2));
       } else if (e.kind === 'robot') {
         var dx = p.x - img.x, near = Math.abs(dx) < 96 && Math.abs(p.y - e.feet) < 40;
         if (near) { img.x += Math.sign(dx) * sp * k; e.dir = dx > 0 ? 1 : -1; }
@@ -353,7 +388,7 @@ GP.Dangers.prototype = {
         else if (img.x < e.x0) { img.x = e.x0; e.dir = 1; }
       }
       img.setFlipX(e.dir < 0);
-      img.y = e.feet - (e.kind === 'esprit' && !GP.reducedMotion ? 3 + Math.sin(e.bob / 400) * 3 : 0);
+      if (e.kind !== 'oiseau') img.y = e.feet - (e.kind === 'esprit' && !GP.reducedMotion ? 3 + Math.sin(e.bob / 400) * 3 : 0);
     });
 
     // marée : la surface monte et descend lentement (plus haute sous la pluie, plus basse au soleil)
@@ -392,7 +427,7 @@ GP.Dangers.prototype = {
         if (f.t > period) { f.state = 'fall'; f.vy = 0; f.shadow.setVisible(false); f.cable.setVisible(false); }
       } else if (f.state === 'fall') {
         f.vy = Math.min(f.vy + 900 * k, 520); f.img.y += f.vy * k;
-        if (f.img.y + 22 >= f.floor) { f.img.y = f.floor - 22; f.state = 'land'; f.t = 0; GP.Sfx.play('step'); }
+        if (f.img.y + f.h >= f.floor) { f.img.y = f.floor - f.h; f.state = 'land'; f.t = 0; GP.Sfx.play('step'); }
       } else if (f.state === 'land') {
         if (f.t > 800) { f.state = 'back'; f.t = 0; s.tweens.add({ targets: f.img, alpha: 0, duration: 300 }); }
       } else if (f.state === 'back' && f.t > 400) {
@@ -498,11 +533,26 @@ GP.Dangers.prototype = {
     // araignées suspendues : descente à 45 px/s si le joueur est proche et ne les regarde pas ; figées s'il les regarde ; remontée à 30 px/s sinon
     this.hangers.forEach(function (h) {
       var dxh = Math.abs(p.x - h.x), proche = dxh < 110, regard = h.x > p.x ? !p.flipX : p.flipX;
-      h.frozen = proche && regard;
+      h.frozen = proche && (regard || dxh < 12);
       if (proche && !regard) h.y = Math.min(h.yMax, h.y + 45 * self.f('enemy') * k);
       else if (!proche) h.y = Math.max(h.yMin, h.y - 30 * k);
       h.img.y = h.y; h.thread.setSize(1, h.y);
       if (h.frozen) h.img.setTint(0x9fb0d0); else h.img.clearTint();
+    });
+
+    // régimes de bananes : pendule (±26°), plus lent sous la pluie (corde mouillée)
+    this.regimes.forEach(function (r) {
+      var th = 0.46 * Math.sin((self.t + r.def.offset) / (r.def.period * self.f('regime')) * Math.PI * 2), x = r.px + r.len * Math.sin(th), y = r.py + r.len * Math.cos(th);
+      r.img.setPosition(x, y).setRotation(-th * 0.6); r.rope.setTo(r.px, r.py, x, y); r.x = x; r.y = y;
+    });
+
+    // peaux de banane : glissade de 0,75 s dans le sens où l'on allait (1,3 fois plus longue sous la pluie)
+    this.peaux.forEach(function (q) {
+      q.cool -= dt;
+      if (onGround && q.cool <= 0 && s.slideMs <= 0 && Math.abs(p.x - q.x) < 10 && !s.dying) {
+        var dir = Math.sign(b.velocity.x) || (p.flipX ? -1 : 1);
+        s.slideDir = dir; s.slideMs = 750 * self.f('peau'); q.cool = 1200; p.setFlipX(dir < 0); GP.Sfx.play('error');
+      }
     });
 
     // plaques de verre du Mémorial : on s'approche, elles s'allument (et le restent) ; leur texte s'affiche tant qu'on est à côté
@@ -583,12 +633,14 @@ GP.Dangers.prototype = {
     var i, e, b = this.s.player.body, H = this.s.H;
     for (i = 0; i < this.patrols.length; i++) {
       e = this.patrols[i];
+      if (e.kind === 'oiseau') { if (hit(e.img.x - 11, e.img.y - 16, 22, 11)) return 'UN HÉRON T\'A ATTRAPÉ !'; continue; }
+      if (e.frozen) continue;                                                      // figée (le joueur la regarde) : sans danger, on peut la frôler
       var h = e.kind === 'robot' ? 11 : (e.kind === 'araignee' ? 10 : (e.kind === 'statue' ? Math.max(14, Math.round(e.img.displayHeight) - 4) : 14)), y = e.kind === 'esprit' ? e.img.y - 16 : e.feet - h;
       if (hit(e.img.x - (e.kind === 'araignee' ? 9 : (e.kind === 'statue' ? 7 : 5)), y, e.kind === 'araignee' ? 18 : (e.kind === 'statue' ? 14 : 10), h)) return e.kind === 'robot' ? 'UN ROBOT T\'A ATTRAPÉ !' : (e.kind === 'araignee' ? 'UNE ARAIGNÉE T\'A ATTRAPÉE !' : (e.kind === 'statue' ? 'UNE STATUE T\'A ATTRAPÉ !' : 'UN ESPRIT DE LA GARDE !'));
     }
     for (i = 0; i < this.hangers.length; i++) {
       e = this.hangers[i];
-      if (hit(e.x - 9, e.y - 10, 18, 10)) return 'UNE ARAIGNÉE T\'A ATTRAPÉE !';
+      if (!e.frozen && hit(e.x - 9, e.y - 10, 18, 10)) return 'UNE ARAIGNÉE T\'A ATTRAPÉE !';
     }
     for (i = 0; i < this.tides.length; i++) {
       e = this.tides[i];
@@ -596,7 +648,11 @@ GP.Dangers.prototype = {
     }
     for (i = 0; i < this.fallers.length; i++) {
       e = this.fallers[i];
-      if (e.state === 'fall' && hit(e.x - 14, e.img.y, 28, 22)) return 'UN CONTENEUR TOMBE !';
+      if (e.state === 'fall' && hit(e.x - e.w / 2, e.img.y, e.w, e.h)) return e.msg;
+    }
+    for (i = 0; i < this.regimes.length; i++) {
+      e = this.regimes[i];
+      if (hit(e.x - 10, e.y - 14, 20, 35)) return 'UN RÉGIME DE BANANES T\'A TOUCHÉ !';
     }
     for (i = 0; i < this.jets.length; i++) {
       e = this.jets[i];
@@ -604,7 +660,7 @@ GP.Dangers.prototype = {
     }
     for (i = 0; i < this.beams.length; i++) {
       e = this.beams[i];
-      if (hit(e.x - 5, 24, 10, H - 24)) return 'LA LUMIÈRE T\'A REPÉRÉ !';
+      if (hit(e.x - 4, 24, 8, H - 24)) return 'LA LUMIÈRE T\'A REPÉRÉ !';
     }
     for (i = 0; i < this.notes.length; i++) {
       e = this.notes[i].img;

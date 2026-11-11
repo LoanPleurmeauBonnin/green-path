@@ -77,37 +77,55 @@ GP.LEVELS['feydeau'] = (function () {
 
 /** NIVEAU 5 — PLACE GRASLIN : les Muses du théâtre lancent des notes, parasols qui font rebondir, projecteurs, rideau à ouvrir. */
 GP.LEVELS['graslin'] = (function () {
-  var L = GP.LevelBuilder.create(132, function (L) {
-    // 1. La place et ses terrasses : une Muse lance des notes, un premier parasol
+  // Parcours dans l'ordre du théâtre : parvis, escalier d'honneur à double révolution, foyer, salle (balcons en arc), scène et rideau.
+  var L = GP.LevelBuilder.create(184, function (L) {
+    // 1. Le parvis et ses terrasses : une Muse lance des notes, un premier parasol
     L.ground(0, 34, 3);
     L.start(2);
     L.hint(3, 'LES MUSES LANCENT DES NOTES : ACCROUPIS-TOI OU SAUTE');
     L.deco(5, 'graslin_table_cafe', { depth: 4 }); L.deco(9, 'graslin_lampadaire_ornemente', { depth: 3 }); L.deco(29, 'graslin_table_cafe', { depth: 4 });
-    L.muse(16, -1, 2800, 0);                           // une Muse de la place lance ses notes vers toi
+    L.muse(16, -1, 2800, 0);
     L.pix(6, 13); L.pix(13, 11); L.pix(17, 13);
     L.hint(20, 'LE PARASOL FAIT REBONDIR : SAUTE DESSUS');
     L.spring(22); L.plat(25, 10, 4); L.pix(26, 9); L.pix(27, 9);
     L.check(31);
-    // 2. Le perron : trois marches, trois Muses
-    L.ground(34, 8, 3); L.ground(42, 8, 4); L.ground(50, 8, 5);
-    L.muse(41, -1, 2500, 0); L.muse(49, -1, 2500, 900); L.muse(57, -1, 2500, 1700);
-    L.pix(38, 13); L.pix(46, 12); L.pix(54, 11); L.pix(44, 10); L.pix(52, 9);
-    // 3. Le portique : un parasol vers la corniche, puis les projecteurs balaient la nef
-    L.ground(58, 72, 6);
-    L.check(59);
-    L.hint(61, 'LE PARASOL TE PROJETTE SUR LA CORNICHE');
-    L.spring(64); L.plat(66, 7, 4); L.pix(67, 6); L.pix(68, 6);
-    L.deco(72, 'graslin_colonne_corinthienne', { depth: 2 }); L.deco(88, 'graslin_colonne_corinthienne', { depth: 2 }); L.deco(104, 'graslin_colonne_corinthienne', { depth: 2 });
-    L.hint(73, "LES PROJECTEURS BALAIENT : PASSE QUAND ILS S'ÉLOIGNENT");
-    L.beam(77, 89, 0.45); L.beam(91, 103, 0.55);
-    L.pix(78, 10); L.pix(82, 10); L.pix(86, 10); L.pix(93, 10); L.pix(97, 10); L.pix(100, 8);
-    L.check(105);
-    // 4. Le rideau : rejouer la séquence pour entrer sur scène, dernière Muse
-    L.hint(107, 'REJOUE LA SÉQUENCE : < > V');
-    L.seq(111, 'LRD');
-    L.deco(122, 'graslin_muse_statue', { depth: 3 });
-    L.muse(125, -1, 2300, 0);
-    L.pix(113, 10); L.pix(117, 10); L.plat(118, 8, 3); L.pix(119, 7); L.pix(122, 10); L.pix(127, 10);
+    // 2. Le péristyle et le perron : les marches montent vers l'escalier d'honneur
+    L.ground(34, 6, 4); L.ground(40, 6, 5); L.ground(46, 6, 6);
+    L.muse(41, -1, 2500, 0);
+    L.pix(38, 12); L.pix(44, 11); L.pix(50, 10);
+    // 3. L'escalier à double révolution : deux volées symétriques, on choisit son côté, elles se rejoignent au foyer
+    L.ground(52, 8, 7);
+    L.check(54);
+    L.hint(55, "DEUX VOLÉES SYMÉTRIQUES : CHOISIS TON CÔTÉ");
+    L.ground(60, 16, 5);                                    // volée basse : la plus sûre, une Muse la garde
+    L.muse(70, -1, 2500, 900);
+    L.pix(62, 11); L.pix(66, 11); L.pix(72, 11);
+    L.plat(61, 8, 3); L.plat(66, 7, 3); L.plat(71, 8, 3);   // volée haute : en l'air, plus de pixels
+    L.pix(62, 7); L.pix(67, 6); L.pix(72, 7);
+    // 4. Le foyer : longue galerie de promenade, les projecteurs balaient
+    L.ground(76, 36, 7);
+    L.check(78);
+    L.hint(80, "LES PROJECTEURS BALAIENT : PASSE QUAND ILS S'ÉLOIGNENT");
+    L.deco(84, 'graslin_colonne_corinthienne', { depth: 2 }); L.deco(98, 'graslin_colonne_corinthienne', { depth: 2 }); L.deco(108, 'graslin_colonne_corinthienne', { depth: 2 });
+    L.beam(79, 92, 0.36); L.beam(97, 110, 0.4);          // projecteurs plus lents et plus espacés : le foyer reste passable
+    L.pix(82, 9); L.pix(88, 9); L.pix(94, 9); L.pix(101, 9); L.pix(107, 9);
+    L.check(110);
+    // 5. La salle : le parterre, et les balcons en arc de cercle au-dessus (le haut rapporte plus)
+    L.ground(112, 48, 5);
+    L.hint(113, "LES BALCONS FORMENT UN ARC : LE HAUT RAPPORTE PLUS");
+    L.muse(120, -1, 2400, 0); L.muse(148, -1, 2400, 1200);
+    L.plat(116, 10, 3); L.plat(120, 8, 3); L.plat(124, 6, 3); L.plat(130, 5, 5); L.plat(137, 6, 3); L.plat(141, 8, 3); L.plat(145, 10, 3);
+    L.pix(117, 9); L.pix(121, 7); L.pix(125, 5); L.pix(132, 4); L.pix(138, 5); L.pix(142, 7); L.pix(146, 9);
+    L.pix(114, 11); L.pix(128, 11); L.pix(135, 11); L.pix(153, 11);
+    L.check(130);
+    // 6. La scène : rejouer la séquence pour ouvrir le rideau, dernière Muse
+    L.ground(160, 24, 6);
+    L.check(161);
+    L.hint(162, 'REJOUE LA SÉQUENCE : < > V');
+    L.seq(168, 'LRD');
+    L.deco(178, 'graslin_muse_statue', { depth: 3 });
+    L.muse(181, -1, 2300, 0);
+    L.pix(165, 10); L.pix(172, 10); L.pix(176, 10); L.pix(182, 9);
   });
   L.id = 'graslin';
   L.maxTime = 200;
@@ -119,7 +137,8 @@ GP.LEVELS['graslin'] = (function () {
   };
   L.thornKey = 'graslin_obstacle_chaises'; L.thornText = 'AÏE, DES CHAISES RENVERSÉES !';
   L.sky = { farKey: 'lv_fond_graslin', farBottom: 236 };         // immeubles de la place, d'après des vues de Graslin
-  L.backdrop = { x: 120, key: 'graslin_theatre_facade', scale: 1, tint: false };
+  L.farSwitch = [[0, 'lv_fond_graslin'], [58, 'lv_fond_theatre', 'ON ENTRE DANS LE THÉÂTRE']];   // à l'intérieur (dès l'escalier d'honneur) : la salle bleue et or
+  L.backdrop = { x: 26, key: 'graslin_theatre_facade', scale: 1, tint: false };   // la façade à huit colonnes derrière le parvis
   L.wxm = { rain: { note: 0.75 }, sun: { beam: 1.25 }, wind: { spring: 1.1 } };
   L.weatherText = { rain: 'LA PLUIE ÉTOUFFE LES NOTES : PLUS LENTES', sun: 'LES PROJECTEURS BALAIENT PLUS VITE', wind: 'LE VENT GONFLE LES PARASOLS : REBOND PLUS HAUT' };
   return L;
@@ -151,6 +170,7 @@ GP.LEVELS['machines'] = (function () {
     L.hint(64, "LES ARAIGNÉES AVANCENT SI TU NE LES REGARDES PAS");
     L.deco(90, 'lv_gardienne', { depth: 2.5 });                  // la Gardienne des Ténèbres (l'araignée)
     L.patrol(66, 76, 'araignee', 40); L.patrol(82, 96, 'araignee', 44);
+    L.patrol(70, 92, 'oiseau', 55);                       // un héron mécanique plonge au-dessus du quai
     L.plat(70, 12, 3); L.pix(71, 11); L.plat(86, 12, 3); L.pix(87, 11);
     L.thorn(78, 1); L.pix(78, 11); L.thorn(94, 1); L.pix(94, 11);
     L.pix(68, 13); L.pix(84, 13);
@@ -161,6 +181,8 @@ GP.LEVELS['machines'] = (function () {
     L.jet(108, 4, 3000, 0); L.jet(114, 4, 3000, 1500);
     L.check(101);
     L.hanger(120);
+    L.patrol(103, 119, 'oiseau', 50);
+    L.hint(100, 'DES HÉRONS PLONGENT : ATTENDS QU\'ILS REMONTENT');
     // 5. L'esplanade : le Grand Éléphant traverse le canal, on grimpe sur son dos (croupe, dos, toit, oreille, défenses)
     L.ground(122, 10, 3);
     L.jet(125, 4, 3600, 0); L.jet(128, 4, 3600, 1800);
@@ -176,6 +198,7 @@ GP.LEVELS['machines'] = (function () {
     L.pix(152, 13); L.pix(155, 13); L.pix(157, 11);
   });
   L.id = 'machines';
+  L.noWind = true;                // pas de vent aux Machines (il gênait)
   L.maxTime = 200;
   L.reveal = 'bottomUp';
   L.abilities = { crouch: true, grab: true };
@@ -309,6 +332,11 @@ GP.LEVELS['buren'] = (function () {
 GP.LEVELS['hangar'] = (function () {
   var L = GP.LevelBuilder.create(140, function (L) {
     L.rotting(true);
+    // décor du quai des Antilles : rails dans le pavage, garde-corps en acier corten, bollards, flèche de la grue grise
+    [[1, 31], [64, 99], [101, 139]].forEach(function (seg) { for (var rx = seg[0]; rx <= seg[1]; rx++) L.deco(rx, 'lv_rails', { depth: 5, dy: 1 }); });
+    [8, 17, 66, 90, 103, 121, 135].forEach(function (cx) { L.deco(cx, 'lv_corten', { depth: 3 }); });
+    [12, 28, 70, 96, 110, 130].forEach(function (bx) { L.deco(bx, 'feydeau_bollard', { depth: 4 }); });
+    [22, 107, 112, 125].forEach(function (fx) { L.deco(fx, 'lv_fleche_grue', { depth: 8, dy: -209 }); });
     // 1. La terrasse de bois : apprendre à récolter au bon moment
     L.ground(0, 32, 3);
     L.start(2);
@@ -317,6 +345,7 @@ GP.LEVELS['hangar'] = (function () {
     L.deco(14, 'hangar_guirlande_lumineuse', { depth: 2, dy: -38 });   // accrochée au sommet de la grue de quai
     L.pix(7, 13); L.pix(10, 13); L.pix(13, 13); L.pix(16, 13);
     L.plat(19, 12, 3); L.pix(20, 11);
+    L.faller(22, 1, 4200, 0, 'lv_caisse_bananes', 'UNE CAISSE DE BANANES T\'A ÉCRASÉ !');
     L.check(28);
     // 2. Le dock : des conteneurs qui glissent et qui montent
     L.ground(32, 6, 3);
@@ -335,13 +364,22 @@ GP.LEVELS['hangar'] = (function () {
     L.pix(72, 13); L.pix(80, 13); L.pix(88, 13); L.pix(96, 13);
     L.check(78);
     // 4. Les palettes en hauteur
-    L.ground(100, 40, 3);
+    L.ground(100, 16, 3);
     L.check(101);
-    L.plat(104, 12, 3); L.pix(105, 11); L.plat(109, 10, 3); L.pix(110, 9); L.plat(114, 8, 3); L.pix(115, 7);
-    L.thorn(118, 2); L.pix(119, 11);
+    L.hint(102, "LA GRUE DU QUAI LÂCHE DES CAISSES DE BANANES : L'OMBRE PRÉVIENT");
+    L.faller(128, 1, 3800, 0, 'lv_caisse_bananes', 'UNE CAISSE DE BANANES T\'A ÉCRASÉ !'); L.faller(134, 1, 3600, 1800, 'lv_caisse_bananes', 'UNE CAISSE DE BANANES T\'A ÉCRASÉ !');
+    L.hint(103, 'LES CAISSES FONT UN ESCALIER : MONTE !');
+    L.caisse(103, 1); L.caisse(105, 2); L.caisse(107, 3); L.caisse(109, 2); L.caisse(111, 1);           // escalier de caisses de bananes
+    L.pix(103, 12); L.pix(105, 10); L.pix(107, 9); L.pix(109, 10); L.pix(111, 12);
+    L.hint(113, 'LA GRUE PORTE DES CAISSES : TRAVERSE');
+    L.pond(116, 124, 15);
+    L.crane(116, 12, 4, 0, 7000, 0, 'lv_caisse_bananes'); L.crane(120, 12, 4, 0, 7000, 3500, 'lv_caisse_bananes');   // deux caisses suspendues à la grue traversent le vide
+    L.pix(118, 10); L.pix(122, 10);
+    L.ground(124, 16, 3);
+    L.check(125);
     // 5. La mûrisserie : un grand tas de pixels, tous à des moments différents
     L.deco(132, 'hangar_conteneur_bleu', { depth: 3 });
-    L.pix(122, 13); L.pix(124, 13); L.pix(127, 13); L.pix(129, 13); L.pix(124, 11); L.pix(128, 11);
+    L.pix(124, 13); L.pix(127, 13); L.pix(129, 13); L.pix(124, 11); L.pix(128, 11);
   });
   L.id = 'hangar';
   L.maxTime = 240;                // il faut parfois attendre qu'un pixel jaunisse
@@ -352,7 +390,7 @@ GP.LEVELS['hangar'] = (function () {
     ledge: ['hangar_terrasse_bois_g', 'hangar_terrasse_bois_m', 'hangar_terrasse_bois_d'], mover: ['hangar_terrasse_bois_g', 'hangar_terrasse_bois_m', 'hangar_terrasse_bois_d']
   };
   L.thornKey = 'hangar_obstacle_tole_coupante'; L.thornText = 'AÏE, DE LA TÔLE COUPANTE !';
-  L.sky = { farKey: 'hangar_fond_tile_x', farBottom: 236 };
+  L.sky = { farKey: 'lv_fond_hangar_quai', farBottom: 236 };       // le quai des Antilles : long hangar blanc, grue Titan grise, anneaux, Loire
   L.wxm = { sun: { rot: 1.3, mold: 0.8 }, rain: { rot: 0.8, mold: 1.3 } };
   L.weatherText = { sun: 'LA CHALEUR FAIT POURRIR LES PIXELS PLUS VITE', rain: "L'HUMIDITÉ FAIT POUSSER LA MOISISSURE" };
   return L;
@@ -367,7 +405,7 @@ GP.LEVELS['memorial'] = (function () {
     L.hint(3, 'ICI, ON SE SOUVIENT : PRENDS TON TEMPS');
     L.deco(5, 'memorial_banc_beton', { depth: 4 }); L.deco(9, 'memorial_lampadaire_sobre', { depth: 3 }); L.deco(30, 'memorial_lampadaire_sobre', { depth: 3 }); L.deco(20, 'memorial_banc_beton', { depth: 4 });
     L.pix(7, 13); L.pix(11, 13); L.pix(18, 13);
-    L.hint(12, 'LA STÈLE GARDE UNE SÉQUENCE : RETIENS-LA');
+    L.hint(12, 'LIS LA STÈLE, PUIS REJOUE-LA : BAS = FLÈCHE BAS, HAUT = SAUT');
     L.memo(15, 24, 'DJD');
     L.check(27);
     L.pix(29, 13);

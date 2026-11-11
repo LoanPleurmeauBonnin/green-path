@@ -36,7 +36,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.env = GP.WeatherRules.env(null);
     this.deaths = 0; this.time_ms = 0; this.paused = false; this.finished = false; this.invuln = 0;
     this.introMs = 1700;   // bandeau d'introduction : le joueur attend, le chrono ne tourne pas encore
-    this.dying = false; this.crouching = false; this.climbing = null; this.hanging = null;
+    this.slideMs = 0; this.slideDir = 1; this.dying = false; this.crouching = false; this.climbing = null; this.hanging = null;
     this.coyote = 0; this.buffer = 0; this.jumping = false; this.boost = 0;
     this.maxTime = (L.maxTime || 180) * 1000; this.timeWarned = false; this.timedOut = false;   // limite douce : 3 min par défaut, plus pour les niveaux qui en demandent
     this.alive = true;
@@ -329,6 +329,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.wx.set(st); this.wxWidget.set(st);
     this.setNuit(!st.isDay);
     this.env = GP.WeatherRules.env(st);
+    if (this.L.noWind) { this.env.wind = 0; this.env.windSign = 0; if (this.env.key === 'vent') this.env.key = this.env.night ? 'nuit' : 'nuages'; }            // niveau sans vent (retour de l'équipe)
     this.phy = GP.WeatherRules.physics(this.env, this.TUNE);
     // ronces de pluie : elles poussent (1,2 s, visibles) avant de devenir dangereuses
     this.rainThorns.forEach(function (t) {
@@ -393,6 +394,15 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   // ---------- Boucle ----------
   update(time, delta) {
     this.sky.update(this.cameras.main, delta);
+    if (this.L.farSwitch && this.sky.far) {                                   // fond qui change selon l'endroit (extérieur puis intérieur du théâtre)
+      var fx = this.player.x / 16, fk = this.L.farSwitch[0][1];
+      var fl = '';
+      this.L.farSwitch.forEach(function (f) { if (fx >= f[0]) { fk = f[1]; fl = f[2] || ''; } });
+      if (fk !== this.farKeyNow && this.textures.exists(fk)) {
+        var first = !this.farKeyNow; this.farKeyNow = fk; this.sky.far.setTexture(fk);
+        if (!first && fl) this.toast(fl, GP.PAL.y);                               // on annonce le changement de décor
+      }
+    }
     if (this.paused || this.finished || this.dying || !this.player) return;
     var dt = Math.min(delta, 50), p = this.player, b = p.body, U = this.TUNE, X = this.phy;
     this.updateMechanics(dt);
@@ -455,7 +465,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var max = this.crouching ? U.crouchSpeed : U.speed;
     var target = dir * max, a = (onGround ? X.accelGround : X.accelAir) * dt / 1000;
     if (this.boost > 0) this.boost = onGround ? 0 : this.boost - dt;   // élan d'un anneau rouge : on garde sa vitesse en l'air
-    if (!(this.boost > 0)) b.setVelocityX(b.velocity.x + Phaser.Math.Clamp(target - b.velocity.x, -a, a));
+    if (this.slideMs > 0) { this.slideMs -= dt; b.setVelocityX(this.slideDir * 175); }                     // peau de banane : on glisse tout droit
+    else if (!(this.boost > 0)) b.setVelocityX(b.velocity.x + Phaser.Math.Clamp(target - b.velocity.x, -a, a));
     if (!onGround && X.airPush) b.setVelocityX(Phaser.Math.Clamp(b.velocity.x + X.airPush * dt / 1000, -180, 180));   // le vent pousse les sauts
     if (dir) p.setFlipX(dir < 0);
 

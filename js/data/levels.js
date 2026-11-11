@@ -34,7 +34,7 @@ GP.LevelBuilder = {
       width: width, rows: 17, grid: new Int8Array(width * 17),
       plats: [], thorns: [], pixels: [], checks: [], hints: [], deco: [], startX: 2, startRow: 13,
       climbs: [], crumbles: [], gargoyles: [], slits: [], gates: [], barrels: [], movers: [], rainThorns: [], sunPlats: [],
-      muses: [], molds: [], glasses: [], hangers: [], plaques: [], cranes: [], elephants: [], cbornes: [], cplats: [], memos: [], drafts: [],
+      muses: [], molds: [], glasses: [], hangers: [], plaques: [], regimes: [], peaux: [], caisses: [], cranes: [], elephants: [], cbornes: [], cplats: [], memos: [], drafts: [],
       patrols: [], tides: [], boats: [], liars: [], fallers: [], jets: [], beams: [], springs: [], seqs: [], belts: [], carts: [], rings: [], aligns: [], ponds: [],
       rot: false, wxm: {},
       abilities: {}, skin: null
@@ -68,7 +68,7 @@ GP.LevelBuilder = {
       tide: function (x0, x1, low, high, period) { L.tides.push({ x0: x0, x1: x1, low: low, high: high, period: period || 9000 }); },        // eau qui monte (lignes basse et haute)
       boat: function (x, y, w) { L.boats.push({ x: x, y: y, w: w || 2 }); },                                                                  // bateau qui s'enfonce
       liar: function (x, y, text, blur) { L.liars.push({ x: x, y: y, text: text, blur: blur }); },                                            // visage qui ment
-      faller: function (x, y, period, offset) { L.fallers.push({ x: x, y: y, period: period, offset: offset }); },                            // conteneur qui tombe
+      faller: function (x, y, period, offset, key, msg) { L.fallers.push({ x: x, y: y, period: period, offset: offset, key: key, msg: msg }); },   // objet suspendu qui tombe (conteneur par défaut ; key : autre sprite, ex. caisse de bananes)                            // conteneur qui tombe
       jet: function (x, h, period, offset) { L.jets.push({ x: x, h: h, period: period, offset: offset }); },                                  // jet de vapeur ou d'eau
       beam: function (x0, x1, speed) { L.beams.push({ x0: x0, x1: x1, speed: speed }); },                                                     // projecteur qui balaie
       spring: function (x) { L.springs.push({ x: x, y: L.top(x) - 1 }); },                                                                    // parasol qui fait rebondir
@@ -80,8 +80,11 @@ GP.LevelBuilder = {
       muse: function (x, dir, period, offset) { L.muses.push({ x: x, dir: dir || -1, period: period, offset: offset }); },                    // Muse (statue) qui lance des notes
       mold: function (x, w, period, offset) { L.molds.push({ x: x, w: w, period: period, offset: offset }); },                                // moisissure qui gagne du terrain
       hanger: function (x) { L.hangers.push({ x: x, floor: L.top(x) }); },                                                               // araignée suspendue à un fil : elle descend si on ne la regarde pas (accroupi : on passe dessous)
+      peau: function (x) { L.peaux.push({ x: x }); },                                                                                     // peau de banane au sol : on glisse tout droit, sans contrôle, pendant 0,75 s
+      regime: function (x, period, offset) { L.regimes.push({ x: x, period: period || 3000, offset: offset || 0, floor: L.top(x) }); },        // régime de bananes suspendu qui se balance : accroupi, on passe dessous
       plaque: function (x, text) { L.plaques.push({ x: x, text: text, floor: L.top(x) }); },                                          // plaque de verre du Mémorial : elle s'allume au passage et affiche un fait daté
-      crane: function (x, y, dx, dy, period, offset) { L.cranes.push({ x: x, y: y, dx: dx || 0, dy: dy || 0, period: period || 7000, offset: offset || 0 }); },   // grue : un conteneur suspendu à un câble va et vient (plateforme qui transporte)
+      crane: function (x, y, dx, dy, period, offset, key) { L.cranes.push({ x: x, y: y, dx: dx || 0, dy: dy || 0, period: period || 7000, offset: offset || 0, key: key }); },   // key : sprite suspendu (conteneur par défaut)
+      caisse: function (x, tiers) { L.caisses.push({ x: x, tiers: tiers || 1, floor: L.top(x) }); },                                           // pile de caisses de bananes (escalier) : le dessus est une plateforme   // grue : un conteneur suspendu à un câble va et vient (plateforme qui transporte)
       elephant: function (west, east, period) { L.elephants.push({ west: west, east: east, period: period || 13000 }); },                   // le Grand Éléphant traverse un canal du bord ouest au bord est : on monte sur lui
       borne: function (x, color) { L.cbornes.push({ x: x, color: color }); },                                                              // borne de couleur : la toucher allume les passerelles de sa couleur
       cplat: function (x, y, w, color) { L.cplats.push({ x: x, y: y, w: w, color: color }); },                                           // passerelle de couleur (solide seulement si sa couleur est allumée)

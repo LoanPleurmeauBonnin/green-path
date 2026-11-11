@@ -72,7 +72,7 @@ GP.LOCATIONS = [
   },
   {
     id: 'machines', name: "Machines de l'île",
-    sprite: 'machines_monument_machines',
+    sprite: '',                                  // sur la carte : le Grand Éléphant dessiné par code (MapArt)
     playable: true, level: 'machines', parTime: 120,
     notice: "Atelier-spectacle installé dans les anciens chantiers navals. Le Grand Éléphant, géant mécanique de bois et d'acier, promène les visiteurs sur l'île.",
     element: { label: 'Grand Éléphant', verify: false }, verify: false,

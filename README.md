@@ -63,7 +63,7 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
   | Passage Pommeraye | verre plus fragile | verre qui revient plus vite | |
   | Tour LU | tapis plus vifs | jets de vapeur plus longs | parasol : rebond plus haut |
 - **Un décor propre à chaque lieu** : le **Jardin des Plantes** est un vrai parc (rangées d'arbres, magnolias, massifs, hortensias, hautes herbes) où l'on croise des silhouettes colorées inspirées des sculptures de l'été au jardin ; le **Château** se traverse de la cour, avec ses tours de schiste et son logis blanc en tuffeau, jusqu'aux **salles intérieures** (châtelet aux herses, puis salle des gardes avec sa cheminée). Tout est dessiné par code, sans image externe.
-- **Un danger propre à chaque lieu** : ronces et mauvaises herbes au Jardin, fissures de voûte qui suintent à la Cathédrale, esprits de la garde au Château, eau qui monte et visages menteurs à l'Île Feydeau, Muses qui lancent des notes et projecteurs à Graslin, jets, araignées qui se figent et Grand Éléphant à monter aux Machines, conteneurs qui tombent aux Chantiers, bornes de couleur à Buren, pourriture des pixels et moisissure au Hangar, une stèle à lire et rien d'hostile au Mémorial, verre qui se fissure, statues qui s'animent quand on ne les regarde pas et pluie qui passe par la verrière à la Pommeraye, courant d'air qui allège la gravité à la Tour LU. Un signe (ombre, souffle, tremblement) précède toujours le danger.
+- **Un danger propre à chaque lieu** : ronces et mauvaises herbes au Jardin, fissures de voûte qui suintent à la Cathédrale, esprits de la garde au Château, eau qui monte et visages menteurs à l'Île Feydeau, Muses qui lancent des notes, escalier à double révolution, projecteurs du foyer et balcons de la salle à Graslin, jets, araignées qui se figent et Grand Éléphant à monter aux Machines, conteneurs qui tombent aux Chantiers, bornes de couleur à Buren, pourriture des pixels, moisissure, caisses de bananes qui tombent, forment un escalier et que la grue du quai porte au-dessus du vide au Hangar, une stèle à lire et rien d'hostile au Mémorial, verre qui se fissure, statues qui s'animent quand on ne les regarde pas et pluie qui passe par la verrière à la Pommeraye, courant d'air qui allège la gravité à la Tour LU. Un signe (ombre, souffle, tremblement) précède toujours le danger.
 - **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou un des 8 modèles.
 
 ## Les 12 lieux
@@ -117,7 +117,7 @@ Aucun build, aucune dépendance : ouvrir `index.html` dans un navigateur (foncti
 ```bash
 python3 -m http.server 8123
 ```
-puis http://localhost:8123. **Mode test** : ajouter `?dev=1` à l'adresse (W : météos simulées sur la carte, N dans un niveau ; K : ramasser tous les pixels).
+puis http://localhost:8123. **Mode test** : ajouter `?dev=1` à l'adresse (W : météos simulées sur la carte, N dans un niveau ; K : ramasser tous les pixels) ; **tous les niveaux sont ouverts** sur la carte.
 
 ## Fallback et limites connues
 - **Hors ligne, le jeu reste entièrement jouable** (météo, sauvegarde locale ; le classement affiche la dernière version vue ; la sauvegarde en ligne repart au retour du réseau) : si le réseau coupe, le jeu garde **la dernière météo reçue** (widget « HORS LIGNE · IL Y A N MIN ») ; si aucune n'a jamais été reçue, météo neutre sans effet ([data/fallback.json](data/fallback.json)). La progression est gardée dans le navigateur (`localStorage`).

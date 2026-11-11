@@ -138,8 +138,9 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       var a = l.anecdote || l.panneau;
       if (!a) return null;
       var key = MapScene.personKey(self, l), x = self.nx(i) + 40;
-      var im = self.add.image(x, GP.MapArt.vergeY(x), key).setOrigin(0.5, 1).setScale(1.5).setDepth(5).setVisible(false);
-      if (l.anecdote && !GP.reducedMotion) self.tweens.add({ targets: im, y: im.y - 2, duration: 700 + i * 37, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      var im = self.add.image(x, GP.MapArt.vergeY(x), key).setOrigin(0.5, 1).setScale(1).setDepth(5).setVisible(false);   // même taille que le héros
+      im.bulle = GP.UI.txt(self, x, im.y - 28, '!', GP.PAL.y).setOrigin(0.5, 1).setDepth(6).setVisible(false);   // « j'ai quelque chose à te raconter »
+      if (l.anecdote && !GP.reducedMotion) self.tweens.add({ targets: [im, im.bulle], y: '-=2', duration: 700 + i * 37, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       return im;
     });
   }
@@ -196,7 +197,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       n.img.setTexture('carte_piedestal_' + MapScene.PEDESTAL[st]);
       n.num.setColor(st === 'locked' || st === 'coming' ? GP.PAL.w : GP.PAL.k).setVisible(st !== 'locked');   // le piédestal verrouillé porte déjà un cadenas
       n.badge.setVisible(st === 'completed');
-      if (self.pers && self.pers[i]) self.pers[i].setVisible(st === 'completed');
+      if (self.pers && self.pers[i]) { var vis = st !== 'coming' && st !== 'locked'; self.pers[i].setVisible(vis); self.pers[i].bulle.setVisible(vis && !!l.anecdote); }
       var got = P.stars(i);
       n.stars.forEach(function (s, k) { s.setVisible(st === 'completed').setTexture(k < got ? 'star_on' : 'star_off'); });
       if (i !== self.revealing) self.lms[i].setTexture(GP.MapArt.monument(l, st !== 'completed'));
@@ -373,6 +374,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       if (l.anecdote || l.panneau) pages.push({ title: l.panneau ? 'PANNEAU' : 'RENCONTRE', draw: function (add) { self.drawAnecdote(add, l); } });
     } else {
       pages.push({ title: MapScene.LABELS[st] || 'À DÉCOUVRIR', draw: function (add) { self.drawIntro(add, i, st); } });
+      if ((l.anecdote || l.panneau) && st !== 'locked' && st !== 'coming') pages.push({ title: l.panneau ? 'PANNEAU' : 'RENCONTRE', draw: function (add) { self.drawAnecdote(add, l); } });   // le personnage raconte son anecdote dès l'arrivée
     }
     this.sheet = { pages: pages, page: 0, content: [], m: m };
 

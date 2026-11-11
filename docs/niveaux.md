@@ -1327,10 +1327,10 @@ Pour chaque monument, on se demande **ce qu'il fait dans la vraie vie** (lever, 
 | Cathédrale | élever, laisser suinter | grimper aux colonnes, corniches qui s'effritent, fissures de voûte qui gouttent |
 | Machines de l'île | porter, marcher | Grand Éléphant qui traverse le canal avec le joueur sur le dos ; araignées qui se figent quand on les regarde |
 | Chantiers | lever des blocs de navires | grue jaune : conteneurs suspendus qui transportent le joueur |
-| Graslin | jouer, ouvrir le rideau | séquence du rideau, Muses qui lancent des notes |
+| Graslin | jouer, ouvrir le rideau | parcours dans l'ordre du théâtre (parvis, escalier à double révolution, foyer, salle à balcons en arc, scène), séquence du rideau, Muses qui lancent des notes |
 | Pommeraye | abriter sous une verrière, exposer des statues | statues qui s'animent hors du regard, pluie par les vitres cassées |
 | Buren | colorer la perspective | bornes de couleur qui allument les passerelles |
-| Hangar à Bananes | faire mûrir | pixels qui pourrissent, moisissure |
+| Hangar à Bananes | recevoir, stocker et faire mûrir des primeurs (bananes, ananas) en hangar climatisé | pixels qui pourrissent, moisissure ; caisses de bananes qui tombent de la grue du quai, qui forment un escalier et que la grue porte au-dessus d'un vide |
 | Tour LU | faire monter, cuire | courant d'air ascendant, petits-beurres-plateformes |
 | Mémorial | se souvenir | stèle et porte de lumière, plaques de verre qui s'allument et affichent un fait sourcé, rien d'hostile |
 | Feydeau | une île dans la Loire | marée qui monte, balcons de fer en refuge, bateaux, visages qui mentent |
