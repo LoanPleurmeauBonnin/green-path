@@ -262,8 +262,11 @@ GP.Dangers = function (scene) {
   var glassSet = ['memorial_sol_dalle_verre', 'memorial_sol_dalle_verre', 'memorial_sol_dalle_verre'];
   this.glasses = (L.glasses || []).map(function (g, i) {
     var img = scene.add.image(g.x * 16, g.y * 16, scene.rowTexture('lv_glass_' + i, glassSet, g.w)).setOrigin(0, 0).setDepth(9).setAlpha(0.92);
-    return { img: img, body: scene.platformBody(img, true), x: img.x, w: g.w * 16, state: 'solid', timer: 0 };
+    var c = { img: img, body: scene.platformBody(img, true), x: img.x, w: g.w * 16, state: 'solid', timer: 0, rang: g.rang, lit: false };
+    if (g.annee) c.label = GP.UI.txt(scene, img.x + g.w * 8, img.y - 2, String(g.annee), GP.PAL.w, { backgroundColor: GP.PAL.k, padding: { x: 2, y: 2 } }).setOrigin(0.5, 1).setDepth(10);
+    return c;
   });
+  this.dateNext = 0;   // prochain rang de dalle datée à poser (chronologie)
 
   // ---------- Mémoire : une stèle à lire, puis une porte de lumière qui s'ouvre si on rejoue la séquence (sans danger) ----------
   var WORD = { D: 'BAS', J: 'HAUT' };
@@ -556,9 +559,11 @@ GP.Dangers.prototype = {
     });
 
     // plaques de verre du Mémorial : on s'approche, elles s'allument (et le restent) ; leur texte s'affiche tant qu'on est à côté
+    var proche = null;   // une seule plaque parle à la fois : la plus proche (sinon les textes se superposent)
+    this.plaques.forEach(function (q) { if (Math.abs(p.x - q.x) < 36 && (!proche || Math.abs(p.x - q.x) < Math.abs(p.x - proche.x))) proche = q; });
     this.plaques.forEach(function (q) {
-      var near = Math.abs(p.x - q.x) < 36;
-      if (near && !q.lit) { q.lit = true; q.img.setAlpha(1); if (q.halo) q.halo.setAlpha(0.7); GP.Sfx.play('step'); }
+      var near = q === proche;
+      if (Math.abs(p.x - q.x) < 36 && !q.lit) { q.lit = true; q.img.setAlpha(1); if (q.halo) q.halo.setAlpha(0.7); GP.Sfx.play('step'); }
       q.txt.setAlpha(near ? 1 : 0);
     });
 
@@ -590,13 +595,17 @@ GP.Dangers.prototype = {
     // dalles de verre
     this.glasses.forEach(function (c) {
       var on = c.state === 'solid' && b.touching.down && b.bottom <= c.img.y + 2 && b.right > c.img.x && b.x < c.img.x + c.w;
+      if (on && c.rang !== undefined) {   // dalle datée : dans l'ordre elle s'allume et reste, sinon elle se fissure et la chronologie repart de zéro
+        if (c.lit || c.rang === self.dateNext) { if (!c.lit) { c.lit = true; self.dateNext++; c.img.setTint(0xffe9a0); GP.Sfx.play('confirm'); } on = false; }
+        else self.glasses.forEach(function (o) { if (o.lit) { o.lit = false; o.img.clearTint(); } }), self.dateNext = 0;
+      }
       if (on) { c.state = 'cracking'; c.timer = 800 * self.f('glass'); GP.Sfx.play('step'); c.img.setTint(0xd8ecff); }
       if (c.state === 'cracking') {
         c.timer -= dt; c.img.x = c.x + (GP.reducedMotion ? 0 : (Math.floor(c.timer / 60) % 2 ? 1 : -1));
-        if (c.timer <= 0) { c.state = 'gone'; c.timer = 3000 * self.f('glassback'); c.body.enable = false; c.img.x = c.x; s.tweens.add({ targets: c.img, alpha: 0, y: c.img.y + 8, duration: 220 }); }
+        if (c.timer <= 0) { c.state = 'gone'; if (c.label) c.label.setAlpha(0.25); c.timer = 3000 * self.f('glassback'); c.body.enable = false; c.img.x = c.x; s.tweens.add({ targets: c.img, alpha: 0, y: c.img.y + 8, duration: 220 }); }
       } else if (c.state === 'gone') {
         c.timer -= dt;
-        if (c.timer <= 0) { c.state = 'solid'; c.body.enable = true; s.tweens.killTweensOf(c.img); c.img.setAlpha(0.92).clearTint().setPosition(c.x, c.body.y); }
+        if (c.timer <= 0) { c.state = 'solid'; if (c.label) c.label.setAlpha(1); c.body.enable = true; s.tweens.killTweensOf(c.img); c.img.setAlpha(0.92).clearTint().setPosition(c.x, c.body.y); }
       }
     });
 

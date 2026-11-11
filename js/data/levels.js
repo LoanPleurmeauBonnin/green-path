@@ -88,7 +88,8 @@ GP.LevelBuilder = {
       elephant: function (west, east, period) { L.elephants.push({ west: west, east: east, period: period || 13000 }); },                   // le Grand Éléphant traverse un canal du bord ouest au bord est : on monte sur lui
       borne: function (x, color) { L.cbornes.push({ x: x, color: color }); },                                                              // borne de couleur : la toucher allume les passerelles de sa couleur
       cplat: function (x, y, w, color) { L.cplats.push({ x: x, y: y, w: w, color: color }); },                                           // passerelle de couleur (solide seulement si sa couleur est allumée)
-      glass: function (x, y, w) { L.glasses.push({ x: x, y: y, w: w }); },                                                                    // dalle de verre qui se fissure
+      glass: function (x, y, w) { L.glasses.push({ x: x, y: y, w: w }); },
+      date: function (x, y, w, rang, annee) { L.glasses.push({ x: x, y: y, w: w, rang: rang, annee: annee }); },   // dalle datée : à poser dans l'ordre de l'histoire (rang 0, 1, 2…), sinon elle se fissure                                                                    // dalle de verre qui se fissure
       memo: function (stele, gate, pattern) { L.memos.push({ stele: stele, gate: gate, pattern: pattern.split('') }); },                       // stèle à lire, porte à ouvrir de mémoire (D = bas, J = haut)
       draft: function (x0, x1, y0, y1) { L.drafts.push({ x0: x0, x1: x1, y0: y0, y1: y1 }); },                                               // courant d'air ascendant (gravité allégée)
       pond: function (x0, x1, row) { L.ponds.push({ x0: x0, x1: x1, row: row }); },                                                           // eau décorative

@@ -38,6 +38,9 @@ Sources consultées le 10 novembre 2026 (recherche web, pages patrimoniales de l
 | Tour LU | LOUIS LEFÈVRE-UTILE | J'ai imaginé le Petit-Beurre en 1886. Pour l'Exposition universelle de 1900, j'ai fait élever une tour de 36 mètres. | https://www.herodote.net/Les_biscuits_LU-synthese-2799.php ; https://artsandculture.google.com/exhibit/lu-une-histoire-nantaise/YwJSmyHH3im9Kg?hl=fr | Plusieurs dates divergent selon les sources (1886 pour le Petit-Beurre, 1888 pour le dépôt de marque) : à confirmer auprès du Château des ducs (exposition « LU, une histoire nantaise »). |
 | Mémorial | PANNEAU | MÉMORIAL DE L'ABOLITION DE L'ESCLAVAGE. Inauguré le 25 mars 2012, quai de la Fosse. Œuvre de Krzysztof Wodiczko et Julian Bonder. | https://metropole.nantes.fr/actualites/le-memorial-de-l-abolition-de-l-esclavage-monument-politique-et-artistique ; https://www.slaverymonuments.org/items/show/1152 | Texte volontairement neutre, sans personnage. |
 
+## Références de dessin du Mémorial (non intégrées)
+Photos consultées sur Wikimédia Commons le 11 novembre 2026 : « Mémorial de l'abolition de l'esclavage.jpg » (mur d'acier corten et lettres découpées), « … (8).jpg » (composition de la façade), « … (6).jpg » (plaques de verre gravées de l'article 4, en français et en anglais). Plusieurs photos montrent des personnes : elles servent seulement à comprendre les matériaux et la composition, rien n'est reproduit.
+
 ## Plaques du Mémorial (niveau 10)
 Six plaques de verre s'allument quand le joueur s'approche et affichent un fait. **Texte à valider par l'équipe avant la présentation** ; aucune scène inventée, aucune parole prêtée à une personne.
 

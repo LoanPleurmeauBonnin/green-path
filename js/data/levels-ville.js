@@ -442,8 +442,10 @@ GP.LEVELS['memorial'] = (function () {
     L.pix(118, 13); L.pix(124, 13);
     L.check(129);
     L.pond(132, 147, 15);
-    L.glass(133, 14, 3); L.glass(138, 13, 3); L.glass(143, 14, 3);
-    L.pix(134, 13); L.pix(139, 12); L.pix(144, 13);
+    L.hint(131, "DANS L'ORDRE DE L'HISTOIRE : 1777, 1794, 1848, 1888");
+    L.date(133, 14, 2, 0, 1777); L.date(137, 13, 2, 1, 1794); L.date(141, 14, 2, 2, 1848); L.date(145, 13, 2, 3, 1888);   // en quinconce : un peu plus exigeant
+    L.date(130, 11, 2, 3, 1888);   // la dalle tentante, avant le chemin et hors de ses sauts : 1888 trop tôt, elle cède
+    L.pix(134, 13); L.pix(138, 11); L.pix(142, 13); L.pix(146, 11); L.pix(130, 10);
     // 5. La remontée vers la lumière
     L.ground(147, 6, 3); L.ground(153, 6, 4); L.ground(159, 6, 5); L.ground(165, 11, 6);
     L.check(148);
@@ -460,7 +462,9 @@ GP.LEVELS['memorial'] = (function () {
     top: ['memorial_sol_haut_1', 'memorial_sol_haut_2'], fill: 'memorial_sol_plein', left: 'memorial_sol_gauche', right: 'memorial_sol_droite', block: 'memorial_sol_plein',
     ledge: ['memorial_passerelle_metal_g', 'memorial_passerelle_metal_m', 'memorial_passerelle_metal_d'], mover: ['memorial_passerelle_metal_g', 'memorial_passerelle_metal_m', 'memorial_passerelle_metal_d']
   };
-  L.sky = { farKey: 'memorial_fond_tile_x', farBottom: 236 };
+  L.sky = { farKey: 'lv_fond_memorial_corten', farBottom: 236 };         // tout le long : le grand mur d'acier corten
+  L.farSwitch = [[0, 'lv_fond_memorial_corten'], [37, 'lv_fond_memorial_passage', 'ON DESCEND DANS LE PASSAGE SOUTERRAIN'], [150, 'lv_fond_memorial_corten', 'ON REMONTE VERS LA LUMIÈRE']];   // dehors, puis le passage de verre et de béton, puis la remontée
+  L.backdrop = { x: 15, key: 'lv_facade_memorial', scale: 1, tint: false };   // la grande façade d'acier corten et son nom découpé
   L.wxm = { rain: { tide: 1, glass: 0.8 }, sun: { tide: -1, glassback: 0.7 } };
   L.weatherText = { rain: 'LA MARÉE MONTE UN PEU ; LE VERRE CÈDE PLUS VITE', sun: 'LA MARÉE RESTE BASSE ; LE VERRE REVIENT VITE', wind: 'LE VENT SOUFFLE SUR LA LOIRE' };
   return L;
