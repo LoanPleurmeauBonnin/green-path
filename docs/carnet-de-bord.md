@@ -98,3 +98,11 @@
 **Ressenti** : réglage `feel-1`, voir [ressenti.md](ressenti.md) : demi-gravité à l'apex, correction de coin de plafond, rebord frôlé, saut depuis l'accroupi, hisser en poussant vers le mur ; conservation de la vitesse des plateformes essayée et écartée.
 
 **Recette exécutée** : 60 tests Node ; essais scriptés dans le navigateur (saut, coin de plafond, rebord, accroupi, marche de la Cathédrale). **Non réalisé** : aucun playtest humain ; niveaux 7 à 12 non rejoués ; la « troncature » exacte vue sur les captures n'a pas pu être identifiée au-delà du décor sur la carte.
+
+## Mercredi 11 novembre 2026 (nuit) — niveaux bloqués, son, méthode
+
+**Demandes** : plus d'icône check sur les niveaux finis (le piédestal doré suffit) ; plantage en coupant le son ; niveau 2 infinissable ; une méthode (skills) pour des niveaux cohérents à la Mario.
+
+**Corrections** : la méthode `sound()` de l'écran Options était masquée par `scene.sound` de Phaser (« self.sound is not a function ») → `toggleSound()` ; icône check retirée de la carte. Skills `level-design` et `platformer` installés (non versionnés). Nouveau **contrôleur de faisabilité** (`tools/solvability.cjs`, [methode-niveaux.md](methode-niveaux.md)) : il simule le joueur au pixel contre la géométrie. Il a retrouvé exactement le blocage du niveau 2 (x=95 : les montants de la porte des toits étaient des murs de 4 tuiles sur le chemin) et un second, au niveau 4 (x=132 : une colonne de balcon barrait l'accès depuis les bateaux). Corrigés par des retouches (`REPAIRS` dans `GZoneLevels.js`). Les 11 niveaux du moteur actuel passent (arrivée, pixels, lanternes).
+
+**Recette exécutée** : 72 tests Node (dont un test de faisabilité par niveau). **Non réalisé** : refonte « à la Mario » des 12 niveaux (rythme, mécaniques une à une, textures et décor du niveau 2) ; le Château (ancien moteur), les timings de pièges, les ennemis et les courants d'air du niveau 12 ne sont pas contrôlés ; aucun playtest humain.
