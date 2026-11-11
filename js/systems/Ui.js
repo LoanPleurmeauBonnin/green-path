@@ -31,7 +31,8 @@ GP.UI = (function () {
     opts = opts || {};
     var base = opts.color || (opts.primary ? P.g : P.m);
     var box = scene.add.rectangle(x, y, w, opts.height || 16, GP.int(P.d), 1).setOrigin(0).setStrokeStyle(2, GP.int(P.k)).setInteractive({ useHandCursor: true });
-    var t = txt(scene, x + w / 2, y + (opts.height ? 4 : 5), label, base, { align: 'center', lineSpacing: 2 }).setOrigin(0.5, 0);
+    // Libellé centré dans le bouton, quelle que soit la hauteur (le +1 compense le bas vide de la police).
+    var t = txt(scene, x + w / 2, y + (opts.height || 16) / 2 + 1, label, base, { align: 'center', lineSpacing: 2 }).setOrigin(0.5);
     function hover(on) {
       box.setFillStyle(GP.int(on ? P.G : P.d), 1).setStrokeStyle(2, GP.int(on ? P.g : P.k));
       t.setColor(on ? P.w : base);

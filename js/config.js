@@ -26,9 +26,11 @@ GP.Config = {
 };
 
 /** Vrai si le système demande moins d'animations (accessibilité). */
-GP.reducedMotion = (function () {
+GP.systemReducedMotion = (function () {
   try { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; }
 })();
+/** Valeur utilisée par le jeu : le système par défaut, que le réglage OPTIONS > ANIMATIONS peut remplacer (voir GP.Settings). */
+GP.reducedMotion = GP.systemReducedMotion;
 
 /** Palette unique du projet (16+ couleurs). Toute couleur du jeu vient d'ici. */
 GP.PAL = {

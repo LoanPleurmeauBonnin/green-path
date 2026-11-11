@@ -67,7 +67,12 @@ GP.GZoneRuntime = (function () {
         }
       }
       if(!s.img&&!p.visuals.length){s.img=g.add.rectangle(s.x,s.y,s.w,5,GP.int(GP.PAL.t)).setOrigin(0).setDepth(9);}
-      if(s.mechanic.leurre||s.mechanic.solide===false){s.body.enable=false;if(s.img)s.img.setAlpha(0.25);}
+      if(s.mechanic.leurre||s.mechanic.solide===false){
+        // Les leurres sont traversables. Au Mémorial la lecture se durcit de série en série : fantômes dans la première
+        // (apprentissage, id t…), à peine voilés dans la deuxième (p…), identiques aux vraies dalles dans la dernière (c…).
+        s.body.enable=false;s.baseAlpha=d.num===11?(/^t/.test(p.id||'')?0.25:/^p/.test(p.id||'')?0.6:1):0.25;
+        if(s.img)s.img.setAlpha(s.baseAlpha);
+      }
       s.visuals=p.visuals.map(function(v){return {img:v.rendered,dx:(v.x-p.x)*16,dy:(v.y+1-p.y)*16};}).filter(function(v){return v.img;});
       if(s.mechanic.type==='rotation')s.visuals.forEach(function(v){v.dx+=v.img.width/2;v.dy-=v.img.height/2;v.img.setOrigin(0.5);});
       self.surfaces.push(s);
@@ -135,6 +140,12 @@ GP.GZoneRuntime = (function () {
         if(s.gone>0){s.gone-=dt;if(s.gone<=0){s.body.enable=true;s.timer=0;if(s.img)s.img.setAlpha(1);}}
         else if(on){s.timer+=dt;if(s.img)s.img.setTint(GP.int(GP.PAL.y));if(s.timer>fragile.cede_apres_s*1000){s.body.enable=false;s.gone=fragile.regenere_apres_s*1000;if(s.img)s.img.setAlpha(0.15);}}
       }
+      if(s.baseAlpha!==undefined&&s.img){
+        // Leurre touché : il s'efface doucement sous les pieds (le corps est déjà immatériel), puis revient.
+        if(b.right>s.x&&b.x<s.x+s.w&&b.bottom>=s.y-2&&b.bottom<=s.y+14&&b.velocity.y>=0)s.fade=1500;
+        if(s.fade>0)s.fade-=dt;
+        s.img.alpha+=((s.fade>0?0.12:s.baseAlpha)-s.img.alpha)*Math.min(1,dt/160);
+      }
       if(on&&s.def.glisse_tuiles_s)g.surfaceMotion+=s.def.glisse_tuiles_s*16*(env.rain?1.2:1);
     },this);
     this.boosts.forEach(function(p){
@@ -197,7 +208,7 @@ GP.GZoneRuntime = (function () {
       // Métaphore lente annoncée : ralentissement, jamais mise à mort pour une lecture au Mémorial.
       var rise=(1-Math.cos(phase/period*Math.PI*2))*4;
       h.graphics.fillStyle(GP.int(GP.PAL.b),0.5);h.graphics.fillRect(h.x,h.y-rise,h.w,4+rise);
-      if(this.hit({x:h.x,y:h.y-12,w:h.w,h:16}))g.phy.accelGround=Math.min(g.phy.accelGround,700);return;
+      if(this.hit({x:h.x,y:h.y-12,w:h.w,h:16}))g.phy.accelGround=Math.min(g.phy.accelGround,600);return;
     }
     var on=!cyc||phase<active;
     if(cyc){

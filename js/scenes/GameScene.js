@@ -351,9 +351,12 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.hudTime = fix(GP.UI.txt(this, 68, 23, '', P.w), D + 1);
     this.hudDeaths = fix(GP.UI.txt(this, 68, 36, '', P.m), D + 1);
     var self = this;
-    this.pauseButton = GP.UI.button(this, GP.Config.WIDTH - 66, 4, 62, '', function () { self.onEsc(); }, { height: 28 });
-    this.pauseButton.objs.forEach(function (o) { o.setDepth(D + 1); });
-    GP.Prompts.bind(this, this.pauseButton.label, function () { return GP.t('PAUSE') + '\n' + GP.Prompts.labels('pause').join(' / '); });
+    // Bouton PAUSE : seulement sur écran tactile. Au clavier c'est Échap, à la manette Start (pas de bouton à l'écran).
+    this.pauseButton = null;
+    if (GP.UI.isTouch()) {
+      this.pauseButton = GP.UI.button(this, GP.Config.WIDTH - 66, 4, 62, 'PAUSE', function () { self.onEsc(); }, { height: 28 });
+      this.pauseButton.objs.forEach(function (o) { o.setDepth(D + 1); });
+    }
     this.shelterLabel = fix(GP.UI.txt(this, 8, 58, '', P.c, { backgroundColor: P.k, padding: { x: 3, y: 3 }, wordWrap: { width: 184 } }), D + 1).setAlpha(0);
     this.updateHud();
   }
@@ -406,7 +409,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       },
       lights: this.lanterns.map(function (l) { return [l.x, l.y - 17, 0.8]; })
     });
-    this.wxWidget = GP.WeatherFX.widget(this, GP.Config.WIDTH - 72, 4, 50, { right: true });
+    // La météo laisse la place du bouton PAUSE sur tactile ; sinon elle s'aligne sur le bord droit.
+    this.wxWidget = GP.WeatherFX.widget(this, GP.Config.WIDTH - (GP.UI.isTouch() ? 72 : 4), 4, 50, { right: true });
     this.applyWeather(GP.Weather.get(), true);
     GP.Weather.load(function (s) { if (self.alive) self.applyWeather(s); });
     // météo en direct : la scène suit les mises à jour (toutes les 5 min, ou retour du réseau)

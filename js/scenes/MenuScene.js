@@ -25,8 +25,13 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     var g = this.add.graphics();
     var DX = GP.Config.DX;
     for (var x = 20 - DX; x < W - 20 + DX; x += 8) { g.fillStyle(GP.int(GP.PAL.h), 1); g.fillRect(x, 96, 6, 4); g.fillStyle(GP.int(GP.PAL.g), 1); g.fillRect(x + 1, 97, 4, 2); }
-    var hero = this.add.sprite(20 - DX, 99, 'hero_idle').setOrigin(0.5, 1).play('hero-walk');
-    if (!GP.reducedMotion) this.tweens.add({ targets: hero, x: W - 20 + DX, duration: 7000, repeat: -1, onRepeat: function () { hero.x = 20 - DX; } });
+    // Mouvement réduit (réglage ANIMATIONS ou système) : l'avatar attend au milieu de la ligne, sans marcher sur place.
+    var hero = this.add.sprite(GP.reducedMotion ? W / 2 : 20 - DX, 99, 'hero_idle').setOrigin(0.5, 1);
+    if (GP.reducedMotion) hero.play('hero-idle');
+    else {
+      hero.play('hero-walk');
+      this.tweens.add({ targets: hero, x: W - 20 + DX, duration: 7000, repeat: -1, onRepeat: function () { hero.x = 20 - DX; } });
+    }
 
     // menu
     this.mode = 'main';
@@ -69,7 +74,7 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
   }
 
   clear() {
-    this.items.forEach(function (it) { it.box.destroy(); it.label.destroy(); });
+    this.items.forEach(function (it) { it.box.destroy(); it.label.destroy(); it.arrow.destroy(); });
     if (this.about) { this.about.forEach(function (o) { o.destroy(); }); this.about = null; }
     this.items = [];
   }
@@ -80,11 +85,13 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     list.forEach(function (def, i) {
       var y = top + i * (step || 26);
       var box = self.add.rectangle(W / 2, y, 240, 20, GP.int(GP.PAL.d), 0.95).setStrokeStyle(2, GP.int(GP.PAL.k));
+      // Le libellé est centré seul : la flèche de sélection est un objet à part, sinon elle décale le texte.
       var label = self.txt(W / 2, y + 1, def.label, GP.PAL.w, 8).setOrigin(0.5);
+      var arrow = self.txt(W / 2 - 110, y + 1, '>', GP.PAL.g, 8).setOrigin(0.5).setVisible(false);
       box.setInteractive({ useHandCursor: true });
       box.on('pointerover', function () { self.sel = i; self.refreshSel(); });
       box.on('pointerdown', function () { self.sel = i; self.activate(); });
-      self.items.push({ box: box, label: label, def: def });
+      self.items.push({ box: box, label: label, arrow: arrow, def: def });
     });
     this.sel = 0;
     this.refreshSel();
@@ -96,7 +103,7 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
       it.box.setFillStyle(GP.int(on ? GP.PAL.G : GP.PAL.d), 0.95);
       it.box.setStrokeStyle(2, GP.int(on ? GP.PAL.g : GP.PAL.k));
       it.label.setColor(on ? GP.PAL.w : GP.PAL.m);
-      it.label.setText((on ? '> ' : '  ') + it.def.label.replace(/^[> ]+/, ''));
+      it.arrow.setVisible(on);
     }, this);
   }
 

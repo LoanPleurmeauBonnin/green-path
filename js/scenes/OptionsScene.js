@@ -62,11 +62,15 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
       { label: 'COMPTE', value: function () { return GP.Cloud.isAccount ? GP.Cloud.pseudo : 'INVITÉ'; },
         act: function () { GP.Account.open({ mode: GP.Cloud.isAccount ? 'manage' : 'choose', onDone: function () { if (self.sys && self.sys.isActive()) self.build(); } }); } },
       { label: 'COMMANDES', value: function () { return GP.Prompts.name(); }, act: function () { self.mode = 'keys'; self.sel = 0; self.slot = 0; self.build(); } },
+      { label: 'ANIMATIONS', arrows: true, value: function () {
+          var m = GP.Settings.motion;
+          return m === 'on' ? 'ACTIVÉES' : m === 'reduced' ? 'RÉDUITES' : (GP.systemReducedMotion ? 'AUTO · RÉDUITES' : 'AUTO · ACTIVÉES');
+        }, act: function () { self.motion(1); }, left: function () { self.motion(-1); }, right: function () { self.motion(1); } },
       { label: 'MANETTE', value: function () { return GP.Pad.connected ? 'DÉTECTÉE' : 'NON DÉTECTÉE'; }, act: function () {} },
       { label: 'CONFIDENTIALITÉ', value: function () { return '>'; }, act: function () { self.privacy(); } },
       { label: 'EFFACER MES DONNÉES', value: function () { return ''; }, act: function () { self.confirm = true; self.sel = 1; self.build(); } }
     ];
-    return this.group === 0 ? rows.slice(0, 5) : rows.slice(5);
+    return this.group === 0 ? rows.slice(0, 6) : rows.slice(6);
   }
 
   /** Écran des touches : une ligne par action, 3 emplacements, puis « par défaut » et retour. */
@@ -90,7 +94,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     this.rowsList = this.rows();
     this.sel = Math.max(0, Math.min(this.sel, this.rowsList.length - 1));
     this.title.setText(this.confirm ? 'EFFACER LES DONNÉES DE CE NAVIGATEUR ?' : (this.mode === 'keys' ? (GP.Prompts.device === 'gamepad' ? 'COMMANDES MANETTE' : 'TOUCHES') : 'OPTIONS'));
-    var top = this.mode === 'keys' && !this.confirm ? 56 : (this.confirm ? 100 : 66), step = this.mode === 'keys' && !this.confirm ? 26 : 28;
+    var top = this.mode === 'keys' && !this.confirm ? 56 : (this.confirm ? 100 : 66), step = this.confirm ? 28 : 26;   // 6 lignes dans « jeu et commandes »
     if (this.mode === 'main' && !this.confirm) {
       ['JEU ET COMMANDES', 'DONNÉES ET AIDE'].forEach(function (label, i) {
         var tab = GP.UI.button(self, 60 + i * 184 + GP.Config.DX, 32, 176, label, function () { self.group = i; self.sel = 0; self.build(); }, { height: 20 });
@@ -202,6 +206,12 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     this.scene.restart({ sel: this.sel, group: this.group });
   }
   sound() { GP.Progression.muted = !GP.Progression.muted; GP.Sfx.play('select'); this.refresh(); }
+  /** ANIMATIONS : auto (système) → activées → réduites. Pris en compte à l'ouverture de l'écran suivant. */
+  motion(dir) {
+    var order = ['auto', 'on', 'reduced'], i = order.indexOf(GP.Settings.motion);
+    GP.Settings.set({ motion: order[(i + dir + order.length) % order.length] });
+    GP.Sfx.play('select'); this.refresh();
+  }
 
   fsSupported() { var e = document.documentElement; return !!(e.requestFullscreen || e.webkitRequestFullscreen); }
   fullscreen() {
