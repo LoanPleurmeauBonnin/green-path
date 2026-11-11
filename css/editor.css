@@ -1,0 +1,47 @@
+/* Éditeur de niveaux et de textures (editor.html). Interface sombre aux couleurs du jeu ; la police du jeu pour les titres, une police système lisible pour les champs. */
+@font-face { font-family: 'Press Start 2P'; src: url('../assets/fonts/PressStart2P-Regular.ttf'); font-display: swap; }
+:root { --k: #14182e; --d: #2b3a55; --d2: #1d2540; --g: #5cbf3f; --G: #2f8f45; --y: #f4d35e; --w: #f4f7f2; --m: #aab4c0; --r: #e8873a; --l: #7fb3d5; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--k); color: var(--w); font: 13px/1.35 system-ui, -apple-system, 'Segoe UI', sans-serif; overflow: hidden; }
+button, input, select, textarea { font: inherit; color: inherit; }
+#ed-gate { position: fixed; inset: 0; display: grid; place-items: center; background: var(--k); z-index: 100; text-align: center; padding: 24px; }
+#ed-gate p { font-family: 'Press Start 2P', monospace; font-size: 12px; line-height: 1.8; max-width: 520px; }
+#ed-gate a { color: var(--y); }
+#ed { display: grid; height: 100%; grid-template-columns: 248px 1fr 300px; grid-template-rows: 44px 1fr 24px; grid-template-areas: 'top top top' 'left view right' 'status status status'; }
+#ed[hidden], #ed-modal[hidden], #ed-tex[hidden], #ed-gate[hidden] { display: none; }
+#ed-top { grid-area: top; display: flex; gap: 6px; align-items: center; padding: 6px 10px; background: var(--d2); border-bottom: 2px solid var(--k); overflow-x: auto; white-space: nowrap; }
+#ed-left { grid-area: left; background: var(--d2); border-right: 2px solid var(--k); overflow-y: auto; padding: 8px; }
+#ed-right { grid-area: right; background: var(--d2); border-left: 2px solid var(--k); overflow-y: auto; padding: 8px; }
+#ed-view { grid-area: view; position: relative; background: #8fc4ec; min-width: 0; min-height: 0; }
+#game { position: absolute; inset: 0; }
+#game canvas { display: block; image-rendering: pixelated; }
+#ed-status { grid-area: status; white-space: nowrap; overflow: hidden; display: flex; gap: 16px; align-items: center; padding: 0 10px; background: var(--k); color: var(--m); font-size: 12px; border-top: 2px solid var(--d); }
+#ed-status .warn { color: var(--r); } #ed-status .ok { color: var(--g); }
+h3 { font: 700 10px 'Press Start 2P', monospace; color: var(--g); margin: 12px 0 6px; text-transform: uppercase; letter-spacing: .02em; }
+h3:first-child { margin-top: 0; }
+.btn { background: var(--d); border: 2px solid var(--k); border-radius: 3px; padding: 4px 9px; cursor: pointer; color: var(--w); }
+.btn:hover { background: var(--G); } .btn:disabled { opacity: .4; cursor: default; background: var(--d); }
+.btn.on { background: var(--G); border-color: var(--g); } .btn.primary { background: var(--G); border-color: var(--g); font-weight: 700; } .btn.danger:hover { background: #a33; }
+.sep { width: 1px; align-self: stretch; background: var(--d); margin: 0 4px; }
+select, input[type=text], input[type=number], textarea { background: var(--k); border: 2px solid var(--d); border-radius: 3px; padding: 3px 6px; color: var(--w); min-width: 0; }
+input[type=number] { width: 76px; } textarea { width: 100%; min-height: 70px; font: 12px ui-monospace, monospace; }
+.row { display: flex; gap: 6px; align-items: center; margin: 4px 0; flex-wrap: wrap; }
+.grid2 { display: grid; grid-template-columns: 96px 1fr; gap: 4px 6px; align-items: center; }
+.grid2 label { color: var(--m); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+.palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 4px; max-height: 340px; overflow-y: auto; padding: 2px; }
+.sw { background: #5a6b8a; border: 2px solid var(--k); border-radius: 3px; min-height: 52px; display: grid; place-items: center; cursor: pointer; padding: 2px; position: relative; }
+.sw:hover { border-color: var(--y); } .sw.on { border-color: var(--g); background: #6f86ad; }
+.sw canvas { image-rendering: pixelated; max-width: 44px; max-height: 44px; }
+.sw span { position: absolute; bottom: 0; left: 0; right: 0; font-size: 8px; line-height: 1; background: rgba(20,24,46,.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 1px 2px; }
+.hint { color: var(--m); font-size: 12px; } .kbd { background: var(--k); border: 1px solid var(--d); border-radius: 3px; padding: 0 4px; font: 11px ui-monospace, monospace; }
+.layers label { display: inline-flex; align-items: center; gap: 4px; margin-right: 8px; color: var(--m); }
+#ed-modal { position: fixed; inset: 0; background: rgba(20,24,46,.82); display: grid; place-items: center; z-index: 60; }
+#ed-modal .box { background: var(--d2); border: 2px solid var(--g); border-radius: 6px; padding: 16px; width: min(760px, 94vw); max-height: 90vh; overflow: auto; }
+#ed-modal textarea { min-height: 320px; }
+.list { max-height: 260px; overflow-y: auto; border: 2px solid var(--d); border-radius: 3px; } .list div { padding: 4px 8px; cursor: pointer; display: flex; justify-content: space-between; } .list div:hover { background: var(--d); }
+/* éditeur de textures */
+#ed-tex { position: absolute; inset: 0; background: var(--d2); display: grid; grid-template-columns: 1fr; place-items: center; overflow: auto; padding: 12px; }
+#ed-tex canvas { image-rendering: pixelated; background-color: #6b7a99; background-image: linear-gradient(45deg,#5d6c8a 25%,transparent 25%,transparent 75%,#5d6c8a 75%),linear-gradient(45deg,#5d6c8a 25%,transparent 25%,transparent 75%,#5d6c8a 75%); background-size: 16px 16px; background-position: 0 0, 8px 8px; cursor: crosshair; border: 2px solid var(--k); touch-action: none; }
+.pal { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; } .pal button { aspect-ratio: 1; border: 2px solid var(--k); border-radius: 2px; cursor: pointer; padding: 0; } .pal button.on { border-color: var(--y); outline: 2px solid var(--w); }
+@media (max-width: 980px) { #ed { grid-template-columns: 200px 1fr 240px; } }

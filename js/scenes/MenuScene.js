@@ -49,6 +49,23 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     lb.on('pointerout', function () { lb.setFillStyle(GP.int(GP.PAL.d), 0.95); });
     lb.on('pointerdown', function () { self.toggleLang(); });
 
+    // bouton compte : en haut à gauche (connexion joueur ou admin, ouvre la fenêtre du compte)
+    GP.PixelArt.sprite(this, 'ui_user', ['...kkk...', '..kwwwk..', '..kwwwk..', '...kkk...', '.kkkkkkk.', 'kwwwwwwwk', 'kwwwwwwwk', 'kwwwwwwwk']);
+    var ub = this.add.rectangle(6 - DX, 6, 22, 15, GP.int(GP.PAL.d), 0.95).setOrigin(0).setStrokeStyle(2, GP.int(GP.Cloud.isAdmin ? GP.PAL.y : GP.Cloud.isAccount ? GP.PAL.g : GP.PAL.k)).setInteractive({ useHandCursor: true });
+    this.add.image(6 - DX + 11, 6 + 7.5, 'ui_user').setOrigin(0.5);
+    if (GP.Cloud.isAccount) this.txt(6 - DX + 26, 10, GP.Cloud.pseudo + (GP.Cloud.isAdmin ? ' · ADMIN' : ''), GP.Cloud.isAdmin ? GP.PAL.y : GP.PAL.m, 8);
+    ub.on('pointerover', function () { ub.setFillStyle(GP.int(GP.PAL.G), 0.95); });
+    ub.on('pointerout', function () { ub.setFillStyle(GP.int(GP.PAL.d), 0.95); });
+    ub.on('pointerdown', function () { self.openAccount(); });
+    // le rôle admin peut être donné après la connexion : on le revérifie une fois par ouverture du menu
+    if (GP.Cloud.isAccount && !GP.Menu_adminChecked) {
+      GP.Menu_adminChecked = true;
+      var was = GP.Cloud.isAdmin;
+      GP.Cloud.checkAdmin().then(function (r) {
+        if (r.ok && r.admin !== was && self.sys && self.sys.isActive() && self.mode === 'main') { self.input.keyboard.removeAllListeners(); self.scene.restart(); }
+      });
+    }
+
     var kb = this.input.keyboard;
     kb.on('keydown-UP', function () { self.move(-1); });
     kb.on('keydown-DOWN', function () { self.move(1); });
@@ -63,6 +80,17 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     kb.on('keydown-L', function () { if (!self.modal) self.toggleLang(); });
     this.events.once('shutdown', function () { kb.removeAllListeners(); });
     kb.on('keydown-M', function () { GP.Progression.muted = !GP.Progression.muted; });
+  }
+
+  /** Fenêtre du compte (connexion, code, compte) ; au retour, le menu se redessine (rôle admin possible). */
+  openAccount() {
+    var self = this;
+    GP.Sfx.play('select');
+    GP.Account.open({ mode: GP.Cloud.isAccount ? 'manage' : 'choose', onDone: function () {
+      if (!(self.sys && self.sys.isActive())) return;
+      self.input.keyboard.removeAllListeners();
+      self.scene.restart();
+    } });
   }
 
   /** FR ↔ EN : on garde le choix et on refait l'écran (les textes déjà affichés restent dans l'ancienne langue sinon). */
@@ -127,10 +155,11 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     list.push({ label: "PERSONNALISER L'AVATAR", action: function () { self.openCreator('menu'); } });
     if (GP.Postcard.allDone()) list.push({ label: 'MA CARTE', action: function () { self.goTo('Postcard'); } });   // la carte postale de fin de partie
     if (has) list.push({ label: 'RÉINITIALISER', action: function () { self.buildConfirm(); } });
+    if (GP.Cloud.isAdmin) list.push({ label: 'ÉDITEUR DE NIVEAUX', action: function () { window.location.href = 'editor.html'; } });   // réservé à l'admin (revérifié par l'éditeur)
     list.push({ label: 'CLASSEMENT', action: function () { self.goTo('Score'); } });
     list.push({ label: 'OPTIONS', action: function () { self.goTo('Options'); } });
     list.push({ label: 'CRÉDITS', action: function () { self.buildCredits(); } });
-    this.setItems(list, list.length > 6 ? 112 : 116, list.length > 6 ? 21 : 23);
+    this.setItems(list, list.length > 6 ? 108 : 116, list.length > 7 ? 19 : list.length > 6 ? 21 : 23);
   }
 
   buildConfirm() {

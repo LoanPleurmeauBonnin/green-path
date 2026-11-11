@@ -16,6 +16,8 @@ L'équipe Green Path (Florine RACINE, Loan PLEURMEAU). Questions et demandes d'e
 | `greenpath.save` | progression (niveaux terminés, étoiles, temps, morts), avatar, introduction vue, fragments et dernier checkpoint des niveaux en cours | reprendre la partie |
 | `greenpath.settings` | langue, touches réaffectées | confort de jeu |
 | `greenpath.weather` | dernière météo reçue | rester à jour hors ligne |
+| `greenpath.content` | niveaux modifiés et textures créées publiés par l'équipe (aucune donnée personnelle) | jouer la dernière version hors ligne |
+| `greenpath.editor.*` | (compte admin seulement) brouillons de niveaux et de textures | ne pas perdre un travail en cours |
 | `greenpath.postcard` | date et météo de la fin de partie, étoiles, et le pseudo facultatif écrit sur la carte postale | revoir sa carte postale telle qu'elle a été faite ; **jamais envoyé** (la carte est fabriquée dans le navigateur) |
 | `greenpath.iostip` | l'astuce « plein écran » iPhone a été vue | ne pas la répéter |
 | `greenpath.cloud` | choix invité/pseudo ; avec un pseudo : le pseudo et le **code de sauvegarde** | retrouver sa sauvegarde en ligne |

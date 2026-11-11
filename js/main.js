@@ -10,6 +10,7 @@
     if (loading) loading.remove();
     GP.Settings.load();   // langue et touches du joueur, avant la création des scènes
     GP.Prompts.start();
+    GP.Content.init();   // niveaux et textures publiés avec l'éditeur (cache local, puis réseau en tâche de fond)
     if (!GP.Config.DEV_LEVEL) GP.Cloud.init();   // le banc local ne charge pas le compte personnel
     GP.game = new Phaser.Game({
       type: Phaser.AUTO,
