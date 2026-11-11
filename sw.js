@@ -1,8 +1,8 @@
 /* Copie locale cohérente du jeu. Jamais de cache des API, pseudos ou codes de sauvegarde. */
 'use strict';
-// Ce nom DOIT changer à chaque publication (node tools/bump-sw.cjs) : sinon les navigateurs déjà venus gardent
-// indéfiniment l'ancienne copie du jeu (le service worker sert d'abord le cache).
-var CACHE = 'greenpath-offline-v6-gzones-20261111-1622';
+// Le réseau passe d'abord (voir « fetch » plus bas) : en ligne, c'est toujours la dernière version. Changer ce nom à chaque
+// publication (node tools/bump-sw.cjs) purge en plus l'ancienne copie hors ligne et remplace le service worker installé.
+var CACHE = 'greenpath-offline-v6-gzones-20261111-1629';
 self.addEventListener('install', function (event) {
   event.waitUntil((async function () {
     var base = self.registration.scope, index = new URL('index.html', base).href;

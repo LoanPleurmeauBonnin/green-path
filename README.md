@@ -73,6 +73,8 @@ L'ordre local suit les GZones : **Pommeraye 10, Mémorial 11**. Les sauvegardes 
 | Échap : menu · M : son | Téléphone : ← → ↓ et saut à l'écran (le saut sert aussi à grimper), PAUSE |
 | **Manette** : croix ou stick, A valider | **Manette** : croix ou stick = bouger, A = sauter, ↓ = s'accroupir, ↑ = grimper, Start = pause |
 
+**Ressenti du saut** (réglage `feel-1`, inspiré de Celeste, voir `docs/ressenti.md`) : le sommet du saut flotte un peu tant que la touche est maintenue, un coin de plafond ne bloque plus net (la tête glisse de 1 à 4 px), un rebord frôlé de moins de 8 px est gravi tout seul, on peut sauter depuis l'accroupi (le personnage se relève d'abord), et accroché à un rebord on se hisse aussi en poussant de nouveau vers le mur.
+
 Ronces, pointes, flèches, gouttes, tonneaux ou chute = une mort : retour à la dernière lanterne allumée, les pixels ramassés sont gardés.
 
 **Reprise locale** : les fragments d'un niveau en cours et la dernière lanterne sont maintenant sauvegardés. Après fermeture ou rafraîchissement, le niveau reprend à ce point sûr, image partiellement reconstruite, temps et morts conservés. Une partie terminée se rejoue depuis le début. Les reprises intra-niveau restent sur cet appareil, contrairement aux résultats terminés qui peuvent être synchronisés avec un compte facultatif.
