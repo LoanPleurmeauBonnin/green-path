@@ -109,13 +109,16 @@ GP.GZoneArt = (function () {
     GP.LevelArt.chunks(scene,'gz_terrain',o.cv).forEach(function(k,i){scene.add.image(i*GP.LevelArt.CHUNK,0,k).setOrigin(0).setDepth(5);});
 
     // Motifs patrimoniaux de fond, portés par le sol et distincts des appuis jouables.
-    if(d.num===2) {
-      var roof=scene.add.graphics().setDepth(0);roof.fillStyle(GP.int(GP.PAL.d));roof.fillRect(17*16,32,78*16,(d.sol_y-2)*16);
-      for(var col=20;col<95;col+=8){
-        roof.fillStyle(GP.int(GP.PAL.e));roof.fillRect(col*16,36,5,(d.sol_y-2)*16);
-        var k=key(scene,'cathedrale_vitrail_a');if(k)scene.add.image(col*16+20,90,k).setDepth(1);
-      }
-    }
+    // Fond d'architecture d'un niveau (couches du document avec x_range) : la nef de la Cathédrale, en tuiles empilées du
+    // sol vers la voûte. Sans lui le niveau 2 était un grand vide sombre.
+    (d.fond.couches||[]).forEach(function(cl){
+      if(!cl.x_range||!key(scene,cl.sprite))return;
+      var im=scene.textures.get(key(scene,cl.sprite)).getSourceImage(),x0=cl.x_range[0]*16,w=(cl.x_range[1]-cl.x_range[0])*16,bg=GP.PixelArt.canvas(w,H),b=bg.ctx;
+      for(var xx=0;xx<w;xx+=im.width)for(var yy=d.sol_y*16-im.height;yy>-im.height;yy-=(cl.empile?im.height:H))b.drawImage(im,xx,yy);
+      b.fillStyle='rgba(20,24,46,0.18)';b.fillRect(0,0,w,H);   // un voile : la nef reste en retrait derrière le jeu
+      GP.PixelArt.toTexture(scene,'gz_fond_'+cl.sprite,bg.cv);
+      scene.add.image(x0,0,'gz_fond_'+cl.sprite).setOrigin(0).setDepth(0.5);
+    });
     if(d.num===10||d.num===9||d.num===6) {
       var g=scene.add.graphics().setDepth(0), left=d.num===10?0:d.num===9?44:38, right=d.num===6?80:d.largeur;
       g.fillStyle(GP.int(GP.PAL.d));g.fillRect(left*16,32,(right-left)*16,H-32);
