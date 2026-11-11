@@ -106,3 +106,13 @@
 **Corrections** : la méthode `sound()` de l'écran Options était masquée par `scene.sound` de Phaser (« self.sound is not a function ») → `toggleSound()` ; icône check retirée de la carte. Skills `level-design` et `platformer` installés (non versionnés). Nouveau **contrôleur de faisabilité** (`tools/solvability.cjs`, [methode-niveaux.md](methode-niveaux.md)) : il simule le joueur au pixel contre la géométrie. Il a retrouvé exactement le blocage du niveau 2 (x=95 : les montants de la porte des toits étaient des murs de 4 tuiles sur le chemin) et un second, au niveau 4 (x=132 : une colonne de balcon barrait l'accès depuis les bateaux). Corrigés par des retouches (`REPAIRS` dans `GZoneLevels.js`). Les 11 niveaux du moteur actuel passent (arrivée, pixels, lanternes).
 
 **Recette exécutée** : 72 tests Node (dont un test de faisabilité par niveau). **Non réalisé** : refonte « à la Mario » des 12 niveaux (rythme, mécaniques une à une, textures et décor du niveau 2) ; le Château (ancien moteur), les timings de pièges, les ennemis et les courants d'air du niveau 12 ne sont pas contrôlés ; aucun playtest humain.
+
+## Mercredi 11 novembre 2026 (nuit, suite) — niveaux 1 à 3 : apprendre avant d'être testé
+
+**Demande** : refonte « à la Mario » en commençant par les niveaux 1 à 3 (une idée à la fois, danger appris là où l'échec est sans risque).
+
+**Constat** (audit des premiers obstacles de chaque zone) : au Jardin, les premières ronces (x=31), l'eau (x=38) et les jets d'eau cycliques (x=67, 74) n'étaient précédés d'aucun panneau ; dans la Cathédrale, les cierges, pointes, colonnes à grimper et gargouilles de la nef n'étaient annoncés nulle part. Le Château avait déjà ses indications (pont-levis, herse, flèches, planches, tonneau).
+
+**Corrections** : cinq panneaux d'apprentissage ajoutés avant le premier danger de chaque famille (Jardin : ronces, jets d'eau ; Cathédrale : cierges et pointes, colonne à grimper, gargouille), via un nouveau champ `signes` des retouches (`GZoneLevels.js`), avec leur traduction anglaise. Géométrie inchangée : le contrôleur de faisabilité donne toujours 0 pixel hors d'atteinte aux niveaux 1 et 2. Le Château a été relu à l'écran (départ, herse) : rien à reprendre.
+
+**Recette exécutée** : 72 tests Node ; contrôle à l'écran du panneau de la Cathédrale en français et en anglais. **Non réalisé** : niveaux 4 à 12 ; aucun playtest humain.

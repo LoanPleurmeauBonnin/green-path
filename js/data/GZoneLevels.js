@@ -38,9 +38,14 @@ GP.GZoneLevels = (function () {
    *   retirer : ids de plateformes supprimées · modifier : { id: propriétés } · ajouter : plateformes ajoutées
    */
   var REPAIRS = {
+    // Jardin : chaque danger est présenté par un panneau AVANT sa première rencontre (skill level-design : enseigner avant de tester).
+    1: { signes: [{ x: 26, y: 14, texte: 'Les ronces piquent : saute !' }, { x: 59, y: 14, texte: "Les jets d'eau montent puis retombent : traverse quand ils sont bas." }] },
     // Cathédrale : les montants de la porte des toits étaient des murs pleins de 4 tuiles sur le chemin du joueur (la porte
     // se traverse entre eux, elle ne se contourne pas). Ils deviennent des jambages de décor ; le linteau reste au-dessus.
-    2: { modifier: { p23: { fond: true }, p24: { fond: true } } },
+    // + panneaux avant les cierges, les colonnes et les gargouilles.
+    2: { modifier: { p23: { fond: true }, p24: { fond: true } },
+      signes: [{ x: 24, y: 21, texte: 'Cierges et pointes : saute par-dessus.' }, { x: 27, y: 21, texte: 'Maintiens ↑ contre une colonne pour y grimper.' },
+        { x: 92, y: 7, texte: 'La gargouille crache : passe entre deux jets.' }] },
     // Feydeau : le pilier du balcon secret (une colonne pleine de 3 tuiles posée sur le tablier) barrait l'entrée du balcon depuis
     // les bateaux, donc le niveau était infinissable après x=132. Il devient un pilier de décor.
     4: { modifier: { p37: { fond: true } } }
@@ -54,6 +59,7 @@ GP.GZoneLevels = (function () {
       d.plateformes.forEach(function (p) { if (p.id === id) Object.assign(p, r.modifier[id]); });
     });
     (r.ajouter || []).forEach(function (p) { d.plateformes.push(Object.assign({}, p)); });
+    (r.signes || []).forEach(function (s) { d.signes.push(Object.assign({ sprite: 'signes_panneau_saut' }, s)); });
   }
   GP.GZONES.forEach(repair);
   GP.GZONES.forEach(balance);
