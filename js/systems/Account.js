@@ -155,7 +155,8 @@ GP.Account = (function () {
   function manage(box) {
     var st = status();
     box.appendChild(el('h2', { text: T('MON COMPTE') }));
-    box.appendChild(el('p', { class: 'acct-pseudo', text: GP.Cloud.pseudo }));
+    box.appendChild(el('p', { class: 'acct-pseudo', text: GP.Cloud.pseudo + (GP.Cloud.isAdmin ? ' · ADMIN' : '') }));
+    if (GP.Cloud.isAdmin) box.appendChild(btn('ÉDITEUR DE NIVEAUX', function () { window.location.href = 'editor.html'; }, true));
     box.appendChild(btn('AFFICHER MON CODE', function () { showCode(box, GP.Cloud.pseudo, GP.Cloud.code, 'closed'); }));
     box.appendChild(btn('SYNCHRONISER', function () {
       busy = true; say(st, '…', true);

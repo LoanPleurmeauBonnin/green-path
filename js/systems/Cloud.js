@@ -11,7 +11,7 @@
 GP.Cloud = (function () {
   var KEY = 'greenpath.cloud', SBKEY = 'greenpath.scoreboard', CFG = GP.Config.CLOUD;
   var ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // sans 0 O 1 I : lisible à la main
-  var st = { pseudo: null, code: null, choice: null, dirty: false }, timer = null, revision = 0;
+  var st = { pseudo: null, code: null, choice: null, dirty: false, admin: false }, timer = null, revision = 0;
   function pseudoOK(p) { return typeof p === 'string' && /^[A-Za-z0-9_-]{3,16}$/.test(p); }
   function codeOK(c) { return typeof c === 'string' && /^[A-Z0-9]{20,64}$/.test(c); }
   function bounded(n, max) { return typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= max; }
@@ -24,6 +24,7 @@ GP.Cloud = (function () {
   }
   function validResponse(name, j) {
     if (name === 'gp_scoreboard') return Array.isArray(j);
+    if (name === 'gp_content_get') return !!j && typeof j === 'object' && !Array.isArray(j) && typeof j.levels === 'object' && typeof j.textures === 'object';
     if (!j || typeof j !== 'object' || typeof j.ok !== 'boolean') return false;
     if (!j.ok) return typeof j.error === 'string' && j.error.length < 80;
     if (name === 'gp_register' || name === 'gp_login') {
@@ -36,14 +37,15 @@ GP.Cloud = (function () {
   function store() { try { return window.localStorage; } catch (e) { return null; } }
   function load() {
     var s = store(), d = null;
-    st = { pseudo: null, code: null, choice: null, dirty: false };
+    st = { pseudo: null, code: null, choice: null, dirty: false, admin: false };
     try { d = s && JSON.parse(s.getItem(KEY)); } catch (e) { d = null; }
     if (d && typeof d === 'object') {
       st.pseudo = pseudoOK(d.pseudo) ? d.pseudo : null;
       st.code = codeOK(d.code) ? d.code : null;
       st.choice = d.choice === 'account' || d.choice === 'guest' ? d.choice : null;
       st.dirty = !!d.dirty;
-      if (!st.pseudo || !st.code) { st.pseudo = st.code = null; if (st.choice === 'account') st.choice = null; }
+      st.admin = d.admin === true;   // simple mémoire d'affichage : le serveur revérifie le rôle à chaque publication
+      if (!st.pseudo || !st.code) { st.pseudo = st.code = null; st.admin = false; if (st.choice === 'account') st.choice = null; }
     }
   }
   function save() {
@@ -118,6 +120,8 @@ GP.Cloud = (function () {
     get codeGrouped() { return groupCode(st.code); },
     get isAccount() { return !!(st.pseudo && st.code); },
     get choice() { return st.choice; },
+    /** Rôle admin du compte connecté (annoncé par le serveur à la connexion ; l'éditeur et les publications le revérifient). */
+    get isAdmin() { return !!(st.admin && st.pseudo && st.code); },
     get enabled() { return !!(CFG && CFG.url); },
     groupCode: groupCode, normCode: normCode,
 
@@ -155,7 +159,7 @@ GP.Cloud = (function () {
       return rpc('gp_login', { p_pseudo: pseudo, p_code: c }).then(function (r) {
         if (!r.ok) return r;
         if (!r.data.ok) return { ok: false, error: r.data.error };
-        st.pseudo = r.data.pseudo; st.code = c; st.choice = 'account'; st.dirty = true; save();
+        st.pseudo = r.data.pseudo; st.code = c; st.choice = 'account'; st.dirty = true; st.admin = r.data.admin === true; save();
         merge(r.data);
         api.push();
         return { ok: true, pseudo: st.pseudo };
@@ -180,7 +184,17 @@ GP.Cloud = (function () {
     },
 
     /** Oublie le compte sur cet appareil (la sauvegarde reste en ligne). */
-    forget: function () { clearTimeout(timer); revision++; st.pseudo = st.code = null; st.choice = 'guest'; st.dirty = false; save(); },
+    forget: function () { clearTimeout(timer); revision++; st.pseudo = st.code = null; st.choice = 'guest'; st.dirty = false; st.admin = false; save(); },
+
+    /** Redemande au serveur si le compte est admin ({ ok, admin }). */
+    checkAdmin: function () {
+      if (!this.isAccount) return Promise.resolve({ ok: true, admin: false });
+      return rpc('gp_admin_check', { p_code: st.code }).then(function (r) {
+        if (!r.ok) return r;
+        st.admin = r.data.ok === true; save();
+        return { ok: true, admin: st.admin };
+      });
+    },
 
     /** Supprime le compte en ligne (pseudo, avatar, progression) puis l'oublie ici. */
     deleteAccount: function () {
@@ -207,7 +221,7 @@ GP.Cloud = (function () {
       });
     },
     /** Efface ce que le jeu garde de ses échanges en ligne dans ce navigateur. */
-    clearLocal: function () { clearTimeout(timer); revision++; st = { pseudo: null, code: null, choice: null, dirty: false }; var s = store(); try { if (s) { s.removeItem(KEY); s.removeItem(SBKEY); } } catch (e) { /* ignoré */ } },
+    clearLocal: function () { clearTimeout(timer); revision++; st = { pseudo: null, code: null, choice: null, dirty: false, admin: false }; var s = store(); try { if (s) { s.removeItem(KEY); s.removeItem(SBKEY); } } catch (e) { /* ignoré */ } },
     rpc: rpc
   };
   return api;

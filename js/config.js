@@ -81,3 +81,14 @@ GP.int = function (hex) { return parseInt(hex.replace('#', ''), 16); };
   GP.Config.SAVE_KEY = 'greenpath.dev.' + level[1];
   GP.Config.CLOUD.url = ''; GP.Config.CLOUD.key = '';
 })();
+
+/** Essai d'un brouillon depuis l'éditeur (editor.html) : ?test=<niveau>. Sauvegarde séparée, cloud désactivé, rien n'est publié ni enregistré
+ * dans la progression du joueur. Le brouillon est lu par GP.Content (clé « greenpath.editor.test »). */
+(function () {
+  var loc = window.location || {};
+  var m = /[?&]test=(jardin-des-plantes|cathedrale|chateau|feydeau|graslin|machines|chantiers|buren|hangar|pommeraye|memorial|tour-lu)(?:&|$)/.exec(loc.search || '');
+  if (!m) return;
+  GP.Config.DEV_LEVEL = m[1]; GP.Config.TEST_DRAFT = m[1];
+  GP.Config.SAVE_KEY = 'greenpath.test';
+  GP.Config.CLOUD.url = ''; GP.Config.CLOUD.key = '';
+})();
