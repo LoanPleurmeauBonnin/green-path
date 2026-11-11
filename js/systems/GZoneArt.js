@@ -39,6 +39,12 @@ GP.GZoneArt = (function () {
         c.fillStyle=GP.PAL.m;c.fillRect(x+2,y,2,h);c.fillRect(x+w-4,y,2,h);c.fillRect(x,y,w,3);
         for(var yy=y+12;yy<y+h-20;yy+=24){c.fillStyle=GP.PAL.e;c.fillRect(x+2,yy,w-4,2);
           for(var t=0;t<20;t++){var xx=Math.round((w-8)*t/20);c.fillRect(x+4+xx,yy+t,1,1);c.fillRect(x+w-5-xx,yy+t,1,1);}}
+      }else if(p.style==='herbe'&&!p.top_sprite){
+        // Sol d'herbe du Jardin : vraies tuiles de la planche « commun », variées colonne par colonne.
+        for(var cx=0;cx<(p.w||1);cx++)for(var cy=0;cy*16<h;cy++){
+          var v=((p.x+cx)*7+cy*3)%3+1;
+          put(cy===0?'commun_herbe_haut_'+v:'commun_terre_'+v,x+cx*16,y+cy*16,16,16);
+        }
       }else{put(fill,x,y,w,h);put(top||fill,x,y,w,Math.min(16,h));}
     });
     L.roofs.forEach(function(r){
