@@ -6,7 +6,7 @@
  *             · ↓ ou S s'accroupir / descendre · Échap pause. Tactile : boutons à l'écran (GP.UI.touchPad).
  * Mode test (?dev=1) : N météo simulée (W sert au saut), K tout ramasser.
  *
- * Règles : ramasser tous les pixels reconstruit l'image et termine le niveau. Ronce, pointes, flèche, goutte,
+ * Règles : ramasser tous les pixels reconstruit l'image ; si L.exit existe, rejoindre aussi l'arche. Ronce, pointes, flèche, goutte,
  * tonneau ou chute = une mort : +1 au compteur MORTS et retour à la dernière lanterne (pixels gardés).
  * Capacités introduites une par niveau (L.abilities) : s'accroupir (Château), s'accrocher aux rebords et grimper
  * aux colonnes (Cathédrale), plateformes mobiles (Bouffay).
@@ -34,6 +34,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.ab = L.abilities || {};
     this.TUNE = Object.assign({}, GP.Tuning.player);
     this.shelter = { rain: 0, snow: 0, wind: 0, id: null };
+    this.surfaceMotion = 0;
     this.phy = { accelGround: this.TUNE.accelGround, accelAir: this.TUNE.accelAir, airPush: 0, sight: 0 };
     this.env = GP.WeatherRules.env(null);
     this.deaths = 0; this.time_ms = 0; this.paused = false; this.finished = false; this.invuln = 0;
@@ -44,13 +45,14 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.events.once('shutdown', function () { self.alive = false; });
 
     this.cameras.main.fadeIn(350, 20, 24, 46);
-    this.cameras.main.setBounds(0, 0, this.W, GP.Config.HEIGHT);
+    this.cameras.main.setBounds(0, 0, this.W, L.rows === 17 ? GP.Config.HEIGHT : Math.max(this.H, GP.Config.HEIGHT));
 
     this.makeBackground();
     this.makeTerrain();
     this.makeObjects();
     this.makePlayer();
     this.makeMechanics();
+    this.makeStructures();
     this.makeHud();
     this.makeWeather();
     this.makeInput();
@@ -65,7 +67,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       window.removeEventListener('pagehide', saveRun); window.removeEventListener('blur', saveRun);
     });
     this.showIntro();
-    if (this.pc.done()) this.finish();
+    if (this.pc.done() && !L.exit) this.finish();
+    this.updateExit();
   }
 
   /** Reprise au dernier point sûr ; les pixels restent acquis, même après un refresh. */
@@ -73,6 +76,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     GP.Progression.data.runs[this.loc.id] = { signature: GP.Save.runSignature(this.L),
       taken: this.pixels.reduce(function (a, p, i) { if (p.taken) a.push(i); return a; }, []),
       checkpoint: this.checkpointIndex, time: this.time_ms, deaths: this.deaths };
+    if (this.gz && this.gz.boss) GP.Progression.data.runs[this.loc.id].boss = this.gz.boss.snapshot();
     GP.Progression.persist();
   }
 
@@ -86,6 +90,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var l = this.lanterns[r.checkpoint];
     if (l) this.respawn = { x: l.x, y: l.y };
     this.player.body.reset(this.respawn.x, this.respawn.y);
+    if (this.gz && this.gz.boss) this.gz.boss.restore(r.boss);
     this.updateHud();
   }
 
@@ -93,6 +98,9 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   makeBackground() {
     var L = this.L;
     this.sky = GP.LevelArt.sky(this, -40, L.sky || {});
+    this.gzPlan = L.gzone ? GP.GZoneRuntime.plan(L) : null;
+    if (L.gzone) GP.GZoneArt.build(this, L, this.gzPlan);
+    this.architecture = L.architecture === 'chateau' ? GP.CastleArt.build(this, L) : null;
     if (L.backdrop) {
       var bx = L.backdrop.x * 16, top = L.top(L.backdrop.x) * 16, img = this.add.image(bx, top + 2, L.backdrop.key).setOrigin(0.5, 1).setScale(L.backdrop.scale).setDepth(-5);
       if (L.backdrop.tint !== false) img.setTintFill(0x2b3a55).setAlpha(0.55);
@@ -102,7 +110,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   makeTerrain() {
     var L = this.L, data = [];
     var self = this;
-    GP.LevelArt.renderTerrain(this, 'lv_terrain', L).forEach(function (k, i) {   // morceaux de 2048 px (limite des textures sur téléphone)
+    (L.gzone ? [] : GP.LevelArt.renderTerrain(this, 'lv_terrain', L)).forEach(function (k, i) {   // morceaux de 2048 px (limite des textures sur téléphone)
       self.add.image(i * GP.LevelArt.CHUNK, 0, k).setOrigin(0).setDepth(5);
     });
     // carte de collision : 1 terre, 2 pierre, 3 sens unique, 4 topiaire, 5 pavés (tuiles invisibles)
@@ -120,6 +128,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
 
   /** Vrai si la case du monde (x, y en px) est pleine (sol, pierre…), sens unique exclu. */
   solidAt(x, y) {
+    if (this.gz) return this.gz.solidAt(x, y);
     var t = this.layer.getTileAtWorldXY(x, y);
     return !!(t && t.index >= 0 && t.index !== 2);
   }
@@ -268,6 +277,63 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     });
   }
 
+  /** Ouvrages optionnels. Les niveaux 1/2 n'en définissent aucun : leur flux ne change pas. */
+  makeStructures() {
+    var self = this, L = this.L, sk = L.skin || {};
+    this.gz = L.gzone ? new GP.GZoneRuntime(this) : null;
+    this.bridges = (L.bridges || []).map(function (def, i) {
+      var bridge = Object.assign({ clock: 0, angle: 0, lowered: true }, def);
+      var key = self.rowTexture('lv_drawbridge_' + i, sk.bridge, def.w);
+      // 2 px de recouvrement vertical évitent l'accrochage au flanc de la rive : le collider
+      // Tilemap est résolu avant ce corps indépendant, notamment à faible vitesse sur la neige.
+      bridge.surfaceY = def.y * 16 - 2;
+      bridge.img = self.add.image(def.x * 16, bridge.surfaceY, key).setOrigin(0).setDepth(9);
+      // Corps séparé du tablier pivotant : sa rotation ne déforme pas une AABB praticable.
+      bridge.support = self.add.zone(def.x * 16, bridge.surfaceY, def.w * 16, 6).setOrigin(0);
+      bridge.body = self.platformBody(bridge.support, true);
+      bridge.chain = self.add.graphics().setDepth(10);
+      return bridge;
+    });
+    this.water = (L.water || []).map(function (w) {
+      var g = self.add.graphics().setDepth(6), x = w.x * 16, y = w.y * 16;
+      g.fillStyle(GP.int(GP.PAL.n)); g.fillRect(x, y, w.w * 16, w.h * 16);
+      g.fillStyle(GP.int(GP.PAL.b)); g.fillRect(x, y, w.w * 16, 5);
+      for (var dx = 2; dx < w.w * 16 - 4; dx += 12) { g.fillStyle(GP.int(GP.PAL.l)); g.fillRect(x + dx, y + 1, 6, 1); }
+      return { x: x, y: y + 3, w: w.w * 16, h: w.h * 16 - 3 };
+    });
+    this.exit = null;
+    if (L.exit) {
+      var e = L.exit, img = this.add.image(e.x * 16 + 8, e.y * 16, e.key).setOrigin(0.5, 1).setDepth(7);
+      var label = GP.UI.txt(this, img.x + 16, img.y - 56, '', GP.PAL.c, {
+        align: 'right', backgroundColor: GP.PAL.k, padding: { x: 4, y: 4 }, wordWrap: { width: 200 }
+      }).setOrigin(1, 1).setDepth(40);
+      this.exit = { img: img, label: label, count: -1, x: img.x - 12, y: img.y - 32, w: 24, h: 34 };
+    }
+  }
+
+  atExit() {
+    if (!this.exit || !this.player) return false;
+    var b = this.player.body, e = this.exit;
+    return b.right > e.x && b.x < e.x + e.w && b.bottom > e.y && b.y < e.y + e.h;
+  }
+
+  updateExit() {
+    var e = this.exit;
+    if (!e) return;
+    var bossDone = !this.gz || !this.gz.boss || this.gz.boss.done;
+    var complete = this.pc.done() && bossDone;
+    if (e.count !== this.pc.count || e.bossDone !== bossDone) {
+      e.count = this.pc.count;
+      e.bossDone = bossDone;
+      var missing = this.pixels.find(function (p) { return !p.taken; });
+      var zone = missing && (this.L.zones || []).find(function (z) { return missing.x >= z.x * 16 && missing.x < z.end * 16; });
+      e.label.setText(!bossDone ? 'TERMINE L’ÉPREUVE DU BOSS' : complete ? 'IMAGE COMPLÈTE · ENTRE DANS L’ARCHE' :
+        'IL MANQUE ' + (this.pc.total - this.pc.count) + ' PIXELS' + (zone ? '\nÀ CHERCHER : ' + zone.name : ''));
+      e.img.setTint(complete ? GP.int(GP.PAL.g) : GP.int(GP.PAL.m));
+    }
+    e.label.setVisible(Math.abs(this.player.x - e.img.x) < 160);
+  }
+
   // ---------- Interface ----------
   makeHud() {
     var P = GP.PAL, D = 50;
@@ -356,6 +422,10 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.sky.set(st);
     this.wx.set(st); this.wxWidget.set(st);
     this.env = GP.WeatherRules.env(st);
+    if (this.architecture) this.architecture.flags.forEach(function (flag) {
+      // Inclinaison bornée, fixe en mouvement réduit. Le repère indique aussi un vent gauche.
+      flag.setFlipX(self.env.windSign < 0).setAngle(GP.reducedMotion ? 0 : -self.env.windSign * Math.min(20, self.env.wind / 3));
+    });
     this.phy = GP.WeatherRules.physics(this.env, this.TUNE, this.shelter);
     // ronces de pluie : elles poussent (1,2 s, visibles) avant de devenir dangereuses
     this.rainThorns.forEach(function (t) {
@@ -412,6 +482,16 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
         else { self.toast('MÉTÉO RÉELLE'); GP.Weather.load(function (st) { if (self.alive) self.applyWeather(st); }); }
       });
       kb.on('keydown-K', function () { if (!self.paused && !self.finished) self.pixels.forEach(function (p) { if (!p.taken) self.collect(p, true); }); });
+      if (GP.Config.DEV_LEVEL) {
+        kb.on('keydown-R', function () {
+          delete GP.Progression.data.runs[self.loc.id]; GP.Progression.persist();
+          self.scene.restart({ index: self.index });
+        });
+        kb.on('keydown-V', function () {
+          var st = Object.assign({}, GP.Weather.get()); st.windDir = (st.windDir + 180) % 360;
+          GP.Weather.state = st; self.applyWeather(st); self.toast('MÉTÉO TEST : VENT INVERSÉ');
+        });
+      }
     }
     this.events.once('shutdown', function () { kb.removeAllListeners(); });
   }
@@ -427,6 +507,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var cx = b.x + b.width / 2;
     for (var i = 0; i < this.climbZones.length; i++) {
       var z = this.climbZones[i];
+      if (z.active === false) continue;
       if (cx >= z.x0 && cx <= z.x1 && b.bottom > z.y0 && b.y < z.y1) return z;
     }
     return null;
@@ -449,6 +530,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.updateShelter(dt);
     var X = this.phy;
     this.updateMechanics(dt);
+    if (this.dying) return;
     if (this.introMs > 0) { this.introMs -= dt; b.setVelocityX(0); return; }
     this.time_ms += dt;
     this.saveMs += dt;
@@ -504,15 +586,17 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
 
     // course : accélération douce vers la vitesse cible (le sol mouillé ou enneigé glisse un peu plus)
     var max = this.crouching ? U.crouchSpeed : U.speed;
-    var target = dir * max, a = (onGround ? X.accelGround : X.accelAir) * dt / 1000;
+    var target = dir * max + (onGround ? this.surfaceMotion : 0), a = (onGround ? X.accelGround : X.accelAir) * dt / 1000;
     b.setVelocityX(b.velocity.x + Phaser.Math.Clamp(target - b.velocity.x, -a, a));
     if (!onGround && X.airPush) b.setVelocityX(Phaser.Math.Clamp(b.velocity.x + X.airPush * dt / 1000, -180, 180));   // le vent pousse les sauts
+    if (this.gz && this.gz.impulseMs > 0 && !onGround) b.setVelocityX(this.gz.impulseVX);
     if (dir) p.setFlipX(dir < 0);
 
     // saut : temps de grâce au bord (coyote), tampon d'appui, saut variable
     this.coyote = onGround ? U.coyote : this.coyote - dt;
     this.buffer = jumpPressed ? U.buffer : this.buffer - dt;
     if (onGround) this.jumping = false;
+    if (this.gz && this.gz.justBoosted) { this.buffer = 0; this.coyote = 0; this.jumping = true; }
     if (this.buffer > 0 && this.coyote > 0 && !this.crouching) {
       b.setVelocityY(U.jump); this.buffer = 0; this.coyote = 0; this.jumping = true;
       GP.Sfx.play('step');
@@ -521,13 +605,27 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     if (jumpReleased && this.jumping && b.velocity.y < 0) { b.setVelocityY(b.velocity.y * U.cut); this.jumping = false; }
 
     // --- s'accrocher à un rebord : en l'air, contre un mur, les mains à hauteur de son sommet ---
-    if (this.ab.grab && !onGround && b.velocity.y > -80 && dir && (dir > 0 ? b.blocked.right : b.blocked.left)) this.tryGrab(dir);
+    if (this.ab.grab && !onGround && b.velocity.y > -80 && dir && (this.gz || (dir > 0 ? b.blocked.right : b.blocked.left))) this.tryGrab(dir);
 
     this.animate(onGround);
     this.afterMove(dt);
   }
 
   tryGrab(dir) {
+    if (this.gz) {
+      var body = this.player.body;
+      var candidates = this.gz.solids.concat(this.gz.surfaces);
+      for (var i = 0; i < candidates.length; i++) {
+        var s = candidates[i], edge = dir > 0 ? s.body.x : s.body.right;
+        if (!s.body.enable || s.grab === false || Math.abs((dir > 0 ? body.right : body.x) - edge) > 7 || body.y < s.body.y - 8 || body.y > s.body.y + 12) continue;
+        var x = edge + dir * 8;
+        if (this.solidAt(x, s.body.y - 8)) continue;
+        this.hanging = { x: x, top: s.body.y }; this.hangDir = dir;
+        body.setAllowGravity(false); body.setVelocity(0, 0); body.reset(this.player.x, s.body.y + 14); this.jumping = false;
+        return;
+      }
+      return;
+    }
     var b = this.player.body, wx = dir > 0 ? b.right + 2 : b.x - 2, c = Math.floor(wx / 16);
     for (var r = Math.floor((b.y - 10) / 16); r <= Math.floor((b.y + 12) / 16); r++) {
       var top = r * 16;
@@ -561,6 +659,17 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   /** Pièges et plateformes animés (indépendants du joueur). */
   updateMechanics(dt) {
     var self = this, p = this.player, b = p.body, t = this.time_ms + this.introMs;
+    if (this.gz) this.gz.update(dt);
+    this.bridges.forEach(function (bridge) {
+      var x = bridge.x * 16, y = bridge.surfaceY, w = bridge.w * 16;
+      var occupied = b.right > x - 4 && b.x < x + w + 4 && b.bottom >= y - 6 && b.y < y + 12;
+      bridge.body.enable = GP.LevelMechanics.bridge(bridge, dt, occupied);
+      bridge.img.setAngle(bridge.angle).setTint(bridge.warned ? GP.int(GP.PAL.y) : 0xffffff);
+      var a = bridge.angle * Math.PI / 180, ex = Math.round(x + w * Math.cos(a)), ey = Math.round(y + w * Math.sin(a));
+      var chain = bridge.chain; chain.clear(); chain.fillStyle(GP.int(bridge.warned ? GP.PAL.y : GP.PAL.m));
+      var ax = x - 2, ay = y - w, n = Math.max(Math.abs(ex - ax), Math.abs(ey - ay));
+      for (var k = 0; k <= n; k += 3) chain.fillRect(Math.round(ax + (ex - ax) * k / (n || 1)), Math.round(ay + (ey - ay) * k / (n || 1)), 2, 2);
+    });
     // plateformes mobiles : position sinusoïdale, vitesse calculée pour suivre (le joueur est transporté)
     // (vitesse = dérivée du mouvement aller-retour, plus une petite correction de dérive : pas d'à-coups)
     this.movers.forEach(function (m) {
@@ -583,9 +692,12 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.gates.forEach(function (g) {
       g.t += dt;
       var cycle = g.open + g.closed, ph = g.t % cycle, wantDown = ph >= g.open;
-      var under = Math.abs(p.x - g.img.x) < 14 && p.y > g.floor - 52 && p.y <= g.floor + 2;
-      if (wantDown && !g.down && !under) { g.down = true; g.body.enable = true; self.tweens.add({ targets: g.img, y: g.floor, duration: 250 }); }
-      else if (!wantDown && g.down) { g.down = false; g.body.enable = false; self.tweens.add({ targets: g.img, y: g.floor - 40, duration: 400 }); }
+      var under = b.right > g.img.x - g.img.width / 2 - 4 && b.x < g.img.x + g.img.width / 2 + 4 && b.bottom > g.floor - 52 && b.y < g.floor;
+      g.down = wantDown && !(under && g.img.y < g.floor);
+      var targetY = g.down ? g.floor : g.floor - 48;
+      g.img.y += Phaser.Math.Clamp(targetY - g.img.y, -dt * 0.14, dt * 0.14);
+      g.body.updateFromGameObject(); g.body.enable = g.down;
+      if (!wantDown && ph > g.open - 500) g.img.setTint(GP.int(GP.PAL.y)); else g.img.clearTint();
     });
     // tonneaux
     this.barrels.forEach(function (r) {
@@ -633,6 +745,9 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var bx = b.x, by = b.y, bw = b.width, bh = b.height;
     function hit(x, y, w, h) { return bx < x + w && bx + bw > x && by < y + h && by + bh > y; }
     if (by > this.H + 10) { this.die('CHUTE !'); return; }
+    for (var wi = 0; wi < this.water.length; wi++) {
+      var water = this.water[wi]; if (hit(water.x, water.y, water.w, water.h)) { this.die('DANS LES DOUVES !'); return; }
+    }
     if (this.invuln <= 0) {
       var ouch = this.L.thornText || 'AÏE, LES RONCES !';
       for (var i = 0; i < this.thorns.length; i++) { var t = this.thorns[i]; if (hit(t.x, t.y, t.w, t.h)) { this.die(ouch); return; } }
@@ -669,6 +784,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       if (sight) { var dd = Math.abs(px.x - p.x) + Math.abs(px.y - p.y) * 0.5; px.img.setAlpha(Phaser.Math.Clamp(1 - (dd - sight) / 50, 0.15, 1)); }
       else if (px.img.alpha !== 1) px.img.setAlpha(1);
     });
+    this.updateExit();
+    if (this.L.exit && GP.LevelMechanics.canFinish(this.L, this.pc.done(), this.atExit(), !this.gz || !this.gz.boss || this.gz.boss.done)) this.finish();
   }
 
   /** Ramassage : le pixel s'envole vers l'image du HUD, qui révèle le groupe suivant. */
@@ -686,7 +803,10 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.updateHud();
     this.saveRun();
     this.events.emit('playtest-event', { type: 'collect', count: this.pc.count, x: px.x, y: px.y });
-    if (this.pc.done()) this.finish();
+    if (this.pc.done()) {
+      if (!this.L.exit) this.finish();
+      else { this.updateExit(); if (!quiet) this.toast('IMAGE COMPLÈTE · REJOINS L’ARCHE'); }
+    }
   }
 
   /**
@@ -697,6 +817,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var self = this, p = this.player, U = this.TUNE;
     if (this.dying) return;
     this.dying = true;
+    if (this.gz) this.gz.impulseMs = 0;
     this.deaths++;
     this.events.emit('playtest-event', { type: 'death', reason: msg, x: p.x, y: p.y });
     this.saveRun();
@@ -716,6 +837,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
         p.setAlpha(0.45);
         self.invuln = U.invuln;
         self.jumping = false; self.buffer = 0;
+        self.updateShelter(0, true);
         self.dying = false;
       }
     });
@@ -724,6 +846,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   finish() {
     var self = this;
     if (this.finished) return;
+    if (!GP.LevelMechanics.canFinish(this.L, this.pc.done(), this.atExit(), !this.gz || !this.gz.boss || this.gz.boss.done)) return;
     this.finished = true;
     this.events.emit('playtest-event', { type: 'finish', timeMs: this.time_ms, deaths: this.deaths, count: this.pc.count });
     this.physics.pause();

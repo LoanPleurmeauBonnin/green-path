@@ -1,6 +1,6 @@
 /* Copie locale cohérente du jeu. Jamais de cache des API, pseudos ou codes de sauvegarde. */
 'use strict';
-var CACHE = 'greenpath-offline-v3-shelters';
+var CACHE = 'greenpath-offline-v5-gzones';
 self.addEventListener('install', function (event) {
   event.waitUntil((async function () {
     var base = self.registration.scope, index = new URL('index.html', base).href;

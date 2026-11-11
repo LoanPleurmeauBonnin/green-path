@@ -27,7 +27,7 @@ GP.runBrowserTests = function () {
     if (!game.scene.isActive('Game')) report.push({ debug: { kind: map.panelKind, action: map.panelAction, status: GP.Progression.status(0), scenes: game.scene.getScenes(true).map(function (s) { return s.scene.key; }), gameStatus: game.scene.getScene('Game').sys.settings.status } });
     check('Fiche → niveau', game.scene.isActive('Game'));
     var g = game.scene.getScene('Game'); g.introMs = 0; step(20);
-    check('Collision au sol', g.player.body.blocked.down);
+    check('Collision au sol', g.player.body.blocked.down || g.player.body.touching.down);
     var y = g.player.y; g.bot = { step: function () { return { jump: true }; } }; step(10);
     check('Saut physique', g.player.y < y - 10); g.bot = null;
     g.collect(g.pixels[0], true); var count = g.pc.count; g.collect(g.pixels[0], true);
@@ -45,20 +45,36 @@ GP.runBrowserTests = function () {
     g.pause(); g.resume(); check('Pause et reprise après réentrée', !g.pauseMenu && !g.paused);
     // Changement de météo pendant une pousse : aucune ancienne animation ne réactive une ronce sèche.
     function weather(i) { GP.Weather.simIndex = i - 1; var st = GP.Weather.nextSim(); g.applyWeather(st); }
-    weather(2); step(10); weather(0); step(10); weather(2); step(90);
-    check('Pluie rapide : ronces visibles et actives', g.rainThorns.every(function (t) { return t.img.visible && t.active; }));
-    weather(0); step(50); check('Soleil : ronces inactives, fleurs solides', g.rainThorns.every(function (t) { return !t.active && !t.img.visible; }) && g.sunPlats.every(function (p) { return p.body.enable; }));
+    if (g.gz) {
+      weather(6); step(2);
+      var jets = g.gz.hazards.filter(function (h) { return h.def.sprite === 'jardin_jet_eau'; });
+      check('Jardin JSON : les deux jets gèlent en appuis', jets.length === 2 && jets.every(function (h) { return h.ice && h.ice.body.enable; }));
+      weather(0); step(2); check('Soleil : appuis de glace retirés', jets.every(function (h) { return !h.ice.body.enable; }));
+    } else {
+      weather(2); step(10); weather(0); step(10); weather(2); step(90);
+      check('Pluie rapide : ronces visibles et actives', g.rainThorns.every(function (t) { return t.img.visible && t.active; }));
+      weather(0); step(50); check('Soleil : ronces inactives, fleurs solides', g.rainThorns.every(function (t) { return !t.active && !t.img.visible; }) && g.sunPlats.every(function (p) { return p.body.enable; }));
+    }
     // Fin contrôlée : teste le flux et l'intégrité, pas une traversée humaine des obstacles.
-    g.pixels.forEach(function (p) { g.collect(p, true); }); step(160);
+    g.pixels.forEach(function (p) { g.collect(p, true); });
+    if (g.L.exit) { g.player.body.reset(g.L.exit.x * 16 + 8, g.L.exit.y * 16); g.checkWorld(); }
+    step(160);
     check('Image complète → résultat et sauvegarde', game.scene.isActive('Result') && !!GP.Progression.data.completed['jardin-des-plantes'] && !GP.Progression.data.runs['jardin-des-plantes']);
     game.scene.getScene('Result').leave('Map'); step(40);
     check('Résultat → carte, étape suivante disponible', game.scene.isActive('Map') && GP.Progression.canEnter(1));
-    for (var i = 1; i < 3; i++) {
-      g = level(i); g.time_ms = 90000; g.pixels.forEach(function (p) { g.collect(p, true); }); step(160);
+    for (var i = 1; i < GP.LOCATIONS.length; i++) {
+      g = level(i); g.time_ms = 90000; g.pixels.forEach(function (p) { g.collect(p, true); });
+      if (g.L.exit) {
+        check('Collecte complète : arche encore à rejoindre', !g.finished);
+        // Fixture de flux seulement : les phases réelles sont testées dans run-levels-qa.cjs.
+        if (g.gz && g.gz.boss) { g.gz.boss.phase = g.gz.boss.def.phases; g.gz.boss.done = true; }
+        g.player.body.reset(g.L.exit.x * 16 + 8, g.L.exit.y * 16); g.checkWorld();
+      }
+      step(160);
       check('Transition et résultat ' + GP.LOCATIONS[i].id, game.scene.isActive('Result') && !!GP.Progression.data.completed[GP.LOCATIONS[i].id]);
     }
-    check('12 lieux non simulés : 3 terminables, 9 à venir', GP.Progression.completedCount() === 3 && GP.LOCATIONS.filter(function (l) { return !l.playable; }).length === 9);
-    check('Sauvegarde rechargée : 3 résultats', Object.keys(GP.Save.load().completed).length === 3);
+    check('12 lieux disponibles : flux de résultat contrôlé', GP.Progression.completedCount() === 12 && GP.LOCATIONS.every(function (l) { return l.playable; }));
+    check('Sauvegarde rechargée : 12 résultats', Object.keys(GP.Save.load().completed).length === 12);
     check('Carte découpée pour textures mobiles', GP.MapArt.worldKeys.length === 2 && GP.MapArt.worldKeys.every(function (k) { return game.textures.get(k).getSourceImage().width <= 2048; }));
   } catch (e) { report.push({ name: 'STOP : ' + e.message, ok: false, stack: e.stack }); }
   finally {

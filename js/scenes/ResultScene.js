@@ -22,7 +22,8 @@ GP.Scenes.Result = class ResultScene extends Phaser.Scene {
     this.add.rectangle(22, 14, 436, 242, GP.int(P.d)).setOrigin(0);
     this.add.rectangle(22, 33, 436, 1, GP.int(P.G)).setOrigin(0);
     UI.txt(this, 32, 20, 'IMAGE RECONSTRUITE', P.g);
-    UI.txt(this, 450, 20, res.unlockedNew ? 'ÉTAPE SUIVANTE DÉBLOQUÉE !' : 'ÉTAPE ' + String(r.index + 1).padStart(2, '0'), res.unlockedNew ? P.y : P.m).setOrigin(1, 0);
+    var campaignDone = res.allDone && GP.Progression.completedCount() === GP.LOCATIONS.filter(function (l) { return l.playable; }).length;
+    UI.txt(this, 450, 20, campaignDone ? 'PARCOURS COMPLÉTÉ !' : res.unlockedNew ? 'ÉTAPE SUIVANTE DÉBLOQUÉE !' : 'ÉTAPE ' + String(r.index + 1).padStart(2, '0'), res.unlockedNew || campaignDone ? P.y : P.m).setOrigin(1, 0);
 
     // la photo reconstruite en grand (×4 ; le monument dessiné si la photo n'est pas encore intégrée)
     var key = GP.PixelCollection.photoKey(this, loc.id), src = this.textures.get(key).getSourceImage();

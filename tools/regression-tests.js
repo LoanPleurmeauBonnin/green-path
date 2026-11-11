@@ -67,20 +67,21 @@ GP.runRegressionTests = function () {
     var g = start('Game', { index: 2 });
     check('Étape : centrage et séparation du HUD', g.introCard.x === GP.Config.WIDTH / 2 && g.introCard.y === 135 && g.introCard.y - g.introCard.height / 2 > 52 && g.introCard.width <= 400);
     check('Étape : textes au-dessus du fond', g.introCard.objects.slice(1).every(function (o) { return o.depth > g.introCard.objects[0].depth; }));
-    g.introMs = 0; weather(g, 2); sample(g, 900, 224, true);
+    var passage = g.L.shelters[0], sx = passage.x + 8, floor = passage.y + passage.h - 1;
+    g.introMs = 0; weather(g, 2); sample(g, passage.x - 16, floor, true);
     check('Pluie : extérieur inchangé', g.phy.accelGround === 650 && g.shelter.rain === 0);
-    sample(g, 936, 224); check('Entrée : protection progressive', g.shelter.rain > 0 && g.shelter.rain < 1); tick(30);
-    check('Passage : sec et collisions conservées', g.phy.accelGround === 1100 && g.shelter.rain === 1 && g.solidAt(936, 160) && g.player.body.blocked.down);
+    sample(g, sx, floor); check('Entrée : protection progressive', g.shelter.rain > 0 && g.shelter.rain < 1); tick(30);
+    check('Passage : sec et collisions conservées', g.phy.accelGround === 1100 && g.shelter.rain === 1 && g.solidAt(sx, passage.y - 8) && g.player.body.blocked.down);
     var cam = g.cameras.main;
-    check('Pluie : aucune goutte sous le passage avec caméra décalée', g.wx.exposureAt(936 - cam.scrollX, 210 - cam.scrollY, false) === 0);
+    check('Pluie : aucune goutte sous le passage avec caméra décalée', g.wx.exposureAt(sx - cam.scrollX, floor - 14 - cam.scrollY, false) === 0);
     weather(g, 4); check('Vent : poussée réduite de moitié', g.phy.airPush === 55);
     weather(g, 6); check('Neige : inertie sèche sous le linteau', g.phy.accelGround === 1100 && g.phy.accelAir === 700);
     weather(g, 2); check('Changement météo en abri : état cohérent', g.shelter.rain === 1 && g.phy.accelGround === 1100);
-    sample(g, 980, 224); check('Sortie : pas de bascule physique brutale', g.shelter.rain > 0 && g.shelter.rain < 1); tick(30);
+    sample(g, passage.x - 16, floor); check('Sortie : pas de bascule physique brutale', g.shelter.rain > 0 && g.shelter.rain < 1); tick(30);
     check('Sortie : pluie habituelle retrouvée', g.shelter.rain === 0 && g.phy.accelGround === 650);
     var zones = g.L.shelters;
-    g.L.shelters = zones.concat([{ id: 'qa-overlap', x: 912, y: 176, w: 48, h: 49, rain: 0.5, snow: 0.5, wind: 1 }]);
-    sample(g, 936, 224, true); check('Chevauchement : maximum par canal', g.shelter.rain === 1 && g.shelter.wind === 1);
+    g.L.shelters = zones.concat([Object.assign({}, passage, { id: 'qa-overlap', rain: 0.5, snow: 0.5, wind: 1 })]);
+    sample(g, sx, floor, true); check('Chevauchement : maximum par canal', g.shelter.rain === 1 && g.shelter.wind === 1);
     g.L.shelters = zones;
     // Fixture de reprise : un checkpoint est couvert sans déplacer ses coordonnées ni migrer de sauvegarde.
     var lantern = g.lanterns[0]; g.checkpointIndex = 0; g.collect(g.pixels[0], true); var expectedTaken = g.pc.count; g.saveRun();
@@ -91,7 +92,8 @@ GP.runRegressionTests = function () {
     g.L.shelters = zones; g.updateShelter(0, true);
     check('Reprise extérieure : aucune ancienne protection conservée', g.shelter.rain === 0);
     GP.Weather.simIndex = 1; GP.Weather.nextSim(); g = start('Game', { index: 0 }); g.introMs = 0; sample(g, 88, 224, true);
-    check('Auvent existant : protection partielle', g.shelter.rain === 0.5 && g.shelter.wind === 0.25 && g.phy.accelGround === 875);
+    if (g.L.gzone) check('Jardin JSON : aucun auvent inventé sur le parvis', g.shelter.rain === 0 && g.shelter.wind === 0 && g.phy.accelGround === 650);
+    else check('Auvent existant : protection partielle', g.shelter.rain === 0.5 && g.shelter.wind === 0.25 && g.phy.accelGround === 875);
     var session = GP.Playtest.start(g, { id: 'QA', kind: 'simulation' }); tick(30); g.collect(g.pixels[1], true); session.stop();
     check('Instrumentation : collecte réelle enregistrée, pas de notes humaines inventées', session.report.events.some(function (e) { return e.type === 'collect'; }) && session.report.notes.length === 0 && session.report.kind === 'simulation');
   } catch (e) { report.push({ name: 'STOP : ' + e.message, ok: false, stack: e.stack }); }
@@ -131,7 +133,8 @@ GP.captureRegressionSheet = async function () {
     map.openPanel(2); await shot('FICHE CENTRÉE');
     var g = start('Game', { index: 0 }); await shot('ENTRÉE / ÉTAPE CENTRÉE');
     GP.Weather.simIndex = 1; GP.Weather.nextSim(); g = start('Game', { index: 2 }); g.introMs = 0;
-    g.player.body.reset(936, 224); g.cameras.main.centerOn(936, 135); tick(170); await shot('CHÂTEAU / PASSAGE SEC');
+    var passage = g.L.shelters[0], sx = passage.x + 8, floor = passage.y + passage.h - 1;
+    g.player.body.reset(sx, floor); g.cameras.main.centerOn(sx, floor - 80); tick(170); await shot('CHÂTEAU / PASSAGE SEC');
     GP.Weather.simIndex = 1; GP.Weather.nextSim(); g = start('Game', { index: 0 }); g.introMs = 0;
     g.player.body.reset(88, 224); tick(170); await shot('JARDIN / AUVENT PARTIEL');
     // Lecture isolée des modules, sans toucher aux textures originales.

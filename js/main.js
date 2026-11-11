@@ -10,7 +10,7 @@
     if (loading) loading.remove();
     GP.Settings.load();   // langue et touches du joueur, avant la création des scènes
     GP.Prompts.start();
-    GP.Cloud.init();      // compte en ligne éventuel (le jeu marche sans)
+    if (!GP.Config.DEV_LEVEL) GP.Cloud.init();   // le banc local ne charge pas le compte personnel
     GP.game = new Phaser.Game({
       type: Phaser.AUTO,
       parent: 'game',

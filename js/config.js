@@ -67,3 +67,15 @@ GP.PAL = {
 
 /** Convertit '#rrggbb' en entier Phaser. */
 GP.int = function (hex) { return parseInt(hex.replace('#', ''), 16); };
+
+/** Banc local du niveau en chantier : sauvegarde séparée et cloud désactivé avant son initialisation.
+ * Ne change ni le déverrouillage normal, ni une sauvegarde personnelle, ni le site public.
+ */
+(function () {
+  var loc = window.location || {};
+  var level = /[?&]level=(jardin-des-plantes|cathedrale|chateau|feydeau|graslin|machines|chantiers|buren|hangar|pommeraye|memorial|tour-lu)(?:&|$)/.exec(loc.search || '');
+  if (!GP.Config.DEV_TOOLS || !/^(localhost|127\.0\.0\.1)$/.test(loc.hostname || '') || !level) return;
+  GP.Config.DEV_LEVEL = level[1];
+  GP.Config.SAVE_KEY = 'greenpath.dev.' + level[1];
+  GP.Config.CLOUD.url = ''; GP.Config.CLOUD.key = '';
+})();

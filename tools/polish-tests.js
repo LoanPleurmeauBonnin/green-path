@@ -58,13 +58,14 @@ GP.runPolishTests = function () {
       map.closePanel();
     }
     var g = start('Game', { index: 0 }); g.introMs = 0;
-    check('Tutoriel : touche remappée', g.signs[1].text.text.indexOf('F') >= 0);
+    var jumpSign = g.signs[g.L.hints.findIndex(function (h) { return h.text.indexOf('{jump}') >= 0; })];
+    check('Tutoriel : touche remappée', jumpSign && jumpSign.text.text.indexOf('F') >= 0);
     tick(20); key('keydown', 70, 'f'); tick(5);
     check('Clavier DOM : saut avec la touche remappée', g.player.body.velocity.y < 0);
     key('keyup', 70, 'f'); tick();
     pad.axes[0] = 0.9; tick();
-    check('En jeu : basculement manette, tutoriel et pause', g.signs[1].text.text.indexOf('[A]') >= 0 && g.pauseButton.label.text.indexOf('START') >= 0 && g.ctl.read().right);
-    keyboard(); tick(); check('En jeu : clavier reprend, stick maintenu ne vole pas le focus', GP.Prompts.device === 'keyboard' && g.signs[1].text.text.indexOf('F') >= 0 && !g.ctl.read().right);
+    check('En jeu : basculement manette, tutoriel et pause', jumpSign.text.text.indexOf('[A]') >= 0 && g.pauseButton.label.text.indexOf('START') >= 0 && g.ctl.read().right);
+    keyboard(); tick(); check('En jeu : clavier reprend, stick maintenu ne vole pas le focus', GP.Prompts.device === 'keyboard' && jumpSign.text.text.indexOf('F') >= 0 && !g.ctl.read().right);
     pad.axes[0] = 0; tick(); button(9);
     check('Pause manette : B annoncé', g.paused && g.pauseMenu.titleRight.text.indexOf('[B]') >= 0);
     button(0); check('Pause manette : A reprend', !g.paused);

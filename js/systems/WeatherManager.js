@@ -66,7 +66,8 @@ GP.Weather = (function () {
     { name: 'VENT', temp: 12, code: 2, isDay: true, wind: 60, windDir: 240, precip: 0.6, cloud: 60 },
     { name: 'BRUME', temp: 6, code: 45, isDay: true, wind: 2, windDir: 0, precip: 0, cloud: 100 },
     { name: 'NEIGE', temp: -1, code: 73, isDay: true, wind: 10, windDir: 30, precip: 1, cloud: 100 },
-    { name: 'NUIT PLUIE', temp: 8, code: 61, isDay: false, wind: 25, windDir: 220, precip: 1.2, cloud: 100 }
+    { name: 'NUIT PLUIE', temp: 8, code: 61, isDay: false, wind: 25, windDir: 220, precip: 1.2, cloud: 100 },
+    { name: 'ORAGE', temp: 10, code: 95, isDay: true, wind: 65, windDir: 270, precip: 6, cloud: 100 }
   ];
 
   function readCache() {

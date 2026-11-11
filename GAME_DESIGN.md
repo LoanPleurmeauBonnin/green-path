@@ -1,6 +1,10 @@
 # Green Path — game design et état de réalisation
 
+**État local actuel : douze parcours GZones implémentés, boss 6/9/12 compris, en attente de tests et retouches humains.** L'utilisateur a demandé de réaliser l'ensemble avant ses retours et a approuvé les trois concepts de boss. Jardin/Cathédrale suivent désormais leurs JSON ; le Château conserve son adaptation. L'ordre effectif est Pommeraye 10 / Mémorial 11. Le contenu d'audit ci-dessous est historique ; le suivi actuel et ses limites sont dans [docs/LEVEL_REDESIGN.md](docs/LEVEL_REDESIGN.md). Aucun déploiement automatique.
+
 Version auditée le 10 novembre 2026. **3 lieux jouables, 1 prototype détaché, 9 lieux à développer.** Les 12 étapes restent l'objectif ; aucune fin de parcours sur 12 niveaux n'est actuellement livrée.
+
+**Évolution locale du 11 novembre** : la refonte du Château remplace son parcours par une adaptation 170×20 / 20 fragments, cinq zones et une arche après collecte complète. Le reste de ce document conserve le diagnostic antérieur ; décisions, état de recette et ordre cible Pommeraye 10 / Mémorial 11 sont suivis dans [docs/LEVEL_REDESIGN.md](docs/LEVEL_REDESIGN.md). Aucun boss nouveau n'est implémenté et aucune refonte des niveaux 1/2 n'est faite.
 
 ## Concept et boucle
 

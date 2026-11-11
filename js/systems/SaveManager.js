@@ -19,7 +19,7 @@ GP.Save = {
   },
 
   defaults: function () {
-    return { v: GP.Config.SAVE_VERSION, completed: {}, runs: {}, unlocked: 0, current: 0, muted: false, character: null, introSeen: false, updated: 0 };
+    return { v: GP.Config.SAVE_VERSION, route: GP.Config.ROUTE_VERSION || 'baseline', completed: {}, runs: {}, unlocked: 0, current: 0, muted: false, character: null, introSeen: false, updated: 0 };
   },
 
   /** Retourne toujours un objet valide. */
@@ -68,11 +68,13 @@ GP.Save = {
       out.runs[l.id] = { signature: r.signature, taken: taken,
         checkpoint: Math.floor(num(r.checkpoint, -1, L.checks.length - 1, -1)),
         time: num(r.time, 0, 36000000, 0), deaths: Math.floor(num(r.deaths, 0, 100000, 0)) };
+      if (L.boss && r.boss && Number.isInteger(r.boss.phase) && r.boss.phase >= 0 && r.boss.phase <= L.boss.phases) out.runs[l.id].boss = { phase: r.boss.phase };
     });
     var unlocked = Math.floor(num(d.unlocked, 0, GP.LAST_PLAYABLE, 0));
     unlocked = Math.max(unlocked, Math.min(GP.LAST_PLAYABLE, maxDone + 1));
     out.unlocked = Math.min(GP.LAST_PLAYABLE, Math.max(0, unlocked));
     var cur = Math.floor(num(d.current, 0, locs.length - 1, 0));
+    if (GP.Config.ROUTE_VERSION === 'gzones-1' && d.route !== 'gzones-1' && (cur === 9 || cur === 10)) cur = cur === 9 ? 10 : 9;
     out.current = Math.min(locs.length - 1, Math.max(0, cur));
     out.muted = !!d.muted;
     out.character = (d.character && typeof d.character === 'object' && GP.Character) ? GP.Character.sanitize(d.character) : null;
@@ -83,7 +85,7 @@ GP.Save = {
   },
 
   runSignature: function (L) {
-    return L.width + ':' + L.pixels.map(function (p) { return p.x + ',' + p.y; }).join(';') + ':' +
+    return (L.revision ? L.revision + ':' : '') + L.width + ':' + L.pixels.map(function (p) { return p.x + ',' + p.y; }).join(';') + ':' +
       L.checks.map(function (p) { return p.x + ',' + p.y; }).join(';');
   },
 

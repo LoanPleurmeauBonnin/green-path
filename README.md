@@ -1,12 +1,14 @@
 # Green Path — Nantes en mille pixels
 
-**État vérifié : 3 étapes jouables sur 12** (Jardin, Cathédrale, Château). Un prototype Bouffay existe hors parcours ; les neuf autres niveaux et la récompense finale restent à développer. Audit local du 10 novembre 2026 : [AUDIT.md](AUDIT.md), [GAME_DESIGN.md](GAME_DESIGN.md), [HERITAGE_GRAMMAR.md](HERITAGE_GRAMMAR.md), [ROADMAP.md](ROADMAP.md).
+**Les 12 niveaux sont implémentés à partir des GZones**, avec les boss des niveaux 6, 9 et 12. Version **0.5-gzones** : travail à tester et retoucher, pas douze validations humaines. **Sélecteur local : http://127.0.0.1:8130/tools/levels.html** (outil de développement non publié). En production, utiliser la carte et le déverrouillage normal. Suivi actuel : [docs/LEVEL_REDESIGN.md](docs/LEVEL_REDESIGN.md). Les documents d'audit du 10 novembre décrivent le socle antérieur : [AUDIT.md](AUDIT.md), [GAME_DESIGN.md](GAME_DESIGN.md), [HERITAGE_GRAMMAR.md](HERITAGE_GRAMMAR.md), [ROADMAP.md](ROADMAP.md).
 
 **Finition UX/UI et corrections** : commandes adaptatives, remapping, carte réversible avec montée sur les piédestaux, terminaisons ciblées, trois rubriques À propos, Options aéré, fiche et transition centrées. Détail : [docs/UX_POLISH.md](docs/UX_POLISH.md). **Météo abritée livrée localement** : [docs/WEATHER_SHELTERS.md](docs/WEATHER_SHELTERS.md). Protocole silencieux, relevé volontaire et configuration d'équilibrage : [docs/PLAYTEST_REPORT.md](docs/PLAYTEST_REPORT.md) ; aucun playtest humain revendiqué. Les autres évolutions de [docs/GAMEPLAY_UPGRADES.md](docs/GAMEPLAY_UPGRADES.md) restent des propositions.
 
+**Refonte des douze niveaux** : Jardin/Cathédrale suivent désormais leurs JSON ; le Château conserve son adaptation. Les autres niveaux intègrent balcons, flotteurs, rebonds, mécanismes industriels, anneaux, conteneurs, dalles, séquences et courants ascendants. Réussite = image complète **puis arche** ; pour 6/9/12, le boss doit également être neutralisé. La publication sur l'adresse officielle est autorisée par l'utilisateur ; les captures ci-dessous restent celles de la version antérieure. Les nouveaux exports sont dans `docs/screenshots/level-*.png`.
+
 > *« Psst… par ici ! Je suis le gardien de la ligne verte. Cette nuit, un grand coup de vent a soufflé sur Nantes. Ses monuments se sont envolés en mille pixels ! »*
 
-Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en lieu, tu cours, tu sautes, tu grimpes et tu ramasses les pixels qui reconstruisent, case après case, chaque monument. **La vraie météo de Nantes change le jeu** : s'il pleut à Nantes, il pleut dans Green Path, le sol glisse et les ronces poussent.
+Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en lieu, tu cours, tu sautes, tu grimpes et tu ramasses les pixels qui reconstruisent, case après case, chaque monument. **La vraie météo de Nantes change le jeu** : précipitations et vent agissent sur les espaces exposés ; l'architecture couverte protège le parcours.
 
 **▶ Jouer : https://green-path-game.vercel.app** (ordinateur, ou téléphone tenu en paysage)
 
@@ -28,15 +30,15 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
 
   | Météo à Nantes | Dans Green Path |
   |---|---|
-  | Pluie, bruine, orage | pluie à l'écran, le sol glisse ; Jardin : des ronces poussent ; Cathédrale : les gargouilles coulent plus souvent |
-  | Neige | flocons, on dérape (plus d'inertie) |
+  | Pluie, bruine, orage | sol exposé plus glissant ; balcons à entraînement ; parasols alourdis ; précipitations masquées sous les couvertures |
+  | Neige | inertie accrue dehors, jets du Jardin gelés en appuis, flotteurs moins enfoncés, premier rebond des parasols plus faible |
   | Vent fort | le vent pousse les sauts dans sa direction ; Château et Bouffay : les tonneaux roulent plus vite |
   | Brume | voile clair, les pixels ne se voient que de près |
   | Nuit | ciel étoilé, lanternes allumées, pixels visibles un peu moins loin |
-  | Grand soleil | Jardin : des fleurs deviennent des plateformes (raccourcis) |
+  | Grand soleil | parasols plus élastiques à Graslin ; variation bornée des mécanismes mobiles |
 
-  Chaque effet est borné et le vent reste contrable. Les 80 fragments des trois niveaux sont géométriquement atteignables sous pluie, vent et neige dans les tests automatisés ; ces essais neutralisent les dangers et ne prouvent pas à eux seuls une traversée complète par un humain.
-- **Abris existants** : les deux passages couverts du Château bloquent pluie/neige et divisent la poussée du vent par deux ; les deux auvents de tram au Jardin protègent partiellement. Transition physique progressive et masque spatial des précipitations ; aucune structure ajoutée à la Cathédrale.
+  Les **275 fragments** font l'objet de diagnostics physiques dont les limites sont documentées : téléportations à des surfaces candidates, morts neutralisées et interactions d'anneaux prises en compte. Cela ne prouve pas une traversée complète et connectée avec dangers par un humain. Le Château dispose en plus de traversées scriptées ; ne pas étendre leur résultat aux onze autres parcours.
+- **Abris** : passages du Château, nef de la Cathédrale, atelier, hangar, verrière de Pommeraye et galerie du Mémorial. Protections et géométrie visibles partagées avec le masque de précipitations ; pas de bulle sèche autour du joueur. Le nouveau Jardin n'importe pas les auvents de son ancien prototype.
 - **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou un des 8 modèles.
 
 ## Les 12 lieux
@@ -44,20 +46,22 @@ L'ordre suit la séquence de la page [« Arpenter la ligne verte »](https://www
 
 | # | Lieu | Statut | Ce qu'on y apprend |
 |---|---|---|---|
-| 1 | Jardin des Plantes | ✅ jouable | courir, sauter, ronces, lanternes |
-| 2 | Cathédrale Saint-Pierre-et-Saint-Paul | ✅ jouable | **grimper** aux colonnes, **s'accrocher** aux rebords, gargouilles, corniches qui s'effritent |
+| 1 | Jardin des Plantes | à tester localement | allées, bassins, jets et topiaires |
+| 2 | Cathédrale Saint-Pierre-et-Saint-Paul | à tester localement | colonnes, accroche, nef couverte, galeries et toits |
 | 3 | Château des ducs de Bretagne | ✅ jouable | **s'accroupir** sous les flèches, tonneaux, herses, douves |
-| 4 | Île Feydeau | à venir | |
-| 5 | Place Graslin | à venir | |
-| 6 | Machines de l'île (Grand Éléphant) | à venir | |
-| 7 | Parc des Chantiers (Grue Titan) | à venir | |
-| 8 | Anneaux de Buren | à venir | |
-| 9 | Hangar à Bananes | à venir | |
-| 10 | Mémorial de l'abolition de l'esclavage | à venir | |
-| 11 | Passage Pommeraye | à venir | |
-| 12 | Tour LU (Lieu Unique) | à venir | |
+| 4 | Île Feydeau | à tester localement | balcons inclinés et bateaux flotteurs |
+| 5 | Place Graslin | à tester localement | parasols rebondissants et lustres |
+| 6 | Machines de l'île (Grand Éléphant) | à tester localement | engrenages, bielles, vapeur et boss à valves |
+| 7 | Parc des Chantiers (Grue Titan) | à tester localement | chariots au poids et ascenseur |
+| 8 | Anneaux de Buren | à tester localement | impulsions et chaînes d'anneaux |
+| 9 | Hangar à Bananes | à tester localement | conteneurs, portes basses, boss à lampes UV |
+| 10 | Passage Pommeraye | à tester localement | trois strates, dalles fragiles et lustres |
+| 11 | Mémorial de l'abolition de l'esclavage | à tester localement | séquences de dalles et eau lente |
+| 12 | Tour LU (Lieu Unique) | à tester localement | courants ascendants et boss à quatre lanternes |
 
 *Un niveau « Bouffay » (étals mobiles) existe dans `js/data/levels.js` mais n'est rattaché à aucun lieu pour l'instant.*
+
+L'ordre local suit les GZones : **Pommeraye 10, Mémorial 11**. Les sauvegardes restent liées aux identifiants de lieux ; seule l'ancienne sélection d'indice 9/10 est permutée une fois. Les reprises des parcours remplacés sont invalidées par révision, pas les résultats déjà terminés.
 
 ## Commandes
 | Carte | Niveau |
@@ -96,12 +100,27 @@ python3 -m http.server 8123
 ```
 puis http://localhost:8123. **Mode test** : ajouter `?dev=1` à l'adresse (W : météos simulées sur la carte, N dans un niveau ; K : ramasser tous les pixels).
 
+### Tester directement les douze niveaux
+
+```bash
+python3 -m http.server 8130 --bind 127.0.0.1
+```
+
+Ouvrir **http://127.0.0.1:8130/tools/levels.html**, puis choisir un niveau. Exemple : **http://127.0.0.1:8130/?dev=1&level=chateau**. Ces lancements sont réservés à localhost : sauvegarde `greenpath.dev.<lieu>`, compte cloud non chargé, progression normale non débloquée par l'essai.
+
+- Contrôles de jeu habituels ; **N** : neuf météos simulées dont orage, puis météo réelle ; **V** : inverser le vent courant ; **R** : recommencer le parcours de test.
+- **K** sert seulement à vérifier l'arche avec tous les fragments : ce n'est pas un test de collecte. Même après K, rejoindre l'arche reste nécessaire.
+- Parcourir les cinq zones, essayer un retour vers un fragment manquant, la reprise aux lanternes et les passages couverts sous pluie/neige.
+- Les JSON de Jardin/Cathédrale étaient les seules références disponibles et sont maintenant interprétés par le moteur ; aucune autre version jouable externe n'a été fournie.
+
+Recette automatisée reproductible et limites : [tests/README.md](tests/README.md). Les boss approuvés se neutralisent par valves, lampes UV ou lanternes, pas en les frappant. K ne permet pas de contourner leur victoire. Les retouches se feront sur les retours de l'utilisateur, conformément à sa nouvelle demande de réaliser l'ensemble avant validation.
+
 ## Fallback et limites connues
 - **Hors ligne** : le dossier complet lancé avec un serveur local ne dépend pas d'Internet. Sur le site hébergé en HTTPS, une **première visite complète** prépare une copie locale (service worker, `sw.js`) qui permet ensuite le rechargement sans réseau. Il est impossible de charger un site jamais visité sans réseau. Le cache ne contient que les fichiers publics, jamais les échanges météo/compte. Attendre la fin de l'installation avant de passer en mode avion ; vérifier avec `await GP.offlineReady` dans la console. `?dev=1` ne lance pas cette installation.
 - Si l'API coupe, le jeu garde **la dernière météo reçue** (widget « HORS LIGNE ») ; sinon météo **NEUTRE** sans effet ([data/fallback.json](data/fallback.json), copie documentaire des valeurs JS, non chargée par le moteur). Le widget affiche deux lignes ; le mode test indique « TEST · SIMULATION ». Les réponses incomplètes ou non numériques sont rejetées. Progression dans `localStorage`, ou en mémoire jusqu'à fermeture si le stockage est bloqué.
 - La météo est redemandée toutes les 5 min, et dès que le réseau revient.
 - Images à reconstruire : photo pixélisée validée pour le Jardin des Plantes ; pour les autres lieux, le monument de la planche de sprites en attendant des photos Commons validées.
-- Niveaux **4 à 12** à venir ; Bouffay détaché. Aucun boss ni illustration finale livré.
+- Douze versions de travail et trois boss ; Bouffay reste détaché. Aucun nouvel atlas ni illustration-récompense finale ajouté. Les outils de test et le sélecteur de développement restent exclus de la publication Vercel.
 - La provenance/licence de la référence de l'avatar reste à clarifier avant diffusion large. Les notices secondaires demandent encore une vérification documentaire.
 - Le mode tactile est conçu pour le paysage ; le canvas n'est pas entièrement accessible aux lecteurs d'écran. Les tests de fenêtre responsive ne remplacent pas un vrai essai iOS/Android.
 

@@ -1,5 +1,22 @@
 # Vérifier Green Path
 
+## Recette actuelle — douze niveaux
+
+Les suites décrites plus bas conservent leurs historiques. Le jeu actif possède maintenant douze niveaux, dont trois boss approuvés. Sélecteur de développement : **http://127.0.0.1:8130/tools/levels.html**, après `python3 -m http.server 8130 --bind 127.0.0.1`.
+
+```bash
+node --test tests/*.test.js
+node tools/compare-figma.js
+PLAYWRIGHT_MODULE=/chemin/node_modules/playwright node tools/run-levels-qa.cjs
+PLAYWRIGHT_MODULE=/chemin/node_modules/playwright node tools/run-level-geometry.cjs
+```
+
+Playwright et Google Chrome sont optionnels pour la recette ; aucune dépendance npm n'est nécessaire pour jouer. Le runner des douze niveaux vérifie le chargement, les neuf simulations météo, les appuis, les transports, les conditions de collecte/arche, les phases de boss et la reprise après attaque, aux trois formats. Les horloges et positions des objectifs sont contrôlées : **pas des traversées humaines ni des victoires naturelles contre les boss**.
+
+Le diagnostic physique teste séparément les fragments sous soleil, à partir de surfaces candidates téléportées et avec morts neutralisées ; il prend en compte l'interaction réelle des anneaux centraux. **Il ne certifie pas un parcours connecté depuis le début**, ni les douze niveaux sous toutes les météos. Résultats : [levels-qa.json](../docs/levels-qa.json), [levels-geometry.json](../docs/levels-geometry.json). Planches de composition : `docs/screenshots/level-*.png` (positions imposées, physique arrêtée).
+
+Les tests Node du socle isolé chargent volontairement les anciennes définitions pour vérifier leur préservation ; `tests/levels.test.js` charge en plus les GZones et vérifie les douze définitions actives, l'ordre et les sauvegardes. Une réussite automatisée ne marque jamais un niveau « Validé » dans le suivi humain.
+
 Utiliser une **origine locale de test**, pas une partie personnelle. Les scripts d'intégration sauvegardent/restaurent la progression locale et neutralisent les écritures cloud, mais un environnement de test séparé reste préférable.
 
 ## Automatique, sans dépendance
@@ -81,3 +98,31 @@ await GP.captureRegressionSheet();     // 11 vues, export PNG
 Exécuter séparément et séquentiellement les trois runners, jamais en parallèle sur la même origine. Leurs helpers transmettent explicitement `{}` pour ne pas hériter des anciennes données d'initialisation Phaser. Les données de progression, météo et API Gamepad temporaires sont restaurées en fin de recette.
 
 Dernier passage : Node 39/39 ; pour chacun des trois formats, régression 73/73, polish 97/97, socle 24/24 ; neuf diagnostics géométriques sans fragment inaccessible. L'instrumentation locale n'est pas chargée en jeu public et ne transmet rien. Protocole humain et limites : [PLAYTEST_REPORT.md](../docs/PLAYTEST_REPORT.md). Architecture des abris : [WEATHER_SHELTERS.md](../docs/WEATHER_SHELTERS.md). Aucun playtest humain ni essai matériel n'a été réalisé par ces scripts.
+
+## Refonte locale du Château (11 novembre 2026)
+
+Le bilan précédent décrit la recette historique avant refonte. Le nouveau suivi est dans [LEVEL_REDESIGN.md](../docs/LEVEL_REDESIGN.md), avec résultats machine dans [chateau-qa.json](../docs/chateau-qa.json).
+
+Accès humain : servir le dépôt sur le port **8130**, puis ouvrir **http://127.0.0.1:8130/?dev=1&level=chateau**. Sauvegarde de test distincte et compte cloud non chargé ; aucune connexion au compte n'est nécessaire. **N** parcourt neuf simulations météo dont l'orage, **V** inverse le vent et **R** recommence la reprise de test. K force la collecte pour tester la sortie ; ne pas l'utiliser pour évaluer la collecte réelle.
+
+Charger `tools/chateau-tests.js` comme les autres scripts, puis :
+
+```js
+GP.runChateauTests();                // composants : téléportations de fixtures explicitement utilisées
+GP.runChateauRoute(0);               // soleil, physique normale, dangers actifs, sans téléportation après départ
+GP.runChateauRoute(2);               // pluie ; 4 vent, 6 neige, 8 orage, -1 neutre
+GP.runChateauRoute(4, true);         // vent opposé
+GP.runChateauRoute(0, false, true);  // aller jusqu'à la cour puis retour au départ, sans entrer dans l'arche
+```
+
+Les contrôleurs sont scriptés et connaissent leurs objectifs : ils ne représentent ni la lecture d'un nouveau joueur, ni sa difficulté ressentie. Les diagnostics de `geometry-tests.js` restent distincts et désactivent les morts.
+
+Automatisation optionnelle : installer **Playwright séparément du jeu** et disposer de Google Chrome. Serveur local déjà lancé :
+
+```bash
+PLAYWRIGHT_MODULE=/chemin/vers/node_modules/playwright node tools/run-chateau-qa.cjs
+```
+
+Le runner traite les trois formats séquentiellement, sur des contextes de navigateur isolés. Il exécute les quatre suites, les parcours scriptés, les diagnostics géométriques et les commandes clavier de développement ; il vérifie des données personnelles **fictives** inchangées et intercepte tout appel Supabase. Il exporte trois planches de huit vues : les positions y sont imposées et la physique arrêtée, ce ne sont pas des parcours.
+
+Les tests Node restent sans dépendance : `node --test tests/*.test.js`. Ils incluent les empreintes des définitions Jardin/Cathédrale/Bouffay du socle `e57f7a7`, les ponts, l'arche, les abris et l'isolation locale. Aucun appareil mobile, clavier/manette physique, Firefox ou Safari n'est certifié par cette automatisation.

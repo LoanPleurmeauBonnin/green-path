@@ -23,8 +23,8 @@ GP.TestBot = {
       if (!onGround) return out;
       var why = null;
       var c4 = col(front + 4), t4 = L.top(c4);
-      if (t4 >= 17 && !s.layer.getTileAt(c4, curTop - 0)) why = 'trou';
-      if (t4 > curTop + 1 && t4 < 17 && L.thorns.some(function (t) { return t.x >= c4 && t.x <= c4 + 2; })) why = 'fosse';
+       if (t4 >= L.rows && !s.layer.getTileAt(c4, curTop - 0)) why = 'trou';
+       if (t4 > curTop + 1 && t4 < L.rows && L.thorns.some(function (t) { return t.x >= c4 && t.x <= c4 + 2; })) why = 'fosse';
       for (var d = 2; d <= 18 && !why; d += 4) { var c = col(front + d); if (L.top(c) < curTop) why = 'mur'; }
       if (!why && s.thorns.some(function (t) { return t.x > front - 4 && t.x < front + 22 && t.y > b.y - 4; })) why = 'ronce';
       if (!why && s.pixels.some(function (p) { return !p.taken && p.x > b.x - 8 && p.x < front + 30 && p.y < b.y - 2; })) why = 'pixel';
@@ -51,34 +51,50 @@ GP.TestBot.reach = function (g, stepFn) {
   g.invuln = 1e9; g.pixels = []; g.introMs = 0;
   function surfaces(col, belowY) {
     var out = [], t = L.top(col);
-    if (t < 17) out.push(t * 16);
+    if (t < L.rows) out.push(t * 16);
     L.plats.forEach(function (pl) { if (col >= pl.x && col < pl.x + pl.w) out.push(pl.y * 16); });
+    (L.bridges || []).forEach(function (pl) { if (col >= pl.x && col < pl.x + pl.w) out.push(pl.y * 16); });
     return out.filter(function (y) { return y > belowY; }).sort(function (a, b) { return a - b; });
   }
   // Manières d'essayer : marcher, saut long, saut + s'accrocher puis se hisser, grimper (colonne) puis aller à droite.
   var PLANS = [
     function (f, d) { return { right: d > 0, jump: false }; },
+    function (f, d) { return { right: d > 0, jump: f > 1 && f <= 7 }; },
     function (f, d) { return { right: d > 0, jump: f > 1 && f <= 23 }; },
     function (f, d) { return { right: d > 0, jump: (f > 1 && f <= 23) || (f > 50 && f < 56) }; },
-    function (f, d) { return { right: f > 100 && d > 0, up: f > 1 && f < 140, jump: false }; }
+    function (f, d) { return { right: f > 100 && d > 0, up: f > 1 && f < 140, jump: false }; },
+    function (f, d, px, g) { var near = Math.abs(g.player.x - px.x) < 32; return { right: near && g.player.x < px.x, left: near && g.player.x > px.x, jump: near && f > 2 }; },
+    function (f, d, px, g) { var near = Math.abs(g.player.x - px.x) < 32 && f > 110; return { right: near && g.player.x < px.x, left: near && g.player.x > px.x, jump: near }; }
   ];
   function reset(x0, s) {
+    if (g.gz) {
+      g.gz.time = 0; g.gz.lastRing = null;
+      g.gz.impulseMs = 0; g.gz.immune = 0;
+      g.gz.boosts.forEach(function (boost) { boost.cooldown = 0; });
+      g.gz.surfaces.forEach(function (surface) {
+        surface.progress = 0; surface.timer = 0; surface.gone = 0;
+        surface.body.enable = !(surface.mechanic.leurre || surface.mechanic.solide === false);
+        surface.obj.setPosition(surface.x, surface.y); surface.body.updateFromGameObject();
+      });
+      g.gz.rings.forEach(function (r) { r.cooldown = 0; });
+    }
     g.hanging = null; g.climbing = null; g.setCrouch(false); b.setAllowGravity(true); b.enable = true;
     b.reset(x0, s); p.setAlpha(1);
   }
   saved.forEach(function (px) {
     var ok = false;
-    for (var d = -24; d <= 84 && !ok; d += 6) {
+    for (var d = -24; d <= (g.gz ? 208 : 84) && !ok; d += 6) {
       var x0 = px.x - d, s = surfaces(Math.floor(x0 / 16), px.y - 2)[0];
       if (s === undefined) continue;
       PLANS.forEach(function (plan) {
         if (ok) return;
         reset(x0, s);
         var f = 0;
-        g.bot = { step: function () { f++; var o = plan(f, d); o.left = !o.right && d < 0 && f > 1; return o; } };
-        for (var i = 0; i < 170 && !ok; i++) {
+        g.bot = { step: function () { f++; var o = plan(f, d, px, g); o.left = o.left || (!o.right && d < 0 && f > 1); return o; } };
+        for (var i = 0; i < (g.gz ? 300 : 170) && !ok; i++) {
           stepFn(1);
           if (b.x < px.x + 5 && b.x + b.width > px.x - 5 && b.y < px.y + 5 && b.y + b.height > px.y - 5) ok = true;
+          if (g.gz && g.gz.lastRing && Math.hypot(g.gz.lastRing.x - px.x, g.gz.lastRing.y - px.y) < 20) ok = true;
         }
       });
     }

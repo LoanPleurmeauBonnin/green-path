@@ -14,7 +14,7 @@
   "mode": ["interactive", "data-driven"],
   "stack": ["JavaScript", "Phaser 3.90.0", "Canvas/WebGL", "HTML", "CSS"],
   "data_sources": ["Open-Meteo : météo de Nantes, cache et fallback local"],
-  "ai_usage": "Claude Code et Claude Design pour le prototype initial ; GPT-6.1 Sol via OpenCode pour audit, correctifs, tests et documentation. Voir README.md, AI usage.",
-  "version": "0.4-shelters",
-  "status": "Prototype : 3 étapes jouables sur 12 ; corpus secondaire et fin à développer."
+  "ai_usage": "Claude Code et Claude Design pour le prototype initial ; GPT-6.1 Sol via OpenCode pour audit, correctifs, interprétation des 12 GZones, boss, tests et documentation. Voir README.md, AI usage.",
+  "version": "0.5-gzones",
+  "status": "Version de travail : 12 parcours et 3 boss implémentés ; tests et retouches humains à poursuivre."
 }
