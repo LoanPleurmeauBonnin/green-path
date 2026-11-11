@@ -12,7 +12,6 @@ const c = { window: null }; c.window = c; vm.createContext(c); c.GP = G;
 vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'js/systems/Lint.js'), 'utf8'), c);
 
 const nums = Object.keys(G.Redesigns).map(Number);
-test('Redesigns : la liste des niveaux redessinés', () => { assert.ok(nums.includes(2) && nums.includes(4)); });
 for (const n of nums) {
   test('Niveau ' + n + ' redessiné : finissable, cohérent, repères conservés', () => {
     const d = G.GZONES[n - 1], L = G.LEVELS[G.GZoneLevels.ids[n - 1]];

@@ -95,112 +95,32 @@ GP.Kit = (function () {
 GP.Redesigns = {};
 
 /**
- * 2 · Cathédrale Saint-Pierre-et-Saint-Paul. Le parvis et la façade (le portail s'ouvre sous un tympan de pierre), la grande nef
- * (sol de dalles, colonnes grimpables, escalier vers les galeries), les galeries des vitraux (balustrades portées par des piliers),
- * puis les toits : les corniches reposent sur des empilements de contreforts, gardées par des gargouilles, jusqu'à la tour et sa rosace.
+ * 5 · Théâtre Graslin. Le niveau est un plan de tronçons (GP.LevelGen) : on apprend une chose à la fois, sur un sol qui ne change
+ * de hauteur que par marches d'une tuile. Terrasses de café (rangées à 3 tuiles) → premier trou → bloc → perron (escalier) → tremplin
+ * parasol → les huit colonnes (blocs de 3 tuiles, pointes) → oiseaux et pontons → le fronton.
  */
-GP.Redesigns[2] = (function () {
-  var K = GP.Kit, b = new K.Builder({ sol_y: 22, hauteur: 24 });
-  var PIERRE = { top_sprite: 'cathedrale_pierre_haut', fill_sprite: 'cathedrale_pierre_blanche_pleine_2' };
-  var NEF = { top_sprite: 'cathedrale_dalle_nef', fill_sprite: 'cathedrale_pierre_blanche_pleine_2' };
-  var CORN = ['cathedrale_corniche_g', 'cathedrale_corniche_m', 'cathedrale_corniche_d'];
-  var COL = { sprite_chapiteau: 'cathedrale_colonne_chapiteau', sprite_fut: 'cathedrale_colonne_fut', sprite_base: 'cathedrale_colonne_base' };
-
-  // Le parvis, la façade et le portail
-  b.ground(0, 17, PIERRE);
-  b.deco('cathedrale_tour_facade', 0, 21, { layer: 'sol' });
-  b.deco('cathedrale_arc_brise_porte', 12, 21);
-  b.deco('cathedrale_statue_niche', 9, 21);
-  b.mass(10, 13, 7, PIERRE, { fill_to: 18, grab: false, note: 'tympan au-dessus du portail' });
-  b.deco('cathedrale_clocheton', 10.5, 12);
-  b.deco('cathedrale_clocheton', 14.5, 12);
-  // La nef : voûte, sol de dalles, rebord à gravir, colonnes, escalier
-  b.mass(17, 0, 78, PIERRE, { fill_to: 3, grab: false, bas_sprite: 'cathedrale_pierre_bas', note: 'voûte de la nef' });
-  b.ground(17, 83, NEF);
-  b.mass(21, 18.5, 3, PIERRE, { grab: true, note: 'marche de 3,5 tuiles : accroche ↑' });
-  b.column(30, 17, COL); b.column(42, 14, COL);
-  b.ramp(50, 22, 58, 14, PIERRE);
-  // Les galeries des vitraux
-  [[58, 14, 9, [58, 62, 66]], [70, 12, 8, [70, 74, 77]], [81, 10, 6, [81, 86]]].forEach(function (g) {
-    b.plat.push({ id: b.uid('gal'), type: 'galerie', x: g[0], y: g[1], w: g[2], sprite: 'cathedrale_galerie_balustrade', piliers: g[3], sprite_fut: 'cathedrale_colonne_fut', sol_y: 22, grab: true });
+GP.Redesigns[5] = (function () {
+  var THEME = {
+    ground: { top_sprite: 'graslin_sol_haut_1', fill_sprite: 'graslin_sol_plein' },
+    block: { top_sprite: 'graslin_sol_haut_2', fill_sprite: 'graslin_sol_plein' },
+    rowSet: ['graslin_terrasse_cafe_g', 'graslin_terrasse_cafe_m', 'graslin_terrasse_cafe_d'],
+    spikes: 'commun_pointes_fer_1', bounceSprite: 'graslin_parasol_cafe', monument: 'graslin_monument_graslin', signSprite: 'signes_panneau_saut',
+    decor: ['graslin_table_cafe', 'graslin_lampadaire_ornemente', 'graslin_muse_statue', 'commun_fleur_jaune', 'commun_fleur_rouge'],
+    signs: {
+      row: 'Monte sur les terrasses de café pour attraper les pixels.', gap: 'Un trou : prends de l’élan et maintiens le saut.',
+      block: 'Un obstacle plein : saute par-dessus.', up: 'Les marches du perron : saute de l’une à l’autre.', bounce: 'Saute sur un parasol : il te fait rebondir.',
+      spikes: 'Les pointes piquent : saute par-dessus.', bird: 'Les oiseaux volent bas : maintiens ↓ pour passer dessous.', stones: 'Les pontons te portent : saute de l’un à l’autre.',
+      wall: 'Maintiens ↑ près d’un rebord pour t’y accrocher.', fin: 'Franchis l’arche sous le fronton pour terminer.'
+    }
+  };
+  return GP.LevelGen.generate({
+    num: 5, largeur: 224, hauteur: 22, groundY: 16, seed: 5, theme: THEME, pixels: 24, tempsRef: 105,
+    plan: [
+      ['mark', 'Les Terrasses de Café'], ['rest', 8], ['row', 7, 3], ['rest', 4], ['gap', 3], ['block', 1], ['rest', 5, 'lantern'],
+      ['mark', 'Le Grand Perron'], ['up', 4], ['rest', 4], ['block', 2], ['up', 3], ['rest', 3], ['bounce'], ['rest', 5, 'lantern'],
+      ['mark', 'Les Huit Colonnes'], ['spikes', 2], ['block', 3], ['spikes', 3], ['block', 3, 2], ['gap', 4], ['rest', 4, 'lantern'],
+      ['mark', 'Les Muses et les Lustres'], ['bird', 6], ['stones', 10], ['rest', 4, 'lantern'], ['spikes', 3], ['bird', 7], ['row', 6, 3], ['rest', 4],
+      ['mark', 'Le Fronton'], ['down', 3], ['rest', 5, 'lantern'], ['gap', 3], ['block', 2], ['rest', 6]
+    ]
   });
-  b.mass(87, 9, 1, PIERRE, { grab: true });
-  b.mass(88, 8, 12, PIERRE, { grab: true, note: 'palier devant la porte des toits' });
-  b.mass(95, 0, 5, PIERRE, { fill_to: 4, grab: false, note: 'linteau de la porte des toits' });
-  b.deco('cathedrale_arc_brise_porte', 96, 7);
-  for (var i = 0; i < 11; i++) b.deco(i % 2 ? 'cathedrale_vitrail_haut_2' : 'cathedrale_vitrail_haut_1', 19 + i * 7, 2, { layer: 'inlay' });
-  // Les toits : une corniche sur un empilement de contreforts
-  b.ground(100, 58, PIERRE);
-  function roof(x, y, w) {
-    b.row(x, y, w, CORN, { grab: true });
-    var cx = x + Math.floor(w / 2);
-    for (var by = y + 2; by <= 21; by += 3) b.deco('cathedrale_contrefort', cx, Math.min(by, 21));
-  }
-  roof(103, 6, 3); roof(109, 7, 5); roof(117, 5, 3); roof(123, 4, 6);
-  // La tour, sa rosace et ses clochetons
-  b.mass(129, 6, 29, PIERRE, { grab: true, note: 'terrasse de la tour' });
-  b.deco('cathedrale_rosace', 137, 12, { layer: 'inlay' });
-  b.deco('cathedrale_clocheton', 131, 5); b.deco('cathedrale_clocheton', 143, 5);
-  // Dangers : pointes au sol, cierge de la galerie, gargouilles
-  [[34, 'cathedrale_pointes_pierre_1', 3], [46, 'cathedrale_pointes_pierre_2', 2], [67, 'cathedrale_pointes_pierre_1', 3], [78, 'cathedrale_pointes_pierre_2', 3],
-   [100, 'cathedrale_pointes_pierre_1', 3], [106, 'cathedrale_pointes_pierre_2', 3], [114, 'cathedrale_pointes_pierre_1', 3], [120, 'cathedrale_pointes_pierre_2', 3]]
-    .forEach(function (d) { b.danger(d[1], d[0], 21, 'mortel', { w: d[2] }); });
-  b.danger('cathedrale_cierge_flamme', 84, 9, 'mortel');
-  [[105, 5], [119, 4]].forEach(function (g) { b.danger('cathedrale_gargouille', g[0], g[1], 'cyclique', { cycle: { periode_s: 2.5, projectile: 'ciel_goutte_pluie', portee_tuiles: 3, direction: 'gauche' } }); });
-  b.bird('pigeon_z3', 68, 78, 12, 2.55); b.bird('pigeon_z4', 108, 114, 7, 2.98);
-  // Pixels, lanternes, panneaux
-  [[7, 20], [9, 19], [21, 17], [30, 15], [42, 12], [46, 19, 1], [52, 17], [60, 12], [64, 20], [73, 10, 1], [82, 8], [104, 4], [111, 5, 1], [118, 3, 1], [125, 2], [136, 4], [138, 3], [140, 4]]
-    .forEach(function (p) { b.px(p[0], p[1], p[2]); });
-  b.lantern(59, 13).lantern(90, 7).lantern(127, 3);
-  b.sign(8, 21, 'Entre dans la cathédrale par le portail.', 'signes_panneau_fleches');
-  b.sign(18, 21, 'Maintiens ↑ près d’un rebord en l’air pour t’y accrocher et grimper !', 'signes_panneau_fleches');
-  b.sign(24, 21, 'Cierges et pointes : saute par-dessus.'); b.sign(27, 21, 'Maintiens ↑ contre une colonne pour y grimper.');
-  b.sign(60, 13, 'Les pigeons volent bas : maintiens ↓ pour passer dessous.', 'signes_panneau_fleches');
-  b.sign(82, 9, 'Le cierge brûle : saute par-dessus.');
-  b.sign(98, 7, 'La gargouille crache : passe entre deux jets.');
-  b.zone('Le Parvis', 0, 17).zone('La Nef : colonnes et cierges', 17, 58).zone('La Galerie des Vitraux', 58, 100).zone('Les Toits et Gargouilles', 100, 129).zone('La Terrasse de la Rosace', 129, 158);
-  return b.out();
-})();
-
-/**
- * 4 · Île Feydeau. Le quai Turenne, puis les hôtels d'armateurs : chaque balcon de fer forgé est accroché à la façade d'un hôtel
- * (plus de poteaux plantés dans l'eau), les gabares s'enfoncent sous le poids du joueur pour traverser le bras de Loire, et la
- * proue de pierre ferme l'île. Les balcons penchés font glisser (glisse_tuiles_s).
- */
-GP.Redesigns[4] = (function () {
-  var K = GP.Kit, b = new K.Builder({ sol_y: 14, hauteur: 18 });
-  var QUAI = { top_sprite: 'feydeau_sol_haut_1', fill_sprite: 'feydeau_sol_plein' };
-  var BALC = ['feydeau_balcon_fer_g', 'feydeau_balcon_fer_m', 'feydeau_balcon_fer_d'];
-  var quais = [[0, 36], [63, 11], [74, 5], [94, 5], [112, 6], [152, 28]];
-  quais.forEach(function (q) { b.ground(q[0], q[1], QUAI); });
-  function onQuai(x) { return quais.some(function (q) { return x >= q[0] && x < q[0] + q[1]; }); }
-  // balcons : x, y, largeur, glisse (tuiles/s ; + vers la droite)
-  [[14, 11, 5, 1.2], [22, 10, 3, 1.2], [39, 11, 4, 1.2], [47, 10, 4, -1.2], [55, 9, 5, 1.2], [65, 11, 4, 1.2], [121, 11, 4, 1.2], [135, 11, 4, 0], [135, 9, 3, 0], [143, 9, 4, 1.2], [159, 11, 5, -1.2]]
-    .forEach(function (c) { b.row(c[0], c[1], c[2], BALC, c[3] ? { glisse_tuiles_s: c[3] } : {}); });
-  // une façade d'hôtel derrière chaque groupe de balcons (le pied dans l'eau si le balcon est au-dessus du bras de Loire)
-  var hotels = [13, 16.5, 21, 38.5, 46.5, 54.5, 58, 63.5, 120.5, 134.5, 142.5, 157.5, 161];
-  hotels.forEach(function (x, i) { b.deco(i % 3 === 1 ? 'feydeau_hotel_armateur_b_penchee' : 'feydeau_hotel_armateur_a', x, onQuai(x + 1.5) ? 13 : 14, { layer: 'fond' }); });
-  [14, 18, 159, 163].forEach(function (x) { b.deco('feydeau_mascaron', x, 10, { layer: 'inlay' }); });
-  // les gabares : appuis qui s'enfoncent
-  [80, 87, 101, 107, 128].forEach(function (x, i) {
-    var id = 'gabare' + (i + 1);
-    b.plat.push({ type: 'pad', id: id, x: x, y: 14, w: 4, solid: 'top', sur: id, mecanique: { type: 'flotteur', enfonce_tuiles: 1.5, duree_s: 1.5, remonte_s: 2 } });
-    b.decor.push({ sprite: 'petit_bateau', x: x, y: 14.25, id: id + 'a' }); b.decor.push({ sprite: 'petit_bateau', x: x + 2, y: 14.25, id: id + 'b' });
-  });
-  [[6, 'feydeau_bollard'], [8, 'feydeau_ancre'], [31, 'feydeau_bollard'], [66, 'feydeau_bollard'], [75, 'feydeau_ancre'], [113, 'feydeau_bollard'], [154, 'feydeau_bollard']]
-    .forEach(function (d) { b.deco(d[1], d[0], 13); });
-  // l'eau du bras de Loire : trois rangées de profondeur
-  [[36, 27], [79, 2], [84, 3], [91, 3], [99, 2], [105, 2], [111, 1], [118, 34]].forEach(function (w) { [15, 16, 17].forEach(function (y) { b.water(w[0], w[1], y); }); });
-  [[29, 13], [88, 13], [103, 13], [122, 10]].forEach(function (p) { b.danger('feydeau_obstacle_ancre_pointes', p[0], p[1], 'mortel'); });
-  b.enemy({ id: 'mouette_z2', sprite: 'ciel_oiseau', type: 'patrouille_horizontale', x1: 44, x2: 53, y: 8.875, vitesse: 3.5, touche: 'debout', esquive: 'accroupi' });
-  b.enemy({ id: 'mouette_z4a', sprite: 'ciel_oiseau', type: 'patrouille_horizontale', x1: 126, x2: 133, y: 12.875, vitesse: 3.5, touche: 'debout', esquive: 'accroupi' });
-  b.enemy({ id: 'mouette_z4b', sprite: 'ciel_oiseau', type: 'patrouille_horizontale', x1: 140, x2: 148, y: 7.875, vitesse: 3.5, touche: 'debout', esquive: 'accroupi' });
-  [[10, 13], [17, 9], [21, 8], [29, 11], [41, 9], [48, 8], [58, 6, 1], [67, 9], [82, 12], [91, 13], [96, 12], [109, 11], [124, 9], [130, 11], [136, 6, 1], [144, 7], [147, 7], [160, 9], [163, 9], [168, 13]]
-    .forEach(function (p) { b.px(p[0], p[1], p[2]); });
-  b.lantern(34, 13).lantern(72, 13).lantern(114, 13).lantern(145, 8);
-  b.sign(5, 13, 'Les balcons penchés te font glisser : saute dans le sens de la pente pour aller plus loin.', 'signes_panneau_fleches');
-  b.sign(26, 13, 'Les pointes piquent : saute par-dessus.'); b.sign(39, 10, 'Les mouettes rasent les balcons : maintiens ↓ pour passer dessous.');
-  b.sign(76, 13, 'Les bateaux s’enfoncent : ne reste pas immobile.');
-  b.zone('Le Quai Turenne', 0, 36).zone('Les Hôtels d’Armateurs', 36, 74).zone('La Traversée des Gabares', 74, 112).zone('La Cour du Temple du Goût', 112, 152).zone('La Proue de Pierre', 152, 180);
-  return b.out();
 })();

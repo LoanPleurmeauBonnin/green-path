@@ -15,7 +15,7 @@ function load(withBalance) {
   const files = ['js/config.js', 'js/data/tuning.js', 'js/systems/PixelArt.js', 'js/data/locations.js', 'js/data/levels.js', 'js/data/gzones.js'];
   if (withBalance) {   // sprites (mesure des appuis) et niveaux redessinés avant GZoneLevels, comme dans index.html
     ['palette', 'commun', 'carte', 'ciel', 'signes', 'jardin', 'cathedrale', 'chateau', 'centre', 'ile', 'bouffay', 'retouches'].forEach(s => files.push('js/data/sprites/' + s + '.js'));
-    files.push('js/data/Redesigns.js', 'js/data/GZoneLevels.js');
+    files.push('js/systems/PixelArt.js', 'js/data/LevelGen.js', 'js/data/Redesigns.js', 'js/data/GZoneLevels.js');
   }
   files.forEach(f => vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), c));
   return c.GP;
