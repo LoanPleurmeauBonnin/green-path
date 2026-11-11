@@ -101,6 +101,19 @@ GP.GZoneArt = (function () {
           for(var t=0;t<20;t++){var xx=Math.round((w-8)*t/20);c.fillRect(x+4+xx,yy+t,1,1);c.fillRect(x+w-5-xx,yy+t,1,1);}}
       }else drawMass(p,material(p));
     });
+    // Rampes : même tranches que la collision, matériau des blocs, arête d'encre et reflet le long de la pente.
+    (plan.ramps||[]).forEach(function(r){
+      var sl=GP.GZoneRuntime.rampSlices(r,d.hauteur),m=material(r),top=Math.floor(Math.min.apply(null,sl.map(function(s){return s.y;}))/16)*16;
+      c.save();c.beginPath();sl.forEach(function(s){c.rect(s.x,s.y,s.w,s.h);});c.clip();
+      put(m.fill[0],sl[0].x,top,sl.length*4,sl[0].y+sl[0].h-top);
+      c.restore();
+      sl.forEach(function(s,i){
+        c.fillStyle=GP.PAL.k;c.fillRect(s.x,s.y,4,1);
+        c.fillStyle='rgba(255,255,255,0.2)';c.fillRect(s.x,s.y+1,4,1);
+        var up=sl[i+1]&&sl[i+1].y<s.y?sl[i+1].y:s.y;   // contre-marche : trait d'encre jusqu'à la tranche suivante
+        if(up<s.y){c.fillStyle=GP.PAL.k;c.fillRect(s.x+3,up,1,s.y-up);}
+      });
+    });
     L.roofs.forEach(function(r){
       c.fillStyle=GP.PAL.k;c.fillRect(r.x,r.y,r.w,r.h);
       c.fillStyle=d.num===10?GP.PAL.l:GP.PAL.e;c.fillRect(r.x,r.y+1,r.w,4);
@@ -146,7 +159,8 @@ GP.GZoneArt = (function () {
     });
     // Une seule représentation du monument d'arrivée, pas une seconde copie étirée.
     var monument=d.arrivee.monument,k=key(scene,monument.sprite);
-    if(k)scene.add.image(monument.x*16,(monument.y+1)*16,k).setOrigin(0,1).setDepth(1);
+    // Le monument a déjà été montré en grand sur la carte et sur l'écran de résultat : devant l'arche, seule celle-ci compte (sauf la Tour LU, décor du boss).
+    if(k&&d.num===12)scene.add.image(monument.x*16,(monument.y+1)*16,k).setOrigin(0,1).setDepth(1);
   }
   return { prepare:prepare,key:key,build:build };
 })();

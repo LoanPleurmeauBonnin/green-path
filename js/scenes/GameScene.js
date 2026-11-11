@@ -309,7 +309,13 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       var label = GP.UI.txt(this, img.x + 16, img.y - 56, '', GP.PAL.c, {
         align: 'right', backgroundColor: GP.PAL.k, padding: { x: 4, y: 4 }, wordWrap: { width: 200 }
       }).setOrigin(1, 1).setDepth(40);
-      this.exit = { img: img, label: label, count: -1, x: img.x - 12, y: img.y - 32, w: 24, h: 34 };
+      // Flèche qui rebondit au-dessus de l'arche quand l'image est complète (à la place d'un texte).
+      var arrow = this.add.graphics().setDepth(41).setVisible(false), ay = img.y - img.height - 6;
+      arrow.fillStyle(GP.int(GP.PAL.k)); arrow.fillRect(-5, -10, 10, 7); arrow.fillTriangle(-9, -4, 9, -4, 0, 5);
+      arrow.fillStyle(GP.int(GP.PAL.g)); arrow.fillRect(-3, -9, 6, 5); arrow.fillTriangle(-7, -5, 7, -5, 0, 2);
+      arrow.setPosition(img.x, ay);
+      if (!GP.reducedMotion) this.tweens.add({ targets: arrow, y: ay + 4, duration: 420, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      this.exit = { img: img, label: label, arrow: arrow, count: -1, x: img.x - 12, y: img.y - 32, w: 24, h: 34 };
     }
   }
 
@@ -329,11 +335,12 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       e.bossDone = bossDone;
       var missing = this.pixels.find(function (p) { return !p.taken; });
       var zone = missing && (this.L.zones || []).find(function (z) { return missing.x >= z.x * 16 && missing.x < z.end * 16; });
-      e.label.setText(!bossDone ? 'TERMINE L’ÉPREUVE DU BOSS' : complete ? 'IMAGE COMPLÈTE · ENTRE DANS L’ARCHE' :
+      e.label.setText(!bossDone ? 'TERMINE L’ÉPREUVE DU BOSS' : complete ? '' :
         'IL MANQUE ' + (this.pc.total - this.pc.count) + ' PIXELS' + (zone ? '\nÀ CHERCHER : ' + zone.name : ''));
       e.img.setTint(complete ? GP.int(GP.PAL.g) : GP.int(GP.PAL.m));
     }
-    e.label.setVisible(Math.abs(this.player.x - e.img.x) < 160);
+    e.label.setVisible(!complete && Math.abs(this.player.x - e.img.x) < 160);
+    if (e.arrow) e.arrow.setVisible(complete);
   }
 
   // ---------- Interface ----------
@@ -562,6 +569,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var dir = (right ? 1 : 0) - (left ? 1 : 0), onGround = b.blocked.down || b.touching.down;
 
     // --- tolérances invisibles (Celeste) : coin de plafond au sommet du saut, bord de mur frôlé de justesse ---
+    if (onGround && dir && U.stepUp && !this.hanging && !this.climbing && (dir > 0 ? b.blocked.right : b.blocked.left)) this.ledgeAssist(dir, U.stepUp);
     if (!onGround && !this.hanging && !this.climbing) {
       if (b.blocked.up && this.lastVy < -40 && U.headCorner) this.headCorner(dir);
       else if (dir && U.ledgeAssist && (dir > 0 ? b.blocked.right : b.blocked.left) && b.velocity.y > -100) this.ledgeAssist(dir);
@@ -653,8 +661,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
    * Bord de mur frôlé : en l'air, poussé contre un mur dont le dessus est à 8 px au plus sous les pieds (là où l'accroche ne
    * se déclenche pas encore), on monte dessus au lieu de buter.
    */
-  ledgeAssist(dir) {
-    var p = this.player, b = p.body, N = this.TUNE.ledgeAssist, fx = dir > 0 ? b.right + 1 : b.x - 2;
+  ledgeAssist(dir, max) {
+    var p = this.player, b = p.body, N = max || this.TUNE.ledgeAssist, fx = dir > 0 ? b.right + 1 : b.x - 2;
     for (var d = 0; d <= N; d++) {
       var y = b.bottom - 1 - d;
       if (!this.solidAt(fx, y) || this.solidAt(fx, y - 1)) continue;
@@ -863,7 +871,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.tweens.killTweensOf(px.img);
     px.img.destroy();
     var color = this.pc.reveal(), cam = this.cameras.main, self = this;
-    if (!quiet) GP.Sfx.play('select');
+    if (!quiet) GP.Sfx.play('pixel');
     if (!GP.reducedMotion && !quiet) {
       var sp = this.add.image(px.x - cam.scrollX, px.y - cam.scrollY, 'spark').setScrollFactor(0).setDepth(70).setTint(color).setScale(2);
       this.tweens.add({ targets: sp, x: 26, y: 24, scale: 1, duration: 450, ease: 'Quad.easeIn', onComplete: function () { sp.destroy(); } });
@@ -873,7 +881,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.events.emit('playtest-event', { type: 'collect', count: this.pc.count, x: px.x, y: px.y });
     if (this.pc.done()) {
       if (!this.L.exit) this.finish();
-      else { this.updateExit(); if (!quiet) this.toast('IMAGE COMPLÈTE · REJOINS L’ARCHE'); }
+      else { this.updateExit(); if (!quiet) GP.Sfx.play('unlock'); }
     }
   }
 
