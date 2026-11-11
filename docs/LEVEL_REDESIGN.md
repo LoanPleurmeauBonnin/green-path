@@ -1,5 +1,33 @@
 # Refonte des 12 niveaux — diagnostic et suivi
 
+## Correctif 0.5.1-rendering — suite à l'audit du site publié
+
+**Livraison autorisée : l'utilisateur a demandé commit, push et déploiement du correctif.** Cible : branche `fix/audit-green-path`, sans modification de `main`, projet Vercel `green-path`, domaine officiel `green-path-game.vercel.app`. La branche de travail, propre avant intervention, a été avancée sans commit de fusion jusqu'à `55549c7` (`main`) pour conserver les photos et décors récemment intégrés. Les originaux JSON sont inchangés. Les mentions de corrections uniquement locales décrivent la phase précédant cette autorisation ; la section 0.5-gzones concerne la livraison antérieure.
+
+### Défauts reproduits dans la production
+
+- 14 masses du Jardin remplies par `gz_soil` générique ; aux Chantiers, des piles de 4/6 tuiles restaient en terre parce que le remplacement par acier était limité à une largeur de 3.
+- Comparaison `undefined === undefined` dans l'association des visuels : décors anonymes attribués à des plateformes sans lien ; galeries et certains mobiles sans leur sprite propre.
+- Pièces `gabare1a/b` non suivies par la gabare ; groupes de conteneurs anonymes non déclarés ; pads se contentant d'un rectangle de secours.
+- Le chemin GZone contournait le terrain de `LevelArt` ; bordures latérales/angles des jeux de tuiles ignorés, fonds du parc/Château et salles présents mais inutilisés.
+
+### Corrections effectuées
+
+1. **Associations et corps visibles** — identifiants non vides obligatoires ; suffixes de pièces a/b bornés (jamais `gear10` capturé par `gear1`) ; groupes anonymes explicitement déclarés par sprite/coordonnées source dans `js/data/levelStyles.js`. Une image ne peut pas avoir deux propriétaires mobiles ; les trois pads statiques de la serre peuvent partager sa silhouette. Les galeries ont leur bande native répétée sur toute la portée, les sprites non répétables ne sont plus coupés arbitrairement à la largeur du pad. Les bateaux, caisses, tubes et engrenages sont des assemblages suivis par leurs vrais corps. Les lustres de Pommeraye ont un collider de 20 px, largeur native du sprite, en conservant centre, hauteur et amplitude du trajet ; retrait des ailes de collision invisibles de l'ancien pad 48 px. Câbles dessinés vers les rails ou la couverture explicitement présents.
+2. **Matériaux** — profils `natural`, `quay`, `masonry`, `metal`, déclarés par rôle et identifiant source, sans heuristique de largeur dans le renderer. Aux Chantiers : pelouses de la friche/belvédère conservées, cales en quai minéral et toutes les piles structurelles en acier, y compris `p16`, `p18`, `p41`, `p42`. Le Jardin utilise les textures de terre/herbe, variantes et angles des planches existantes, pas `gz_soil`. Une texture de matériau inconnue est signalée au lieu d'être silencieusement effacée ou remplacée par de la terre.
+3. **Rendu actif et décors** — `GameScene.makeTerrain` passe toujours par `LevelArt.renderTerrain`, qui délègue au terrain GZone exact si nécessaire : un seul terrain affiché par scène. Les contours sont calculés sur l'union des masses : sommet, côtés, dessous et coins uniquement exposés, sans joint artificiel entre blocs contigus. Supports de fond à une profondeur distincte. Fonds `lv_fond_parc` et `lv_fond_chateau`, plantes/sculptures du Jardin, rails sources et deux salles recadrées du Château effectivement affichés. Les salles restent limitées aux deux baies couvertes, sans rendre sèche l'avant-cour ouverte. Les photos et autres ajouts de `main` sont conservés.
+
+### Vérifications du correctif
+
+- Node : **62/62**, dont dix nouveaux tests ciblés d'associations, matériaux, contours et largeur/centre des lustres ; avatar **285/285**.
+- Chrome, **pour chaque format 1920×1080, 1366×768 et 844×390** : rendu **104/104**, régression **73/73**, polish **97/97**, flux **44/44** ; aucune erreur JavaScript/console, ressource manquante ou écriture cloud. Rapport : [rendering-qa.json](rendering-qa.json). Ces contrôles incluent le pixel d'un coin réellement dessiné, les couleurs des piles industrielles, la portée visuelle des corps et le suivi pendant le mouvement.
+- Diagnostic solaire : **275/275 fragments** toujours atteignables depuis des surfaces candidates ; [rendering-geometry.json](rendering-geometry.json). Téléportations, morts neutralisées et interaction des anneaux prises en compte : pas une traversée connectée ni un essai humain.
+- Avant : [production](screenshots/render-before-production.png). Après : [1920×1080](screenshots/render-fix-1920x1080.png), [1366×768](screenshots/render-fix-1366x768.png), [844×390](screenshots/render-fix-844x390.png). Trois premiers points de terrain comparables ; autres vues dédiées aux galeries, flotteurs et salles. Positions de capture imposées, physique arrêtée et météo simulée ; pas des parcours humains.
+- Aucun temps cible, contrôle ou format de sauvegarde changé ; mêmes positions de fragments/checkpoints. La correction de largeur des lustres est couverte par le diagnostic physique. Cache préparé pour une publication ultérieure : `greenpath-offline-v6-rendering`, manifeste `0.5.1-rendering`.
+- Vérification hors ligne locale dans un contexte Chrome neuf : `levelStyles.js` présent dans le cache v6, serveur rendu inaccessible au navigateur puis rechargement du menu et création du niveau Chantiers réussis. Ce contrôle ne certifie pas tous les niveaux hors ligne ni un appareil physique.
+
+Accès local : **http://127.0.0.1:8130/tools/levels.html** ; ce sélecteur reste exclu de la publication, tout comme les outils, tests, rapports QA, fichiers d'environnement et schéma Supabase. La production utilise la carte normale. Aucune migration Supabase. La validation humaine et les essais matériels restent à faire ; ce correctif ne marque aucun niveau « Validé » du fait de sa publication.
+
 ## Livraison 0.5-gzones — autorisation de publication
 
 L'utilisateur a explicitement demandé **commit, push et déploiement Vercel** après la réalisation des douze niveaux. Cible : branche `fix/audit-green-path`, sans fusion dans `main`, projet Vercel existant `green-path`, domaine officiel `green-path-game.vercel.app`. Pas de migration Supabase. L'ancien domaine supprimé n'est pas rétabli. Les mentions « aucun commit/déploiement » des sections suivantes décrivent les phases précédentes, avant cette autorisation.

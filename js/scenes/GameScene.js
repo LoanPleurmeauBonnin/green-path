@@ -35,6 +35,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.TUNE = Object.assign({}, GP.Tuning.player);
     this.shelter = { rain: 0, snow: 0, wind: 0, id: null };
     this.surfaceMotion = 0;
+    this.structureArt = [];
     this.phy = { accelGround: this.TUNE.accelGround, accelAir: this.TUNE.accelAir, airPush: 0, sight: 0 };
     this.env = GP.WeatherRules.env(null);
     this.deaths = 0; this.time_ms = 0; this.paused = false; this.finished = false; this.invuln = 0;
@@ -97,9 +98,12 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   // ---------- Décor ----------
   makeBackground() {
     var L = this.L;
+    GP.LevelStyles.apply(L);
     this.sky = GP.LevelArt.sky(this, -40, L.sky || {});
-    var self = this;
-    (L.rooms || []).forEach(function (r) { self.add.image(r.x * 16, 0, r.key).setOrigin(0, 0).setDepth(-20); });   // salles intérieures : fond de pierre devant le ciel
+    GP.GZoneArt.rooms(this, L);
+    (L.artDecor || []).forEach(function (d) {
+      this.add.image(d.x, d.y, d.key).setOrigin(0.5, 1).setDepth(2).setData('sourceArt', d.key);
+    }, this);
     this.gzPlan = L.gzone ? GP.GZoneRuntime.plan(L) : null;
     if (L.gzone) GP.GZoneArt.build(this, L, this.gzPlan);
     this.architecture = L.architecture === 'chateau' ? GP.CastleArt.build(this, L) : null;
@@ -112,7 +116,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   makeTerrain() {
     var L = this.L, data = [];
     var self = this;
-    (L.gzone ? [] : GP.LevelArt.renderTerrain(this, 'lv_terrain', L)).forEach(function (k, i) {   // morceaux de 2048 px (limite des textures sur téléphone)
+    GP.LevelArt.renderTerrain(this, 'lv_terrain', L, this.gzPlan).forEach(function (k, i) {   // morceaux de 2048 px (limite des textures sur téléphone)
       self.add.image(i * GP.LevelArt.CHUNK, 0, k).setOrigin(0).setDepth(5);
     });
     // carte de collision : 1 terre, 2 pierre, 3 sens unique, 4 topiaire, 5 pavés (tuiles invisibles)

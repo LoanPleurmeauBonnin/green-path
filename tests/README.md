@@ -1,5 +1,16 @@
 # Vérifier Green Path
 
+## Correctif du rendu et des associations
+
+`tests/rendering.test.js` teste les identifiants absents, groupes de pièces, propriétaires mobiles, matériaux par rôle, vrais identifiants de masse et contours exposés. Le runner suivant vérifie les **pixels réellement produits**, les galeries visibles, le suivi des bateaux/conteneurs/lustres et l'immobilité des décors non associés, sur les douze niveaux et les trois formats :
+
+```bash
+PLAYWRIGHT_MODULE=/chemin/node_modules/playwright node tools/run-rendering-qa.cjs
+GREENPATH_GEOMETRY_REPORT=docs/rendering-geometry.json PLAYWRIGHT_MODULE=/chemin/node_modules/playwright node tools/run-level-geometry.cjs
+```
+
+Serveur local sur le port 8130 requis. Rapports : [rendering-qa.json](../docs/rendering-qa.json), [rendering-geometry.json](../docs/rendering-geometry.json). Planches : `docs/screenshots/render-fix-*`. Les anciens rapports et captures sont conservés. Les tests de composants/captures imposent des positions ; le diagnostic de fragments neutralise les morts. Aucun de ces résultats ne constitue une validation humaine d'architecture ou de difficulté.
+
 ## Recette actuelle — douze niveaux
 
 Les suites décrites plus bas conservent leurs historiques. Le jeu actif possède maintenant douze niveaux, dont trois boss approuvés. Sélecteur de développement : **http://127.0.0.1:8130/tools/levels.html**, après `python3 -m http.server 8130 --bind 127.0.0.1`.

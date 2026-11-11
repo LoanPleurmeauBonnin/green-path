@@ -15,6 +15,6 @@
   "stack": ["JavaScript", "Phaser 3.90.0", "Canvas/WebGL", "HTML", "CSS"],
   "data_sources": ["Open-Meteo : météo de Nantes, cache et fallback local"],
   "ai_usage": "Claude Code et Claude Design pour le prototype initial ; GPT-6.1 Sol via OpenCode pour audit, correctifs, interprétation des 12 GZones, boss, tests et documentation. Voir README.md, AI usage.",
-  "version": "0.5-gzones",
+  "version": "0.5.1-rendering",
   "status": "Version de travail : 12 parcours et 3 boss implémentés ; tests et retouches humains à poursuivre."
 }

@@ -1,5 +1,27 @@
 /** Géométrie exacte en pixels et mécanismes des GZones. Les chaînes de conception ne sont jamais évaluées. */
 GP.GZoneRuntime = (function () {
+  function identifier(value) { return typeof value === 'string' && value.length > 0; }
+  function associate(surfaces, visuals) {
+    surfaces.forEach(function (surface) {
+      var keys = [surface.sur, surface.id].filter(identifier);
+      surface.visuals = visuals.filter(function (visual) {
+        return keys.some(function (key) {
+          if (identifier(visual.surfaceId) && visual.surfaceId === key) return true;
+          if (!identifier(visual.id)) return false;
+          if (visual.id === key) return true;
+          // Pièces déclarées « gabare1a/b », « gear1a/b » : jamais gear10 ni un préfixe arbitraire.
+          return /\d$/.test(key) && visual.id.indexOf(key) === 0 && /^[a-z]$/.test(visual.id.slice(key.length));
+        });
+      });
+    });
+    visuals.forEach(function (visual) {
+      var owners = surfaces.filter(function (s) { return s.visuals.indexOf(visual) >= 0; });
+      // Une serre peut avoir plusieurs pads STATIQUES sur une silhouette unique, pas deux propriétaires animés.
+      if (owners.length > 1 && owners.some(function (s) { return s.mecanique && s.mecanique.type; })) {
+        throw new Error('Un décor mobile appartient à plusieurs plateformes : ' + (visual.id || visual.surfaceId));
+      }
+    });
+  }
   function plan(L) {
     var d=L.gzone, p={masses:[],surfaces:[],visuals:[],columns:[],galleries:[]}, all=d.plateformes, ids={};
     all.forEach(function(a){if(a.id&&a.type)ids[a.id]=a;});
@@ -8,6 +30,7 @@ GP.GZoneRuntime = (function () {
       if(a.type==='masse'){
         var b=Object.assign({},a,{bottom:a.fill_to===undefined?(a.to===undefined?d.hauteur:a.to):a.fill_to});
         b.decorative=!!a.fond||!!a.pilier;
+        b.material=GP.LevelStyles.material(d,b);
         b.oneWay=!!a.pilier||((a.w||1)<=1&&b.bottom-a.y>4)||/façade.*pilier/.test(a.note||'');
         p.masses.push(b);return;
       }
@@ -32,8 +55,10 @@ GP.GZoneRuntime = (function () {
           de:[a.x1,a.y1],vers:[a.x2,a.y2],vitesse_tuiles_s:a.v||2,periode_s:a.periode_s,
           sens:a.rotation,fragile:a.fragile_s?{cede_apres_s:a.fragile_s,regenere_apres_s:3}:null},raw:a});
     });
-    // Associer chaque pad mobile à ses visuels, dont les engrenages à deux pièces.
-    p.surfaces.forEach(function(s){s.visuals=p.visuals.filter(function(v){return v.id===s.sur||v.id===s.id||(/^gear/.test(s.id||'')&&v.id&&v.id.indexOf(s.id)===0);});});
+    p.visuals.forEach(function(v){GP.LevelStyles.decorate(d,v);});
+    p.surfaces.forEach(function(s){GP.LevelStyles.surface(d,s,p.visuals);});
+    GP.LevelStyles.bindVisuals(d,p.visuals);
+    associate(p.surfaces,p.visuals);
     L.plats=p.surfaces.filter(function(s){return Number.isFinite(s.y)&&!(s.mecanique&&s.mecanique.leurre);}).concat(p.masses.filter(function(p){return !p.decorative;})).map(function(s){return {x:s.x,y:s.y,w:s.w||1};});
     return p;
   }
@@ -55,21 +80,41 @@ GP.GZoneRuntime = (function () {
     L.roofs.forEach(function(r){self.solids.push(self.box(r.x,r.y,r.w,r.h,false));});
     this.plan.surfaces.forEach(function(p,i){
       if(!Number.isFinite(p.y))return;
-      var s=self.box(p.x*16,p.y*16,(p.w||1)*16,6,true);s.def=p;s.mechanic=p.mecanique||{};s.progress=0;s.timer=0;s.gone=0;
+      var s=self.box(p.x*16,p.y*16,(p.w||1)*16,6,true);s.def=p;s.mechanic=p.mecanique||{};s.progress=0;s.timer=0;s.gone=0;s.imageOffsetX=0;
       if(p.sprite_set){s.img=g.add.image(s.x,s.y,g.rowTexture('gz_surface_'+i,p.sprite_set,Math.ceil(p.w||1))).setOrigin(0).setDepth(9);}
       else if(!p.visuals.length){
         var key=GP.GZoneArt.key(g,p.sprite);
         if(key){
-          var im=g.textures.get(key).getSourceImage(),o=GP.PixelArt.canvas(s.w,im.height);
-          for(var x=0;x<s.w;x+=im.width)o.ctx.drawImage(im,x,0);
-          GP.PixelArt.toTexture(g,'gz_single_surface_'+i,o.cv);
-          s.img=g.add.image(s.x,s.y,'gz_single_surface_'+i).setOrigin(0).setDepth(9);
+          var im=g.textures.get(key).getSourceImage(),info=GP.Sprites.info(p.sprite);
+          if(p.type==='galerie'||(info&&info.tile_x)){
+            var o=GP.PixelArt.canvas(s.w,im.height);
+            for(var x=0;x<s.w;x+=im.width)o.ctx.drawImage(im,x,0);
+            GP.PixelArt.toTexture(g,'gz_single_surface_'+i,o.cv);
+            s.img=g.add.image(s.x,s.y,'gz_single_surface_'+i).setOrigin(0).setDepth(9);
+          }else{
+            s.imageOffsetX=(s.w-im.width)/2;
+            s.img=g.add.image(s.x+s.imageOffsetX,s.y,key).setOrigin(0).setDepth(9);
+          }
         }
       }
-      if(!s.img&&!p.visuals.length){s.img=g.add.rectangle(s.x,s.y,s.w,5,GP.int(GP.PAL.t)).setOrigin(0).setDepth(9);}
+      if(!s.img&&!p.visuals.length){s.placeholder=true;s.img=g.add.rectangle(s.x,s.y,s.w,5,GP.int(GP.PAL.p)).setOrigin(0).setDepth(9);}
       if(s.mechanic.leurre||s.mechanic.solide===false){s.body.enable=false;if(s.img)s.img.setAlpha(0.25);}
       s.visuals=p.visuals.map(function(v){return {img:v.rendered,dx:(v.x-p.x)*16,dy:(v.y+1-p.y)*16};}).filter(function(v){return v.img;});
+      if(s.mechanic.type&&s.visuals.length){
+        var left=Math.min.apply(null,s.visuals.map(function(v){return s.x+v.dx;}));
+        var right=Math.max.apply(null,s.visuals.map(function(v){return s.x+v.dx+v.img.width;}));
+        var top=Math.min.apply(null,s.visuals.map(function(v){return s.y+v.dy-v.img.height;}));
+        var shiftX=s.x+s.w/2-(left+right)/2,shiftY=s.y-top;
+        s.visuals.forEach(function(v){v.dx+=shiftX;v.dy+=shiftY;v.img.setPosition(s.x+v.dx,s.y+v.dy);});
+      }
       if(s.mechanic.type==='rotation')s.visuals.forEach(function(v){v.dx+=v.img.width/2;v.dy-=v.img.height/2;v.img.setOrigin(0.5);});
+      var rail=p.raw&&p.raw.rail_y;
+      if(Number.isFinite(rail))s.railY=rail*16;
+      else if(s.mechanic.type==='oscillation'){
+        var roof=L.roofs.find(function(r){return s.x>=r.x&&s.x+s.w<=r.x+r.w&&r.y+r.h<s.y;});
+        if(roof)s.railY=roof.y+roof.h;
+      }
+      if(Number.isFinite(s.railY))s.cable=g.add.graphics().setDepth(4);
       self.surfaces.push(s);
     });
     this.plan.columns.forEach(function(p){
@@ -128,8 +173,9 @@ GP.GZoneRuntime = (function () {
         var vx=b.velocity.x,vy=b.velocity.y;
         b.reset(g.player.x+dx,g.player.y+dy);b.setVelocity(vx,vy);b.touching.down=true;
       }
-      s.obj.setPosition(nx,ny);s.body.updateFromGameObject();if(s.img)s.img.setPosition(nx,ny);
+      s.obj.setPosition(nx,ny);s.body.updateFromGameObject();if(s.img)s.img.setPosition(nx+s.imageOffsetX,ny);
       s.visuals.forEach(function(v){v.img.setPosition(nx+v.dx,ny+v.dy);});
+      if(s.cable){s.cable.clear();s.cable.lineStyle(1,GP.int(GP.PAL.m));s.cable.lineBetween(nx+s.w/2,s.railY,nx+s.w/2,ny);}
       var fragile=m.fragile||(m.type==='fragile'?{cede_apres_s:0.8,regenere_apres_s:3}:null);
       if(fragile){
         if(s.gone>0){s.gone-=dt;if(s.gone<=0){s.body.enable=true;s.timer=0;if(s.img)s.img.setAlpha(1);}}
@@ -212,5 +258,5 @@ GP.GZoneRuntime = (function () {
     }
     if(this.hit({x:h.x+2,y:h.y-8,w:Math.max(8,h.w-4),h:8}))g.die('ATTENTION À L’OBSTACLE !');
   };
-  return Object.assign(Runtime,{plan:plan});
+  return Object.assign(Runtime,{plan:plan,associate:associate});
 })();

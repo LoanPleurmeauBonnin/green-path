@@ -8,5 +8,6 @@ try{await page.goto('http://127.0.0.1:8130/?dev=1&level=jardin-des-plantes');awa
 for(const file of ['bot','geometry-tests'])await page.addScriptTag({url:'http://127.0.0.1:8130/tools/'+file+'.js'});
 for(let i=0;i<12;i++){const r=await page.evaluate(i=>GP.runGeometryTest(i,0),i);results.push(r);console.log(JSON.stringify(r));}
 }finally{await browser.close();}
-fs.writeFileSync(path.join(__dirname,'..','docs','levels-geometry.json'),JSON.stringify({kind:'teleported-physics-diagnostic',weather:'SOLEIL',results},null,2)+'\n');
+const target=process.env.GREENPATH_GEOMETRY_REPORT?path.resolve(process.env.GREENPATH_GEOMETRY_REPORT):path.join(__dirname,'..','docs','levels-geometry.json');
+fs.writeFileSync(target,JSON.stringify({kind:'teleported-physics-diagnostic',weather:'SOLEIL',results},null,2)+'\n');
 })().catch(e=>{console.error(e);process.exitCode=1;});

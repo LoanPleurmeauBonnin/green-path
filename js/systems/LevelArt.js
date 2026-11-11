@@ -559,7 +559,9 @@ GP.LevelArt = (function () {
     return chunks(scene, key, o.cv);
   }
 
-  function renderTerrain(scene, key, L) {
+  function renderTerrain(scene, key, L, plan) {
+    if (L.gzone) return GP.GZoneArt.renderTerrain(scene, key, L, plan || GP.GZoneRuntime.plan(L));
+    scene.terrainArt = { renderer: L.skin ? 'legacy-skin' : 'legacy-terrain', masses: [] };
     if (L.skin) return renderSkin(scene, key, L);
     var W = L.width * T, H = L.rows * T, o = PA.canvas(W, H), ctx = o.ctx, k = GP.PAL.k;
     function at(x, y) { return (x < 0 || x >= L.width || y >= L.rows) ? (y >= L.rows ? 1 : 0) : (y < 0 ? 0 : L.grid[y * L.width + x]); }

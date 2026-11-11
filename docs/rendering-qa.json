@@ -1,0 +1,1506 @@
+{
+  "kind": "render-and-binding-regression",
+  "formats": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "suites": {
+        "regression": {
+          "passed": 73,
+          "total": 73,
+          "failed": []
+        },
+        "polish": {
+          "passed": 97,
+          "total": 97,
+          "failed": []
+        },
+        "flow": {
+          "passed": 44,
+          "total": 44,
+          "failed": []
+        }
+      },
+      "levels": [
+        {
+          "id": "jardin-des-plantes",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "park-backdrop-connected",
+              "ok": true
+            },
+            {
+              "name": "new-garden-art-connected",
+              "ok": true
+            },
+            {
+              "name": "real-native-corner-pixels",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "cathedrale",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "three-visible-galleries",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "chateau",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "castle-backdrop-connected",
+              "ok": true
+            },
+            {
+              "name": "two-clipped-rooms",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "feydeau",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "two-native-boat-pieces",
+              "ok": true
+            },
+            {
+              "name": "boat-follows-sinking",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "graslin",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "machines",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "chantiers",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p16",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p18",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p41",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p42",
+              "ok": true
+            },
+            {
+              "name": "natural-park-kept",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "buren",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "hangar",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "pommeraye",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "chandeliers-native-width",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "memorial",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "tour-lu",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "suites": {
+        "regression": {
+          "passed": 73,
+          "total": 73,
+          "failed": []
+        },
+        "polish": {
+          "passed": 97,
+          "total": 97,
+          "failed": []
+        },
+        "flow": {
+          "passed": 44,
+          "total": 44,
+          "failed": []
+        }
+      },
+      "levels": [
+        {
+          "id": "jardin-des-plantes",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "park-backdrop-connected",
+              "ok": true
+            },
+            {
+              "name": "new-garden-art-connected",
+              "ok": true
+            },
+            {
+              "name": "real-native-corner-pixels",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "cathedrale",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "three-visible-galleries",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "chateau",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "castle-backdrop-connected",
+              "ok": true
+            },
+            {
+              "name": "two-clipped-rooms",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "feydeau",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "two-native-boat-pieces",
+              "ok": true
+            },
+            {
+              "name": "boat-follows-sinking",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "graslin",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "machines",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "chantiers",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p16",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p18",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p41",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p42",
+              "ok": true
+            },
+            {
+              "name": "natural-park-kept",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "buren",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "hangar",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "pommeraye",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "chandeliers-native-width",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "memorial",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "tour-lu",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "suites": {
+        "regression": {
+          "passed": 73,
+          "total": 73,
+          "failed": []
+        },
+        "polish": {
+          "passed": 97,
+          "total": 97,
+          "failed": []
+        },
+        "flow": {
+          "passed": 44,
+          "total": 44,
+          "failed": []
+        }
+      },
+      "levels": [
+        {
+          "id": "jardin-des-plantes",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "park-backdrop-connected",
+              "ok": true
+            },
+            {
+              "name": "new-garden-art-connected",
+              "ok": true
+            },
+            {
+              "name": "real-native-corner-pixels",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "cathedrale",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "three-visible-galleries",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "chateau",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "castle-backdrop-connected",
+              "ok": true
+            },
+            {
+              "name": "two-clipped-rooms",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "feydeau",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "two-native-boat-pieces",
+              "ok": true
+            },
+            {
+              "name": "boat-follows-sinking",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "graslin",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "machines",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "chantiers",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p16",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p18",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p41",
+              "ok": true
+            },
+            {
+              "name": "metal-pixels-p42",
+              "ok": true
+            },
+            {
+              "name": "natural-park-kept",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "buren",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "hangar",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "pommeraye",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            },
+            {
+              "name": "chandeliers-native-width",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "memorial",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        },
+        {
+          "id": "tour-lu",
+          "checks": [
+            {
+              "name": "single-active-terrain",
+              "ok": true
+            },
+            {
+              "name": "texture-chunks",
+              "ok": true
+            },
+            {
+              "name": "material-renderer-active",
+              "ok": true
+            },
+            {
+              "name": "no-placeholder-platforms",
+              "ok": true
+            },
+            {
+              "name": "no-anonymous-id-match",
+              "ok": true
+            },
+            {
+              "name": "unowned-decor-stationary",
+              "ok": true
+            },
+            {
+              "name": "images-follow-their-body",
+              "ok": true
+            },
+            {
+              "name": "all-visible-bodies-covered",
+              "ok": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "consoleErrors": [],
+  "missing": [],
+  "cloudWrites": []
+}
