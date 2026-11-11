@@ -8,7 +8,13 @@
 :root {
   --ink: #14182e;
   --green: #2fbf71;
+  --green-dark: #145a3a;
   --white: #f4f7f2;
+  --stone: #efe3bd;
+  /* Un « pixel de jeu » en pixels d'écran : même échelle que le canevas (zone de 480×270 agrandie), pour que les écrans
+     HTML (chargement, compte) aient la même taille de texte que le reste du jeu. */
+  --u: min(calc(100vw / 480), calc(100vh / 270));
+  --u: min(calc(100vw / 480), calc(100dvh / 270));
 }
 
 html, body {
@@ -26,7 +32,7 @@ html, body {
   overflow: hidden;
 }
 
-#loading, .msg {
+.msg {
   position: fixed;
   inset: 0;
   display: grid;
@@ -35,5 +41,28 @@ html, body {
   color: var(--green);
   font-size: 12px;
 }
+
+/* Écran de chargement : le titre de l'accueil, la ligne verte, puis le texte, à l'échelle du jeu. */
+#loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 8);
+  margin: 0;
+  background: var(--ink);
+  text-align: center;
+}
+#loading .ld-title { color: var(--green); font-size: calc(var(--u) * 32); line-height: 1; text-shadow: calc(var(--u) * 3) calc(var(--u) * 3) 0 var(--green-dark); }
+#loading .ld-sub { color: var(--stone); font-size: calc(var(--u) * 10); }
+#loading .ld-line {
+  width: min(calc(var(--u) * 440), 92vw);
+  height: calc(var(--u) * 4);
+  margin: calc(var(--u) * 4) 0;
+  background: repeating-linear-gradient(90deg, var(--green) 0 calc(var(--u) * 6), transparent calc(var(--u) * 6) calc(var(--u) * 8));
+}
+#loading .ld-text { color: var(--white); font-size: calc(var(--u) * 10); }
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

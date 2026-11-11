@@ -43,6 +43,24 @@ GP.GZoneArt = (function () {
       var mat=(d.tuiles||{})[p.tuiles]||{},top=p.top_sprite||mat.haut,fill=p.fill_sprite||mat.plein||'gz_soil';
       return {top:[].concat(top||fill),fill:[].concat(fill),under:p.bas_sprite};
     }
+    /**
+     * 1 si la première rangée de la tuile est presque vide (brins d'herbe) alors que la deuxième est pleine : le trait
+     * visible du sol est alors 1 px sous la surface de collision, et l'avatar comme les décors paraissent flotter.
+     */
+    var lifts = {};
+    function lift(id) {
+      if (lifts[id] !== undefined) return lifts[id];
+      var k = key(scene, id), v = 0;
+      if (k) {
+        var im = scene.textures.get(k).getSourceImage(), cv = document.createElement('canvas');
+        cv.width = im.width; cv.height = Math.min(2, im.height);
+        var cx = cv.getContext('2d'); cx.drawImage(im, 0, 0);
+        var d0 = cx.getImageData(0, 0, cv.width, 1).data, d1 = cx.getImageData(0, 1, cv.width, 1).data, n0 = 0, n1 = 0;
+        for (var i = 0; i < cv.width; i++) { if (d0[i * 4 + 3] > 0) n0++; if (d1[i * 4 + 3] > 0) n1++; }
+        v = n0 < cv.width / 2 && n1 >= cv.width * 0.9 ? 1 : 0;
+      }
+      return (lifts[id] = v);
+    }
     /** Liseré d'un côté sans sprite dédié : trait d'encre, puis reflet (gauche) ou ombre (droite), comme les bords des planches. */
     function rim(tx,ty,th,right,top){
       var y0=top?ty+1:ty;
@@ -59,8 +77,10 @@ GP.GZoneArt = (function () {
         if(top)id=m.top[(X*7+Y*3)%m.top.length];
         if(exL&&(top?m.cornerL:m.sideL)){id=top?m.cornerL:m.sideL;spriteL=true;}
         else if(exR&&(top?m.cornerR:m.sideR)){id=top?m.cornerR:m.sideR;spriteR=true;}
-        if(exB&&m.under)id=m.under;
-        put(id,tx,ty,16,th);
+        if(exB&&m.under&&!top)id=m.under;
+        // Tuile d'herbe : remontée d'un pixel (sur du terrain plein dessous) pour que le trait du sol soit à la hauteur de collision.
+        if(top&&lift(id)){put(m.fill[(X*7+Y*3)%m.fill.length],tx,ty,16,th);put(id,tx,ty-1,16,th);}
+        else put(id,tx,ty,16,th);
         if(exL&&!spriteL)rim(tx,ty,th,false,top);
         if(exR&&!spriteR)rim(tx,ty,th,true,top);
         // Coins du dessus arrondis (un pixel) là où le sprite n'a pas déjà son propre arrondi.

@@ -101,11 +101,17 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     ];
     this.lights = [];
     for (var i = 0; i < this.locs.length - 1; i++) {
-      var mid = this.nx(i) + M.GAP / 2, set = SETS[i % SETS.length];
+      var mid = this.nx(i) + M.GAP / 2, set = SETS[i % SETS.length], placed = [];
       [-62, -30, 18, 50].forEach(function (dx, k) {
         var x = mid + dx + Math.round(rnd() * 6 - 3), key = set[k];
-        if (!S.has(key) || M.inGap(x) || M.inGap(x - 18) || M.inGap(x + 18)) return;
-        S.add(self, x, M.vergeY(x), GP.MapDecor.key(self, key)).setOrigin(0.5, 1).setDepth(k === 0 ? 2 : 3);
+        if (!S.has(key)) return;
+        var im = S.add(self, x, M.vergeY(x), GP.MapDecor.key(self, key)).setOrigin(0.5, 1).setDepth(k === 0 ? 2 : 3), half = im.displayWidth / 2;
+        // Un décor ne doit jamais recouvrir un monument (il le tronquerait), ni un autre décor : on le décale ou on l'ôte.
+        var lo = self.nx(i) + MapScene.MONUMENT_HALF + half + 4, hi = self.nx(i + 1) - MapScene.MONUMENT_HALF - half - 4;
+        x = Phaser.Math.Clamp(x, lo, hi);
+        var clash = lo > hi || placed.some(function (p) { return Math.abs(p.x - x) < p.half + half + 3; });
+        if (clash || M.inGap(x) || M.inGap(x - 18) || M.inGap(x + 18)) { im.destroy(); return; }
+        im.setPosition(x, M.vergeY(x)); placed.push({ x: x, half: half });
         if (key === 'carte_lampadaire') self.lights.push([x, M.vergeY(x) - 25, 0.7]);
       });
     }
@@ -488,6 +494,8 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
 
 /** Libellés d'état (rien pour une étape simplement jouable). */
 /** Piédestal de la planche « carte » selon l'état de l'étape. */
+/** Demi-largeur d'un monument sur la carte (48 px) : aucun décor ne s'y superpose. */
+GP.Scenes.Map.MONUMENT_HALF = 24;
 GP.Scenes.Map.PEDESTAL = { available: 'disponible', completed: 'termine', locked: 'verrouille', coming: 'avenir' };
 
 GP.Scenes.Map.LABELS = { completed: 'TERMINÉ', available: '', locked: 'VERROUILLÉ', coming: 'À VENIR' };
