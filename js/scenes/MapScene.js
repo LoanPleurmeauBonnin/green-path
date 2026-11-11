@@ -190,12 +190,11 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       // piédestal de la planche « carte » : disponible, terminé, verrouillé, à venir
       var img = self.add.image(x, y + 6, 'carte_piedestal_disponible').setOrigin(0.5, 1).setDepth(10).setInteractive({ useHandCursor: true });
       var num = self.txt(x, y - 2, String(i + 1), GP.PAL.k).setOrigin(0.5).setDepth(11);
-      var badge = self.add.image(x + 12, y - 8, 'badge_done').setDepth(12).setVisible(false);
       var stars = [0, 1, 2].map(function (k) { return self.add.image(x - 8 + k * 8, y + 16, 'star_off').setDepth(12).setVisible(false); });
       img.on('pointerover', function () { self.hover = i; self.updateBar(); });
       img.on('pointerout', function () { if (self.hover === i) { self.hover = -1; self.updateBar(); } });
       img.on('pointerdown', function () { if (!self.panel) self.goTo(i, true); });
-      self.nodes.push({ img: img, num: num, badge: badge, stars: stars });
+      self.nodes.push({ img: img, num: num, stars: stars });
     });
   }
 
@@ -206,7 +205,6 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       var st = P.status(i), n = self.nodes[i];
       n.img.setTexture('carte_piedestal_' + MapScene.PEDESTAL[st]);
       n.num.setColor(st === 'locked' || st === 'coming' ? GP.PAL.w : GP.PAL.k).setVisible(st !== 'locked');   // le piédestal verrouillé porte déjà un cadenas
-      n.badge.setVisible(st === 'completed');
       var got = P.stars(i);
       n.stars.forEach(function (s, k) { s.setVisible(st === 'completed').setTexture(k < got ? 'star_on' : 'star_off'); });
       if (i !== self.revealing) self.lms[i].setTexture(GP.MapArt.monument(l, st !== 'completed'));
