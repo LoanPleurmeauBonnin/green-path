@@ -52,6 +52,14 @@
     GP.offlineReady = navigator.serviceWorker.register('./sw.js').then(function () {
       return navigator.serviceWorker.ready.then(function () { return true; });
     }).catch(function () { return false; });
+    // Mise à jour : quand une nouvelle copie du jeu prend le contrôle, la page se recharge une fois, sauf en plein
+    // niveau (la partie serait interrompue : la mise à jour s'appliquera au prochain chargement).
+    var hadController = !!navigator.serviceWorker.controller, reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!hadController || reloaded) return;   // première installation : rien à recharger
+      reloaded = true;
+      if (!(GP.game && GP.game.scene && GP.game.scene.isActive('Game'))) window.location.reload();
+    });
   }
   window.addEventListener('resize', checkOrientation);
   window.addEventListener('orientationchange', function () { setTimeout(checkOrientation, 150); });
