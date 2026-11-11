@@ -56,7 +56,16 @@ GP.GZoneLevels = (function () {
       { x: 62, y: 14, texte: 'Le tonneau roule : saute au bon moment.' }, { x: 117, y: 7, texte: 'Le lustre oscille : saute dessus quand il approche.' }] },
     // Machines : dents (avant la première), vapeur cyclique, piston.
     6: { signes: [{ x: 22, y: 13, texte: 'Les dents des engrenages piquent : saute par-dessus.' }, { x: 33, y: 11, texte: 'La vapeur jaillit par intermittence : passe quand elle retombe.' },
-      { x: 77, y: 8, texte: 'Les pistons montent et descendent : saute dessus quand il est bas.' }] }
+      { x: 77, y: 8, texte: 'Les pistons montent et descendent : saute dessus quand il est bas.' }] },
+    // Chantiers : ferraille, oiseaux bas, ascenseur, vapeur cyclique.
+    7: { signes: [{ x: 30, y: 16, texte: 'La ferraille coupe : saute par-dessus.' }, { x: 46, y: 15, texte: 'Les oiseaux volent bas : maintiens ↓ pour passer dessous.' },
+      { x: 90, y: 9, texte: "L'ascenseur monte quand tu montes dessus : attends-le." }, { x: 101, y: 5, texte: 'La vapeur jaillit par intermittence : passe quand elle retombe.' }] },
+    // Buren : bornes, sens des anneaux (rouge, bleu), oiseaux bas, anneau clignotant.
+    8: { signes: [{ x: 17, y: 13, texte: 'Les bornes piquent : saute par-dessus.' }, { x: 27, y: 10, texte: "Anneau rouge : élan vers l'avant. Anneau bleu : élan vers le haut." },
+      { x: 56, y: 11, texte: 'Les oiseaux volent bas : maintiens ↓ pour passer dessous.' }, { x: 149, y: 9, texte: "L'anneau change de couleur : attends la bonne avant de sauter." }] },
+    // Hangar : tôle coupante, portes coulissantes, tonneau roulant.
+    9: { signes: [{ x: 21, y: 18, texte: 'La tôle coupe : saute par-dessus.' }, { x: 93, y: 12, texte: 'La porte se ferme par intermittence : passe quand elle est ouverte.' },
+      { x: 124, y: 8, texte: 'Le tonneau roule : saute au bon moment.' }] }
   };
   function repair(d) {
     var r = REPAIRS[d.num];
