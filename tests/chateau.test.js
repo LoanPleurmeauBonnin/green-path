@@ -32,7 +32,8 @@ test('Château : cinq zones, vingt fragments, trois lanternes et deux ponts, san
   const L = harness().LEVELS.chateau;
   assert.equal(L.width, 170); assert.equal(L.rows, 20); assert.equal(L.zones.length, 5);
   assert.equal(L.pixels.length, 20); assert.equal(L.checks.length, 3); assert.equal(L.bridges.length, 2);
-  assert.ok(L.water.every(w => w.x >= 22)); assert.equal(L.top(12), 17); assert.equal(L.top(14), 16);
+  assert.ok(L.water.every(w => w.x >= 12));   // deux douves, une sous chaque pont-levis (la fosse sèche a disparu)
+  assert.equal(L.top(10), 15); assert.ok(L.top(12) > 17 && L.top(14) > 17, 'plus de marches dans la douve');
   assert.equal(L.exit.x, 167); assert.equal(L.exit.y, L.top(L.exit.x));
   assert.ok(L.pixels.every(p => p.x >= 0 && p.x < L.width && p.y >= 0 && p.y < L.rows));
 });

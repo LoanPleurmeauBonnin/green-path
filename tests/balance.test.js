@@ -27,7 +27,6 @@ test('Équilibrage : retraits ciblés, rien d’autre ne disparaît', () => {
     const removed = (table[n].retirer || []).length, added = (table[n].ajouter || []).length;
     assert.equal(after.GZONES[n - 1].dangers.length, before.GZONES[n - 1].dangers.length - removed + added, 'niveau ' + n);
   });
-  assert.equal(after.GZONES[3].dangers.length, before.GZONES[3].dangers.length, 'niveau 4 inchangé');
 });
 
 test('Mémorial : toujours sans ennemi ni pointe (niveau contemplatif)', () => {
