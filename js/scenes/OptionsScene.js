@@ -56,7 +56,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
       { label: 'LANGUE', value: function () { return GP.I18n.lang === 'fr' ? 'FRANÇAIS' : 'ENGLISH'; }, arrows: true,
         act: function () { self.lang(); }, left: function () { self.lang(); }, right: function () { self.lang(); } },
       { label: 'SON', value: function () { return GP.Progression.muted ? 'COUPÉ' : 'ACTIVÉ'; }, arrows: true,
-        act: function () { self.sound(); }, left: function () { self.sound(); }, right: function () { self.sound(); } },
+        act: function () { self.toggleSound(); }, left: function () { self.toggleSound(); }, right: function () { self.toggleSound(); } },
       { label: 'PLEIN ÉCRAN', value: function () { return fsOk ? (isFs ? 'DÉSACTIVER' : 'ACTIVER') : 'NON DISPONIBLE ICI'; },
         act: function () { self.fullscreen(); } },
       { label: 'COMPTE', value: function () { return GP.Cloud.isAccount ? GP.Cloud.pseudo : 'INVITÉ'; },
@@ -205,7 +205,8 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     this.input.keyboard.removeAllListeners();
     this.scene.restart({ sel: this.sel, group: this.group });
   }
-  sound() { GP.Progression.muted = !GP.Progression.muted; GP.Sfx.play('select'); this.refresh(); }
+  /** (Pas « sound » : Phaser range son gestionnaire de sons dans scene.sound, qui masquait cette méthode et faisait planter.) */
+  toggleSound() { GP.Progression.muted = !GP.Progression.muted; GP.Sfx.play('select'); this.refresh(); }
   /** ANIMATIONS : auto (système) → activées → réduites. Pris en compte à l'ouverture de l'écran suivant. */
   motion(dir) {
     var order = ['auto', 'on', 'reduced'], i = order.indexOf(GP.Settings.motion);
