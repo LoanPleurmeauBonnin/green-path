@@ -2,7 +2,9 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.open-meteo.com https://jvmswcgkfgnjxccmfksd.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="theme-color" content="#14182e">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="mobile-web-app-capable" content="yes">
@@ -18,7 +20,8 @@
   <link rel="stylesheet" href="css/game.css">
 </head>
 <body>
-  <div id="game"></div>
+  <div id="game" role="region" aria-label="Green Path — jeu de plateforme" aria-describedby="instructions"></div>
+  <p id="instructions" class="sr-only">Flèches pour naviguer, Entrée pour valider. En jeu : gauche et droite pour courir, Espace pour sauter, haut pour grimper, bas pour s'accroupir. Échap : pause. H sur la carte : aide. Le jeu reste visuel et n'est pas entièrement accessible aux lecteurs d'écran.</p>
   <p id="loading">CHARGEMENT…</p>
   <!-- Téléphone tenu en portrait : on demande de le tourner (le jeu est en pause). -->
   <div id="rotate" role="alertdialog" aria-live="assertive" aria-label="Veuillez tourner votre téléphone">
@@ -39,11 +42,14 @@
 
   <script src="js/vendor/phaser.min.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/data/tuning.js"></script>
   <script src="js/data/lang/fr.js"></script>
   <script src="js/data/lang/en.js"></script>
   <script src="js/systems/I18n.js"></script>
   <script src="js/systems/Settings.js"></script>
   <script src="js/systems/Controls.js"></script>
+  <script src="js/systems/Prompts.js"></script>
+  <script src="js/systems/MapTravel.js"></script>
   <script src="js/systems/Cloud.js"></script>
   <script src="js/systems/Account.js"></script>
   <script src="js/data/sprites/palette.js"></script>
@@ -65,14 +71,23 @@
   <script src="js/systems/PixelArt.js"></script>
   <script src="js/systems/Sprites.js"></script>
   <script src="js/systems/MapArt.js"></script>
+  <script src="js/systems/MapDecor.js"></script>
   <script src="js/systems/CharacterSprite.js"></script>
   <script src="js/systems/WeatherManager.js"></script>
   <script src="js/systems/WeatherFX.js"></script>
   <script src="js/systems/WeatherRules.js"></script>
+  <script src="js/systems/WeatherShelters.js"></script>
   <script src="js/systems/Ui.js"></script>
   <script src="js/systems/LevelArt.js"></script>
+  <script src="js/systems/CastleArt.js"></script>
+  <script src="js/systems/LevelMechanics.js"></script>
+  <script src="js/systems/GZoneArt.js"></script>
+  <script src="js/systems/GZoneRuntime.js"></script>
+  <script src="js/systems/LevelBoss.js"></script>
   <script src="js/systems/PixelCollection.js"></script>
   <script src="js/data/levels.js"></script>
+  <script src="js/data/gzones.js"></script>
+  <script src="js/data/GZoneLevels.js"></script>
   <script src="assets/locations/jardin-des-plantes.js"></script>
   <script src="assets/locations/cathedrale.js"></script>
   <script src="assets/locations/chateau.js"></script>
@@ -84,6 +99,7 @@
   <script src="assets/locations/tour-lu.js"></script>
   <script src="js/scenes/BootScene.js"></script>
   <script src="js/scenes/MenuScene.js"></script>
+  <script src="js/scenes/AboutScene.js"></script>
   <script src="js/scenes/CharacterScene.js"></script>
   <script src="js/scenes/OptionsScene.js"></script>
   <script src="js/scenes/ScoreScene.js"></script>

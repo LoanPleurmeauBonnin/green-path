@@ -1,0 +1,20 @@
+{
+  "framework": "PATRIMOINE.EXE",
+  "edition": "NTE001",
+  "city": "Nantes",
+  "host": "ESD Nantes",
+  "dates": ["2026-11-09", "2026-11-10", "2026-11-12"],
+  "project_title": "Green Path — Nantes en mille pixels",
+  "authors": ["Florine RACINE", "Loan PLEURMEAU"],
+  "heritage_source": {
+    "title": "Château des ducs de Bretagne — masse, seuils et élévations",
+    "url": "https://www.chateaunantes.fr/le-chateau/histoire/",
+    "rights": "Référence documentaire, photographies institutionnelles non réutilisées. Photo secondaire Palmarium : Pymouss44, CC BY-SA 3.0, recadrée et pixélisée ; voir CREDITS.md. Origine de la référence avatar à clarifier."
+  },
+  "mode": ["interactive", "data-driven"],
+  "stack": ["JavaScript", "Phaser 3.90.0", "Canvas/WebGL", "HTML", "CSS"],
+  "data_sources": ["Open-Meteo : météo de Nantes, cache et fallback local"],
+  "ai_usage": "Claude Code et Claude Design pour le prototype initial ; GPT-6.1 Sol via OpenCode pour audit, correctifs, interprétation des 12 GZones, boss, tests et documentation. Voir README.md, AI usage.",
+  "version": "0.5-gzones",
+  "status": "Version de travail : 12 parcours et 3 boss implémentés ; tests et retouches humains à poursuivre."
+}

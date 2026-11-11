@@ -1,3 +1,5 @@
+> **Document de propositions, pas état d'implémentation.** Conservé comme matériau de conception. Les longueurs, ennemis, boss, effets météo, références historiques et affirmations de faisabilité ci-dessous ne sont pas des fonctionnalités ni des validations. Le code courant, les limites et l'ordre des lieux font foi dans [GAME_DESIGN.md](../GAME_DESIGN.md) et [AUDIT.md](../AUDIT.md). En particulier : aucun flash d'orage n'est livré ; Mémorial = étape 10, Pommeraye = étape 11 ; seuls Jardin, Cathédrale et Château sont accessibles. Les différences avec cette proposition restent à arbitrer par l'équipe.
+
 ## Niveau 1 — Jardin des Plantes — difficulté 1/12
 
 1. **Intention** : Apprendre le déplacement de base (`←`/`→`), le saut court vs saut long, et l'accroupissement (`↓`) pour éviter des obstacles en hauteur. La sensation recherchée est celle d'une promenade bucolique, sécurisante et lumineuse à la sortie de la gare, où le joueur prend ses marques sans pression.

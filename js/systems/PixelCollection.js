@@ -15,14 +15,7 @@
 GP.PixelCollection = function (scene, locId, total, order) {
   var cells = GP.PixelCollection.cells(scene, locId), w = cells.w, h = cells.h;
 
-  // Ordres de révélation (un par lieu, voir docs/grammaire.md).
-  var ORDERS = {
-    // croissance : du bas vers le haut ; dans une ligne, du centre vers les bords
-    bottomUp: function (a, b) { return (b.y - a.y) || (Math.abs(a.x - w / 2) - Math.abs(b.x - w / 2)); },
-    topDown: function (a, b) { return (a.y - b.y) || (a.x - b.x); },
-    leftRight: function (a, b) { return (a.x - b.x) || (b.y - a.y); }
-  };
-  cells.sort(ORDERS[order] || ORDERS.bottomUp);
+  GP.PixelCollection.sortCells(cells, order);
 
   this.total = Math.max(1, total);
   this.count = 0;
@@ -36,6 +29,25 @@ GP.PixelCollection = function (scene, locId, total, order) {
   if (scene.textures.exists(this.key)) scene.textures.remove(this.key);
   this.tex = scene.textures.createCanvas(this.key, w, h);
   this.draw();
+};
+
+/** Ordres géométriques déterministes ; les régions du Château sont une interprétation stylisée, pas un relevé. */
+GP.PixelCollection.sortCells = function (cells, order) {
+  var w = cells.w, h = cells.h;
+  function phase(c) {
+    if (c.y >= h * 0.6) return 0;    // assise et masse basse
+    if (c.x >= w * 0.28 && c.x < w * 0.72) return 1;   // courtine centrale
+    return 2;                     // élévation latérale des tours
+  }
+  var ORDERS = {
+    // croissance : du bas vers le haut ; dans une ligne, du centre vers les bords
+    bottomUp: function (a, b) { return (b.y - a.y) || (Math.abs(a.x - w / 2) - Math.abs(b.x - w / 2)); },
+    topDown: function (a, b) { return (a.y - b.y) || (a.x - b.x); },
+    leftRight: function (a, b) { return (a.x - b.x) || (b.y - a.y); },
+    fortification: function (a, b) { return phase(a) - phase(b) || (b.y - a.y) || (a.x - b.x); }
+  };
+  cells.sort(ORDERS[order] || ORDERS.bottomUp);
+  return cells;
 };
 
 /** Cases colorées de l'image du lieu : photo pixélisée si elle existe, sinon le monument dessiné. */

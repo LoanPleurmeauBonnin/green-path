@@ -13,7 +13,7 @@ L'équipe Green Path (Florine RACINE, Loan PLEURMEAU). Questions et demandes d'e
 ## Ce que le jeu garde sur l'appareil (stockage local du navigateur, jamais envoyé)
 | Clé `localStorage` | Contenu | Finalité |
 |---|---|---|
-| `greenpath.save` | progression (niveaux terminés, étoiles, temps, morts), avatar, introduction vue | reprendre la partie |
+| `greenpath.save` | progression (niveaux terminés, étoiles, temps, morts), avatar, introduction vue, fragments et dernier checkpoint des niveaux en cours | reprendre la partie |
 | `greenpath.settings` | langue, touches réaffectées | confort de jeu |
 | `greenpath.weather` | dernière météo reçue | rester à jour hors ligne |
 | `greenpath.iostip` | l'astuce « plein écran » iPhone a été vue | ne pas la répéter |
@@ -34,10 +34,13 @@ Toutes les données sont sur l'appareil du joueur : il les voit et les efface lu
 ## Pseudo, sauvegarde et classement (Supabase)
 - **Facultatif**, sans e-mail, sans mot de passe. Proposé après le premier niveau terminé ; le mode invité reste possible à tout moment.
 - **Consentement explicite** (case à cocher) avant la création, avec renvoi vers cette notice.
-- **Données enregistrées** : pseudo (3 à 16 caractères), avatar, progression par niveau (étoiles, pixels, meilleur temps, morts), **haché SHA-256 du code secret** (le code lui-même n'est jamais envoyé en clair à nouveau après la création ; il reste sur l'appareil du joueur), dates de création et de mise à jour.
+- **Données enregistrées** : pseudo (3 à 16 caractères), avatar, progression par niveau terminé (étoiles, pixels, meilleur temps, morts), **haché SHA-256 du code secret**, dates de création et de mise à jour. Le code est conservé sur l'appareil et **transmis dans le corps des requêtes HTTPS** pour retrouver, synchroniser ou supprimer la sauvegarde ; le serveur n'en conserve que le haché. Les fragments d'un niveau en cours restent locaux.
 - **Finalités** : retrouver sa sauvegarde sur un autre appareil ; afficher le classement. **Base légale** : consentement.
 - **Visibilité** : le classement public montre pseudo, rang, étoiles, nombre de niveaux et temps cumulé. Rien d'autre. Le pseudo est public : le jeu demande de ne pas utiliser son vrai nom.
 - **Hébergement** : Supabase, région eu-west-3 (Paris). Aucune clé secrète dans le jeu ; les tables ne sont pas accessibles directement (voir `supabase/README.md`).
 - **Durée** : tant que le compte existe ; projet pédagogique, supprimé après l'évaluation sauf demande contraire de l'équipe.
 - **Droits** : accès (le joueur voit sa progression dans le jeu), effacement immédiat (**OPTIONS → COMPTE → SUPPRIMER MON COMPTE**) ou sur demande via les *issues* du dépôt GitHub. Le code perdu ne peut pas être récupéré (pas d'e-mail pour l'envoyer) : le compte reste inaccessible et peut être supprimé sur demande de l'équipe seulement avec le pseudo.
 - **Mineurs** : le jeu ne demande aucune donnée d'identité ; un pseudo ne doit pas révéler d'information personnelle.
+
+## Copie hors ligne
+Après une première visite complète en HTTPS ou sur localhost, un service worker garde les fichiers publics du jeu en Cache Storage. Aucune réponse Open-Meteo/Supabase, aucun pseudo ni code n'entre dans ce cache. Le navigateur permet d'effacer cette copie via les données du site ; « EFFACER MES DONNÉES » efface les sauvegardes personnelles, pas les fichiers publics du jeu.

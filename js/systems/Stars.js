@@ -22,5 +22,5 @@ GP.Stars = {
   },
 
   /** Total d'étoiles possibles sur les niveaux jouables. */
-  maxTotal: function () { return (GP.LAST_PLAYABLE + 1) * this.MAX; }
+  maxTotal: function () { return GP.LOCATIONS.filter(function (l) { return l.playable; }).length * this.MAX; }
 };

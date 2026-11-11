@@ -30,8 +30,8 @@ GP.UI = (function () {
   function button(scene, x, y, w, label, cb, opts) {
     opts = opts || {};
     var base = opts.color || (opts.primary ? P.g : P.m);
-    var box = scene.add.rectangle(x, y, w, 16, GP.int(P.d), 1).setOrigin(0).setStrokeStyle(2, GP.int(P.k)).setInteractive({ useHandCursor: true });
-    var t = txt(scene, x + w / 2, y + 5, label, base).setOrigin(0.5, 0);
+    var box = scene.add.rectangle(x, y, w, opts.height || 16, GP.int(P.d), 1).setOrigin(0).setStrokeStyle(2, GP.int(P.k)).setInteractive({ useHandCursor: true });
+    var t = txt(scene, x + w / 2, y + (opts.height ? 4 : 5), label, base, { align: 'center', lineSpacing: 2 }).setOrigin(0.5, 0);
     function hover(on) {
       box.setFillStyle(GP.int(on ? P.G : P.d), 1).setStrokeStyle(2, GP.int(on ? P.g : P.k));
       t.setColor(on ? P.w : base);
@@ -47,24 +47,26 @@ GP.UI = (function () {
   function modal(scene, titleLeft, titleRight, opts) {
     opts = opts || {};
     var W = GP.Config.WIDTH, H = GP.Config.HEIGHT, objs = [];
-    var x = opts.x || 20, y = opts.y || 12, w = opts.w || 440, h = opts.h || 226, dx = GP.Config.DX;
+    var x = opts.x === undefined ? 20 : opts.x, y = opts.y === undefined ? 12 : opts.y, w = opts.w || 440, h = opts.h || 226, dx = GP.Config.DX;
     // Les fenêtres sont dessinées sur 480 px de large et centrées : chaque objet ajouté est décalé de DX.
     function add(o) {
       if (Array.isArray(o)) { o.forEach(add); return o; }
-      o.setDepth(D + (o.depthBoost || 0)).setScrollFactor(0); o.x += dx; objs.push(o); return o;
+      o.setDepth(D + (o.depthBoost || 0)).setScrollFactor(0); o.x += dx; o.y += opts.offsetY || 0; objs.push(o);
+      o.once('destroy', function () { var i = objs.indexOf(o); if (i >= 0) objs.splice(i, 1); });
+      return o;
     }
-    var dim = scene.add.rectangle(0, 0, W, H, GP.int(P.k), 0.6).setOrigin(0).setInteractive().setDepth(D).setScrollFactor(0);
+    var dim = scene.add.rectangle(0, 0, W, H, GP.int(P.k), opts.dim === undefined ? 0.6 : opts.dim).setOrigin(0).setInteractive().setDepth(D).setScrollFactor(0);
     objs.push(dim);
     add(scene.add.rectangle(x, y, w, h, GP.int(P.k)).setOrigin(0));
     add(scene.add.rectangle(x + 2, y + 2, w - 4, h - 4, GP.int(P.d)).setOrigin(0));
     add(scene.add.rectangle(x + 2, y + 21, w - 4, 1, GP.int(P.G)).setOrigin(0));
     var tl = add(txt(scene, x + 10, y + 8, titleLeft, P.g));
     var tr = add(txt(scene, x + w - 10, y + 8, titleRight || '', P.m).setOrigin(1, 0));
-    objs.forEach(function (o) { o.setAlpha(0); scene.tweens.add({ targets: o, alpha: 1, duration: 120 }); });
+    objs.forEach(function (o) { var alpha = o.alpha; o.setAlpha(0); scene.tweens.add({ targets: o, alpha: alpha, duration: 120 }); });
     return {
       add: function (o) { var r = add(o); return r; },
       objs: objs, titleRight: tr, titleLeft: tl,
-      destroy: function () { objs.forEach(function (o) { o.destroy(); }); objs.length = 0; }
+      destroy: function () { objs.slice().forEach(function (o) { o.destroy(); }); objs.length = 0; }
     };
   }
 
@@ -72,6 +74,16 @@ GP.UI = (function () {
   function key(scene, add, x, y, label) {
     var arrows = { '<': 'ui_arr_l', '>': 'ui_arr_r', '^': 'ui_arr_u', 'v': 'ui_arr_d' };
     var w = arrows[label] ? 15 : Math.max(15, label.length * 8 + 8);
+    if (GP.Prompts.device === 'gamepad') {
+      var colors = { A: P.G, B: P.r, X: P.b, Y: P.y }, color = colors[label];
+      var cap = scene.add.graphics(); cap.fillStyle(GP.int(color || P.d)); cap.lineStyle(1, GP.int(P.g));
+      if (color) { cap.fillCircle(x + 8, y + 7, 7); cap.strokeCircle(x + 8, y + 7, 7); }
+      else { cap.fillRoundedRect(x, y, w, 15, 4); cap.strokeRoundedRect(x, y, w, 15, 4); }
+      add(cap);
+      if (arrows[label]) add(scene.add.image(x + 8, y + 7, arrows[label]).setTintFill(GP.int(P.w)));
+      else add(txt(scene, x + w / 2, y + 3, label, label === 'Y' ? P.k : P.w).setOrigin(0.5, 0));
+      return w;
+    }
     add(scene.add.rectangle(x, y, w, 15, GP.int(P.k)).setOrigin(0));
     add(scene.add.rectangle(x + 1, y + 1, w - 2, 12, GP.int(P.c)).setOrigin(0));
     add(scene.add.rectangle(x + 1, y + 11, w - 2, 2, GP.int(P.t)).setOrigin(0));   // ombre du bas de la touche
@@ -84,16 +96,17 @@ GP.UI = (function () {
   var PAGES = [
     {
       title: 'LA CARTE', rows: [
-        [['<', '>'], 'CHANGER DE NIVEAU (OU A / D)'],
-        [['CLIC'], 'ALLER JUSQU\'À UNE ÉTAPE'], [['ENTRÉE'], 'OUVRIR LA FICHE DU LIEU, JOUER'],
-        [['ÉCHAP'], 'FERMER, REVENIR AU MENU'], [['M'], 'COUPER / REMETTRE LE SON'], [['H'], 'OUVRIR CETTE AIDE']
+        [['@navX'], 'CHANGER DE NIVEAU'],
+        [['@confirm'], 'OUVRIR LA FICHE DU LIEU, JOUER'],
+        [['@back'], 'FERMER, REVENIR AU MENU'], [['@mute'], 'COUPER / REMETTRE LE SON'], [['@help'], 'OUVRIR CETTE AIDE'],
+        [['@pages'], 'FEUILLETER LES PAGES']
       ]
     },
     {
       title: 'DANS UN NIVEAU', rows: [
-        [['<', '>'], 'COURIR (OU Q/A ET D)'], [['ESPACE'], 'SAUTER (OU W, Z) ; MAINTENIR = PLUS HAUT'],
-        [['v'], "S'ACCROUPIR SOUS LES FLÈCHES (OU S)"], [['^'], 'GRIMPER AUX COLONNES, SE HISSER SUR UN REBORD'],
-        [['ÉCHAP'], 'PAUSE'], [[], 'SUR TÉLÉPHONE : BOUTONS À L\'ÉCRAN, EN PAYSAGE']
+        [['@move'], 'COURIR'], [['@jump'], 'SAUTER ; MAINTENIR = PLUS HAUT'],
+        [['@down'], "S'ACCROUPIR SOUS LES FLÈCHES"], [['@up'], 'GRIMPER AUX COLONNES, SE HISSER SUR UN REBORD'],
+        [['@pause'], 'PAUSE'], [[], 'SUR TÉLÉPHONE : BOUTONS À L\'ÉCRAN, EN PAYSAGE']
       ]
     },
     {
@@ -133,10 +146,17 @@ GP.UI = (function () {
       m.titleRight.setText((cur + 1) + '/' + PAGES.length + ' ' + pg.title);
       var y = 44;
       pg.rows.forEach(function (row) {
-        var x = 34, keys = row[0];
+        var x = 34, keys = [];
+        row[0].forEach(function (k) {
+          if (k.charAt(0) === '@') GP.Prompts.labels(k.slice(1)).forEach(function (label) { keys.push(label); });
+          else keys.push(k);
+        });
         keys.forEach(function (k) {
           if (k.charAt(0) === '#') { var im = addC(scene.add.image(x, y + 7, k.slice(1)).setOrigin(0, 0.5)); x += im.width + 4; }
-          else x += key(scene, addC, x, y, k) + 4;
+          else {
+            var arrows = { '←': '<', '→': '>', '↑': '^', '↓': 'v' };
+            x += key(scene, addC, x, y, arrows[k] || k) + 4;
+          }
         });
         var tx = keys.length ? Math.max(pg.icons ? 100 : 150, x + 6) : 34;
         var t = addC(txt(scene, tx, y + 4, row[1], P.w, { wordWrap: { width: 446 - tx }, lineSpacing: 4 }));
@@ -168,12 +188,14 @@ GP.UI = (function () {
       close: function () {
         if (!handle.open) return;
         handle.open = false;
+        unwatch();
         evL.forEach(function (e) { kb.off(e, L); }); evR.forEach(function (e) { kb.off(e, R); });
         m.destroy();
         GP.Sfx.play('back');
         if (opts.onClose) opts.onClose();
       }
     };
+    var unwatch = GP.Prompts.watch(scene, render);
     render();
     GP.Sfx.play('select');
     return handle;
@@ -206,7 +228,11 @@ GP.UI = (function () {
     btn(70, H - 30, 19, 'ui_arr_r', 'right');
     btn(114, H - 26, 15, 'ui_arr_d', 'down');
     btn(W - 32, H - 34, 24, 'ui_arr_u', 'jump');
-    if (onPause) { var pz = button(scene, W - 64, 46, 60, 'PAUSE', onPause); pz.objs.forEach(function (o) { o.setDepth(55); objs.push(o); }); }
+    var release = function () { Object.keys(state).forEach(function (k) { state[k] = false; }); };
+    window.addEventListener('blur', release);
+    scene.input.on('gameout', release);
+    scene.events.once('shutdown', function () { window.removeEventListener('blur', release); scene.input.off('gameout', release); });
+    // Le bouton pause appartient au HUD commun, pas à une seconde surcouche tactile.
     return objs;
   }
 
@@ -227,8 +253,8 @@ GP.UI = (function () {
   }
 
   /** Découpe des paragraphes en pages qui tiennent dans une zone (largeur, hauteur en px) ; coupe entre deux phrases. */
-  function paginate(scene, paragraphs, width, height) {
-    var probe = txt(scene, -1000, -1000, '', P.w, { wordWrap: { width: width }, lineSpacing: 4 });
+  function paginate(scene, paragraphs, width, height, advanced) {
+    var probe = txt(scene, -1000, -1000, '', P.w, { wordWrap: { width: width, useAdvancedWrap: !!advanced }, lineSpacing: 4 });
     function fits(t) { probe.setText(t); return probe.height <= height; }
     var pieces = [];
     paragraphs.forEach(function (p) {
@@ -246,8 +272,19 @@ GP.UI = (function () {
       if (page && !fits(next)) { pages.push(page); page = p; } else page = next;
     });
     if (page) pages.push(page);
+    // Une phrase isolée peut dépasser une page : découper aux mots, sans en supprimer.
+    var safe = [];
+    pages.forEach(function (text) {
+      if (fits(text)) { safe.push(text); return; }
+      var buffer = '';
+      (text.match(/\S+\s*/g) || ['']).forEach(function (word) {
+        if (buffer && !fits(buffer + word)) { safe.push(buffer.trim()); buffer = ''; }
+        buffer += word;
+      });
+      if (buffer.trim()) safe.push(buffer.trim());
+    });
     probe.destroy();
-    return pages;
+    return safe;
   }
 
   /**

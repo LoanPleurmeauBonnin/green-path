@@ -19,7 +19,8 @@ GP.Scenes.Score = class ScoreScene extends Phaser.Scene {
     var me = GP.Cloud.isAccount ? GP.Cloud.pseudo : null;
     this.foot = this.txt(W / 2, H - 52, me ? GP.t('TOI : ') + me : 'JOUE EN INVITÉ : CRÉE UN PSEUDO DANS OPTIONS POUR APPARAÎTRE ICI.', P.c)
       .setOrigin(0.5, 0).setWordWrapWidth(440).setAlign('center');
-    var back = GP.UI.button(this, W / 2 - 50, H - 22, 100, 'RETOUR', function () { self.leave(); });
+    var back = GP.UI.button(this, W / 2 - 70 + GP.Config.DX, H - 22, 140, '', function () { self.leave(); });
+    GP.Prompts.bind(this, back.label, 'RETOUR {back}');
     back.objs.forEach(function (o) { o.setDepth(5); });
     var kb = this.input.keyboard;
     kb.on('keydown-ESC', function () { self.leave(); });

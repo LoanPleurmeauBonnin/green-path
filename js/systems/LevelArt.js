@@ -639,5 +639,5 @@ GP.LevelArt = (function () {
     return 'day';
   }
 
-  return { CHUNK: CHUNK, makeTextures: makeTextures, renderTerrain: renderTerrain, skyKind: skyKind, sky: sky, TILE: T, C: C };
+  return { CHUNK: CHUNK, chunks: chunks, makeTextures: makeTextures, renderTerrain: renderTerrain, skyKind: skyKind, sky: sky, TILE: T, C: C };
 })();

@@ -1,15 +1,15 @@
 # Fiche-source V1 — Château des ducs de Bretagne
 
 Projet : Green Path / PXE_NTE001_G01_PIXEL-MEMORY · J1, 9 novembre 2026
-Statut : **brouillon**. Les champs marqués **À COMPLÉTER** demandent une observation ou une vérification de l'étudiant.
+Statut : fiche initiale J1, conservée comme trace. **Complément vérifié le 10/11/2026 : [HERITAGE_GRAMMAR.md](../HERITAGE_GRAMMAR.md)** (source institutionnelle, règles réellement codées, limites et droits). Les relevés étudiants restent à compléter ; les hypothèses initiales ci-dessous ne sont pas toutes confirmées.
 
 | Champ | Contenu |
 |---|---|
 | **Titre** | Château des ducs de Bretagne |
-| **Lieu** | Nantes, centre historique, rive nord de la Loire (étape 2 de Green Path) |
+| **Lieu** | Nantes, centre historique, rive nord de la Loire (étape 3 de Green Path) |
 | **Type** | Architecture fortifiée ; aujourd'hui musée d'histoire de Nantes |
-| **Contexte** | Forteresse reconstruite à la fin du XVe siècle par François II puis Anne de Bretagne, remparts de tuffeau. **À VÉRIFIER sur Nantes Patrimonia** (site inaccessible lors de la recherche : erreur de certificat SSL). |
-| **Référence / URL** | Nantes Patrimonia : **À COMPLÉTER** (URL de la notice). Image : https://commons.wikimedia.org/wiki/File:Ch%C3%A2teau_des_ducs_de_Bretagne_(Nantes)_13.jpg |
+| **Contexte** | Forteresse reconstruite à la fin du XVe siècle par François II puis Anne de Bretagne ; remparts, douves et palais résidentiel. Source institutionnelle consultée le 10/11 : https://www.chateaunantes.fr/le-chateau/histoire/. La page situe notamment le tuffeau sur les façades du Grand Logis : ne pas généraliser à tous les remparts. |
+| **Référence / URL** | Institution : https://www.chateaunantes.fr/le-chateau/histoire/. Nantes Patrimonia : notice précise encore à compléter. Image candidate non intégrée : https://commons.wikimedia.org/wiki/File:Ch%C3%A2teau_des_ducs_de_Bretagne_(Nantes)_13.jpg |
 | **Date d'accès** | Commons : 2026-11-09. Nantes Patrimonia : **À COMPLÉTER** |
 | **Droits / licence** | Image candidate : John Samuel (User:Jsamwrites), **CC BY-SA 4.0** (crédit, lien vers la licence, mention des modifications ; dérivés en partage à l'identique). Détails et alternatives : `docs/images-candidates.md`. Validation avant intégration : **en attente**. |
 | **Relevés** | **À COMPLÉTER** : 5 à 10 détails observés sur la photo choisie (axe, module, rythme, relation, matière). Pistes à confirmer à l'œil : alternance merlon / créneau, ligne continue des courtines, tours qui interrompent cette ligne, porte comme seuil. |

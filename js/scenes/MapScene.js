@@ -20,16 +20,18 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     this.P = GP.Progression;
     this.moving = false;
     this.panel = null;
+    this.help = null; this.sheet = null; this.toastObj = null;
     this.hover = -1;
     this.revealing = -1;
     this.cur = Math.min(this.P.data.current, this.locs.length - 1);
+    this.travel = new GP.MapTravel(this.cur, this.locs.length, this.nx(0), GP.MapArt.GAP, GP.MapArt.walkY);
     this.alive = true;   // faux après la fermeture de la scène (réponses réseau tardives)
     this.events.once('shutdown', function () { self.alive = false; });
 
     this.cameras.main.fadeIn(350, 20, 24, 46);
     this.cameras.main.setBounds(0, 0, GP.MapArt.WIDTH, GP.Config.HEIGHT);
     this.sky = GP.LevelArt.sky(this, -40, { city: true, farBottom: 176, nearBottom: 186 });
-    this.add.image(0, 0, 'world_map').setOrigin(0).setDepth(0);
+    GP.MapArt.worldKeys.forEach(function (key, i) { self.add.image(i * GP.LevelArt.CHUNK, 0, key).setOrigin(0).setDepth(0); });
     this.makeDecor();
     this.pathG = this.add.graphics().setDepth(6);
     this.makeMonuments();
@@ -50,10 +52,11 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     });
 
     var kb = this.input.keyboard;
-    kb.on('keydown-LEFT', function () { self.step(-1); });
-    kb.on('keydown-A', function () { self.step(-1); });
-    kb.on('keydown-RIGHT', function () { self.step(1); });
-    kb.on('keydown-D', function () { self.step(1); });
+    function move(d, ev) { if (!(ev && ev.repeat && GP.Prompts.device === 'gamepad')) self.step(d); }
+    kb.on('keydown-LEFT', function (ev) { move(-1, ev); });
+    kb.on('keydown-A', function (ev) { move(-1, ev); });
+    kb.on('keydown-RIGHT', function (ev) { move(1, ev); });
+    kb.on('keydown-D', function (ev) { move(1, ev); });
     kb.on('keydown-ENTER', function () { self.onConfirm(); });
     kb.on('keydown-SPACE', function () { self.onConfirm(); });
     kb.on('keydown-ESC', function () { self.onEsc(); });
@@ -63,7 +66,18 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     this.events.once('shutdown', function () { kb.removeAllListeners(); });
   }
 
-  update(time, delta) { this.sky.update(this.cameras.main, delta); }
+  update(time, delta) {
+    this.sky.update(this.cameras.main, delta);
+    if (this.panel || GP.Pad.capture || !this.travel.moving) return;
+    var arrived = this.travel.tick(delta);
+    this.moving = this.travel.moving;
+    this.placeHero(this.travel.x);
+    if (arrived) {
+      this.cur = this.travel.target; this.P.setCurrent(this.cur);
+      this.startIdle(); this.updateBar(); GP.Sfx.play('select');
+      if (this.travel.open) this.openPanel(this.cur);
+    }
+  }
 
   indexOf(id) {
     for (var i = 0; i < this.locs.length; i++) if (this.locs[i].id === id) return i;
@@ -91,7 +105,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       [-62, -30, 18, 50].forEach(function (dx, k) {
         var x = mid + dx + Math.round(rnd() * 6 - 3), key = set[k];
         if (!S.has(key) || M.inGap(x) || M.inGap(x - 18) || M.inGap(x + 18)) return;
-        S.add(self, x, M.vergeY(x), key).setOrigin(0.5, 1).setDepth(k === 0 ? 2 : 3);
+        S.add(self, x, M.vergeY(x), GP.MapDecor.key(self, key)).setOrigin(0.5, 1).setDepth(k === 0 ? 2 : 3);
         if (key === 'carte_lampadaire') self.lights.push([x, M.vergeY(x) - 25, 0.7]);
       });
     }
@@ -201,9 +215,9 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
 
   // ---------- héros ----------
   makeHero() {
-    var x = this.nx(this.cur), y = this.ny(this.cur);
-    this.heroShadow = this.add.image(x, y - 1, 'shadow').setDepth(19);
-    this.hero = this.add.sprite(x, y - 1, 'hero_idle').setOrigin(0.5, 1).setDepth(20);
+    var x = this.travel.x, y = this.travel.y;
+    this.heroShadow = this.add.image(x, y, 'shadow').setDepth(19);
+    this.hero = this.add.sprite(x, y, 'hero_idle').setOrigin(0.5, 1).setDepth(20);
     this.cameras.main.centerOn(x, GP.Config.HEIGHT / 2);
     this.cameras.main.startFollow(this.hero, true, 0.1, 0.1, 0, 0);
     this.cameras.main.setDeadzone(60, GP.Config.HEIGHT);
@@ -213,40 +227,33 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
   startIdle() { this.hero.play('hero-idle'); }
   stopIdle() { this.hero.stop(); }
 
+  placeHero(x) {
+    var y = this.travel.y;   // surface logique partagée, piédestaux inclus
+    this.hero.setPosition(x, y); this.heroShadow.setPosition(x, y);
+  }
+
   /** Marche le long du chemin jusqu'à l'étape j ; si openOnArrival, ouvre la fiche à l'arrivée. */
   goTo(j, openOnArrival) {
-    var self = this, M = GP.MapArt;
-    if (this.moving) return;
-    if (j === this.cur) { if (openOnArrival) this.openPanel(j); return; }
-    var x0 = this.nx(this.cur), x1 = this.nx(j);
-    this.moving = true;
-    this.stopIdle();
-    this.hero.play('hero-walk').setFlipX(x1 < x0);   // sprite tourné vers la droite : miroir pour aller à gauche
-    this.tweens.addCounter({
-      from: x0, to: x1, duration: Math.abs(x1 - x0) / 95 * 1000,
-      onUpdate: function (tw) {
-        var x = Math.round(tw.getValue()), y = M.pathY(x);
-        self.hero.setPosition(x, y + 1);
-        self.heroShadow.setPosition(x, y + 1);
-      },
-      onComplete: function () {
-        self.moving = false; self.cur = j; self.P.setCurrent(j);
-        self.hero.setPosition(x1, self.ny(j) - 1).setFlipX(false);
-        self.heroShadow.setPosition(x1, self.ny(j) - 1);
-        self.startIdle(); self.updateBar();
-        GP.Sfx.play('select');
-        if (openOnArrival) self.openPanel(j);
-      }
-    });
+    this.travel.to(j, openOnArrival);
+    this.syncTravel();
+    if (!this.moving) {
+      this.cur = this.travel.target; this.P.setCurrent(this.cur); this.placeHero(this.travel.x);
+      this.startIdle(); this.updateBar();
+      if (openOnArrival) this.openPanel(this.cur);
+    }
+  }
+
+  syncTravel() {
+    this.moving = this.travel.moving;
+    if (!this.moving) return;
+    this.hero.play('hero-walk').setFlipX(this.nx(this.travel.target) < this.travel.x);
     GP.Sfx.play('step');
   }
 
   step(d) {
     if (this.panel) { if (this.panelKind === 'notice') this.sheetGo(d); return; }
-    if (this.moving) return;
-    var j = this.cur + d;
-    if (j < 0 || j >= this.locs.length) { GP.Sfx.play('error'); return; }
-    this.goTo(j, false);
+    this.travel.step(d);
+    this.syncTravel();
   }
 
   onConfirm() {
@@ -284,7 +291,8 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     GP.UI.button(this, W - 4 - 128, H - 19, 128, 'COMMENT JOUER ?', function () { if (!self.panel && !self.moving) self.openHelp(); })
       .objs.forEach(function (o) { o.setDepth(52); });
     this.hud = true;
-    this.toast('< > CHANGER D\'ÉTAPE   ENTRÉE FICHE   H AIDE');
+    this.navHint = fix(this.txt(W / 2, H - 35, '', GP.PAL.m, { backgroundColor: GP.PAL.k, padding: { x: 4, y: 3 } })).setOrigin(0.5);
+    GP.Prompts.bind(this, this.navHint, '{navX} ÉTAPES  {confirm} FICHE  {help} AIDE');
   }
 
   updateBar() {
@@ -302,7 +310,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
   toast(msg, color) {
     var W = GP.Config.WIDTH;
     if (this.toastObj) this.toastObj.destroy();
-    var t = this.txt(W / 2, 236, ' ' + msg + ' ', color || GP.PAL.w, { backgroundColor: GP.PAL.k, padding: { x: 2, y: 3 } })
+    var t = this.txt(W / 2, 64, ' ' + msg + ' ', color || GP.PAL.w, { backgroundColor: GP.PAL.k, padding: { x: 2, y: 3 } })
       .setOrigin(0.5).setDepth(60).setScrollFactor(0);
     this.toastObj = t;
     this.tweens.add({ targets: t, alpha: 0, delay: 3200, duration: 400, onComplete: function () { t.destroy(); } });
@@ -312,7 +320,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
   makeWeather() {
     var self = this;
     this.wx = GP.WeatherFX.apply(this, { depth: 30, fixed: true, noShadows: true, lights: this.lights });
-    this.wxWidget = GP.WeatherFX.widget(this, GP.Config.WIDTH - 158, 4, 50);
+    this.wxWidget = GP.WeatherFX.widget(this, GP.Config.WIDTH - 4, 4, 50, { right: true });
     this.applyWeather(GP.Weather.get());
     GP.Weather.load(function (s) { if (self.alive) self.applyWeather(s); });
     // météo en direct : la scène suit les mises à jour (toutes les 5 min, ou retour du réseau)
@@ -345,7 +353,9 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
   openPanel(i) {
     if (this.panel) return;
     var self = this, l = this.locs[i], st = this.P.status(i), UI = GP.UI;
-    var m = UI.modal(this, 'ÉTAPE ' + String(i + 1).padStart(2, '0') + ' / 12', '');
+    var compact = st !== 'completed';
+    var m = UI.modal(this, 'ÉTAPE ' + String(i + 1).padStart(2, '0') + ' / 12', '', compact ?
+      { x: 32, y: 8, w: 416, h: 140, offsetY: 57, dim: 0.22 } : { offsetY: 10 });
     this.modalObj = m;
     this.panel = m.objs;
     this.panelKind = 'notice';
@@ -361,16 +371,28 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
         } });
       });
     } else {
-      pages.push({ title: MapScene.LABELS[st] || 'À DÉCOUVRIR', draw: function (add) { self.drawIntro(add, i, st); } });
+      var info = [GP.t(l.name.toUpperCase()), GP.t(l.element.label.toUpperCase()), GP.t(l.notice)];
+      if (st === 'coming') info.push(GP.t('NIVEAU PAS ENCORE DISPONIBLE'));
+      if (st === 'locked') info.push(GP.t("TERMINE L'ÉTAPE PRÉCÉDENTE"));
+      UI.paginate(this, info, 292, 78).forEach(function (text) {
+        pages.push({ title: 'À RECONSTRUIRE', draw: function (add) { self.drawContext(add, i, text); } });
+      });
     }
-    this.sheet = { pages: pages, page: 0, content: [], m: m };
+    if (l.grammar) GP.UI.paginate(this, [GP.t(l.grammar)], compact ? 388 : 412, compact ? 78 : 156).forEach(function (text) {
+      pages.push({ title: 'SOURCE → RÈGLE', draw: function (add) { add(UI.txt(self, compact ? 46 : 34, compact ? 36 : 40, text, GP.PAL.w, { wordWrap: { width: compact ? 388 : 412 }, lineSpacing: 4 })); } });
+    });
+    this.sheet = { pages: pages, page: 0, content: [], m: m, compact: compact };
 
     // boutons du bas
-    if (this.panelAction) m.add(UI.button(this, 150, 212, 120, st === 'completed' ? 'REJOUER' : 'JOUER', function () { self.panelPrimary(); }, { primary: true }).objs);
-    m.add(UI.button(this, 280, 212, 70, 'FERMER', function () { self.closePanel(); }).objs);
+    var footer = compact ? 126 : 212;
+    if (this.panelAction) {
+      var play = UI.button(this, 150, footer, 120, '', function () { self.panelPrimary(); }, { primary: true }); m.add(play.objs);
+      GP.Prompts.bind(this, play.label, (st === 'completed' ? 'REJOUER' : 'JOUER') + ' {confirm}');
+    }
+    m.add(UI.button(this, 280, footer, 70, 'FERMER', function () { self.closePanel(); }).objs);
     if (pages.length > 1) {
-      m.add(UI.button(this, 34, 212, 24, '<', function () { self.sheetGo(-1); }).objs);
-      m.add(UI.button(this, 422, 212, 24, '>', function () { self.sheetGo(1); }).objs);
+      m.add(UI.button(this, compact ? 46 : 34, footer, 24, '<', function () { self.sheetGo(-1); }).objs);
+      m.add(UI.button(this, compact ? 410 : 422, footer, 24, '>', function () { self.sheetGo(1); }).objs);
     }
     this.sheetRender();
 
@@ -396,25 +418,17 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       .setColor(this.P.status(this.panelIndex) === 'completed' ? P.y : P.m);
     pg.draw(add);
     if (sh.pages.length > 1) for (var k = 0; k < sh.pages.length; k++)
-      add(self.add.rectangle(GP.Config.DW / 2 - (sh.pages.length - 1) * 5 + k * 10, 203, 6, 6, GP.int(k === sh.page ? P.g : P.e)).setOrigin(0.5));
+      add(self.add.rectangle(GP.Config.DW / 2 - (sh.pages.length - 1) * 5 + k * 10, sh.compact ? 119 : 203, 6, 6, GP.int(k === sh.page ? P.g : P.e)).setOrigin(0.5));
   }
 
-  /** Page unique avant réussite (ou lieu à venir). */
-  drawIntro(add, i, st) {
+  /** Fiche courte au-dessus du rail ; la notice complète est paginée, jamais tronquée. */
+  drawContext(add, i, text) {
     var l = this.locs[i], P = GP.PAL, UI = GP.UI;
-    add(this.add.rectangle(34, 42, 104, 96, GP.int(P.k)).setOrigin(0));
+    add(this.add.rectangle(46, 36, 72, 76, GP.int(P.k)).setOrigin(0));
     var mk = GP.MapArt.monument(l, true);
-    add(this.add.image(86, 90, mk).setScale(mk.indexOf('lm_') === 0 ? 3 : 2));
-    add(UI.txt(this, 34, 146, 'À RECONSTRUIRE', P.g));
-    add(UI.txt(this, 34, 158, l.element.label.toUpperCase(), P.m, { wordWrap: { width: 104 }, lineSpacing: 3 }));
-    add(UI.txt(this, 150, 40, l.name.toUpperCase(), P.g, { wordWrap: { width: 300 }, lineSpacing: 3 }));
-    add(UI.txt(this, 150, l.name.length > 30 ? 66 : 54, l.notice, P.w, { wordWrap: { width: 300 }, lineSpacing: 4 }));
-    if (l.playable) {
-      add(UI.txt(this, 150, 186, 'ÉTOILES', P.m));
-      for (var k = 0; k < 3; k++) add(this.add.image(214 + k * 10, 189, 'star_off'));
-    }
-    if (st === 'coming') add(UI.txt(this, 150, 186, 'NIVEAU PAS ENCORE DISPONIBLE', P.l));
-    else if (st === 'locked') add(UI.txt(this, 150, 198, 'TERMINE L\'ÉTAPE PRÉCÉDENTE', P.m));
+    add(this.add.image(82, 72, mk).setScale(mk.indexOf('lm_') === 0 ? 1.5 : 1));
+    add(UI.txt(this, 130, 36, text, P.w, { wordWrap: { width: 292 }, lineSpacing: 4 }));
+    if (l.playable) for (var k = 0; k < 3; k++) add(this.add.image(72 + k * 10, 104, 'star_off'));
   }
 
   /** Page BILAN : la photo reconstruite en grand, les chiffres et les étoiles. */

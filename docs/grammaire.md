@@ -1,32 +1,32 @@
 # Grammaire — Green Path
 
 Chaîne : SOURCE (Château des ducs de Bretagne) → GRAMMAIRE → ALGORITHME → DATA / INTERACTION → ŒUVRE.
-Statut : brouillon J1. Les valeurs chiffrées sont des paramètres de départ, à ajuster au prototype.
+Statut : fiche J1 actualisée par l'audit du 10/11. Référence complète : [HERITAGE_GRAMMAR.md](../HERITAGE_GRAMMAR.md). Les règles de terrain restent écrites à la main ; aucun relevé métrique n'a été inventé.
 
 ## Fiche de grammaire (niveau de référence : Château)
 
 | Champ | Contenu |
 |---|---|
-| **Primitives** | Cellule (1 pixel de l'image), grille 48×32, module « dent » (merlon) et module « ouverture » (créneau), segment de courtine, tour. |
-| **Relations** | Une cellule collectée en révèle une dans la grille. L'ordre de révélation suit la logique du lieu : d'abord la masse (courtines), puis la cadence (dents / ouvertures qui alternent), enfin la verticalité (tours). |
-| **Invariants** | Grille 48×32 ; 1 pixel collecté = 1 cellule ; l'ordre de révélation du lieu ; image complète à 100 % ; le niveau se termine à 100 %. |
-| **Variables** | Position des pixels dans le niveau ; température (teinte de la palette) ; précipitations (densité des particules de pluie) ; vent (direction de dérive des particules) ; taux de reconstruction. |
-| **Temps** | Évolution par la collecte (événement), météo lue à l'ouverture du niveau et rafraîchie toutes les 30 min (évolution lente). |
+| **Primitives** | Cellule colorée ; photo 48×32 uniquement au Jardin ; ailleurs sprite de monument ; rectangle de mur, bande centrale, volume latéral, seuil. |
+| **Relations** | Un fragment collecté révèle un groupe de cellules. Château : assise basse, centre, élévations latérales (`fortification`), interprétation géométrique du sprite. |
+| **Invariants** | Toutes les cellules opaques révélées une fois ; nombre de groupes égal au nombre de collectibles ; image complète à 100 % ; niveau terminé à 100 %. |
+| **Variables** | Taux de reconstruction, ordre des cellules, précipitations/densité, vent/poussée, accélération au sol et visibilité. La température est seulement affichée. |
+| **Temps** | Collecte événementielle ; météo rafraîchie toutes les 5 min, délai maximal 4 s. |
 | **Déclencheur** | Collecte d'un pixel (action du joueur) ; donnée Open-Meteo. |
-| **Limites** | Température bornée à 0–35 °C pour la palette ; vent borné à 0–80 km/h ; précipitations bornées ; **la météo ne modifie jamais la physique du jeu** ; reset de la sauvegarde ; valeurs de secours si l'API est indisponible. |
+| **Limites** | Vent 0–80 km/h, précipitations 0–10 mm, données numériques finies ; **météo réellement opérante sur la physique** ; reset et fallback neutre. |
 
 ## Règle en une phrase
-« Un pixel collecté révèle une cellule, dans l'ordre qui rebâtit la structure du lieu : masse, cadence, verticalité. »
+« Un fragment collecté révèle un groupe de cellules, dans l'ordre géométrique choisi pour le lieu. »
 
 ## Un ordre par lieu (la variation entre niveaux)
 | Lieu | Propriété traduite | Ordre de révélation (hypothèse) |
 |---|---|---|
-| Château | Cadence plein / vide, masse puis tours | Courtines → alternance dents / ouvertures → tours |
-| Cathédrale | Verticalité, symétrie des deux tours | Du bas vers le haut, côtés gauche et droit en miroir |
+| Château | Masse puis élévations | Assise → région centrale → régions latérales, implémenté ; ce n'est pas une segmentation architecturale mesurée |
+| Cathédrale | Verticalité | Bas → haut, centre → côtés ; aucun ordre sémantique de tours implémenté |
 | Jardin des Plantes (Palmarium) | Croissance | Du bas vers le haut, depuis le sol ; dans une ligne, du centre vers les bords (**implémenté** sur la photo 48×32, `PixelCollection.js`, ordre `bottomUp`) |
 | Bouffay (maison à pans de bois) | Ossature puis remplissage | Poutres d'abord, panneaux ensuite |
 
-Les ordres des trois autres lieux sont à valider après observation de leurs images ; je ne les ai pas encore vérifiés sur Nantes Patrimonia.
+Les interprétations doivent être étayées par les relevés de l'équipe ; Bouffay conserve `bottomUp` et reste hors parcours.
 
 ## Mapping météo (entrée → règle → sortie perceptible)
 La météo réelle de Nantes change l'environnement de Green Path et les niveaux y réagissent (`js/systems/WeatherRules.js`, rendu `WeatherFX.js` et `LevelArt.sky`). Données demandées au démarrage puis toutes les 5 min.
@@ -42,13 +42,15 @@ La météo réelle de Nantes change l'environnement de Green Path et les niveaux
 | `cloud_cover` | 0–100 % → 0 à 8 nuages | ciel plus ou moins chargé |
 | `temperature_2m` | affichée | widget |
 
-**Limites** : chaque effet est annoncé à l'entrée du niveau (et par un message si la météo change en cours de partie) ; les 4 niveaux restent finissables : test d'accessibilité de tous les pixels rejoué sous pluie, vent et neige (`tools/bot.js`). Pas de flash, pas d'éclair.
+**Limites** : chaque effet est annoncé à l'entrée du niveau (et par un message si la météo change en cours de partie). Les 80 fragments des 3 niveaux accessibles sont atteignables sous pluie, vent et neige selon le diagnostic géométrique, qui ignore les morts ; aucune garantie de traversée humaine ne doit être déduite de ce seul test. Pas de flash, pas d'éclair.
 **Fallback** : réseau coupé → dernière météo reçue, gardée dans le navigateur (« HORS LIGNE · IL Y A N MIN ») ; jamais rien reçu → météo neutre sans effet (`data/fallback.json`, valeurs codées dans `WeatherManager.js`).
+
+**Modulation locale livrée** : `WeatherShelters` associe des rectangles aux deux passages couverts du Château (pluie/neige 1, vent 0.5) et aux deux auvents du Jardin (pluie/neige 0.5, vent 0.25). Maximum par canal en chevauchement, transition physique 300 ms, précipitations masquées spatialement. La donnée globale reste identique ; c'est l'exposition qui change. Les zones correspondent aux structures du décor, pas à un relevé certifié du monument. Architecture et limites : [WEATHER_SHELTERS.md](WEATHER_SHELTERS.md). Valeurs physiques et temps cibles centralisés sans retouche globale : [PLAYTEST_REPORT.md](PLAYTEST_REPORT.md).
 
 ## Niveau : règles
 - Un pixel ramassé = un groupe de cases révélé (le nombre de groupes est égal au nombre de pixels du niveau : 32 pour le Jardin).
 - Ronce, pointes, flèche, goutte, tonneau ou chute = **une mort** : compteur MORTS +1, retour à la dernière lanterne allumée, pixels gardés (le compteur sert à l'étoile « sans mourir »).
-- L'image reconstruite est une **vraie photo pixélisée** (48×32 cases, 16 couleurs) : un pixel ramassé révèle un groupe de cases ; les cases cachées restent en gris très sombre (l'image « en mémoire »).
+- Au Jardin, l'image reconstruite est une **photo pixélisée** (48×32 cases, 16 couleurs). Ailleurs, sprite de remplacement ; cases cachées en gris très sombre.
 - Une capacité nouvelle par niveau, puis combinées : Jardin (courir, sauter, ronces), Château (s'accroupir : flèches, herses, tonneaux), Cathédrale (grimper aux colonnes, s'accrocher aux rebords : gargouilles, corniches qui s'effritent), Bouffay (étals mobiles, tout combiné).
 
 ## Étoiles (objectif de fin de niveau)
@@ -61,5 +63,5 @@ Invariant de la carte : un monument reste gris (luminance, sans teinte) tant que
 Une personne qui n'a pas vu le château doit pouvoir lire cette fiche et prédire dans quel ordre l'image apparaît. **À tester au test croisé.**
 
 ## À valider
-- Les valeurs chiffrées (bornes, 30 min de cache) doivent être confirmées dans le moteur (Phase 2–3).
-- L'ordre « courtine → dents → tours » est une hypothèse d'observation, à confirmer sur la photo choisie.
+- Régler les temps cibles au test croisé ; relever précisément le Château avant tout générateur de terrain patrimonial.
+- Remplacer ultérieurement le masque géométrique stylisé par des régions annotées sur une source autorisée.
