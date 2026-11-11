@@ -34,7 +34,7 @@ GP.LevelBuilder = {
       width: width, rows: 17, grid: new Int8Array(width * 17),
       plats: [], thorns: [], pixels: [], checks: [], hints: [], deco: [], startX: 2, startRow: 13,
       climbs: [], crumbles: [], gargoyles: [], slits: [], gates: [], barrels: [], movers: [], rainThorns: [], sunPlats: [],
-      muses: [], molds: [], glasses: [], hangers: [], plaques: [], regimes: [], peaux: [], caisses: [], cranes: [], elephants: [], cbornes: [], cplats: [], memos: [], drafts: [],
+      muses: [], molds: [], glasses: [], hangers: [], plaques: [], regimes: [], peaux: [], caisses: [], cranes: [], elephants: [], cbornes: [], cplats: [], memos: [], frises: [], drafts: [],
       patrols: [], tides: [], boats: [], liars: [], fallers: [], jets: [], beams: [], springs: [], seqs: [], belts: [], carts: [], rings: [], aligns: [], ponds: [],
       rot: false, wxm: {},
       abilities: {}, skin: null
@@ -89,7 +89,7 @@ GP.LevelBuilder = {
       borne: function (x, color) { L.cbornes.push({ x: x, color: color }); },                                                              // borne de couleur : la toucher allume les passerelles de sa couleur
       cplat: function (x, y, w, color) { L.cplats.push({ x: x, y: y, w: w, color: color }); },                                           // passerelle de couleur (solide seulement si sa couleur est allumée)
       glass: function (x, y, w) { L.glasses.push({ x: x, y: y, w: w }); },
-      date: function (x, y, w, rang, annee) { L.glasses.push({ x: x, y: y, w: w, rang: rang, annee: annee }); },   // dalle datée : à poser dans l'ordre de l'histoire (rang 0, 1, 2…), sinon elle se fissure                                                                    // dalle de verre qui se fissure
+      frise: function (f) { L.frises.push(f); },   // frise à compléter : { annees, slots, jetons, porte } (le joueur porte les dates)
       memo: function (stele, gate, pattern) { L.memos.push({ stele: stele, gate: gate, pattern: pattern.split('') }); },                       // stèle à lire, porte à ouvrir de mémoire (D = bas, J = haut)
       draft: function (x0, x1, y0, y1) { L.drafts.push({ x0: x0, x1: x1, y0: y0, y1: y1 }); },                                               // courant d'air ascendant (gravité allégée)
       pond: function (x0, x1, row) { L.ponds.push({ x0: x0, x1: x1, row: row }); },                                                           // eau décorative

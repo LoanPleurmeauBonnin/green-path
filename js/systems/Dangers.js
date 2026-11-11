@@ -262,11 +262,25 @@ GP.Dangers = function (scene) {
   var glassSet = ['memorial_sol_dalle_verre', 'memorial_sol_dalle_verre', 'memorial_sol_dalle_verre'];
   this.glasses = (L.glasses || []).map(function (g, i) {
     var img = scene.add.image(g.x * 16, g.y * 16, scene.rowTexture('lv_glass_' + i, glassSet, g.w)).setOrigin(0, 0).setDepth(9).setAlpha(0.92);
-    var c = { img: img, body: scene.platformBody(img, true), x: img.x, w: g.w * 16, state: 'solid', timer: 0, rang: g.rang, lit: false };
-    if (g.annee) c.label = GP.UI.txt(scene, img.x + g.w * 8, img.y - 2, String(g.annee), GP.PAL.w, { backgroundColor: GP.PAL.k, padding: { x: 2, y: 2 } }).setOrigin(0.5, 1).setDepth(10);
-    return c;
+    return { img: img, body: scene.platformBody(img, true), x: img.x, w: g.w * 16, state: 'solid', timer: 0 };
   });
-  this.dateNext = 0;   // prochain rang de dalle datée à poser (chronologie)
+
+  // ---------- Frise de dates (Mémorial) : des blocs datés ; on les allume en les frappant de la tête (comme Mario) ou en sautant dessus, dans l'ordre de l'histoire ; frise complète = la porte s'ouvre ----------
+  this.frises = (L.frises || []).map(function (f) {
+    var gfl = L.top(f.porte) * 16, gx = f.porte * 16 + 8, ordre = f.blocs.map(function (q) { return q[2]; }).sort(function (u, v) { return u - v; });
+    var blocs = f.blocs.map(function (q, i) {
+      var x = q[0] * 16, y = q[1] * 16;
+      var body = scene.add.image(x, y, 'lv_tileset').setOrigin(0, 0).setDisplaySize(16, 16).setVisible(false);
+      scene.platformBody(body, false);
+      var rect = scene.add.rectangle(x + 8, y + 8, 16, 16, 0x8a8a84).setDepth(8).setStrokeStyle(1, 0x3a3a38);
+      var t = GP.UI.txt(scene, x + 8, y - 2 - (i % 2) * 13, String(q[2]), GP.PAL.w, { backgroundColor: GP.PAL.k, padding: { x: 2, y: 2 } }).setOrigin(0.5, 1).setDepth(9);
+      return { x: x, y: y, year: q[2], rang: ordre.indexOf(q[2]), rect: rect, txt: t, lit: false, cool: 0 };
+    });
+    var barrier = scene.add.image(gx, gfl, 'lv_tileset').setOrigin(0.5, 1).setDisplaySize(10, 200).setVisible(false);   // mur de lumière du sol au plafond : impossible à sauter
+    scene.platformBody(barrier, false);
+    var gate = scene.add.rectangle(gx, gfl, 10, 200, 0xbfe4ff, 0.55).setOrigin(0.5, 1).setDepth(7);
+    return { blocs: blocs, barrier: barrier, gate: gate, next: 0, open: false };
+  });
 
   // ---------- Mémoire : une stèle à lire, puis une porte de lumière qui s'ouvre si on rejoue la séquence (sans danger) ----------
   var WORD = { D: 'BAS', J: 'HAUT' };
@@ -595,22 +609,40 @@ GP.Dangers.prototype = {
     // dalles de verre
     this.glasses.forEach(function (c) {
       var on = c.state === 'solid' && b.touching.down && b.bottom <= c.img.y + 2 && b.right > c.img.x && b.x < c.img.x + c.w;
-      if (on && c.rang !== undefined) {   // dalle datée : dans l'ordre elle s'allume et reste, sinon elle se fissure et la chronologie repart de zéro
-        if (c.lit || c.rang === self.dateNext) { if (!c.lit) { c.lit = true; self.dateNext++; c.img.setTint(0xffe9a0); GP.Sfx.play('confirm'); } on = false; }
-        else self.glasses.forEach(function (o) { if (o.lit) { o.lit = false; o.img.clearTint(); } }), self.dateNext = 0;
-      }
       if (on) { c.state = 'cracking'; c.timer = 800 * self.f('glass'); GP.Sfx.play('step'); c.img.setTint(0xd8ecff); }
       if (c.state === 'cracking') {
         c.timer -= dt; c.img.x = c.x + (GP.reducedMotion ? 0 : (Math.floor(c.timer / 60) % 2 ? 1 : -1));
-        if (c.timer <= 0) { c.state = 'gone'; if (c.label) c.label.setAlpha(0.25); c.timer = 3000 * self.f('glassback'); c.body.enable = false; c.img.x = c.x; s.tweens.add({ targets: c.img, alpha: 0, y: c.img.y + 8, duration: 220 }); }
+        if (c.timer <= 0) { c.state = 'gone'; c.timer = 3000 * self.f('glassback'); c.body.enable = false; c.img.x = c.x; s.tweens.add({ targets: c.img, alpha: 0, y: c.img.y + 8, duration: 220 }); }
       } else if (c.state === 'gone') {
         c.timer -= dt;
-        if (c.timer <= 0) { c.state = 'solid'; if (c.label) c.label.setAlpha(1); c.body.enable = true; s.tweens.killTweensOf(c.img); c.img.setAlpha(0.92).clearTint().setPosition(c.x, c.body.y); }
+        if (c.timer <= 0) { c.state = 'solid'; c.body.enable = true; s.tweens.killTweensOf(c.img); c.img.setAlpha(0.92).clearTint().setPosition(c.x, c.body.y); }
       }
+    });
+
+    // frise de dates : un bloc s'allume quand la tête le frappe par en dessous ou qu'on atterrit dessus ; dans l'ordre il reste doré, sinon tout s'éteint et on recommence
+    this.frises.forEach(function (f) {
+      if (f.open) return;
+      f.blocs.forEach(function (q) {
+        q.cool -= dt;
+        var dessus = b.right > q.x + 2 && b.x < q.x + 14;
+        var tete = dessus && b.top >= q.y + 8 && b.top <= q.y + 19 && b.bottom > q.y + 16;   // par la position (pas par les drapeaux de collision, qui peuvent manquer une image sur un écran rapide)
+        var pied = dessus && (b.touching.down || b.blocked.down) && b.bottom <= q.y + 3 && b.bottom >= q.y - 3;
+        if (!(tete || pied) || q.cool > 0 || q.lit) return;
+        q.cool = 500;
+        if (q.rang === f.next) {
+          q.lit = true; f.next++; q.rect.setFillStyle(0xffe9a0); GP.Sfx.play('confirm');
+          if (f.next >= f.blocs.length) { f.open = true; f.barrier.body.enable = false; s.tweens.add({ targets: f.gate, alpha: 0, duration: 600 }); s.toast("LA FRISE EST COMPLÈTE : LA PORTE S'OUVRE", GP.PAL.g); }
+        } else {
+          f.next = 0; GP.Sfx.play('error'); s.toast("PAS DANS L'ORDRE : RECOMMENCE LA FRISE", GP.PAL.o);
+          f.blocs.forEach(function (o) { o.lit = false; o.rect.setFillStyle(0x8a8a84); });
+          q.rect.setFillStyle(0xd06040); s.time.delayedCall(450, function () { q.rect.setFillStyle(0x8a8a84); });   // le bloc se trompe : il rougit un instant
+        }
+      });
     });
 
     // mémoire : la séquence apparaît près de la stèle, un point d'interrogation près de la porte
     this.memos.forEach(function (q) {
+      if (!q.open && p.x > q.gx + 14) { q.open = true; q.barrier.body.enable = false; q.gate.setAlpha(0); }   // déjà de l'autre côté (reprise au point de contrôle) : la porte reste ouverte, on peut revenir lire la stèle
       var nearS = Math.abs(p.x - q.sx) < 70, nearG = !q.open && p.x > q.gx - 90 && p.x < q.gx - 6;
       q.steleTxt.setAlpha(nearS ? 1 : 0);
       if (nearG) q.gateTxt.setText(' ' + q.pattern.map(function (c, i) { return i < q.idx ? '*' : '?'; }).join(' ') + ' ');

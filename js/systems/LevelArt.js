@@ -1016,12 +1016,13 @@ GP.LevelArt = (function () {
     V: ['10001', '10001', '10001', '10001', '10001', '01010', '00100'], "'": ['00100', '00100', '01000', '00000', '00000', '00000', '00000']
   };
   /** Écrit un texte en grosses lettres de la police ci-dessus (échelle sc) : lettre claire et ombre portée. */
-  function lettresMemorial(ctx, txt, x0, y0, sc, col, ombre) {
+  function lettresMemorial(ctx, txt, x0, y0, sc, col, ombre, off) {
+    off = off === undefined ? 1 : off;
     var cx = x0;
     for (var c = 0; c < txt.length; c++) {
       var ch = txt[c]; if (ch === ' ') { cx += 4 * sc; continue; }
       var g = POLICE_MEM[ch];
-      for (var gy = 0; gy < 7; gy++) for (var gx = 0; gx < 5; gx++) if (g[gy][gx] === '1') { R(ctx, cx + gx * sc + 1, y0 + gy * sc + 1, sc, sc, ombre); R(ctx, cx + gx * sc, y0 + gy * sc, sc, sc, col); }
+      for (var gy = 0; gy < 7; gy++) for (var gx = 0; gx < 5; gx++) if (g[gy][gx] === '1') { R(ctx, cx + gx * sc + off, y0 + gy * sc + off, sc, sc, ombre); R(ctx, cx + gx * sc, y0 + gy * sc, sc, sc, col); }
       cx += (ch === "'" ? 3 : 6) * sc;
     }
     return cx - x0;
@@ -1039,34 +1040,14 @@ GP.LevelArt = (function () {
     R(ctx, 0, 204, w, 32, '#b9b9b2'); R(ctx, 0, 204, w, 2, '#8a8a84'); for (x = 0; x < w; x += 40) R(ctx, x, 206, 1, 30, '#a0a09a');   // socle de béton
     return o.cv;
   }
-  /** Lettres du Mémorial (480×150, transparent) : « MEMORIAL DE L'ABOLITION / DE L'ESCLAVAGE » en grosses lettres claires, posées sur le mur de corten. */
-  function drawFacadeMemorial() {
-    var o = PA.canvas(480, 150), ctx = o.ctx, sc = 3;
-    var l1 = "MEMORIAL DE L'ABOLITION", l2 = "DE L'ESCLAVAGE", w1 = lettresMemorial(PA.canvas(1, 1).ctx, l1, 0, 0, sc, '#000', '#000'), w2 = lettresMemorial(PA.canvas(1, 1).ctx, l2, 0, 0, sc, '#000', '#000');
-    lettresMemorial(ctx, l1, Math.floor((480 - w1) / 2), 22, sc, '#ecece8', '#5a2814');
-    lettresMemorial(ctx, l2, Math.floor((480 - w2) / 2), 58, sc, '#ecece8', '#5a2814');
-    return o.cv;
-  }
-  /** Passage souterrain du Mémorial (480×236, se répète) : béton brut, poutres, grandes plaques de verre translucides vert pâle gravées de lignes de texte, ouverture vers le ciel. */
-  function drawFondMemorialPassage() {
-    // Sous le quai (d'après le vrai passage) : une moitié ouverte sur la Loire entre des piliers de béton, une moitié de mur de verre dépoli incliné gravé de citations
-    var w = 480, h = 236, o = PA.canvas(w, h), ctx = o.ctx, rnd = PA.rng(19), x, y, i;
-    R(ctx, 0, 0, w, h, '#8a8a85'); for (y = 6; y < h; y += 10) { R(ctx, 0, y, w, 1, '#767671'); for (x = (y % 20 ? 40 : 0); x < w; x += 80) R(ctx, x, y, 1, 10, '#767671'); }   // béton banché
-    R(ctx, 0, 0, w, 30, '#5d5d5a'); R(ctx, 0, 30, w, 4, '#4a4a47');                                                  // plafond (dessous du quai)
-    // moitié gauche : la Loire vue entre les piliers
-    R(ctx, 0, 34, 240, 136, '#c9d6de'); R(ctx, 0, 34, 240, 50, '#dbe6ee'); R(ctx, 0, 84, 240, 4, '#9fb0ba');           // ciel clair, rive d'en face
-    R(ctx, 0, 88, 240, 82, '#7f95a2'); for (y = 92; y < 170; y += 5) for (x = Math.floor(rnd() * 14); x < 240; x += 18 + Math.floor(rnd() * 14)) R(ctx, x, y, 6 + Math.floor(rnd() * 8), 1, '#a8bcc8');   // l'eau et ses reflets
-    for (x = 0; x <= 240; x += 80) { R(ctx, x, 34, 26, 136, '#a3a39e'); R(ctx, x + 22, 34, 4, 136, '#77776f'); R(ctx, x, 34, 3, 136, '#bdbdb7'); }   // piliers
-    // moitié droite : mur de verre dépoli, légèrement incliné (les montants penchent), citations gravées
-    R(ctx, 240, 34, 240, 136, '#5c6a66');
-    for (i = 0; i < 4; i++) {
-      var gx = 246 + i * 58;
-      R(ctx, gx, 38, 54, 128, '#cfe0d8'); R(ctx, gx, 38, 54, 22, '#e6f1ec'); R(ctx, gx + 4, 38, 3, 128, 'rgba(255,255,255,0.5)');
-      for (y = 52; y < 156; y += 6) { var lw = 18 + Math.floor(rnd() * 28); R(ctx, gx + 6, y + Math.floor((gx - 246) / 58), lw, 1, '#7e9a8a'); }   // lignes de citations gravées
-      for (y = 38; y < 166; y += 8) R(ctx, gx + 50 - Math.floor((y - 38) / 32), y, 2, 8, '#7d8f88');                  // montant incliné
-    }
-    R(ctx, 0, 170, w, 66, '#6a6a66'); for (x = 0; x < w; x += 48) R(ctx, x, 170, 1, 66, '#585854'); R(ctx, 0, 170, w, 2, '#8a8a85');   // sol de béton
-    return o.cv;
+  /** Titre géant du Mémorial : « MEMORIAL DE L'ABOLITION DE L'ESCLAVAGE » sur une seule ligne, aussi long que le niveau (comme une grande image zoomée). Renvoie deux moitiés (limite de texture des téléphones). */
+  function drawTitreMemorial() {
+    var txt = "MEMORIAL DE L'ABOLITION DE L'ESCLAVAGE", unit = lettresMemorial(PA.canvas(1, 1).ctx, txt, 0, 0, 1, '#000', '#000'), sc = Math.floor(2780 / unit);
+    var w = unit * sc, h = 7 * sc + 8, o = PA.canvas(w, h);
+    lettresMemorial(o.ctx, txt, 0, 0, sc, '#ecece8', '#5a2814', Math.round(sc / 2));
+    var half = Math.ceil(w / 2), a = PA.canvas(half, h), c = PA.canvas(w - half, h);
+    a.ctx.drawImage(o.cv, 0, 0); c.ctx.drawImage(o.cv, -half, 0);
+    return [a.cv, c.cv];
   }
   /** Note de musique lancée par les Muses du théâtre. */
   function drawNote() {
@@ -1158,9 +1139,8 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_caisse_bananes', drawCaisseBananes());
     PA.toTexture(scene, 'lv_regime', drawRegime());
     PA.toTexture(scene, 'lv_peau', drawPeau());
-    PA.toTexture(scene, 'lv_facade_memorial', drawFacadeMemorial());
+    var titre = drawTitreMemorial(); PA.toTexture(scene, 'lv_titre_memorial_a', titre[0]); PA.toTexture(scene, 'lv_titre_memorial_b', titre[1]);
     PA.toTexture(scene, 'lv_fond_memorial_corten', drawFondMemorialCorten());
-    PA.toTexture(scene, 'lv_fond_memorial_passage', drawFondMemorialPassage());
     PA.toTexture(scene, 'lv_facade_graslin', drawFacadeGraslin());
     ['boulangerie', 'chaussettes', 'sacs', 'vetements', 'chapeaux'].forEach(function (b) { PA.toTexture(scene, 'lv_boutique_' + b, drawBoutique(b)); });
     PA.toTexture(scene, 'lv_tapis_rouge', drawTapisRouge());

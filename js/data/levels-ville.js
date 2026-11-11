@@ -437,22 +437,24 @@ GP.LEVELS['memorial'] = (function () {
     L.check(111);
     // 4. La traversée des stèles : une longue séquence, puis des dalles de verre
     L.ground(112, 20, 3);
-    L.memo(114, 126, 'DJJDJ');
+    L.memo(113, 117, 'DJJDJ');
     L.plaque(129, "Article 4 : nul ne sera tenu en esclavage ni en servitude ; l'esclavage et la traite des esclaves sont interdits sous toutes leurs formes.");
-    L.pix(118, 13); L.pix(124, 13);
+    L.pix(120, 13); L.pix(123, 13); L.pix(126, 13); L.pix(129, 13);
+    L.hint(119, "FRAPPE LES DATES DANS L'ORDRE : 1777, 1794, 1848, 1888");
+    // la frise : quatre blocs datés (mélangés) au-dessus du sol ; on les frappe de la tête, dans l'ordre de l'histoire ; la porte s'ouvre quand elle est complète
+    L.frise({ blocs: [[121, 11, 1848], [124, 11, 1777], [127, 11, 1888], [130, 11, 1794]], porte: 131 });
     L.check(129);
     L.pond(132, 147, 15);
-    L.hint(131, "DANS L'ORDRE DE L'HISTOIRE : 1777, 1794, 1848, 1888");
-    L.date(133, 14, 2, 0, 1777); L.date(137, 13, 2, 1, 1794); L.date(141, 14, 2, 2, 1848); L.date(145, 13, 2, 3, 1888);   // en quinconce : un peu plus exigeant
-    L.date(130, 11, 2, 3, 1888);   // la dalle tentante, avant le chemin et hors de ses sauts : 1888 trop tôt, elle cède
-    L.pix(134, 13); L.pix(138, 11); L.pix(142, 13); L.pix(146, 11); L.pix(130, 10);
+    L.hint(133, "LA LOIRE, SOUS LE QUAI");
+    L.plat(133, 14, 2); L.plat(137, 13, 2); L.plat(141, 14, 2); L.plat(145, 13, 2);   // en quinconce
+    L.pix(138, 10); L.pix(146, 10); L.pix(142, 11);
     // 5. La remontée vers la lumière
     L.ground(147, 6, 3); L.ground(153, 6, 4); L.ground(159, 6, 5); L.ground(165, 11, 6);
     L.check(148);
     L.plaque(150, "Le mot « liberté » est écrit en 47 langues, dont le créole et des langues africaines.");
     L.plaque(168, "Une chronologie de l'abolition court de 1777 à 1888.");
     L.pix(150, 13); L.pix(155, 12); L.pix(161, 11); L.pix(168, 10); L.pix(172, 10);
-    L.hint(166, 'LIBERTÉ');
+    L.hint(160, 'LIBERTÉ');
   });
   L.id = 'memorial';
   L.maxTime = 210;
@@ -463,8 +465,7 @@ GP.LEVELS['memorial'] = (function () {
     ledge: ['memorial_passerelle_metal_g', 'memorial_passerelle_metal_m', 'memorial_passerelle_metal_d'], mover: ['memorial_passerelle_metal_g', 'memorial_passerelle_metal_m', 'memorial_passerelle_metal_d']
   };
   L.sky = { farKey: 'lv_fond_memorial_corten', farBottom: 236 };         // tout le long : le grand mur d'acier corten
-  L.farSwitch = [[0, 'lv_fond_memorial_corten'], [37, 'lv_fond_memorial_passage', 'ON DESCEND DANS LE PASSAGE SOUTERRAIN'], [150, 'lv_fond_memorial_corten', 'ON REMONTE VERS LA LUMIÈRE']];   // dehors, puis le passage de verre et de béton, puis la remontée
-  L.backdrop = { x: 15, key: 'lv_facade_memorial', scale: 1, tint: false };   // la grande façade d'acier corten et son nom découpé
+  L.bandeaux = [{ key: 'lv_titre_memorial_a', x: 3, y: 6 }, { key: 'lv_titre_memorial_b', suit: true, y: 6 }];   // le titre, en très grandes lettres, sur toute la longueur du niveau
   L.wxm = { rain: { tide: 1, glass: 0.8 }, sun: { tide: -1, glassback: 0.7 } };
   L.weatherText = { rain: 'LA MARÉE MONTE UN PEU ; LE VERRE CÈDE PLUS VITE', sun: 'LA MARÉE RESTE BASSE ; LE VERRE REVIENT VITE', wind: 'LE VENT SOUFFLE SUR LA LOIRE' };
   return L;

@@ -23,6 +23,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.index = (data && data.index) || 0;
     this.loc = GP.LOCATIONS[this.index];
     this.L = GP.LEVELS[this.loc.level];
+    this.leaving = false;
     this.bot = null;   // robot de test (tools/bot.js), jamais actif en jeu normal
   }
 
@@ -63,6 +64,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.sky = GP.LevelArt.sky(this, -40, L.sky || {});
     var self = this;
     (L.rooms || []).forEach(function (r) { self.add.image(r.x * 16, 0, r.key).setOrigin(0, 0).setDepth(-20); });   // salles intérieures : fond de pierre devant le ciel
+    var prev = null;   // bandeaux : grandes images posées dans le décor, à la suite les unes des autres (titre du Mémorial)
+    (L.bandeaux || []).forEach(function (bd) { var im = this.add.image(bd.suit && prev ? prev.x + prev.width : bd.x * 16, bd.y * 16, bd.key).setOrigin(0, 0.5).setDepth(-5); prev = im; }, this);
     if (L.backdrop) {
       var bx = L.backdrop.x * 16, top = L.top(L.backdrop.x) * 16, img = this.add.image(bx, top + 2, L.backdrop.key).setOrigin(0.5, 1).setScale(L.backdrop.scale).setDepth(-5);
       if (L.backdrop.tint !== false) img.setTintFill(0x2b3a55).setAlpha(0.55);
@@ -701,7 +704,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.physics.pause();
     if (this.toastObj) { this.toastObj.destroy(); this.toastObj = null; }
     GP.Sfx.play('error');
-    var m = GP.UI.modal(this, 'TEMPS ÉCOULÉ', '', { x: 120, y: 56, w: 240, h: 128 });
+    var m = GP.UI.modal(this, 'TEMPS ÉCOULÉ', '', { x: 120, y: 48, w: 240, h: 150 });
     m.add(GP.UI.txt(this, 240, 92, this.pc.count + ' PIXELS SUR ' + this.pc.total, GP.PAL.w).setOrigin(0.5, 0));
     m.add(GP.UI.txt(this, 240, 108, 'PAS D\'ÉTOILE : ESSAIE ENCORE !', GP.PAL.o).setOrigin(0.5, 0));
     var bRe = GP.UI.button(this, 150, 132, 180, 'REJOUER (R)', function () { self.leaveTimeUp('Game'); }, { primary: true });
@@ -739,11 +742,12 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var m = this.pauseMenu = GP.UI.modal(this, 'PAUSE', 'ÉCHAP : REPRENDRE', { x: 120, y: 56, w: 240, h: 128 });
     this.pauseItems = [
       { label: 'REPRENDRE', cb: function () { self.resume(); } },
+      { label: 'REJOUER LE NIVEAU', cb: function () { self.leaveTimeUp('Game'); } },   // solution de secours si le niveau est bloqué ou bogué : on repart du début
       { label: 'COMMENT JOUER ?', cb: function () { self.openHelp(); } },
       { label: 'QUITTER VERS LA CARTE', cb: function () { self.quit(); } }
     ];
     this.pauseBtns = this.pauseItems.map(function (it, i) {
-      var b = GP.UI.button(self, 150, 90 + i * 26, 180, it.label, it.cb, { primary: i === 0 });
+      var b = GP.UI.button(self, 150, 84 + i * 26, 180, it.label, it.cb, { primary: i === 0 });
       m.add(b.objs);
       b.box.on('pointerover', function () { self.pauseSel = i; self.pauseHover(); });
       return b;
@@ -751,7 +755,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.pauseSel = 0; this.pauseHover();
     GP.Sfx.play('select');
   }
-  pauseMove(d) { this.pauseSel = (this.pauseSel + d + 3) % 3; GP.Sfx.play('step'); this.pauseHover(); }
+  pauseMove(d) { this.pauseSel = (this.pauseSel + d + this.pauseItems.length) % this.pauseItems.length; GP.Sfx.play('step'); this.pauseHover(); }
   pauseHover() { var s = this.pauseSel; this.pauseBtns.forEach(function (b, i) { b.hover(i === s); }); }
 
   resume() {
