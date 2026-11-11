@@ -14,6 +14,8 @@ GP.GZoneLevels = (function () {
     1: { vitesse: 0.85, retirer: [{ sprite: 'commun_ronces_2', x: 44, y: 14 }, { sprite: 'commun_pointes_fer_1', x: 102, y: 14 }] },
     2: { vitesse: 0.85, retirer: [{ sprite: 'cathedrale_cierge_flamme', x: 28, y: 21 }, { sprite: 'cathedrale_cierge_flamme', x: 40, y: 21 }] },
     3: { vitesse: 0.9 },
+    // Feydeau : les pointes se superposaient aux mouettes (îlot x=56, balcons x=137 et 145) ou aux piliers (x=68) : retirées.
+    4: { retirer: [56, 68].map(function (x) { return { sprite: 'feydeau_obstacle_ancre_pointes', x: x, y: x === 56 ? 7 : 13 }; }).concat([{ sprite: 'feydeau_obstacle_ancre_pointes', x: 137, y: 10 }, { sprite: 'feydeau_obstacle_ancre_pointes', x: 145, y: 8 }]) },
     5: { retirer: [{ sprite: 'commun_pointes_fer_1', x: 155, y: 5 }] },
     6: { retirer: [{ sprite: 'vapeur', x: 61, y: 10 }, { sprite: 'vapeur', x: 139, y: 13 }] },
     7: { vitesse: 1.1, ajouter: [{ sprite: 'chantiers_obstacle_ferraille', x: 194, y: 14, kind: 'mortel' },

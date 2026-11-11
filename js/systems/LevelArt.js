@@ -421,7 +421,7 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_gate', drawFence(true));
     PA.toTexture(scene, 'lv_backdrop', drawBackdrop(scene));
     // flèche des meurtrières, goutte des gargouilles, fleur-plateforme (soleil)
-    PA.sprite(scene, 'lv_arrow', ['k.........', 'kkkkkkkkwk', 'k.........']);
+    PA.sprite(scene, 'lv_arrow', ['rr............', 'krr.........w.', 'kkkkkkkkkkkkww', 'krr.........w.', 'rr............']);   // flèche plus grosse : empennage rouge, pointe claire
     PA.sprite(scene, 'lv_drop', ['.l.', 'lfl', 'lbl', '.l.']);
     PA.sprite(scene, 'lv_flowerplat', ['..kkkkkkkkkkkk..', '.kyyrryyyyrryyk.', 'kyyrrrryyrrrryyk', 'kGyyrryyyyrryyGk', '.kGGGGGGGGGGGGk.', '..kkkkkkkkkkkk..']);
   }

@@ -173,7 +173,7 @@ GP.LEVELS['chateau'] = (function () {
   var L = GP.LevelBuilder.create(170, function (L) {
     // 1. Ouvrage d'entrée : fosse sèche puis douves. Les paliers sont réversibles.
     L.ground(0, 12, 5);
-    L.ground(12, 2, 3); L.ground(14, 2, 4);   // marche de récupération dans la fosse sèche
+    // Les deux ponts-levis enjambent de vraies douves (la première fosse était sèche, avec des marches : incohérent).
     L.ground(16, 6, 5); L.ground(26, 44, 5);
     L.start(2);
     L.hint(8, 'ATTENDS LE PONT BAISSÉ · LA CHAÎNE ANNONCE SON MOUVEMENT');
@@ -199,6 +199,7 @@ GP.LEVELS['chateau'] = (function () {
     // 4. Chemin de ronde : deux tabliers fixes de réparation, pas deux ponts-levis sans porte.
     L.plat(114, 9, 3, 'bridge'); L.ground(117, 9, 11);
     L.plat(126, 9, 3, 'bridge'); L.ground(129, 13, 11);
+    L.barrel(118, 124, 40);   // un premier tonneau sur le tablier, avant celui du chemin de ronde
     L.barrel(131, 139, 45);
     L.hint(108, 'CHEMIN DE RONDE · ATTENTION AU TONNEAU');
 
@@ -233,7 +234,7 @@ GP.LEVELS['chateau'] = (function () {
   ];
   L.bridges = [{ x: 12, y: 15, w: 4, open: 3000, closed: 2000, warning: 500 },
     { x: 22, y: 15, w: 4, open: 3000, closed: 2000, warning: 500 }];
-  L.water = [{ x: 22, y: 18, w: 4, h: 2 }, { x: 82, y: 18, w: 19, h: 2 },
+  L.water = [{ x: 12, y: 18, w: 4, h: 2 }, { x: 22, y: 18, w: 4, h: 2 }, { x: 82, y: 18, w: 19, h: 2 },
     { x: 114, y: 18, w: 3, h: 2 }, { x: 126, y: 18, w: 3, h: 2 }];
   L.exit = { x: 167, y: 13, key: 'signes_arche_arrivee' };
   L.weatherText = { wind: 'LE VENT FAIT ROULER LES TONNEAUX' };
