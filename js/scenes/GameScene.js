@@ -242,7 +242,13 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
 
     // herses : bloquent le passage quand elles sont baissées (elles ne blessent pas)
     this.gates = L.gates.map(function (g, i) {
-      var floor = (g.y + 1) * 16, img = self.add.image(g.x * 16 + 8, floor, self.key('chateau_herse', 'lv_tileset')).setOrigin(0.5, 1).setDepth(4);   // derrière le mur : elle y remonte
+      // La herse fait toute la largeur du passage (4 tuiles) : le sprite de 2 tuiles est répété deux fois.
+      var gk = self.key('chateau_herse', 'lv_tileset');
+      if (self.textures.exists(gk) && !self.textures.exists('lv_herse_large')) {
+        var src = self.textures.get(gk).getSourceImage(), o = GP.PixelArt.canvas(src.width * 2, src.height);
+        o.ctx.drawImage(src, 0, 0); o.ctx.drawImage(src, src.width, 0); GP.PixelArt.toTexture(self, 'lv_herse_large', o.cv);
+      }
+      var floor = (g.y + 1) * 16, img = self.add.image(g.x * 16, floor, self.textures.exists('lv_herse_large') ? 'lv_herse_large' : gk).setOrigin(0.5, 1).setDepth(4);   // derrière le mur : elle y remonte
       var b = self.platformBody(img, false);
       return { img: img, body: b, floor: floor, open: g.open, closed: g.closed, t: i * 700, down: true };
     });
