@@ -116,3 +116,11 @@
 **Corrections** : cinq panneaux d'apprentissage ajoutés avant le premier danger de chaque famille (Jardin : ronces, jets d'eau ; Cathédrale : cierges et pointes, colonne à grimper, gargouille), via un nouveau champ `signes` des retouches (`GZoneLevels.js`), avec leur traduction anglaise. Géométrie inchangée : le contrôleur de faisabilité donne toujours 0 pixel hors d'atteinte aux niveaux 1 et 2. Le Château a été relu à l'écran (départ, herse) : rien à reprendre.
 
 **Recette exécutée** : 72 tests Node ; contrôle à l'écran du panneau de la Cathédrale en français et en anglais. **Non réalisé** : niveaux 4 à 12 ; aucun playtest humain.
+
+## Mercredi 11 novembre 2026 (nuit, suite 2) — niveaux 4 à 6 : un panneau par idée
+
+**Constat** : Feydeau n'annonçait ni les pointes du quai ni la première mouette (à passer accroupi) ; Graslin n'avait aucun panneau (parasol-rebond, chaises, tonneau roulant, lustre oscillant découverts sans explication) ; aux Machines, ni les dents, ni la vapeur cyclique, ni le piston n'étaient annoncés.
+
+**Corrections** : neuf panneaux (2 + 4 + 3) placés sur sol plat avant la première rencontre, avec traduction anglaise. Géométrie inchangée, faisabilité toujours à 0 pixel hors d'atteinte pour les niveaux 4, 5 et 6.
+
+**Recette exécutée** : tests Node ; contrôle à l'écran de Graslin (parasol, français) et de Feydeau (mouette, anglais). **Non réalisé** : densité de pointes des Machines (zones 2 et 3) non retouchée ; aucun playtest humain ; niveaux 7 à 12 non repris.

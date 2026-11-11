@@ -48,7 +48,15 @@ GP.GZoneLevels = (function () {
         { x: 92, y: 7, texte: 'La gargouille crache : passe entre deux jets.' }] },
     // Feydeau : le pilier du balcon secret (une colonne pleine de 3 tuiles posée sur le tablier) barrait l'entrée du balcon depuis
     // les bateaux, donc le niveau était infinissable après x=132. Il devient un pilier de décor.
-    4: { modifier: { p37: { fond: true } } }
+    // + panneaux avant les pointes du quai et avant la première mouette (à passer accroupi).
+    4: { modifier: { p37: { fond: true } },
+      signes: [{ x: 26, y: 13, texte: 'Les pointes piquent : saute par-dessus.' }, { x: 39, y: 10, texte: 'Les mouettes rasent les balcons : maintiens ↓ pour passer dessous.' }] },
+    // Graslin : aucun panneau dans le document d'origine. Un par idée, avant sa première rencontre : parasol, chaises, tonneau, lustre.
+    5: { signes: [{ x: 11, y: 19, texte: 'Saute sur un parasol : il te fait rebondir.' }, { x: 22, y: 13, texte: 'Chaises et pointes piquent : saute par-dessus.' },
+      { x: 62, y: 14, texte: 'Le tonneau roule : saute au bon moment.' }, { x: 117, y: 7, texte: 'Le lustre oscille : saute dessus quand il approche.' }] },
+    // Machines : dents (avant la première), vapeur cyclique, piston.
+    6: { signes: [{ x: 22, y: 13, texte: 'Les dents des engrenages piquent : saute par-dessus.' }, { x: 33, y: 11, texte: 'La vapeur jaillit par intermittence : passe quand elle retombe.' },
+      { x: 77, y: 8, texte: 'Les pistons montent et descendent : saute dessus quand il est bas.' }] }
   };
   function repair(d) {
     var r = REPAIRS[d.num];
