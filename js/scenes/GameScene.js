@@ -59,7 +59,6 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.makeStructures();
     this.makeSilhouettes();   // après les structures : les niveaux générés (GZone) n'ont leur sol qu'à ce moment
     this.makeHud();
-    GP.UI.soundIcon(this, GP.Config.WIDTH - 26, 46, 60);   // pictogramme du son, sous la météo
     this.makeWeather();
     this.makeInput();
     this.makeTouch();
