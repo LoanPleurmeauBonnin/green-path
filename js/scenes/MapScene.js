@@ -212,7 +212,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       var img = self.add.image(x, y + 6, 'carte_piedestal_disponible').setOrigin(0.5, 1).setDepth(10).setInteractive({ useHandCursor: true });
       var num = self.txt(x, y - 2, String(i + 1), GP.PAL.k).setOrigin(0.5).setDepth(11);
       // trois étoiles en arc de cercle sous le piédestal, centre de l'arc au-dessus d'elles (le milieu est le plus bas)
-      var stars = [0, 1, 2].map(function (k) { return self.add.image(x + (k - 1) * 11, y + (k === 1 ? 12 : 9), 'star_off').setDepth(12).setVisible(false); });
+      var stars = [0, 1, 2].map(function (k) { return self.add.image(x + (k - 1) * 14, y + (k === 1 ? 13 : 10), 'star_off').setDepth(12).setVisible(false); });
       img.on('pointerover', function () { self.hover = i; self.updateBar(); });
       img.on('pointerout', function () { if (self.hover === i) { self.hover = -1; self.updateBar(); } });
       img.on('pointerdown', function () { if (!self.panel) self.goTo(i, true); });
@@ -258,17 +258,15 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
    * Descente sur le piédestal : près d'une étape, les pieds de l'avatar passent du bord haut du disque à son centre
    * (là où est le chiffre), progressivement sur la largeur du piédestal (28 px). Ailleurs, il marche sur la ligne.
    */
-  /** Le héros s'arrête face à un personnage dont le niveau est terminé (une fois par visite de la carte), du côté d'où il arrive : il le regarde, le personnage le regarde, l'anecdote s'affiche. Il repart ensuite à gauche ou à droite. */
+  /** Le héros s'arrête face à un personnage dont le niveau est terminé (à chaque passage), du côté d'où il arrive : il le regarde, le personnage le regarde, l'anecdote s'affiche. Il repart ensuite à gauche ou à droite. */
   stopAtPerson(from, to) {
     if (!this.pers) return false;
-    this.heard = this.heard || {};
     var dir = to > from ? 1 : -1;
     for (var i = 0; i < this.pers.length; i++) {
       var im = this.pers[i];
-      if (!im || !im.talk || this.heard[i] || this.P.status(i) !== 'completed') continue;
+      if (!im || !im.talk || this.P.status(i) !== 'completed') continue;
       var sx = im.x - dir * 22;                        // place d'arrêt : en face du personnage, côté arrivée
       if (!(dir > 0 ? from < sx && sx <= to : to <= sx && sx < from)) continue;
-      this.heard[i] = true;
       this.travel.x = sx; this.travel.moving = false; this.travel.open = false; this.travel.y = this.travel.heightAt(sx);
       this.moving = false; this.placeHero(sx); this.startIdle(); this.updateBar();
       this.hero.setFlipX(im.x < sx);                   // le héros regarde le personnage

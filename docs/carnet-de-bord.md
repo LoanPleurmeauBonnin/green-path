@@ -327,3 +327,7 @@
 **Fiches des lieux** : la page « SOURCE → RÈGLE » est retirée (le joueur n'a pas besoin de la règle de grammaire ; elle reste dans `docs/grammaire.md`).
 
 **Crédits** : README, manifest et CREDITS suivent la version de l'équipe : avatar créé de toutes pièces sur Figma, variantes réalisées avec Claude ; assistance de l'IA limitée à Claude Code, Claude Design et Claude. Anciens textes de crédits inutilisés retirés des fichiers de langue.
+
+## Jeudi 12 novembre 2026 — étoiles d'après la maquette, arrêt à chaque passage
+
+Étoiles : espacées de 14 px, les deux extérieures un peu plus haut que celle du milieu, juste sous le piédestal (d'après la maquette de l'équipe). Personnages de la carte : le héros s'arrête face à eux à chaque passage, plus seulement la première fois. **Non réalisé** : aucun playtest humain.
