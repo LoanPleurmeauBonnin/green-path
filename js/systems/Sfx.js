@@ -13,6 +13,13 @@ GP.Sfx = {
     error:   [[160, 0.12, 'sawtooth']],
     unlock:  [[392, 0.08, 'square'], [523, 0.08, 'square'], [659, 0.08, 'square'], [1047, 0.18, 'square']]
   },
+  /** Contexte audio partagé avec la musique (créé à la demande ; null si indisponible). */
+  context: function () {
+    try {
+      if (!this.ctx) { var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; this.ctx = new AC(); }
+      return this.ctx;
+    } catch (e) { return null; }
+  },
   play: function (name) {
     if (GP.Progression && GP.Progression.data && GP.Progression.muted) return;
     try {
