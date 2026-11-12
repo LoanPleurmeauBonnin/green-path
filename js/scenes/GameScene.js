@@ -118,15 +118,14 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     }
   }
 
-  /** Monuments en silhouette au fond (comme la serre du Jardin) : L.silhouettes = [{ x, loc, scale }], posés sur le sol de la colonne x (cherché dans le terrain réel). */
+  /** Silhouettes posées sur le sol réel de la colonne x (cherché dans le terrain) : L.silhouettes = [{ x, key, depth }] (sculptures en silhouette du Jardin des Plantes : lv_sil_*). */
   makeSilhouettes() {
     var L = this.L, self = this;
     (L.silhouettes || []).forEach(function (sl) {
-      var loc = GP.LOCATIONS.filter(function (l) { return l.id === sl.loc; })[0], x = sl.x, row = 17;
-      if (!loc) return;
+      var x = sl.x, row = 17;
       for (; x > 0 && row >= 17; x--) for (var r = 0; r < 17; r++) if (self.solidAt(x * 16 + 8, r * 16 + 8)) { row = r; break; }
-      if (row >= 17) return;
-      self.add.image((x + 1) * 16, row * 16 + 2, GP.MapArt.monument(loc, false)).setOrigin(0.5, 1).setScale(sl.scale || 3).setDepth(-5).setTintFill(0x2b3a55).setAlpha(0.55);
+      if (row >= 17 || !self.textures.exists(sl.key)) return;
+      self.add.image((x + 1) * 16 + 8, row * 16 + 1, sl.key).setOrigin(0.5, 1).setDepth(sl.depth === undefined ? 3 : sl.depth);
     });
   }
 
