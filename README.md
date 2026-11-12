@@ -38,7 +38,7 @@ Projet noté ESD Nantes (B3), atelier PATRIMOINE.EXE / NANTES 001 — Florine RA
 | Livrable | Où |
 |---|---|
 | Webapp (principal) | https://green-path-game.vercel.app |
-| Fiche-source patrimoniale | [docs/fiche-source.md](docs/fiche-source.md) |
+| Fiche-source patrimoniale (12 lieux) | [docs/fiche-source.md](docs/fiche-source.md) |
 | Grammaire extraite et 3 paramètres opératoires | [docs/grammaire.md](docs/grammaire.md), [HERITAGE_GRAMMAR.md](HERITAGE_GRAMMAR.md) |
 | Problématique et direction créative | [docs/problematique-direction.md](docs/problematique-direction.md) |
 | Sketch minimal p5.js | [sketch/](sketch/) |
@@ -46,7 +46,8 @@ Projet noté ESD Nantes (B3), atelier PATRIMOINE.EXE / NANTES 001 — Florine RA
 | Mapping data / API | section « Source, grammaire et mapping » |
 | Fallback local (hors ligne) | section « Fallback et limites connues » |
 | Test croisé silencieux | [docs/test-croise.md](docs/test-croise.md) |
-| Manifest, cartel | [manifest.json](manifest.json), [CARTEL.md](CARTEL.md) |
+| Manifest, cartel (12 patrimoines) | [manifest.json](manifest.json), [CARTEL.md](CARTEL.md) |
+| Captation (hero, détail, process, démo 23 s, vignette) | [captation/](captation/) |
 | Droits, crédits, sources | [CREDITS.md](CREDITS.md), [docs/sources.md](docs/sources.md), [docs/images-candidates.md](docs/images-candidates.md) |
 | Carnet de bord (décisions, itérations) | [docs/carnet-de-bord.md](docs/carnet-de-bord.md) |
 
@@ -113,7 +114,7 @@ puis http://localhost:8123. **Mode test** : ajouter `?dev=1` (tous les niveaux o
 Publication : `node tools/bump-sw.cjs` (change le nom du cache hors ligne) puis `npx vercel --prod`.
 
 ## Source, grammaire et mapping
-Le **Château des ducs de Bretagne** est la source patrimoniale principale, les onze autres lieux un corpus de variations. Masse → murs, seuil → herse, élévation → tours ; reconstruction assise → centre → côtés. Ce masque stylisé n'est pas un relevé architectural. Chaîne : SOURCE → OBSERVATION → GRAMMAIRE → ALGORITHME → DATA / INTERACTION → ŒUVRE.
+La source est **la ligne verte de Nantes et ses 12 patrimoines** (fiche par lieu : [docs/fiche-source.md](docs/fiche-source.md)). Chaque lieu est observé (trois propriétés patrimoniales retenues, une écartée) puis traduit en règle de jeu : croissance au Jardin des Plantes, verticalité à la Cathédrale, masse, tours et seuils au Château, façades penchées et eau à Feydeau, colonnes et muses à Graslin, mécanique aux Machines de l'île, grue et industrie aux Chantiers, anneaux de Buren, mémoire portuaire au Hangar, sobriété au Mémorial, strates et verrière à Pommeraye, coupole à la Tour LU (tableau complet : [docs/grammaire.md](docs/grammaire.md)). Ces règles sont des traductions ludiques, pas des relevés architecturaux. Chaîne : SOURCE → OBSERVATION → GRAMMAIRE → ALGORITHME → DATA / INTERACTION → ŒUVRE.
 
 **Mapping data → jeu** (Open-Meteo, Nantes, toutes les 5 min, délai 4 s) — au moins trois paramètres ont un effet réel :
 

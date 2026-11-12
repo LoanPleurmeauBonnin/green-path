@@ -14,9 +14,9 @@
     "Loan PLEURMEAU"
   ],
   "heritage_source": {
-    "title": "Château des ducs de Bretagne — masse, seuils et élévations",
-    "url": "https://www.chateaunantes.fr/le-chateau/histoire/",
-    "rights": "Référence documentaire, photographies institutionnelles non réutilisées. Photo secondaire Palmarium : Pymouss44, CC BY-SA 3.0, recadrée et pixélisée ; voir CREDITS.md. Avatar créé de toutes pièces sur Figma par l'équipe, variantes réalisées avec Claude."
+    "title": "La ligne verte de Nantes — corpus de 12 patrimoines (Jardin des Plantes, Cathédrale, Château des ducs de Bretagne, Île Feydeau, Place Graslin, Machines de l'île, Parc des Chantiers, Anneaux de Buren, Hangar à Bananes, Passage Pommeraye, Mémorial de l'abolition, Tour LU)",
+    "url": "https://www.levoyageanantes.fr/les-parcours/arpenter-la-ligne-verte/",
+    "rights": "Références documentaires par lieu dans docs/fiche-source.md ; textes reformulés par l'équipe ; photographies institutionnelles non réutilisées ; images : Wikimedia Commons (licences dans CREDITS.md et docs/sources.md) ; œuvres contemporaines évoquées par des formes génériques. Avatar créé de toutes pièces sur Figma par l'équipe, variantes réalisées avec Claude."
   },
   "mode": [
     "interactive",
@@ -36,8 +36,58 @@
     "Open-Meteo : météo de Nantes (précipitations, vent, jour/nuit), cache, dernière météo reçue et secours local neutre"
   ],
   "ai_usage": "Claude Code pour le prototype, le code, les niveaux, les tests et la documentation ; Claude Design pour les planches de sprites ; Claude pour les variantes de l'avatar (créé de toutes pièces sur Figma par l'équipe). Voir README.md, section AI usage.",
-  "version": "0.6",
+  "version": "1.0",
   "status": "Version livrée au gel fonctionnel du 12 novembre 2026 : 12 niveaux jouables et 3 boss ; réglages à confirmer par des tests humains.",
   "webapp": "https://green-path-game.vercel.app",
-  "repository": "https://github.com/LoanPleurmeauBonnin/green-path"
+  "repository": "https://github.com/LoanPleurmeauBonnin/green-path",
+  "heritage_sources": [
+    {
+      "lieu": "Jardin des Plantes",
+      "reference": "Ville de Nantes ; Wikipédia, Jardin des plantes de Nantes"
+    },
+    {
+      "lieu": "Cathédrale Saint-Pierre-et-Saint-Paul",
+      "reference": "Ville de Nantes, histoire de la cathédrale ; ministère de la Culture"
+    },
+    {
+      "lieu": "Château des ducs de Bretagne",
+      "reference": "https://www.chateaunantes.fr/le-chateau/histoire/ ; Ville de Nantes, Anne de Bretagne"
+    },
+    {
+      "lieu": "Île Feydeau",
+      "reference": "Jules Verne, Souvenirs d'enfance et de jeunesse (1890)"
+    },
+    {
+      "lieu": "Place Graslin",
+      "reference": "Presses universitaires de Rennes, J.-J.-L. Graslin et la place du théâtre (OpenEdition)"
+    },
+    {
+      "lieu": "Machines de l'île",
+      "reference": "Les Machines de l'île, dossier de presse 2019 ; La Machine"
+    },
+    {
+      "lieu": "Parc des Chantiers",
+      "reference": "Ministère de la Culture (grues Titan) ; INA, Dernier jour des chantiers Dubigeon"
+    },
+    {
+      "lieu": "Anneaux de Buren",
+      "reference": "Estuaire ; Le Voyage à Nantes, fiche Les Anneaux"
+    },
+    {
+      "lieu": "Hangar à Bananes",
+      "reference": "Base Mérimée / pss-archi ; Le Voyage à Nantes"
+    },
+    {
+      "lieu": "Passage Pommeraye",
+      "reference": "Wikipédia, Passage Pommeraye ; Routard"
+    },
+    {
+      "lieu": "Mémorial de l'abolition de l'esclavage",
+      "reference": "Ville de Nantes, Le Mémorial de l'abolition de l'esclavage ; slaverymonuments.org"
+    },
+    {
+      "lieu": "Tour LU",
+      "reference": "Hérodote, les biscuits LU ; Ville de Nantes (Tour LU)"
+    }
+  ]
 }

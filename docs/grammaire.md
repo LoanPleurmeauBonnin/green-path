@@ -1,14 +1,16 @@
-# Grammaire — Green Path
+# Grammaire — Green Path (12 patrimoines)
 
-Chaîne : SOURCE (Château des ducs de Bretagne) → GRAMMAIRE → ALGORITHME → DATA / INTERACTION → ŒUVRE.
-Statut : fiche J1 actualisée par l'audit du 10/11. Référence complète : [HERITAGE_GRAMMAR.md](../HERITAGE_GRAMMAR.md). Les règles de terrain restent écrites à la main ; aucun relevé métrique n'a été inventé.
+Chaîne : SOURCE (la ligne verte et ses 12 patrimoines, `fiche-source.md`) → OBSERVATION → GRAMMAIRE → ALGORITHME → DATA / INTERACTION → ŒUVRE.
+Statut : fiche consolidée le 12/11 pour les 12 lieux. Référence complète : [HERITAGE_GRAMMAR.md](../HERITAGE_GRAMMAR.md). Les règles de terrain restent écrites à la main ; aucun relevé métrique n'a été inventé.
 
-## Fiche de grammaire (niveau de référence : Château)
+**Principe** : une grammaire **commune** (collecter un pixel révèle un groupe de cellules ; la météo de Nantes modifie le terrain) et une **grammaire propre à chaque lieu** : la propriété patrimoniale observée devient une mécanique de plateforme (tableau « Un lieu, une règle » ci-dessous).
+
+## Fiche de grammaire (commune aux 12 lieux)
 
 | Champ | Contenu |
 |---|---|
 | **Primitives** | Cellule colorée ; photo 48×32 uniquement au Jardin ; ailleurs sprite de monument ; rectangle de mur, bande centrale, volume latéral, seuil. |
-| **Relations** | Un fragment collecté révèle un groupe de cellules. Château : assise basse, centre, élévations latérales (`fortification`), interprétation géométrique du sprite. |
+| **Relations** | Un fragment collecté révèle un groupe de cellules. ordre de révélation propre au lieu : assise basse, centre, élévations latérales pour le Château (`fortification`), du sol vers le haut et du centre vers les côtés pour les autres (`bottomUp`). |
 | **Invariants** | Toutes les cellules opaques révélées une fois ; nombre de groupes égal au nombre de collectibles ; image complète à 100 % ; niveau terminé à 100 %. |
 | **Variables** | Taux de reconstruction, ordre des cellules, précipitations/densité, vent/poussée, accélération au sol et visibilité. La température est seulement affichée. |
 | **Temps** | Collecte événementielle ; météo rafraîchie toutes les 5 min, délai maximal 4 s. |
@@ -16,17 +18,25 @@ Statut : fiche J1 actualisée par l'audit du 10/11. Référence complète : [HER
 | **Limites** | Vent 0–80 km/h, précipitations 0–10 mm, données numériques finies ; **météo réellement opérante sur la physique** ; reset et fallback neutre. |
 
 ## Règle en une phrase
-« Un fragment collecté révèle un groupe de cellules, dans l'ordre géométrique choisi pour le lieu. »
+« Un fragment collecté révèle un groupe de cellules, dans l'ordre choisi pour le lieu, et chaque lieu transforme sa propriété patrimoniale dominante en mécanique de jeu. »
 
-## Un ordre par lieu (la variation entre niveaux)
-| Lieu | Propriété traduite | Ordre de révélation (hypothèse) |
-|---|---|---|
-| Château | Masse puis élévations | Assise → région centrale → régions latérales, implémenté ; ce n'est pas une segmentation architecturale mesurée |
-| Cathédrale | Verticalité | Bas → haut, centre → côtés ; aucun ordre sémantique de tours implémenté |
-| Jardin des Plantes (Palmarium) | Croissance | Du bas vers le haut, depuis le sol ; dans une ligne, du centre vers les bords (**implémenté** sur la photo 48×32, `PixelCollection.js`, ordre `bottomUp`) |
-| Bouffay (maison à pans de bois) | Ossature puis remplissage | Poutres d'abord, panneaux ensuite |
+## Un lieu, une règle (la variation entre niveaux)
+| # | Lieu | Propriété patrimoniale traduite | Règle de jeu (traduction ludique, pas reconstitution historique) |
+|---|---|---|---|
+| 1 | Jardin des Plantes | croissance du vivant | l'image pousse du sol vers le ciel ; ronces qui sortent sous la pluie, fleurs-plateformes au soleil |
+| 2 | Cathédrale | verticalité, colonnes répétées | colonnes à escalader, corniches comme appuis, gargouilles dont les gouttes tombent plus souvent sous la pluie |
+| 3 | Château | masse, tours, seuils | assise, courtine puis tours latérales ; herses = alternance passage / attente ; on s'accroupit sous les flèches |
+| 4 | Île Feydeau | façades qui se penchent, île et eau | balcons inclinés, bateaux flotteurs qui s'enfoncent, marée qui monte |
+| 5 | Place Graslin | façade à colonnes, statues de muses, théâtre | muses qui lancent des notes, parasols qui font rebondir, projecteurs, rideau à séquence |
+| 6 | Machines de l'île | mécanique visible, Grand Éléphant | engrenages, jets de vapeur cycliques, éléphant sur lequel on monte pour traverser le canal, boss à valves |
+| 7 | Parc des Chantiers | grue jaune, vestiges industriels | conteneurs qui tombent de la grue (l'ombre prévient), chariots au poids, ascenseur |
+| 8 | Anneaux de Buren | anneaux lumineux sur la rive | bornes de couleur qui allument les passerelles de leur couleur, anneaux qui propulsent |
+| 9 | Hangar à Bananes | mémoire portuaire des bananes | pixels qui mûrissent puis pourrissent, moisissure qui s'étend, boss à lampes UV |
+| 10 | Mémorial de l'abolition | sobriété, verre, textes gravés | aucun ennemi : stèle à lire, porte de lumière à rouvrir de mémoire, dalles de verre qui se fissurent |
+| 11 | Passage Pommeraye | trois niveaux, escalier, verrière | trois strates reliées, verre de la verrière qui se fissure, lustres qui balancent |
+| 12 | Tour LU | tour et coupole de l'ancienne usine | reprise des mécaniques apprises, puis courant d'air ascendant de la coupole, boss à quatre lanternes |
 
-Les interprétations doivent être étayées par les relevés de l'équipe ; Bouffay conserve `bottomUp` et reste hors parcours.
+Les interprétations doivent être étayées par les relevés de l'équipe (`fiche-source.md`) ; le niveau « Bouffay » (maison à pans de bois, ossature puis remplissage) existe dans le code mais n'est rattaché à aucun lieu.
 
 ## Mapping météo (entrée → règle → sortie perceptible)
 La météo réelle de Nantes change l'environnement de Green Path et les niveaux y réagissent (`js/systems/WeatherRules.js`, rendu `WeatherFX.js` et `LevelArt.sky`). Données demandées au démarrage puis toutes les 5 min.
@@ -85,7 +95,7 @@ Règle (`js/systems/Stars.js`, à ajuster au playtest) : 1 étoile image complè
 Invariant de la carte : un monument reste gris (luminance, sans teinte) tant que son niveau n'est pas terminé ; il retrouve ses couleurs, une seule fois, au retour sur la carte après la réussite.
 
 ## Test de qualité
-Une personne qui n'a pas vu le château doit pouvoir lire cette fiche et prédire dans quel ordre l'image apparaît. **À tester au test croisé.**
+Une personne qui n'a pas vu les lieux doit pouvoir lire cette fiche et prédire dans quel ordre l'image apparaît. **À tester au test croisé.**
 
 ## À valider
 - Régler les temps cibles au test croisé ; relever précisément le Château avant tout générateur de terrain patrimonial.
