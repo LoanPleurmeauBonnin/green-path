@@ -174,6 +174,22 @@ GP.Postcard = (function () {
   var SPARK_KEYS = ['plus', 'diamond', 'dot', 'cross', 'plus', 'dot'];
   function drawGrid(c, grid, x, y, color) { grid.forEach(function (row, yy) { for (var xx = 0; xx < row.length; xx++) if (row[xx] === 'x') { c.fillStyle = color; c.fillRect(x + xx, y + yy, 1, 1); } }); }
 
+  // Choix du joueur : couleur de fond et monument au centre (gardés dans le navigateur, avec la carte)
+  var FONDS = [{ n: 'NUIT', bg: '#12141d', dot: '#1b1e2b' }, { n: 'MARINE', bg: '#0c1830', dot: '#13264a' }, { n: 'FORÊT', bg: '#0f2218', dot: '#183626' },
+    { n: 'BORDEAUX', bg: '#2a0f1a', dot: '#3b1626' }, { n: 'VIOLET', bg: '#1d1233', dot: '#2a1c4a' }];
+  var SHORT = { 'jardin-des-plantes': 'JARDIN', cathedrale: 'CATHÉDR.', chateau: 'CHÂTEAU', feydeau: 'FEYDEAU', graslin: 'GRASLIN', machines: 'MACHINES', chantiers: 'CHANTIERS',
+    buren: 'BUREN', hangar: 'HANGAR', pommeraye: 'POMMERAYE', memorial: 'MÉMORIAL', 'tour-lu': 'TOUR LU' };
+  var OPT_KEY = 'greenpath.postcard.options', opts = { fond: 0, centre: 'avatar' };
+  try { var rawOpt = storage() && storage().getItem(OPT_KEY); if (rawOpt) { var po = JSON.parse(rawOpt); opts.fond = num(po.fond, 0, FONDS.length - 1, 0); opts.centre = typeof po.centre === 'string' ? po.centre : 'avatar'; } } catch (e) { /* choix par défaut */ }
+  function saveOpts() { try { if (storage()) storage().setItem(OPT_KEY, JSON.stringify(opts)); } catch (e) { /* ignoré */ } }
+  /** Fonds et centres possibles : « avatar » puis chaque monument reconstruit, dans l'ordre du parcours. */
+  function centres() { var done = GP.Progression.data.completed; return ['avatar'].concat(GP.LOCATIONS.filter(function (l) { return done[l.id]; }).map(function (l) { return l.id; })); }
+  function centreValide() { return centres().indexOf(opts.centre) >= 0 ? opts.centre : 'avatar'; }
+  function nextFond() { opts.fond = (opts.fond + 1) % FONDS.length; saveOpts(); return FONDS[opts.fond].n; }
+  function nextCentre() { var l = centres(); opts.centre = l[(l.indexOf(centreValide()) + 1) % l.length]; saveOpts(); return centreName(); }
+  function fondName() { return FONDS[opts.fond % FONDS.length].n; }
+  function centreName() { var c = centreValide(); return c === 'avatar' ? 'AVATAR' : (SHORT[c] || c.toUpperCase()); }
+
   /** Dessine la carte (1800 × 1200 px). scene : pour lire les textures du jeu (ciel, monuments, météo). */
   function render(scene, fin, character, variant) {
     var grand = (variant || GP.Postcard.style) === 'grand';   // « grand » : un grand personnage au centre et quatre grands monuments aux coins (planche de référence n° 2)
@@ -189,13 +205,15 @@ GP.Postcard = (function () {
       c.fillStyle = '#0c1830'; c.fillRect(0, 0, LW, LH);
       for (var gx0 = 6; gx0 < LW; gx0 += 12) for (var gy0 = 6; gy0 < LH; gy0 += 12) if (rnd() < 0.55) { c.fillStyle = rnd() < 0.12 ? '#2c5a78' : '#13264a'; c.fillRect(gx0 + Math.floor(rnd() * 5) - 2, gy0 + Math.floor(rnd() * 5) - 2, 3, 3); }
     } else {
-      c.fillStyle = '#12141d'; c.fillRect(0, 0, LW, LH);
-      c.fillStyle = '#1b1e2b'; for (var g = 0; g < 900; g++) c.fillRect(Math.floor(rnd() * LW), Math.floor(rnd() * LH), 1, 1);
+      var pal = FONDS[opts.fond % FONDS.length];
+      c.fillStyle = pal.bg; c.fillRect(0, 0, LW, LH);
+      c.fillStyle = pal.dot; for (var g = 0; g < 900; g++) c.fillRect(Math.floor(rnd() * LW), Math.floor(rnd() * LH), 1, 1);
     }
 
     // couronne des monuments reconstruits, dans l'ordre du parcours, autour de l'avatar
     var CX = 300, CY = 176, RX = 205, RY = 98, done = GP.Progression.data.completed;
-    var list = GP.LOCATIONS.filter(function (l) { return done[l.id]; }), spots = [], n = list.length;
+    var centreId = grand ? 'avatar' : centreValide();
+    var list = GP.LOCATIONS.filter(function (l) { return done[l.id] && l.id !== centreId; }), spots = [], n = list.length;
     var bigs = [];
     if (grand) {   // quatre grands monuments aux coins (×2), les autres en petit autour
       var wish = ['cathedrale', 'chateau', 'machines', 'graslin'], corners = [[104, 98], [496, 98], [104, 236], [496, 236]];
@@ -258,8 +276,18 @@ GP.Postcard = (function () {
     });
 
     // l'avatar du joueur, grand, au centre : c'est le sujet de la carte
-    var cfg = GP.Character.sanitize(character || GP.Character.defaultConfig()), grid = GP.Character.compose(cfg, 'cheer0'), AS = grand ? 22 : 13;
+    var cfg = GP.Character.sanitize(character || GP.Character.defaultConfig()), grid = GP.Character.compose(cfg, 'cheer0'), AS = grand ? 22 : (centreId === 'avatar' ? 13 : 8);
     var aw = GP.Character.W * AS, ah = GP.Character.H * AS, ax = Math.round(CX * S - aw / 2), ay = Math.round(CY * S - ah / 2);
+    if (centreId !== 'avatar') {   // le monument choisi, en grand au centre (autocollant), l'avatar plus petit devant lui
+      var cm = tex(GP.MapArt.monument(GP.LOCATIONS.filter(function (l) { return l.id === centreId; })[0], false));
+      if (cm) {
+        var K = 9, mw = cm.width * K, mh = cm.height * K, mx = Math.round(CX * S - mw / 2), my = Math.round(CY * S - mh / 2 - 10), mo = PA.canvas(cm.width, cm.height);
+        mo.ctx.drawImage(cm, 0, 0); mo.ctx.globalCompositeOperation = 'source-in'; mo.ctx.fillStyle = '#fff4d8'; mo.ctx.fillRect(0, 0, cm.width, cm.height);
+        [[-K, 0], [K, 0], [0, -K], [0, K]].forEach(function (d) { ctx.drawImage(mo.cv, mx + d[0], my + d[1], mw, mh); });
+        ctx.drawImage(cm, mx, my, mw, mh);
+      }
+      ax = Math.round(CX * S + 150); ay = Math.round(CY * S + 330 - ah);   // l'avatar, en bas à droite du monument
+    }
     ctx.fillStyle = 'rgba(255,244,216,0.10)'; ctx.fillRect(ax - 18, ay + ah + 4, aw + 36, 14);   // ombre au sol
     // contour crème : même style d'autocollant
     for (var gy = 0; gy < GP.Character.H; gy++) for (var gx = 0; gx < GP.Character.W; gx++) if (grid[gy][gx]) [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(function (d) { ctx.fillStyle = '#fff4d8'; ctx.fillRect(ax + (gx + d[0]) * AS, ay + (gy + d[1]) * AS, AS, AS); });
@@ -319,6 +347,7 @@ GP.Postcard = (function () {
   return {
     W: LW * S, H: LH * S, levels: levels, allDone: allDone, get: get, record: record, setPseudo: setPseudo, clear: clear,
     clean: clean, cleanPseudo: cleanPseudo, isoLocal: isoLocal, skyPhrase: skyPhrase, sentence: sentence, fileName: fileName,
-    render: render, preview: preview, download: download, style: 'planche'
+    render: render, preview: preview, download: download, style: 'planche',
+    nextFond: nextFond, nextCentre: nextCentre, fondName: fondName, centreName: centreName
   };
 })();
