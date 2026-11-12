@@ -1,0 +1,11 @@
+/**
+ * Image patrimoniale pixélisée (même algorithme que tools/pixelize.swift, voir l'historique git ; ne pas modifier à la main).
+ * Source et licence : voir CREDITS.md.
+ */
+window.GP = window.GP || {};
+GP.IMAGES = GP.IMAGES || {};
+GP.IMAGES['memorial'] = {
+  w: 48, h: 32,
+  palette: ['#c0d7ef', '#875c57', '#808697', '#defbff', '#8a6866', '#a3a9ba', '#6a6975', '#9b7f83', '#9cbdd5', '#ccecfe', '#755c5f', '#9d95a1', '#917375', '#b9c2d3', '#697a87', '#764f4c'],
+  data: 'b77777777777777ccccccc4444444aaaaaaaaaaaaaaaaaaa77777777777777cccccccc4444444aaaa4aaaaaaaaaaaaaa777777777777cccccccccc444444aaaaaaaaaaaaaaaaaaaa777777777777cccccccccc444444aaaaaaaaaaaaaaaaaaaa777777777777cc7ccc4ccc44444aaaaaaaaaaaaaaaaaaaaa7777777777cccc7ccccccc44444aaaaaaaaaaaaaaaaaaaaa7777777777cccc7cccccc444444aaaaaaaaaaaaaaaaaaaaa7cc7777777ccccccc44cc4444444aaaaaaaaaaaaaaaaaaaa7cc7777777ccccccccccc44444444aaaaaaaaaaaaaaaaaaa7cc77777c7ccccccc44cc44444444aa11aaaaaaaaaaaaaaa77c777cccccccccc444444cacc177a74b1ffad0baaadddd4d7cd7bddc99cc39cb04155da3da30f9b3cff9333ba63333c3bc9b533b93bd93b504ad50a9da3df3b37f239030ae3333cdc40bb3b5d0b9505504a059f9063da3b3bf835e39ae33bbadc40b23759bc9505504a959f00e3563b9bf83b6391e336af37407c90b3d495db504a92918023be3295f83b6ddfe33aaf0c407c90c03795c48d463694592972369df83baaafe3390f54497c977b9b9b578d4e9a9c29b9c29f0df8328901e9339a0c49bc975ddb9b958d429e972909a59f00f8928991e9999a97490c99b00b059b80c2929be999f89299f8926991e99aafbccddc097997d99789db969b6990f89299f897690fe99aaf7c477c7c4bb4705459d50f05699df00a09f897690fe99aff7c4cc4cc4cc444444cc7b15ba09df00f894290090fe99d54cc44c4cc44444444444441411144fbbf20ca09000fe9999ccc44c4cc44444441441111111111111cf1ff4bc65fe0999cc4444444444444414411111111111af1fffff1aaf1aa4c7a444444444444444111111111111ffffffffff1fff1ffffff4444444444414411111111111affffffffffffffffffffff4444414444411111111111111fffffffffffffffffffffff414441141111111111111f11ffffffffffffffffffffffff411141111111111111111f11ffffffffffffffffffffffff111111111111111111111fffffffffffffffffffffffffff'
+};
