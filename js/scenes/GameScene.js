@@ -409,7 +409,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   /** Bandeau d'entrée : l'étape, puis ce que la météo de Nantes change aujourd'hui. */
   showIntro() {
     var self = this, P = GP.PAL, UI = GP.UI, lines = GP.WeatherRules.announce(this.env, this.L);
-    var head = this.secret ? 'NIVEAU SECRET' : 'ÉTAPE ' + String(this.index + 1).padStart(2, '0') + ' / 12';
+    var head = this.secret ? 'NIVEAU BONUS' : 'ÉTAPE ' + String(this.index + 1).padStart(2, '0') + ' / 12';
     this.introMs = lines.length > 1 ? 2600 : 1900;
     var maxW = Math.min(400, GP.Config.WIDTH - 32);
     var title = UI.txt(this, 0, 0, head, P.g, { fontSize: '12px' }).setOrigin(0.5, 0);

@@ -84,23 +84,25 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       for (var x = xa; x <= xe; x += 1) { var y = M.pathY(x); lg.fillStyle(GP.int(GP.PAL.h), 1); lg.fillRect(x, y - 2, 1, 4); lg.fillStyle(GP.int(GP.PAL.g), 1); lg.fillRect(x, y - 1, 1, 2); }
     }
     var ped = this.add.image(xb, yb + 6, 'carte_piedestal_disponible').setOrigin(0.5, 1).setDepth(10).setInteractive({ useHandCursor: true });
+    var sil = this.add.image(xb, M.vergeY(xb), 'lv_silhouette_nantes').setOrigin(0.5, 1).setDepth(5);   // la silhouette sombre de Nantes, comme un monument pas encore dévoilé
     var star = this.add.image(xb, yb - 3, 'star_on').setDepth(12);
     var rec = null; try { rec = JSON.parse(localStorage.getItem('gp_secret') || 'null'); } catch (e) { rec = null; }
-    var label = this.txt(xb, yb - 26, GP.t('LIGNE VERTE') + (rec ? ' ' + Math.floor(rec.time / 60) + ':' + String(rec.time % 60).padStart(2, '0') : ''), GP.PAL.y, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 2 } }).setOrigin(0.5, 1).setDepth(13);
-    this.bonus = { ped: ped, star: star, label: label };
+    var label = this.txt(xb, M.vergeY(xb) - 48, GP.t('NIVEAU BONUS') + (rec ? ' ' + Math.floor(rec.time / 60) + ':' + String(rec.time % 60).padStart(2, '0') : ''), GP.PAL.y, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 2 } }).setOrigin(0.5, 1).setDepth(13);
+    this.bonus = { ped: ped, star: star, label: label, sil: sil };
     ped.on('pointerover', function () { self.hover = n; self.updateBar(); });
     ped.on('pointerout', function () { if (self.hover === n) { self.hover = -1; self.updateBar(); } });
     ped.on('pointerdown', function () { if (!self.panel) self.goTo(n, true); });
     if (!GP.reducedMotion) this.tweens.add({ targets: star, y: yb - 6, duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     if (!animate) { ligneJusqua(xb); return; }
     // apparition, comme sur une carte de Mario : la ligne verte se trace petit à petit (son), puis l'étape rebondit avec des éclats
-    [ped, star, label].forEach(function (o) { o.setAlpha(0).setScale(0); });
+    [ped, star, label, sil].forEach(function (o) { o.setAlpha(0); }); [ped, star, label].forEach(function (o) { o.setScale(0); });
     var prog = { v: xa }, ticks = 0;
     this.tweens.add({ targets: prog, v: xb, duration: GP.reducedMotion ? 1 : 1900, delay: 900, ease: 'Linear',
       onUpdate: function () { ligneJusqua(Math.floor(prog.v)); if (Math.floor((prog.v - xa) / 28) > ticks) { ticks++; GP.Sfx.play('step'); } },
       onComplete: function () { ligneJusqua(xb); } });
     this.time.delayedCall(900 + (GP.reducedMotion ? 1 : 1900) + 200, function () {
       GP.Sfx.play('unlock');
+      self.tweens.add({ targets: sil, alpha: 1, duration: 700 });
       self.tweens.add({ targets: [ped, star], alpha: 1, scale: 1, duration: GP.reducedMotion ? 1 : 500, ease: 'Back.easeOut' });
       self.tweens.add({ targets: label, alpha: 1, scale: 1, duration: 300, delay: 300 });
       if (!GP.reducedMotion) for (var j = 0; j < 6; j++) {   // éclats autour de l'étape
@@ -440,7 +442,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
 
   updateBar() {
     var i = this.hover >= 0 ? this.hover : this.cur;
-    if (i >= this.locs.length) { this.barName.setText(GP.t('NIVEAU SECRET') + ' · ' + GP.t('LIGNE VERTE')); this.barState.setText(''); return; }
+    if (i >= this.locs.length) { this.barName.setText(GP.t('NIVEAU BONUS')); this.barState.setText(''); return; }
     var l = this.locs[i], st = this.P.status(i);
     var label = MapScene.LABELS[st];
     // 41 caractères tiennent à gauche du bouton d'aide ; le nom est tronqué pour laisser la place à l'état

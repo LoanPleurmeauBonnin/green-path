@@ -748,7 +748,7 @@ GP.LEVELS['cathedrale'] = (function () {
 
 // ---------- NIVEAU SECRET « LA LIGNE VERTE » (débloqué à 36 étoiles) : les 12 monuments à la suite, sans panneaux d'aide, un point de contrôle tous les trois monuments ----------
 GP.SECRET_LOCATION = {
-  id: 'ligne-verte', name: 'La Ligne Verte', playable: true, secret: true, level: 'ligne-verte', parTime: 300,
+  id: 'ligne-verte', name: 'Niveau bonus', playable: true, secret: true, level: 'ligne-verte', parTime: 300,
   notice: "Le parcours de l'examen : les douze monuments de la ligne verte à la suite, sans aide. Chaque mécanique que tu as apprise revient une fois.",
   element: { label: 'La ligne verte', verify: false }, verify: false
 };
