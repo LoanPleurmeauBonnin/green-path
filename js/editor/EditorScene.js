@@ -83,7 +83,14 @@ GP.Scenes.Editor = class EditorScene extends Phaser.Scene {
     this.input.on('pointerdown', function (p) { self.down(p); });
     this.input.on('pointermove', function (p) { self.move(p); });
     this.input.on('pointerup', function (p) { self.up(p); });
-    this.input.on('wheel', function (p, o, dx, dy) { self.setZoom(self.zoom * (dy < 0 ? 1.25 : 0.8), p); });
+    // molette et pavé tactile comme Figma : deux doigts ou molette = déplacer ; pincer (ou Ctrl/Cmd + molette) = zoomer vers le curseur
+    this.input.on('wheel', function (p, o, dx, dy, dz, ev) {
+      var e = ev || (p.event) || {}, cam = self.cameras.main;
+      if (e.ctrlKey || e.metaKey) self.setZoom(self.zoom * Math.exp(-dy * 0.012), p);
+      else { cam.setScroll(cam.scrollX + dx / cam.zoom, cam.scrollY + dy / cam.zoom); self.viewChanged(); }
+    });
+    this.events.on('postupdate', function () { var c = self.cameras.main; if (c.scrollX !== self.lsx || c.scrollY !== self.lsy) { self.lsx = c.scrollX; self.lsy = c.scrollY; self.viewChanged(); } });
+    this.mini = document.getElementById('ed-mini'); this.initMini();
     this.scale.on('resize', function () { self.drawGrid(); });
     GP.Ed.sceneReady();
   }
@@ -105,7 +112,7 @@ GP.Scenes.Editor = class EditorScene extends Phaser.Scene {
     this.children.list.slice().forEach(function (o) { if (!before.has(o)) self.layerObjs.push(o); });
     this.overlay(d, plan);
     this.ents = G.entities(d);
-    this.drawGrid(); this.drawSel();
+    this.drawGrid(); this.drawSel(); this.drawMiniBase();
     GP.Ed.refreshStatus();
   }
 
@@ -186,81 +193,127 @@ GP.Scenes.Editor = class EditorScene extends Phaser.Scene {
     if (d.sol_y !== undefined) { g.lineStyle(1 / cam.zoom, 0x2f8f45, 0.7); g.lineBetween(0, d.sol_y * 16, W, d.sol_y * 16); }
   }
 
-  /** Cadre de la sélection (et poignée de largeur) ; aperçu du bloc en cours de tracé. */
+  /** Cadres de la sélection (poignée de largeur si un seul objet), objet survolé, aperçu du bloc ou du motif, rectangle de sélection. */
   drawSel() {
-    var g = this.ov, cam = this.cameras.main, G = GP.EdGeom;
+    var g = this.ov, cam = this.cameras.main, G = GP.EdGeom, self = this, z = cam.zoom;
     g.clear();
-    var d = GP.Ed.doc, o = d && G.get(d, GP.Ed.sel);
-    if (o) {
-      var e = this.ents.filter(function (en) { return en.obj === o; })[0];
-      if (e) {
-        var r = e.rect;
-        g.lineStyle(2 / cam.zoom, 0xf4d35e, 1); g.strokeRect(r.x, r.y, r.w, r.h);
-        if (this.hasWidth(GP.Ed.sel, o)) { g.fillStyle(0xf4d35e, 1); g.fillRect(r.x + r.w - 3 / cam.zoom, r.y + r.h / 2 - 5 / cam.zoom, 6 / cam.zoom, 10 / cam.zoom); }
-      }
-    }
-    if (this.hover) { g.lineStyle(1 / cam.zoom, 0xffffff, 0.8); g.strokeRect(this.hover.x, this.hover.y, this.hover.w, this.hover.h); }
-    if (this.preview) { g.lineStyle(2 / cam.zoom, 0x5cbf3f, 1); g.fillStyle(0x5cbf3f, 0.25); g.fillRect(this.preview.x, this.preview.y, this.preview.w, this.preview.h); g.strokeRect(this.preview.x, this.preview.y, this.preview.w, this.preview.h); }
+    var d = GP.Ed.doc; if (!d) return;
+    var sels = GP.Ed.sels(), single = sels.length === 1;
+    this.ents.forEach(function (e) {
+      if (!sels.some(function (x) { return x.list === e.sel.list && x.i === e.sel.i; })) return;
+      var r = e.rect;
+      g.lineStyle(2 / z, 0xf4d35e, 1); g.strokeRect(r.x, r.y, r.w, r.h);
+      if (single && self.hasWidth(e.sel, e.obj)) { g.fillStyle(0xf4d35e, 1); g.fillRect(r.x + r.w - 3 / z, r.y + r.h / 2 - 5 / z, 6 / z, 10 / z); }
+    });
+    if (this.hover) { g.lineStyle(1 / z, 0xffffff, 0.8); g.strokeRect(this.hover.x, this.hover.y, this.hover.w, this.hover.h); }
+    if (this.preview) { g.lineStyle(2 / z, 0x5cbf3f, 1); g.fillStyle(0x5cbf3f, 0.25); g.fillRect(this.preview.x, this.preview.y, this.preview.w, this.preview.h); g.strokeRect(this.preview.x, this.preview.y, this.preview.w, this.preview.h); }
+    if (this.marquee) { var m = this.marquee; g.lineStyle(1 / z, 0x7fb3d5, 1); g.fillStyle(0x7fb3d5, 0.18); g.fillRect(m.x, m.y, m.w, m.h); g.strokeRect(m.x, m.y, m.w, m.h); }
   }
 
   hasWidth(sel, o) { return typeof o.w === 'number' || (sel.list === 'ennemis' && typeof o.x2 === 'number'); }
 
   // ---------- Vue ----------
   setZoom(z, p) {
-    var cam = this.cameras.main, old = cam.zoom;
-    z = Math.max(0.25, Math.min(6, z));
+    var cam = this.cameras.main;
+    z = Math.max(0.15, Math.min(8, z));
     var wx = p ? p.worldX : cam.midPoint.x, wy = p ? p.worldY : cam.midPoint.y;
     cam.setZoom(z); this.zoom = z;
     if (p) cam.setScroll(wx - (p.x - cam.x - cam.width / 2) / z - cam.width / 2, wy - (p.y - cam.y - cam.height / 2) / z - cam.height / 2);
-    this.drawGrid(); this.drawSel(); GP.Ed.refreshStatus();
+    else cam.centerOn(wx, wy);
+    this.drawGrid(); this.drawSel(); this.viewChanged(); GP.Ed.refreshStatus(); GP.Ed.refreshZoom();
   }
-  centerOn(tx, ty) { this.cameras.main.centerOn(tx * 16, ty * 16); }
+  zoomBy(f) { this.setZoom(this.zoom * f); }
+  centerOn(tx, ty) { this.cameras.main.centerOn(tx * 16, ty * 16); this.viewChanged(); }
   fit() {
     var d = GP.Ed.doc, cam = this.cameras.main; if (!d) return;
     var z = Math.min(cam.width / (d.largeur * 16 + 32), cam.height / (d.hauteur * 16 + 32));
-    this.setZoom(Math.max(0.25, z)); cam.centerOn(d.largeur * 8, d.hauteur * 8);
+    this.setZoom(Math.max(0.15, z)); cam.centerOn(d.largeur * 8, d.hauteur * 8); this.viewChanged();
+  }
+  /** Cadre des rectangles donnés (en pixels du monde) dans la vue. */
+  zoomToRects(rects) {
+    var cam = this.cameras.main, x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    rects.forEach(function (r) { x0 = Math.min(x0, r.x); y0 = Math.min(y0, r.y); x1 = Math.max(x1, r.x + r.w); y1 = Math.max(y1, r.y + r.h); });
+    var z = Math.min(4, Math.max(0.5, Math.min(cam.width / ((x1 - x0) + 160), cam.height / ((y1 - y0) + 160))));
+    this.setZoom(z); cam.centerOn((x0 + x1) / 2, (y0 + y1) / 2); this.viewChanged();
+  }
+  // mini-carte : le niveau en petit, le cadre de la vue, clic ou glisser pour s'y rendre
+  initMini() {
+    var self = this, m = this.mini; if (!m) return;
+    var go = function (ev) { var r = m.getBoundingClientRect(), d = GP.Ed.doc; if (!d) return; self.cameras.main.centerOn((ev.clientX - r.left) / r.width * d.largeur * 16, (ev.clientY - r.top) / r.height * d.hauteur * 16); self.viewChanged(); };
+    var down = false;
+    m.onpointerdown = function (ev) { down = true; m.setPointerCapture(ev.pointerId); go(ev); };
+    m.onpointermove = function (ev) { if (down) go(ev); };
+    m.onpointerup = function () { down = false; };
+  }
+  drawMiniBase() {
+    var d = GP.Ed.doc, m = this.mini; if (!d || !m) return;
+    var w = 220, h = Math.max(30, Math.min(90, Math.round(220 * d.hauteur / d.largeur)));
+    m.width = w; m.height = h; this.miniBase = GP.EdThumb.draw(d, { w: w, h: h });
+    this.viewChanged();
+  }
+  viewChanged() {
+    var m = this.mini, d = GP.Ed.doc, cam = this.cameras.main; if (!m || !d || !this.miniBase) return;
+    var c = m.getContext('2d'); c.clearRect(0, 0, m.width, m.height); c.drawImage(this.miniBase, 0, 0);
+    var sx = m.width / (d.largeur * 16), sy = m.height / (d.hauteur * 16), vw = cam.width / cam.zoom, vh = cam.height / cam.zoom;
+    c.strokeStyle = '#f4d35e'; c.lineWidth = 1.5; c.fillStyle = 'rgba(244,211,94,0.12)';
+    c.fillRect(cam.scrollX + cam.width / 2 - vw / 2 > 0 ? (cam.scrollX + cam.width / 2 - vw / 2) * sx : 0, 0, 0, 0);
+    var rx = (cam.scrollX + cam.width / 2 - vw / 2) * sx, ry = (cam.scrollY + cam.height / 2 - vh / 2) * sy;
+    c.fillRect(rx, ry, vw * sx, vh * sy); c.strokeRect(rx, ry, vw * sx, vh * sy);
   }
 
   // ---------- Souris ----------
   snap(v, list) {
-    var s = GP.Ed.snap;
+    var st = GP.Ed.snap;
     if (GP.EdGeom.INTEGER[list]) return Math.round(v);
-    return s ? Math.round(v / s) * s : Math.round(v * 16) / 16;
+    return st ? Math.round(v / st) * st : Math.round(v * 16) / 16;
   }
+  /** L'entité sous le point : la plus petite zone, hors calques masqués ou verrouillés. */
   pick(wx, wy) {
     var best = null, ba = Infinity;
     this.ents.forEach(function (e) {
-      if (!GP.Ed.layerOn(e.sel.list)) return;
+      if (!GP.Ed.layerOn(e.sel.list) || GP.Ed.locked(e.sel.list)) return;
       var r = e.rect;
       if (wx >= r.x - 2 && wx <= r.x + r.w + 2 && wy >= r.y - 2 && wy <= r.y + r.h + 2) { var a = r.w * r.h; if (a <= ba) { ba = a; best = e; } }
     });
     return best;
   }
   onHandle(p) {
-    var o = GP.EdGeom.get(GP.Ed.doc, GP.Ed.sel); if (!o || !this.hasWidth(GP.Ed.sel, o)) return false;
+    var sels = GP.Ed.sels(); if (sels.length !== 1) return false;
+    var o = GP.EdGeom.get(GP.Ed.doc, sels[0]); if (!o || !this.hasWidth(sels[0], o)) return false;
     var e = this.ents.filter(function (en) { return en.obj === o; })[0]; if (!e) return false;
     var r = e.rect, z = this.cameras.main.zoom;
     return Math.abs(p.worldX - (r.x + r.w)) < 8 / z && Math.abs(p.worldY - (r.y + r.h / 2)) < 10 / z;
   }
 
   down(p) {
-    var G = GP.EdGeom, tool = GP.Ed.tool, cam = this.cameras.main, tx = p.worldX / 16, ty = p.worldY / 16;
+    var G = GP.EdGeom, tool = GP.Ed.tool, cam = this.cameras.main, tx = p.worldX / 16, ty = p.worldY / 16, shift = p.event && (p.event.shiftKey || p.event.metaKey);
     this.hover = null;
     if (p.rightButtonDown() || p.middleButtonDown() || GP.Ed.space || tool === 'pan') { this.pan = { x: p.x, y: p.y, sx: cam.scrollX, sy: cam.scrollY }; return; }
     if (tool === 'select') {
       if (this.onHandle(p)) {
-        var o = G.get(GP.Ed.doc, GP.Ed.sel);
-        this.drag = { mode: 'resize', sel: GP.Ed.sel, obj: o, orig: JSON.parse(JSON.stringify(o)), x0: tx, y0: ty, moved: false };
+        var s0 = GP.Ed.sels()[0], o = G.get(GP.Ed.doc, s0);
+        this.drag = { mode: 'resize', sel: s0, obj: o, orig: JSON.parse(JSON.stringify(o)), x0: tx, y0: ty, moved: false };
         return;
       }
       var hit = this.pick(p.worldX, p.worldY);
-      GP.Ed.select(hit ? hit.sel : null);
-      if (hit) this.drag = { mode: 'move', sel: hit.sel, obj: hit.obj, orig: JSON.parse(JSON.stringify(hit.obj)), x0: tx, y0: ty, moved: false };
+      if (hit) {
+        var already = GP.Ed.isSelected(hit.sel.list, hit.sel.i);
+        if (shift) GP.Ed.select(hit.sel, true); else if (!already) GP.Ed.select(hit.sel);
+        var group = GP.Ed.sels().map(function (x) { var ob = G.get(GP.Ed.doc, x); return ob ? { sel: x, obj: ob, orig: JSON.parse(JSON.stringify(ob)) } : null; }).filter(Boolean);
+        if (!shift || already) this.drag = { mode: 'move', group: group, x0: tx, y0: ty, moved: false };
+      } else {
+        // rectangle de sélection (Maj : on ajoute à la sélection)
+        if (!shift) GP.Ed.select(null);
+        this.drag = { mode: 'marquee', x0: p.worldX, y0: p.worldY, add: shift, base: GP.Ed.sels() };
+        this.marquee = { x: p.worldX, y: p.worldY, w: 0, h: 0 }; this.drawSel();
+      }
     } else if (tool === 'erase') {
       var h = this.pick(p.worldX, p.worldY);
       if (h) { GP.Ed.select(h.sel); GP.Ed.removeSel(); }
     } else if (tool === 'place') {
       GP.Ed.placeAt(Math.floor(tx), Math.floor(ty), tx, ty);
+    } else if (tool === 'stamp') {
+      GP.Ed.stampAt(Math.floor(tx), Math.floor(ty));
     } else if (tool === 'block') {
       this.drag = { mode: 'block', x0: Math.floor(tx), y0: Math.floor(ty), moved: true };
       this.preview = { x: this.drag.x0 * 16, y: this.drag.y0 * 16, w: 16, h: (GP.Ed.doc.hauteur - this.drag.y0) * 16 }; this.drawSel();
@@ -270,15 +323,17 @@ GP.Scenes.Editor = class EditorScene extends Phaser.Scene {
   move(p) {
     var G = GP.EdGeom, cam = this.cameras.main, tx = p.worldX / 16, ty = p.worldY / 16;
     GP.Ed.cursor = { x: tx, y: ty }; GP.Ed.refreshStatus();
-    if (this.pan) { cam.setScroll(this.pan.sx - (p.x - this.pan.x) / cam.zoom, this.pan.sy - (p.y - this.pan.y) / cam.zoom); return; }
+    if (this.pan) { cam.setScroll(this.pan.sx - (p.x - this.pan.x) / cam.zoom, this.pan.sy - (p.y - this.pan.y) / cam.zoom); this.viewChanged(); return; }
     if (this.drag) {
       var dr = this.drag;
       if (dr.mode === 'move') {
-        var dx = this.snap(tx - dr.x0, dr.sel.list), dy = this.snap(ty - dr.y0, dr.sel.list);
+        var lead = dr.group[0], dx = this.snap(tx - dr.x0, lead.sel.list), dy = this.snap(ty - dr.y0, lead.sel.list);
         if (!dr.moved && !dx && !dy) return;
         dr.moved = true;
-        Object.keys(dr.obj).forEach(function (k) { delete dr.obj[k]; });
-        Object.assign(dr.obj, G.moved(dr.orig, dx, dy));
+        dr.group.forEach(function (it) {
+          var ddx = G.INTEGER[it.sel.list] ? Math.round(dx) : dx, ddy = G.INTEGER[it.sel.list] ? Math.round(dy) : dy;
+          Object.keys(it.obj).forEach(function (k) { delete it.obj[k]; }); Object.assign(it.obj, G.moved(it.orig, ddx, ddy));
+        });
         this.lazyRebuild();
       } else if (dr.mode === 'resize') {
         var dw = this.snap(tx - dr.x0, dr.sel.list);
@@ -290,20 +345,34 @@ GP.Scenes.Editor = class EditorScene extends Phaser.Scene {
         var w = Math.max(1, Math.floor(tx) - dr.x0 + 1), x = dr.x0;
         if (Math.floor(tx) < dr.x0) { x = Math.floor(tx); w = dr.x0 - x + 1; }
         this.preview = { x: x * 16, y: dr.y0 * 16, w: w * 16, h: (GP.Ed.doc.hauteur - dr.y0) * 16 }; dr.x = x; dr.w = w; this.drawSel();
+      } else if (dr.mode === 'marquee') {
+        this.marquee = { x: Math.min(dr.x0, p.worldX), y: Math.min(dr.y0, p.worldY), w: Math.abs(p.worldX - dr.x0), h: Math.abs(p.worldY - dr.y0) }; this.drawSel();
       }
       return;
     }
-    var h = GP.Ed.tool === 'select' || GP.Ed.tool === 'erase' ? this.pick(p.worldX, p.worldY) : null;
+    var tool = GP.Ed.tool, h = tool === 'select' || tool === 'erase' ? this.pick(p.worldX, p.worldY) : null;
     var nh = h ? h.rect : null;
     if ((nh && !this.hover) || (!nh && this.hover) || (nh && this.hover && (nh.x !== this.hover.x || nh.y !== this.hover.y))) { this.hover = nh; this.drawSel(); }
   }
 
   up() {
     this.pan = null;
-    var dr = this.drag; this.drag = null; this.preview = null;
+    var dr = this.drag; this.drag = null; this.preview = null; var mq = this.marquee; this.marquee = null;
     if (!dr) { this.drawSel(); return; }
     if (dr.mode === 'block') { GP.Ed.addBlock(dr.x !== undefined ? dr.x : dr.x0, dr.y0, dr.w || 1); }
-    else if (dr.moved) { this.rebuild(); GP.Ed.commit(dr.mode === 'resize' ? 'Redimensionner' : 'Déplacer'); }
+    else if (dr.mode === 'marquee') {
+      if (mq && (mq.w > 3 || mq.h > 3)) {
+        var found = [];
+        this.ents.forEach(function (e) {
+          if (!GP.Ed.layerOn(e.sel.list) || GP.Ed.locked(e.sel.list)) return;
+          var r = e.rect; if (r.x < mq.x + mq.w && r.x + r.w > mq.x && r.y < mq.y + mq.h && r.y + r.h > mq.y) found.push(e.sel);
+        });
+        var base = dr.add ? dr.base : [];
+        found.forEach(function (f) { if (!base.some(function (b) { return b.list === f.list && b.i === f.i; })) base = base.concat([f]); });
+        GP.Ed.setSelection(base);
+      } else this.drawSel();
+    }
+    else if (dr.moved) { this.rebuild(); GP.Ed.commit(dr.mode === 'resize' ? 'Redimensionner' : (dr.group && dr.group.length > 1 ? 'Déplacer ' + dr.group.length + ' objets' : 'Déplacer')); }
     this.drawSel();
   }
 

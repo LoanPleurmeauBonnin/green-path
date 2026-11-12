@@ -14,11 +14,15 @@
        Les scripts ci-dessous reprennent ceux de index.html jusqu'à BootScene.js (tests/editor.test.js le vérifie). -->
   <div id="ed-gate" role="status"><p id="ed-gate-text">Vérification du compte…</p></div>
   <div id="ed" hidden>
-    <header id="ed-top"></header>
-    <aside id="ed-left"></aside>
-    <main id="ed-view"><div id="game"></div><div id="ed-tex" hidden></div></main>
-    <aside id="ed-right"></aside>
-    <footer id="ed-status"></footer>
+    <section id="hub"></section>
+    <section id="work">
+      <header id="ed-top"></header>
+      <nav id="ed-tools" aria-label="Outils"></nav>
+      <aside id="ed-left"></aside>
+      <main id="ed-view"><div id="game"></div><div id="ed-tex" hidden></div><canvas id="ed-mini" width="220" height="60" aria-label="Mini-carte"></canvas><div id="ed-zoom"></div></main>
+      <aside id="ed-right"></aside>
+      <footer id="ed-status"></footer>
+    </section>
   </div>
   <div id="ed-modal" hidden></div>
   <script src="js/vendor/phaser.min.js"></script>
@@ -86,6 +90,7 @@
   <script src="js/scenes/BootScene.js"></script>
   <script src="js/systems/Lint.js"></script>
   <script src="js/editor/EditorScene.js"></script>
+  <script src="js/editor/EditorHub.js"></script>
   <script src="js/editor/EditorUI.js"></script>
   <script src="js/editor/TextureEditor.js"></script>
   <script src="js/editor/editor-main.js"></script>

@@ -80,7 +80,7 @@ test('Éditeur : editor.html charge les mêmes scripts que index.html jusqu’à
   const idx = scripts(fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8')), ed = scripts(fs.readFileSync(path.join(ROOT, 'editor.html'), 'utf8'));
   const base = idx.slice(0, idx.indexOf('js/scenes/BootScene.js') + 1);
   assert.deepEqual(ed.slice(0, base.length), base);
-  assert.deepEqual(ed.slice(base.length), ['js/systems/Lint.js', 'js/editor/EditorScene.js', 'js/editor/EditorUI.js', 'js/editor/TextureEditor.js', 'js/editor/editor-main.js']);
+  assert.deepEqual(ed.slice(base.length), ['js/systems/Lint.js', 'js/editor/EditorScene.js', 'js/editor/EditorHub.js', 'js/editor/EditorUI.js', 'js/editor/TextureEditor.js', 'js/editor/editor-main.js']);
   assert.ok(idx.indexOf('js/systems/Content.js') > idx.indexOf('js/data/GZoneLevels.js'), 'Content.js après GZoneLevels.js');
   assert.ok(!/editor/.test(fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8').replace(/greenpath-offline[^']*/, '')) || true);
 });

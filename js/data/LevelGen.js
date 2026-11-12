@@ -23,6 +23,7 @@ GP.LevelGen = (function () {
   /** spec : { num, largeur, hauteur, groundY, seed, theme, plan:[[tronçon, …args]], pixels, zones:[[nom, x0, x1]], monument } */
   function generate(spec) {
     var K = GP.Kit, T = spec.theme, rand = rng(spec.seed || 1), H = spec.hauteur, W = spec.largeur;
+    (generate.themes = generate.themes || {})[spec.num] = T;   // l'éditeur s'en sert pour poser des motifs aux couleurs du lieu
     var b = new K.Builder({ sol_y: spec.groundY, hauteur: H });
     var x = 0, g = spec.groundY, segs = [], cand = [], taught = {}, lastLantern = 0, flatSince = 0, occupied = {}, blocks = [], notes = [];
     function note(m) { notes.push(m); }
@@ -184,6 +185,12 @@ GP.LevelGen = (function () {
         if ((!S0 || x + extra + remaining + 4 <= S0) && x + extra + remaining + 16 <= (spec.maxLen || 275)) { run(['rest', 4]); run(ex1); }
       }
     });
+    if (spec.raw) {   // motif isolé (éditeur) : les objets du tronçon seulement, sans arrivée ni décor
+      segs.forEach(function (s) { b.mass(s.x0, s.y, s.x1 - s.x0, T.ground, { note: 'sol' }); });
+      var mo = { plateformes: b.plat, dangers: b.dang, ennemis: b.enn, signes: b.sig, checkpoints: b.chk, boosts: b.boosts || [], anneaux: b.anneaux || [], decor: b.decor, width: x,
+        pixels: cand.map(function (p) { return { sprite: 'commun_pixel', x: Math.round(p.x), y: Math.round(p.y), difficulte: p.hard ? 'risque' : 'facile', detail_image: 1 }; }) };
+      generate.notes = notes; return mo;
+    }
     var tail = spec.tail, ex = W - 10;
     function xOf(o) { return o.x !== undefined ? o.x : (o.x1 !== undefined ? o.x1 : o.x0); }
     function clone(o) { return JSON.parse(JSON.stringify(o)); }
@@ -239,5 +246,20 @@ GP.LevelGen = (function () {
     d.__events = events; generate.notes = notes; (generate.byNum = generate.byNum || {})[spec.num] = notes;
     return d;
   }
-  return { generate: generate, rng: rng, notes: function (n) { return n ? ((generate.byNum || {})[n] || []) : (generate.notes || []); } };
+  /** Motifs proposés par l'éditeur : [identifiant, libellé, tronçon, arguments]. */
+  var MOTIFS = [
+    ['trou', 'Trou de 3', 'gap', [3]], ['trou4', 'Trou de 4 (difficile)', 'gap', [4]], ['pontons', 'Pontons sur l’eau', 'stones', [10]],
+    ['escalier', 'Escalier montant (4)', 'up', [4]], ['descente', 'Escalier descendant (3)', 'down', [3]],
+    ['bloc1', 'Bloc de 1', 'block', [1]], ['bloc2', 'Bloc de 2', 'block', [2]], ['bloc3', 'Bloc de 3', 'block', [3]], ['mur', 'Mur à accrocher (3,5)', 'wall', []],
+    ['pointes2', 'Pointes (2)', 'spikes', [2]], ['pointes3', 'Pointes (3)', 'spikes', [3]], ['rangee', 'Rangée flottante (6)', 'row', [6, 3]], ['oiseau', 'Oiseau bas (6)', 'bird', [6]],
+    ['colonne', 'Colonne grimpable', 'column', [5]], ['gargouille', 'Rangée à gargouille', 'spout', [7]], ['gabares', 'Gabares flottantes', 'boats', [15]], ['balcon', 'Balcon penché', 'slide', [5, 1]],
+    ['vapeur', 'Jet de vapeur', 'steam', []], ['porte', 'Porte coulissante', 'door', []], ['anneau', 'Anneau sur grand trou', 'ring', [8]], ['maree', 'Marée', 'tide', [6]], ['parasol', 'Tremplin parasol', 'bounce', []]
+  ];
+  /** Un motif posé sur un sol à la hauteur groundY : { plateformes, dangers, … width } ou null si le lieu n'a pas de thème. */
+  function stamp(num, motif, groundY, hauteur) {
+    var T = (generate.themes || {})[num], m = MOTIFS.filter(function (e) { return e[0] === motif; })[0];
+    if (!T || !m) return null;
+    return generate({ num: num, largeur: 'auto', hauteur: hauteur, groundY: groundY, seed: 1, theme: T, pixels: 99, raw: true, plan: [['rest', 3], [m[2]].concat(m[3]), ['rest', 3]] });
+  }
+  return { generate: generate, rng: rng, stamp: stamp, MOTIFS: MOTIFS, hasTheme: function (n) { return !!(generate.themes || {})[n]; }, notes: function (n) { return n ? ((generate.byNum || {})[n] || []) : (generate.notes || []); } };
 })();

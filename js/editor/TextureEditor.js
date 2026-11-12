@@ -218,6 +218,8 @@ GP.TexEd = (function () {
       document.addEventListener('keydown', GP.TexEd._key);
       refreshAll();
     },
+    openSprite: function (entry) { open(entry); },
+    newTexture: function () { newTexture(); },
     unmount: function () { document.removeEventListener('keydown', GP.TexEd._key); host = null; },
     _key: function (ev) { if (/^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName)) return; if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') { ev.preventDefault(); doUndo(); } },
     statusText: function () { return cur ? cur.id + ' · ' + cur.w + '×' + cur.h + ' · image ' + (cur.f + 1) + '/' + cur.frames.length + ' · outil ' + tool : 'aucune texture ouverte'; },
