@@ -280,3 +280,11 @@
 - 11 novembre 2026 — Graslin : plus de Muses ni de notes (accessibilité : le seul ennemi du niveau est le projecteur « 1-2-3 soleil »). Météo : soleil = projecteurs plus fréquents, pluie = plus espacés ; faisceaux d'un jaune uni, personnage dessiné devant.
 - 11 novembre 2026 — Graslin : le théâtre se lit comme un vrai théâtre. `L.balcon(x, y, w)` (nouveau, `levels.js`) : les plateformes de la salle sont des balcons à sauter, habillés d'une balustrade dorée et d'un devant crème à médaillons (`lv_balcon_3/5`) ; sol du foyer (dallage et tapis rouge), moquette rouge de la salle, plancher de bois de la scène, lampes de rampe au pied de la scène ; fauteuils vert-bleu dans le décor de la salle.
 - 12 novembre 2026 — REFONTE : arche d'arrivée à la fin de chaque niveau refondu (2 à 12) à la place du petit bâtiment de fin (retiré au Château et à la Cathédrale) : `L.exit` avec `signes_arche_arrivee`, comme dans main ; on termine en rejoignant l'arche une fois tous les pixels pris. Testé : sans pixels l'arche ne termine pas, avec tous les pixels elle termine (niveaux 2 à 12).
+
+## Jeudi 12 novembre 2026 — fusion des niveaux, son « désactivé », retour en icône
+
+**Corrections sur `feat/niveaux-fusion`** : le son s'affiche « DÉSACTIVÉ » (options, message de la touche M, traduction anglaise) à la place de « COUPÉ » ; le retour des écrans Options, À propos (crédits, confidentialité, sources), Classement et Avatar est une icône flèche en haut à gauche (`GP.UI.backIcon`), au même style que le bouton compte de l'accueil, et remplace le bouton RETOUR du bas ; `editor.html` charge `Dangers.js` et `levels-ville.js` comme `index.html`.
+
+**Tests** : trois tests décrivaient l'état d'avant la fusion (douze lieux jouables, temps cibles, empreintes des définitions Jardin/Cathédrale/Bouffay) ; ils sont alignés sur l'état fusionné.
+
+**Non réalisé** : aucun playtest humain des niveaux 4 à 12 de la branche.

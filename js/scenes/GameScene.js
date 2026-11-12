@@ -520,7 +520,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       if (self.help) self.help.close();
       else if (!self.finished) { if (!self.paused) self.pause(); self.openHelp(); }
     });
-    kb.on('keydown-M', function () { GP.Progression.muted = !GP.Progression.muted; self.toast(GP.Progression.muted ? 'SON COUPÉ' : 'SON ACTIVÉ'); });
+    kb.on('keydown-M', function () { GP.Progression.muted = !GP.Progression.muted; self.toast(GP.Progression.muted ? 'SON DÉSACTIVÉ' : 'SON ACTIVÉ'); });
     kb.on('keydown-UP', function () { if (self.pauseMenu) self.pauseMove(-1); });
     kb.on('keydown-DOWN', function () { if (self.pauseMenu) self.pauseMove(1); });
     kb.on('keydown-ENTER', function () { if (self.pauseMenu) self.pauseItems[self.pauseSel].cb(); });

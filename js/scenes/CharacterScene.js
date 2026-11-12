@@ -24,8 +24,9 @@ GP.Scenes.Character = class CharacterScene extends Phaser.Scene {
 
     this.cameras.main.fadeIn(300, 20, 24, 46);
     GP.UI.backdrop(this, 0.82);
-    this.txt(14, 10, 'TON AVATAR', P.g);
-    this.txt(14, 21, "IL T'ACCOMPAGNE TOUT LE PARCOURS", P.m);
+    GP.UI.backIcon(this, function () { self.leave('Menu'); });
+    this.txt(40, 10, 'TON AVATAR', P.g);
+    this.txt(40, 21, "IL T'ACCOMPAGNE TOUT LE PARCOURS", P.m);
 
     // carte d'aperçu
     this.add.rectangle(14, 34, 152, 190, GP.int(P.k)).setOrigin(0);
