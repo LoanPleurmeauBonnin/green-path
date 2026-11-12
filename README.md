@@ -71,7 +71,7 @@ L'ordre local suit les GZones : **Pommeraye 10, Mémorial 11**. Les sauvegardes 
 | ← → ou A D : lieu précédent / suivant | ← → ou Q/A D : courir |
 | Entrée / Espace : fiche du lieu, JOUER | Espace, W ou Z : sauter (maintenir = plus haut) |
 | Clic sur un piédestal : y aller | ↓ ou S : s'accroupir · ↑ : grimper, se hisser sur un rebord |
-| H ou **COMMENT JOUER ?** : aide en 4 pages | Échap : pause (reprendre, aide, quitter) |
+| H ou **COMMENT JOUER ?** : aide en 4 pages | Échap : pause (reprendre, retour au point de contrôle, rejouer le niveau, aide, quitter) |
 | Échap : menu · M : son | Téléphone : ← → ↓ et saut à l'écran (le saut sert aussi à grimper), PAUSE |
 | **Manette** : croix ou stick, A valider | **Manette** : croix ou stick = bouger, A = sauter, ↓ = s'accroupir, ↑ = grimper, Start = pause |
 

@@ -20,6 +20,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   constructor() { super({ key: 'Game', physics: { arcade: { gravity: { y: GP.Tuning.worldGravity } } } }); }
 
   init(data) {
+    this.restarting = false;
     this.index = (data && data.index) || 0;
     this.loc = GP.LOCATIONS[this.index];
     this.L = GP.LEVELS[this.loc.level];
@@ -73,6 +74,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
 
   /** Reprise au dernier point sûr ; les pixels restent acquis, même après un refresh. */
   saveRun() {
+    if (this.restarting) return;   // « rejouer le niveau » : la sauvegarde a été effacée, on ne la recrée pas
     GP.Progression.data.runs[this.loc.id] = { signature: GP.Save.runSignature(this.L),
       taken: this.pixels.reduce(function (a, p, i) { if (p.taken) a.push(i); return a; }, []),
       checkpoint: this.checkpointIndex, time: this.time_ms, deaths: this.deaths };
@@ -958,18 +960,20 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.paused = true;
     this.physics.pause();
     this.player.anims.pause();
-    var m = this.pauseMenu = GP.UI.modal(this, 'PAUSE', '', { x: 100, y: 56, w: 280, h: 128 });
+    var m = this.pauseMenu = GP.UI.modal(this, 'PAUSE', '', { x: 100, y: 44, w: 280, h: 160 });
     var unwatch = GP.Prompts.watch(this, function () { m.titleRight.setText(GP.Prompts.format('{back} : REPRENDRE')); });
     m.titleRight.setText(GP.Prompts.format('{back} : REPRENDRE'));
     var destroy = m.destroy;
     m.destroy = function () { unwatch(); destroy(); };
     this.pauseItems = [
       { label: 'REPRENDRE', cb: function () { self.resume(); } },
+      { label: 'AU POINT DE CONTRÔLE', cb: function () { self.backToCheckpoint(); } },   // repart de la dernière lanterne, les pixels pris restent acquis
+      { label: 'REJOUER LE NIVEAU', cb: function () { self.restartLevel(); } },           // solution de secours (blocage, bogue) : on repart du début
       { label: 'COMMENT JOUER ?', cb: function () { self.openHelp(); } },
       { label: 'QUITTER VERS LA CARTE', cb: function () { self.quit(); } }
     ];
     this.pauseBtns = this.pauseItems.map(function (it, i) {
-      var b = GP.UI.button(self, 150, 90 + i * 26, 180, it.label, it.cb, { primary: i === 0 });
+      var b = GP.UI.button(self, 130, 76 + i * 24, 220, it.label, it.cb, { primary: i === 0 });
       m.add(b.objs);
       b.box.on('pointerover', function () { self.pauseSel = i; self.pauseHover(); });
       return b;
@@ -977,7 +981,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.pauseSel = 0; this.pauseHover();
     GP.Sfx.play('select');
   }
-  pauseMove(d) { this.pauseSel = (this.pauseSel + d + 3) % 3; GP.Sfx.play('step'); this.pauseHover(); }
+  pauseMove(d) { this.pauseSel = (this.pauseSel + d + this.pauseItems.length) % this.pauseItems.length; GP.Sfx.play('step'); this.pauseHover(); }
   pauseHover() { var s = this.pauseSel; this.pauseBtns.forEach(function (b, i) { b.hover(i === s); }); }
 
   resume() {
@@ -986,6 +990,31 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.physics.resume();
     this.player.anims.resume();
     GP.Sfx.play('back');
+  }
+
+  /** Pause → « au point de contrôle » : le joueur revient à la dernière lanterne allumée (ou au départ), sans perdre ses pixels. */
+  backToCheckpoint() {
+    var p = this.player;
+    this.resume();
+    p.body.setVelocity(0, 0);
+    p.body.reset(this.respawn.x, this.respawn.y);
+    this.hanging = null; this.climbing = null; this.jumping = false; this.buffer = 0;
+    p.setAlpha(0.45); this.invuln = this.TUNE.invuln;
+    this.updateShelter(0, true);
+    this.toast('POINT DE CONTRÔLE');
+  }
+
+  /** Pause → « rejouer le niveau » : on efface la reprise sauvegardée (pixels, lanterne, temps, morts) et on repart du début. */
+  restartLevel() {
+    var self = this;
+    if (this.restarting) return;
+    this.restarting = true;
+    delete GP.Progression.data.runs[this.loc.id];
+    GP.Progression.persist();
+    GP.Sfx.play('confirm');
+    this.input.keyboard.removeAllListeners();
+    this.cameras.main.fadeOut(300, 20, 24, 46);
+    this.cameras.main.once('camerafadeoutcomplete', function () { self.scene.start('Game', { index: self.index }); });
   }
 
   openHelp() {
