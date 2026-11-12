@@ -35,6 +35,9 @@ GP.LevelBuilder = {
       width: width, rows: rows, grid: new Int8Array(width * rows),
       plats: [], thorns: [], pixels: [], checks: [], hints: [], deco: [], startX: 2, startRow: 13,
       climbs: [], crumbles: [], gargoyles: [], slits: [], gates: [], barrels: [], movers: [], rainThorns: [], sunPlats: [],
+      muses: [], molds: [], glasses: [], hangers: [], plaques: [], regimes: [], peaux: [], caisses: [], cranes: [], elephants: [], cbornes: [], cplats: [], memos: [], frises: [], gardes: [], drafts: [],
+      patrols: [], tides: [], boats: [], liars: [], fallers: [], jets: [], beams: [], springs: [], seqs: [], belts: [], carts: [], rings: [], aligns: [], ponds: [],
+      rot: false, wxm: {},
       abilities: {}, skin: null, shelters: []
     };
     function set(x, y, v) { if (x >= 0 && x < width && y >= 0 && y < rows) L.grid[y * width + x] = v; }
@@ -50,6 +53,7 @@ GP.LevelBuilder = {
       pixRow: function (x, y, n) { for (var i = 0; i < n; i++) L.pixels.push({ x: x + i, y: y }); },
       check: function (x) { L.checks.push({ x: x, y: L.top(x) - 1 }); },
       hint: function (x, text) { L.hints.push({ x: x, y: L.top(x) - 1, text: text }); },
+      balcon: function (x, y, w) { api.plat(x, y, w); L.deco.push({ x: x, y: y, key: 'lv_balcon_' + w, dx: (w - 1) * 8, dy: 3, depth: 5 }); },   // balcon de théâtre : plateforme à sauter, habillée d'un devant crème et or et d'une balustrade
       deco: function (x, key, o) { o = o || {}; L.deco.push({ x: x, y: L.top(x) - 1, key: key, dx: o.dx || 0, dy: o.dy || 0, depth: o.depth }); },
       start: function (x) { L.startX = x; L.startRow = L.top(x) - 1; },
       climb: function (x, top, bottom) { L.climbs.push({ x: x, top: top, bottom: bottom === undefined ? L.top(x) - 1 : bottom }); },
@@ -61,6 +65,39 @@ GP.LevelBuilder = {
       mover: function (x, y, w, dx, dy, period) { L.movers.push({ x: x, y: y, w: w, dx: dx || 0, dy: dy || 0, period: period || 3000 }); },
       rainThorn: function (x) { L.rainThorns.push({ x: x, y: L.top(x) - 1 }); },
       sunPlat: function (x, y, w) { L.sunPlats.push({ x: x, y: y, w: w || 1 }); },
+      // --- niveaux de la ville (voir js/systems/Dangers.js) ---
+      patrol: function (x0, x1, kind, speed) { L.patrols.push({ x0: x0, x1: x1, y: L.top(x0) - 1, kind: kind, speed: speed }); },           // 'esprit', 'robot'
+      tide: function (x0, x1, low, high, period) { L.tides.push({ x0: x0, x1: x1, low: low, high: high, period: period || 9000 }); },        // eau qui monte (lignes basse et haute)
+      boat: function (x, y, w) { L.boats.push({ x: x, y: y, w: w || 2 }); },                                                                  // bateau qui s'enfonce
+      liar: function (x, y, text, blur) { L.liars.push({ x: x, y: y, text: text, blur: blur }); },                                            // visage qui ment
+      faller: function (x, y, period, offset, key, msg) { L.fallers.push({ x: x, y: y, period: period, offset: offset, key: key, msg: msg }); },   // objet suspendu qui tombe (conteneur par défaut ; key : autre sprite, ex. caisse de bananes)                            // conteneur qui tombe
+      jet: function (x, h, period, offset) { L.jets.push({ x: x, h: h, period: period, offset: offset }); },                                  // jet de vapeur ou d'eau
+      garde: function (x, dir) { L.gardes.push({ x: x, dir: dir || 1 }); },   // garde du Château : son regard balaie à hauteur de tête (s'accroupir) puis de chevilles (sauter)
+      spots: function (x0, x1) { L.spotZone = { x0: x0, x1: x1 }; },   // projecteurs « 1-2-3 soleil » : allumés on s'arrête, éteints on avance (entre les tuiles x0 et x1)
+      beam: function (x0, x1, speed) { L.beams.push({ x0: x0, x1: x1, speed: speed }); },                                                     // projecteur qui balaie
+      spring: function (x) { L.springs.push({ x: x, y: L.top(x) - 1 }); },                                                                    // parasol qui fait rebondir
+      seq: function (x, pattern) { L.seqs.push({ x: x, pattern: pattern.split('') }); },                                                      // rideau à ouvrir (séquence L R D J)
+      belt: function (x0, x1, dir, speed) { L.belts.push({ x0: x0, x1: x1, dir: dir, speed: speed }); },                                      // tapis roulant
+      cart: function (x, y, w, dx) { L.carts.push({ x: x, y: y, w: w, dx: dx }); },                                                           // chariot qui avance quand on monte dessus
+      ring: function (x, y, color) { L.rings.push({ x: x, y: y, color: color || 'red' }); return L.rings.length - 1; },                       // anneau d'élan
+      align: function (rings, bx, by, bw) { L.aligns.push({ rings: rings, bridge: { x: bx, y: by, w: bw } }); },                              // anneaux alignés : un pont apparaît
+      muse: function (x, dir, period, offset) { L.muses.push({ x: x, dir: dir || -1, period: period, offset: offset }); },                    // Muse (statue) qui lance des notes
+      mold: function (x, w, period, offset) { L.molds.push({ x: x, w: w, period: period, offset: offset }); },                                // moisissure qui gagne du terrain
+      hanger: function (x) { L.hangers.push({ x: x, floor: L.top(x) }); },                                                               // araignée suspendue à un fil : elle descend si on ne la regarde pas (accroupi : on passe dessous)
+      peau: function (x) { L.peaux.push({ x: x }); },                                                                                     // peau de banane au sol : on glisse tout droit, sans contrôle, pendant 0,75 s
+      regime: function (x, period, offset) { L.regimes.push({ x: x, period: period || 3000, offset: offset || 0, floor: L.top(x) }); },        // régime de bananes suspendu qui se balance : accroupi, on passe dessous
+      plaque: function (x, text) { L.plaques.push({ x: x, text: text, floor: L.top(x) }); },                                          // plaque de verre du Mémorial : elle s'allume au passage et affiche un fait daté
+      crane: function (x, y, dx, dy, period, offset, key) { L.cranes.push({ x: x, y: y, dx: dx || 0, dy: dy || 0, period: period || 7000, offset: offset || 0, key: key }); },   // key : sprite suspendu (conteneur par défaut)
+      caisse: function (x, tiers) { L.caisses.push({ x: x, tiers: tiers || 1, floor: L.top(x) }); },                                           // pile de caisses de bananes (escalier) : le dessus est une plateforme   // grue : un conteneur suspendu à un câble va et vient (plateforme qui transporte)
+      elephant: function (west, east, period) { L.elephants.push({ west: west, east: east, period: period || 13000 }); },                   // le Grand Éléphant traverse un canal du bord ouest au bord est : on monte sur lui
+      borne: function (x, color) { L.cbornes.push({ x: x, color: color }); },                                                              // borne de couleur : la toucher allume les passerelles de sa couleur
+      cplat: function (x, y, w, color) { L.cplats.push({ x: x, y: y, w: w, color: color }); },                                           // passerelle de couleur (solide seulement si sa couleur est allumée)
+      glass: function (x, y, w) { L.glasses.push({ x: x, y: y, w: w }); },
+      frise: function (f) { L.frises.push(f); },   // frise à compléter : { annees, slots, jetons, porte } (le joueur porte les dates)
+      memo: function (stele, gate, pattern) { L.memos.push({ stele: stele, gate: gate, pattern: pattern.split('') }); },                       // stèle à lire, porte à ouvrir de mémoire (D = bas, J = haut)
+      draft: function (x0, x1, y0, y1) { L.drafts.push({ x0: x0, x1: x1, y0: y0, y1: y1 }); },                                               // courant d'air ascendant (gravité allégée)
+      pond: function (x0, x1, row) { L.ponds.push({ x0: x0, x1: x1, row: row }); },                                                           // eau décorative
+      rotting: function (on) { L.rot = on !== false; },                                                                                       // pixels qui mûrissent puis pourrissent
       /** x/y/w/h en pixels monde ; coefficients pluie, neige, vent indépendants. */
       shelter: function (id, x, y, w, h, protection) {
         L.shelters.push({ id: id, x: x, y: y, w: w, h: h, rain: protection.rain, snow: protection.snow, wind: protection.wind });
@@ -263,9 +300,10 @@ GP.LEVELS['cathedrale'] = (function () {
     L.check(29);
     // 3. Gargouilles : la goutte se forme, puis tombe
     L.hint(30, 'UNE GOUTTE SE FORME : ATTENDS');
-    L.block(32, 5, 1, 1); L.gargoyle(32, 5, 2400);
-    L.block(36, 5, 1, 1); L.gargoyle(36, 5, 2400);
+    L.block(30, 0, 12, 1); L.gargoyle(32, 0, 2400);      // une arche de la voûte : l'eau suinte d'une fissure
+    L.gargoyle(36, 0, 2400);
     L.pix(34, 13); L.pix(38, 13);
+    L.plat(33, 9, 3); L.plat(37, 8, 3); L.pix(34, 8); L.pix(38, 7);          // la voie haute de la nef, au-dessus des gouttes
     // 4. Corniches qui s'effritent au-dessus des pointes
     L.ground(40, 2, 3); L.check(40);
     L.hint(41, "LES CORNICHES S'EFFRITENT : AVANCE");
@@ -273,6 +311,7 @@ GP.LEVELS['cathedrale'] = (function () {
     L.thorn(42, 11);
     L.crumble(43, 11, 2); L.crumble(47, 11, 2); L.crumble(51, 11, 2);
     L.pix(44, 10); L.pix(48, 10); L.pix(52, 10);
+    L.plat(44, 7, 2); L.plat(49, 6, 2); L.pix(45, 6); L.pix(50, 5);          // la voie haute : une chapelle latérale à pixels, loin des pointes
     // 5. La tour : colonne, sommet, rebord haut, puis redescente
     L.ground(53, 10, 3);
     L.climb(62, 8, 13);
@@ -281,13 +320,18 @@ GP.LEVELS['cathedrale'] = (function () {
     L.plat(68, 5, 3); L.pix(69, 4); L.pix(70, 4);
     L.ground(67, 13, 3);
     L.check(73);
-    L.block(70, 2, 1, 1); L.gargoyle(70, 2, 2000);
+    L.block(67, 0, 8, 1); L.gargoyle(70, 0, 2000);
     // 6. Un dernier mur à saisir, puis la nef
     L.ground(80, 5, 7);
     L.pix(81, 9); L.pix(83, 9);
-    L.ground(85, 35, 3);
-    L.pix(90, 13); L.pix(94, 13); L.pix(98, 13);
-    L.plat(100, 11, 3); L.pix(101, 10); L.pix(102, 10);
+    L.ground(85, 12, 3);                                              // 6e travée : des gouttes, une fosse de pointes, des corniches qui s'effritent
+    L.block(88, 0, 10, 1); L.gargoyle(90, 0, 2200); L.gargoyle(94, 0, 2200);
+    L.pix(88, 13); L.pix(92, 13);
+    L.hint(95, "LES CORNICHES S'EFFRITENT : AVANCE"); L.ground(97, 7, 2); L.thorn(97, 7);
+    L.crumble(98, 11, 2); L.crumble(101, 11, 2); L.pix(99, 10); L.pix(102, 10);
+    L.ground(104, 16, 3); L.check(104);
+    L.deco(88, 'lv_banc_eglise', { depth: 3 }); L.deco(92, 'lv_banc_eglise', { depth: 3 }); L.deco(96, 'lv_banc_eglise', { depth: 3 }); L.deco(107, 'lv_banc_eglise', { depth: 3 }); L.deco(112, 'lv_banc_eglise', { depth: 3 });
+    L.plat(110, 11, 3); L.pix(111, 10); L.pix(112, 10); L.pix(108, 13); L.pix(116, 13);
   });
   L.id = 'cathedrale';
   L.reveal = 'bottomUp';
@@ -298,7 +342,9 @@ GP.LEVELS['cathedrale'] = (function () {
     ledge: ['cathedrale_corniche_g', 'cathedrale_corniche_m', 'cathedrale_corniche_d']
   };
   L.thornKey = 'cathedrale_pointes_pierre_1'; L.thornText = 'AÏE, LES POINTES DE PIERRE !';
-  L.sky = { farKey: 'cathedrale_nef_fond_tile_x', farBottom: 240 };
+  L.sky = { farKey: 'lv_fond_nef', farBottom: 236 };           // l'intérieur : piliers, vitraux et rosace
+  L.gargoyleKey = 'lv_fuite';                                  // plus de statues : des fissures de la voûte laissent tomber des gouttes
+  L.supports = true;                                           // les corniches reposent sur des piliers de pierre
   L.backdrop = { x: 108, key: 'cathedrale_tour_facade', scale: 1, tint: false };
   L.rainGargoyle = true;
   L.weatherText = { rain: 'LES GARGOUILLES COULENT PLUS SOUVENT' };

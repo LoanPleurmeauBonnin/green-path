@@ -26,9 +26,8 @@ GP.Scenes.About = class AboutScene extends Phaser.Scene {
     this.counter = UI.txt(this, 448, 70, '', P.m).setOrigin(1, 0);
     this.body = UI.txt(this, 32, 92, '', P.w, { wordWrap: { width: 416, useAdvancedWrap: true }, lineSpacing: 4 });
     this.prev = UI.button(this, 20 + dx, 228, 120, '< PRÉCÉDENT', function () { self.page(-1); });
-    this.back = UI.button(this, 170 + dx, 228, 140, '', function () { self.leave(); });
+    this.back = UI.backIcon(this, function () { self.leave(); });
     this.next = UI.button(this, 340 + dx, 228, 120, 'SUIVANT >', function () { self.page(1); });
-    GP.Prompts.bind(this, this.back.label, 'RETOUR {back}');
     GP.Prompts.bind(this, UI.txt(this, 240, 255, '', P.m).setOrigin(0.5), '{pages} PAGES  {navY} RUBRIQUES');
     var kb = this.input.keyboard;
     kb.on('keydown-LEFT', function () { self.page(-1); }); kb.on('keydown-RIGHT', function () { self.page(1); });

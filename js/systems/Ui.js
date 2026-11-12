@@ -44,6 +44,18 @@ GP.UI = (function () {
     return { objs: [box, t], hover: hover, box: box, label: t };
   }
 
+  /** Bouton retour en icône (flèche), en haut à gauche, à la même place et au même style que le bouton compte de l'accueil. */
+  function backIcon(scene, cb) {
+    var dx = GP.Config.DX;
+    if (!scene.textures.exists('ui_back')) GP.PixelArt.sprite(scene, 'ui_back', ['...k.....', '..kwk....', '.kwwkkkkk', 'kwwwwwwwk', '.kwwkkkkk', '..kwk....', '...k.....']);
+    var box = scene.add.rectangle(6 - dx, 6, 22, 15, GP.int(P.d), 0.95).setOrigin(0).setStrokeStyle(2, GP.int(P.k)).setInteractive({ useHandCursor: true }).setDepth(50);
+    var img = scene.add.image(6 - dx + 11, 6 + 7.5, 'ui_back').setOrigin(0.5).setDepth(51);
+    box.on('pointerover', function () { box.setFillStyle(GP.int(P.G), 0.95); });
+    box.on('pointerout', function () { box.setFillStyle(GP.int(P.d), 0.95); });
+    box.on('pointerdown', function () { cb(); });
+    return { objs: [box, img], box: box };
+  }
+
   // ---------- Fenêtre ----------
   function modal(scene, titleLeft, titleRight, opts) {
     opts = opts || {};
@@ -324,5 +336,5 @@ GP.UI = (function () {
     return h;
   }
 
-  return { backdrop: backdrop, paginate: paginate, pagedText: pagedText, isTouch: isTouch, touchPad: touchPad, backdropKey: backdropKey, txt: txt, button: button, modal: modal, help: help, key: key, makeTextures: makeTextures, PAGES: PAGES };
+  return { backdrop: backdrop, paginate: paginate, pagedText: pagedText, isTouch: isTouch, touchPad: touchPad, backdropKey: backdropKey, txt: txt, button: button, backIcon: backIcon, modal: modal, help: help, key: key, makeTextures: makeTextures, PAGES: PAGES };
 })();

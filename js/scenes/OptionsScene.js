@@ -20,6 +20,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     this.title = this.txt(W / 2, 12, 'OPTIONS', P.g).setOrigin(0.5, 0);
     this.hint = this.add.text(W / 2, H - 22, '', { fontFamily: GP.Config.FONT, fontSize: '8px', color: P.m, align: 'center', wordWrap: { width: 440 }, lineSpacing: 3 }).setOrigin(0.5, 0);
     this.layer = [];
+    GP.UI.backIcon(this, function () { self.back(); });   // retour en haut à gauche (revient d'un cran dans les sous-pages)
     this.build();
 
     var kb = this.input.keyboard;
@@ -55,7 +56,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     var rows = [
       { label: 'LANGUE', value: function () { return GP.I18n.lang === 'fr' ? 'FRANÇAIS' : 'ENGLISH'; }, arrows: true,
         act: function () { self.lang(); }, left: function () { self.lang(); }, right: function () { self.lang(); } },
-      { label: 'SON', value: function () { return GP.Progression.muted ? 'COUPÉ' : 'ACTIVÉ'; }, arrows: true,
+      { label: 'SON', value: function () { return GP.Progression.muted ? 'DÉSACTIVÉ' : 'ACTIVÉ'; }, arrows: true,
         act: function () { self.toggleSound(); }, left: function () { self.toggleSound(); }, right: function () { self.toggleSound(); } },
       { label: 'PLEIN ÉCRAN', value: function () { return fsOk ? (isFs ? 'DÉSACTIVER' : 'ACTIVER') : 'NON DISPONIBLE ICI'; },
         act: function () { self.fullscreen(); } },
@@ -100,8 +101,6 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
         var tab = GP.UI.button(self, 60 + i * 184 + GP.Config.DX, 32, 176, label, function () { self.group = i; self.sel = 0; self.build(); }, { height: 20 });
         tab.hover(self.group === i); self.layer = self.layer.concat(tab.objs);
       });
-      var back = GP.UI.button(this, 170 + GP.Config.DX, 224, 140, '', function () { self.leave(); });
-      GP.Prompts.bind(this, back.label, 'RETOUR {back}'); this.layer = this.layer.concat(back.objs);
     }
     if (this.mode === 'keys' && !this.confirm && GP.Prompts.device !== 'gamepad') {
       ['ACTION', 'TOUCHE 1', 'TOUCHE 2', 'TOUCHE 3'].forEach(function (h, i) { self.layer.push(self.txt(i ? 207 + (i - 1) * 83 : 70, 38, h, P.m).setOrigin(i ? 0.5 : 0, 0)); });

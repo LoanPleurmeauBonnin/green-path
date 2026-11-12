@@ -61,7 +61,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     kb.on('keydown-SPACE', function () { self.onConfirm(); });
     kb.on('keydown-ESC', function () { self.onEsc(); });
     kb.on('keydown-H', function () { if (!self.panel) self.openHelp(); else if (self.panelKind === 'help') self.closePanel(); });
-    kb.on('keydown-M', function () { self.P.muted = !self.P.muted; self.toast(self.P.muted ? 'SON COUPÉ' : 'SON ACTIVÉ'); });
+    kb.on('keydown-M', function () { self.P.muted = !self.P.muted; self.toast(self.P.muted ? 'SON DÉSACTIVÉ' : 'SON ACTIVÉ'); });
     if (GP.Config.DEV_TOOLS) kb.on('keydown-W', function () { self.cycleWeather(); });
     this.events.once('shutdown', function () { kb.removeAllListeners(); });
   }
@@ -153,6 +153,16 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       im.baseScale = sc;
       return im;
     });
+    // petits personnages des anecdotes : ils apparaissent près du monument une fois le niveau terminé
+    this.pers = this.locs.map(function (l, i) {
+      var a = l.anecdote || l.panneau;
+      if (!a) return null;
+      var key = MapScene.personKey(self, l), x = self.nx(i) + 40;
+      var im = self.add.image(x, GP.MapArt.vergeY(x), key).setOrigin(0.5, 1).setScale(1).setDepth(5).setVisible(false);   // même taille que le héros
+      im.bulle = GP.UI.txt(self, x, im.y - 28, '!', GP.PAL.y).setOrigin(0.5, 1).setDepth(6).setVisible(false);   // « j'ai quelque chose à te raconter »
+      if (l.anecdote && !GP.reducedMotion) self.tweens.add({ targets: [im, im.bulle], y: '-=2', duration: 700 + i * 37, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      return im;
+    });
   }
 
   /** Dévoilement : halo bref (une seule fois, pas de clignotement), fondu gris → couleur, « pop », étincelles. */
@@ -205,6 +215,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       var st = P.status(i), n = self.nodes[i];
       n.img.setTexture('carte_piedestal_' + MapScene.PEDESTAL[st]);
       n.num.setColor(st === 'locked' || st === 'coming' ? GP.PAL.w : GP.PAL.k).setVisible(st !== 'locked');   // le piédestal verrouillé porte déjà un cadenas
+      if (self.pers && self.pers[i]) { var vis = st !== 'coming' && st !== 'locked'; self.pers[i].setVisible(vis); self.pers[i].bulle.setVisible(vis && !!l.anecdote); }
       var got = P.stars(i);
       n.stars.forEach(function (s, k) { s.setVisible(st === 'completed').setTexture(k < got ? 'star_on' : 'star_off'); });
       if (i !== self.revealing) self.lms[i].setTexture(GP.MapArt.monument(l, st !== 'completed'));
@@ -384,6 +395,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
           add(UI.txt(self, 34, 40, txt, GP.PAL.w, { wordWrap: { width: 412 }, lineSpacing: 4 }));
         } });
       });
+      if (l.anecdote || l.panneau) pages.push({ title: l.panneau ? 'PANNEAU' : 'RENCONTRE', draw: function (add) { self.drawAnecdote(add, l); } });
     } else {
       var info = [GP.t(l.name.toUpperCase()), GP.t(l.element.label.toUpperCase()), GP.t(l.notice)];
       if (st === 'coming') info.push(GP.t('NIVEAU PAS ENCORE DISPONIBLE'));
@@ -391,6 +403,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       UI.paginate(this, info, 292, 78).forEach(function (text) {
         pages.push({ title: 'À RECONSTRUIRE', draw: function (add) { self.drawContext(add, i, text); } });
       });
+      if ((l.anecdote || l.panneau) && st !== 'locked' && st !== 'coming') pages.push({ title: l.panneau ? 'PANNEAU' : 'RENCONTRE', draw: function (add) { self.drawAnecdote(add, l); } });   // le personnage raconte son anecdote dès l'arrivée
     }
     if (l.grammar) GP.UI.paginate(this, [GP.t(l.grammar)], compact ? 388 : 412, compact ? 78 : 156).forEach(function (text) {
       pages.push({ title: 'SOURCE → RÈGLE', draw: function (add) { add(UI.txt(self, compact ? 46 : 34, compact ? 36 : 40, text, GP.PAL.w, { wordWrap: { width: compact ? 388 : 412 }, lineSpacing: 4 })); } });
@@ -433,6 +446,16 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     pg.draw(add);
     if (sh.pages.length > 1) for (var k = 0; k < sh.pages.length; k++)
       add(self.add.rectangle(GP.Config.DW / 2 - (sh.pages.length - 1) * 5 + k * 10, sh.compact ? 119 : 203, 6, 6, GP.int(k === sh.page ? P.g : P.e)).setOrigin(0.5));
+  }
+
+  /** Page RENCONTRE : le petit personnage du lieu raconte une anecdote (ou, au Mémorial, un panneau sobre) ; la source est indiquée. */
+  drawAnecdote(add, l) {
+    var a = l.anecdote || l.panneau, P = GP.PAL, UI = GP.UI;
+    add(this.add.rectangle(34, 40, 96, 116, 0x2f4a6b).setOrigin(0));
+    add(this.add.image(82, 148, MapScene.personKey(this, l)).setOrigin(0.5, 1).setScale(l.panneau ? 3 : 4));
+    add(UI.txt(this, 144, 40, a.who, P.g, { wordWrap: { width: 302 }, lineSpacing: 3 }));
+    add(UI.txt(this, 144, a.who.length > 30 ? 66 : 56, a.text, P.w, { wordWrap: { width: 302 }, lineSpacing: 4 }));
+    add(UI.txt(this, 34, 166, GP.t('SOURCE :') + ' ' + GP.t(a.source), P.m, { wordWrap: { width: 412 }, lineSpacing: 3 }));
   }
 
   /** Fiche courte au-dessus du rail ; la notice complète est paginée, jamais tronquée. */
@@ -496,4 +519,51 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
 GP.Scenes.Map.MONUMENT_HALF = 24;
 GP.Scenes.Map.PEDESTAL = { available: 'disponible', completed: 'termine', locked: 'verrouille', coming: 'avenir' };
 
+/**
+ * Personnage d'anecdote : le même sprite que l'avatar du joueur (GP.Character, pose de repos, grille 15×19) avec les options de `look`,
+ * plus un accessoire dessiné par-dessus (coiffe, chapeau, casque, moustache…). Panneau sobre pour le Mémorial.
+ * Les couleurs des accessoires s'inspirent de portraits et de photos d'époque (Wikimédia Commons) : simples références, rien n'est copié.
+ */
+GP.Scenes.Map.personKey = function (scene, l) {
+  var key = 'pers_' + l.id;
+  if (scene.textures.exists(key)) return key;
+  var PAD_X = 1, PAD_Y = 5, W = 17, H = 24, o = GP.PixelArt.canvas(W, H), c = o.ctx, K = '#170e3b';
+  function R(x, y, w, h, col) { c.fillStyle = col; c.fillRect(x, y, w, h); }
+  if (l.panneau) {                                     // panneau sobre : poteau et plaque
+    R(8, 12, 2, 12, K); R(2, 2, 14, 11, K); R(3, 3, 12, 9, '#e9eef7'); R(4, 5, 10, 1, '#6f7a8e'); R(4, 7, 10, 1, '#6f7a8e'); R(4, 9, 6, 1, '#6f7a8e');
+    GP.PixelArt.toTexture(scene, key, o.cv);
+    return key;
+  }
+  var look = l.anecdote.look, acc = (look.acc || '').split('+');
+  var grid = GP.Character.compose(look, 'idle0'), hairPal = GP.Character.OPTIONS[1].list.filter(function (e) { return e.id === look.hairColor; })[0] || { H: '#2f2b52', h: '#5a2539' };
+  var cells = {};                                      // tout ce qui est dessiné, case par case (pour calculer le contour des accessoires)
+  for (var y = 0; y < GP.Character.H; y++) for (var x = 0; x < GP.Character.W; x++) if (grid[y][x]) cells[(x + PAD_X) + ',' + (y + PAD_Y)] = grid[y][x];
+  var add = {};                                        // accessoires : [ligne, colonne, couleur, largeur], lignes relatives à la grille du personnage (peuvent être négatives)
+  function px(row, col, w, color) { for (var i = 0; i < w; i++) add[(col + i + PAD_X) + ',' + (row + PAD_Y)] = color; }
+  acc.forEach(function (a) {
+    if (a === 'hautdeforme') { px(-4, 5, 6, '#2a2f45'); px(-3, 5, 6, '#2a2f45'); px(-2, 5, 6, '#2a2f45'); px(-1, 5, 6, '#5b5688'); px(0, 5, 6, '#2a2f45'); px(1, 3, 10, '#2a2f45'); }
+    else if (a === 'coiffe') {                          // coiffe dorée à bandeau sombre (portrait d'Anne de Bretagne)
+      px(0, 4, 8, '#e9b64a'); px(1, 3, 10, '#e9b64a'); px(2, 2, 12, '#f4d35e'); px(3, 2, 12, '#2a2540');
+      for (var r = 4; r < 11; r++) { px(r, 1, 2, '#e9b64a'); px(r, 12, 2, '#e9b64a'); }
+    }
+    else if (a === 'beret') { px(-1, 7, 2, '#8a2f2f'); px(0, 3, 10, '#8a2f2f'); px(1, 2, 12, '#a53f3f'); px(2, 3, 10, '#8a2f2f'); }
+    else if (a === 'toque') { px(0, 4, 8, '#2a2f45'); px(1, 3, 10, '#3b3b4f'); px(2, 3, 10, '#2a2f45'); }
+    else if (a === 'casque') { px(-1, 5, 6, '#f4d35e'); px(0, 3, 10, '#f4d35e'); px(1, 2, 12, '#f7e38a'); px(2, 1, 14, '#d1a53a'); }
+    else if (a === 'casquette') { px(0, 4, 8, '#6a7088'); px(1, 3, 10, '#8a90a8'); px(2, 3, 12, '#4a4f66'); }
+    else if (a === 'marin') { px(0, 4, 8, '#f4f4fa'); px(1, 3, 10, '#f4f4fa'); px(2, 3, 10, '#39417f'); }
+    else if (a === 'lunettes') { px(2, 3, 10, '#3b3b4f'); px(2, 5, 2, '#8fc4ec'); px(2, 9, 2, '#8fc4ec'); px(3, 5, 2, '#8fc4ec'); px(3, 9, 2, '#8fc4ec'); }
+    else if (a === 'favoris') { px(6, 1, 1, hairPal.H); px(7, 1, 1, hairPal.H); px(7, 12, 1, hairPal.H); px(8, 12, 1, hairPal.H); }
+    else if (a === 'barbe') { px(8, 2, 2, '#d8dde4'); px(8, 12, 1, '#d8dde4'); px(9, 4, 9, '#d8dde4'); px(10, 4, 8, '#a0a8b4'); px(11, 5, 6, '#d8dde4'); }   // barbe blanche de Jules Verne
+    else if (a === 'moustache') { px(9, 8, 4, hairPal.H); }
+    else if (a === 'boutons') { px(12, 9, 1, '#f4d35e'); px(14, 9, 1, '#f4d35e'); px(16, 9, 1, '#f4d35e'); }
+  });
+  Object.keys(add).forEach(function (k) { cells[k] = add[k]; });
+  Object.keys(add).forEach(function (k) {              // contour sombre autour des accessoires
+    var p = k.split(',').map(Number);
+    [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (d) { var n = (p[0] + d[0]) + ',' + (p[1] + d[1]); if (!cells[n]) cells[n] = K; });
+  });
+  Object.keys(cells).forEach(function (k) { var p = k.split(',').map(Number); if (p[0] >= 0 && p[0] < W && p[1] >= 0 && p[1] < H) R(p[0], p[1], 1, 1, cells[k]); });
+  GP.PixelArt.toTexture(scene, key, o.cv);
+  return key;
+};
 GP.Scenes.Map.LABELS = { completed: 'TERMINÉ', available: '', locked: 'VERROUILLÉ', coming: 'À VENIR' };
