@@ -695,7 +695,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
 
     // demi-gravité près du sommet : tant que le saut est maintenu, on flotte un peu (viser l'atterrissage est plus facile)
     var apex = !onGround && !this.hanging && jumpDown && Math.abs(b.velocity.y) < U.apexThreshold;
-    b.setGravityY(apex ? -(1 - U.apexGravityMult) * GP.Tuning.worldGravity : 0);
+    // dans un courant d'air (Tour LU) la gravité allégée de GP.Dangers prime : sans cela cette ligne l'écrasait à chaque image et le courant d'air ne portait plus
+    b.setGravityY(this.dangers && this.dangers.inDraft ? -600 : (apex ? -(1 - U.apexGravityMult) * GP.Tuning.worldGravity : 0));
 
     this.animate(onGround);
     this.afterMove(dt);
