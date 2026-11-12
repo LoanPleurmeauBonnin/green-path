@@ -80,6 +80,12 @@ GP.Dangers = function (scene) {
     return { x: x, floor: floor, h: (j.h || 4) * 16, period: j.period || 3000, t: -(j.offset || 0), state: 'idle', col: col, core: core, puff: puff };
   });
 
+  // ---------- Pics à cycle : cachés → annonce (demi-hauteur, tic) 600 ms avant → sortis (mortels) → rentrés ----------
+  this.spikes = (L.spikes || []).map(function (s) {
+    var floor = L.top(s.x) * 16, g = scene.add.graphics().setDepth(10);
+    return { x: s.x * 16, w: s.w * 16, floor: floor, period: s.period, on: s.on, t: -(s.offset || 0), state: null, g: g };
+  });
+
   // ---------- Projecteurs : une colonne de lumière qui balaie ----------
   this.beams = (L.beams || []).map(function (b, i) {
     var cone = scene.add.rectangle(b.x0 * 16, 24, 12, H - 24, 0xfff3a0, 0.28).setOrigin(0.5, 0).setDepth(10);
@@ -535,6 +541,22 @@ GP.Dangers.prototype = {
       }
     });
 
+    // pics à cycle : la phase 0 est le début de la sortie ; l'annonce dure 600 ms juste avant
+    var px = p.x;
+    this.spikes.forEach(function (sp) {
+      sp.t += dt;
+      var ph = ((sp.t % sp.period) + sp.period) % sp.period, warnAt = sp.period - 600;
+      var state = sp.t < 0 ? 'hidden' : ph < sp.on ? 'on' : ph >= warnAt ? 'warn' : 'hidden';
+      if (state === sp.state) return;
+      var near = Math.abs(px - (sp.x + sp.w / 2)) < 220;
+      sp.state = state;
+      if (near && state === 'warn') GP.Sfx.play('tick');
+      if (near && state === 'on') GP.Sfx.play('wall');
+      var g = sp.g, n = Math.round(sp.w / 8), h = state === 'on' ? 12 : state === 'warn' ? 6 : 2;
+      g.clear(); g.fillStyle(state === 'on' ? 0xe8e8f0 : state === 'warn' ? 0xf2c94c : 0x59607a, 1);
+      for (var k = 0; k < n; k++) g.fillTriangle(sp.x + k * 8, sp.floor, sp.x + k * 8 + 8, sp.floor, sp.x + k * 8 + 4, sp.floor - h);
+    });
+
     // projecteurs
     this.beams.forEach(function (bm) {
       var d = bm.def, ph = self.t / 1000 * (d.speed || 0.5) * self.f('beam') + bm.ph, kk = 0.5 - 0.5 * Math.cos(ph);
@@ -768,6 +790,10 @@ GP.Dangers.prototype = {
     for (i = 0; i < this.jets.length; i++) {
       e = this.jets[i];
       if (e.state === 'on' && hit(e.x - 5, e.floor - e.hh, 10, e.hh)) return 'UN JET ! ATTENDS LE SOUFFLE';
+    }
+    for (i = 0; i < this.spikes.length; i++) {
+      e = this.spikes[i];
+      if (e.state === 'on' && hit(e.x + 1, e.floor - 11, e.w - 2, 11)) return 'DES PICS ! LIS LE RYTHME';
     }
     for (i = 0; i < this.beams.length; i++) {
       e = this.beams[i];

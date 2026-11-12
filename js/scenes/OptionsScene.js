@@ -78,7 +78,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
 
   /** Écran des touches : une ligne par action, 3 emplacements, puis « par défaut » et retour. */
   keyRows() {
-    var self = this, names = { left: 'GAUCHE', right: 'DROITE', jump: 'SAUTER', up: 'GRIMPER', down: "S'ACCROUPIR" };
+    var self = this, names = { left: 'GAUCHE', right: 'DROITE', jump: 'SAUTER', up: 'GRIMPER', down: "S'ACCROUPIR", dash: 'DASH' };
     if (GP.Prompts.device === 'gamepad') {
       var padRows = GP.Settings.ACTIONS.map(function (a) { return { label: names[a], value: function () { return GP.Prompts.format('{' + a + '}'); } }; });
       padRows.push({ label: 'CLAVIER', value: function () { return 'APPUYER SUR UNE TOUCHE'; } });
@@ -97,7 +97,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     this.rowsList = this.rows();
     this.sel = Math.max(0, Math.min(this.sel, this.rowsList.length - 1));
     this.title.setText(this.confirm ? 'EFFACER LES DONNÉES DE CE NAVIGATEUR ?' : (this.mode === 'keys' ? (GP.Prompts.device === 'gamepad' ? 'COMMANDES MANETTE' : 'TOUCHES') : 'OPTIONS'));
-    var top = this.mode === 'keys' && !this.confirm ? 56 : (this.confirm ? 100 : 66), step = this.confirm ? 28 : (this.mode === 'main' && this.group === 0 ? 23 : 26);   // 7 lignes dans « jeu et commandes »
+    var top = this.mode === 'keys' && !this.confirm ? 54 : (this.confirm ? 100 : 66), step = this.confirm ? 28 : (this.mode === 'keys' ? 22 : (this.mode === 'main' && this.group === 0 ? 23 : 26));   // touches : 6 actions + 2 lignes   // 7 lignes dans « jeu et commandes »
     if (this.mode === 'main' && !this.confirm) {
       ['JEU ET COMMANDES', 'DONNÉES ET AIDE'].forEach(function (label, i) {
         var tab = GP.UI.button(self, 60 + i * 184 + GP.Config.DX, 32, 176, label, function () { self.group = i; self.sel = 0; self.build(); }, { height: 20 });

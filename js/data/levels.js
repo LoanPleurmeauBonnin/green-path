@@ -16,6 +16,8 @@
  *   L.start(x)                   départ du joueur
  * Mécaniques des niveaux suivants (une nouvelle par niveau, puis combinées) :
  *   L.climb(x, haut, bas)        colonne à escalader (lignes haut..bas) — Cathédrale
+ *   L.spikes(x, w, période, durée, décalage)  pics à cycle : cachés, annonce (demi-hauteur + tic), sortis (mortels), puis rentrés — lire le rythme
+ *   L.wall(x, haut, bas, face)   mur marqué (colonne de blocs x, lignes haut..bas) : accroche, glisse, saut mural ; face : 'left' | 'right' | 'both'
  *   L.crumble(x, y, w)           rebord qui s'effrite sous les pieds puis revient — Cathédrale
  *   L.gargoyle(x, y, période)    gargouille qui laisse tomber une goutte (annoncée) — Cathédrale
  *   L.slit(x, y, dir, période)   meurtrière : flèches à hauteur de tête, s'accroupir pour passer — Château
@@ -34,7 +36,7 @@ GP.LevelBuilder = {
     var L = {
       width: width, rows: rows, grid: new Int8Array(width * rows),
       plats: [], thorns: [], pixels: [], checks: [], hints: [], deco: [], startX: 2, startRow: 13,
-      climbs: [], crumbles: [], gargoyles: [], slits: [], gates: [], barrels: [], movers: [], rainThorns: [], sunPlats: [],
+      climbs: [], walls: [], spikes: [], crumbles: [], gargoyles: [], slits: [], gates: [], barrels: [], movers: [], rainThorns: [], sunPlats: [],
       muses: [], molds: [], glasses: [], hangers: [], plaques: [], regimes: [], peaux: [], caisses: [], cranes: [], elephants: [], cbornes: [], cplats: [], memos: [], frises: [], gardes: [], drafts: [],
       patrols: [], tides: [], boats: [], liars: [], fallers: [], jets: [], beams: [], springs: [], seqs: [], belts: [], carts: [], rings: [], aligns: [], ponds: [],
       rot: false, wxm: {},
@@ -57,6 +59,8 @@ GP.LevelBuilder = {
       deco: function (x, key, o) { o = o || {}; L.deco.push({ x: x, y: L.top(x) - 1, key: key, dx: o.dx || 0, dy: o.dy || 0, depth: o.depth }); },
       start: function (x) { L.startX = x; L.startRow = L.top(x) - 1; },
       climb: function (x, top, bottom) { L.climbs.push({ x: x, top: top, bottom: bottom === undefined ? L.top(x) - 1 : bottom }); },
+      spikes: function (x, w, period, on, offset) { L.spikes.push({ x: x, w: w || 2, period: period || 2600, on: on || 900, offset: offset || 0 }); },
+      wall: function (x, top, bottom, face) { L.walls.push({ x: x, top: top, bottom: bottom === undefined ? L.top(x) - 1 : bottom, face: face || 'both' }); },
       crumble: function (x, y, w) { L.crumbles.push({ x: x, y: y, w: w || 1 }); },
       gargoyle: function (x, y, period) { L.gargoyles.push({ x: x, y: y, period: period || 2600 }); },
       slit: function (x, y, dir, period, offset, range) { L.slits.push({ x: x, y: y, dir: dir || -1, period: period || 1400, offset: offset || 0, range: range || 10 }); },

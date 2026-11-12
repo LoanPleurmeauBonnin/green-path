@@ -44,6 +44,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.introMs = 1700;   // bandeau d'introduction : le joueur attend, le chrono ne tourne pas encore
     this.slideMs = 0; this.slideDir = 1; this.dying = false; this.crouching = false; this.climbing = null; this.hanging = null;
     this.coyote = 0; this.buffer = 0; this.jumping = false; this.lastVy = 0; this.hangReleased = false; this.boost = 0;
+    this.dashMs = 0; this.dashCd = 0; this.dashBuf = 0; this.dashCharges = this.TUNE.dash.charges; this.dashDX = 0; this.dashDY = 0; this.dashWasDown = false; this.ghostMs = 0;
+    this.wallSide = 0; this.wallCoyote = 0; this.wallLock = 0; this.wallLockVX = 0; this.wallCd = 0; this.wallHold = 0;
     this.maxTime = (L.maxTime || 180) * 1000; this.timeWarned = false; this.timedOut = false;   // limite douce : 3 min par défaut, plus pour les niveaux qui en demandent
     this.alive = true;
     this.events.once('shutdown', function () { self.alive = false; });
@@ -248,6 +250,18 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       for (var r = c.top; r <= c.bottom; r++) self.add.image(c.x * 16, r * 16, self.key('cathedrale_colonne_fut', 'lv_tileset')).setOrigin(0).setDepth(4);
       if (S.has('cathedrale_colonne_chapiteau')) self.add.image(c.x * 16 + 8, c.top * 16, 'cathedrale_colonne_chapiteau').setOrigin(0.5, 1).setDepth(4);
       return { x0: c.x * 16 + 1, x1: c.x * 16 + 15, y0: c.top * 16 - 4, y1: (c.bottom + 1) * 16, cx: c.x * 16 + 8 };
+    });
+
+    // murs marqués : on peut s'y accrocher, y glisser et en sauter (repère vert sur la face utilisable)
+    var wg = this.add.graphics().setDepth(8);
+    this.wallZones = (L.walls || []).map(function (w) {
+      var y0 = w.top * 16, y1 = (w.bottom + 1) * 16;
+      wg.fillStyle(GP.int(GP.PAL.g), 0.9);
+      [['left', w.x * 16 - 2], ['right', (w.x + 1) * 16]].forEach(function (f) {
+        if (w.face !== 'both' && w.face !== f[0]) return;
+        for (var y = y0; y < y1; y += 8) wg.fillRect(f[1], y + 1, 2, 5);
+      });
+      return { col: w.x, y0: y0, y1: y1, face: w.face };
     });
 
     // rebords qui s'effritent
@@ -527,7 +541,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   makeInput() {
     var self = this, kb = this.input.keyboard;
     this.ctl = GP.Controls.attach(this);   // clavier (touches réaffectables), tactile et manette
-    this.touch = { left: false, right: false, up: false, down: false, jump: false };
+    this.touch = { left: false, right: false, up: false, down: false, jump: false, dash: false };
     this.jumpWasDown = false; this.upWasDown = false;
     kb.on('keydown-ESC', function () { self.onEsc(); });
     kb.on('keydown-H', function () {
@@ -632,6 +646,25 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var dir = (right ? 1 : 0) - (left ? 1 : 0), onGround = b.blocked.down || b.touching.down;
     this.dangers.input({ left: left, right: right, down: down, jump: jumpPressed });
 
+    // --- dash : 8 directions, une charge (rechargée au sol, sur une colonne, accroché), tampon d'appui, pas de dash accroupi ---
+    var D = U.dash, dashDown = bot ? !!bot.dash : !!c.dash, dashPressed = dashDown && !this.dashWasDown;
+    this.dashWasDown = dashDown;
+    this.dashBuf = dashPressed ? D.buffer : this.dashBuf - dt; this.dashCd -= dt;
+    if (this.dashMs <= 0 && (onGround || this.hanging || this.climbing)) this.dashCharges = D.charges;
+    if (this.dashMs > 0) {   // en plein dash : la vitesse est imposée, les commandes sont ignorées (sauf un saut mis en attente)
+      this.dashMs -= dt; if (jumpPressed) this.buffer = U.buffer;
+      var hit = this.dashMs < D.ms - 40 && ((this.dashDX && (this.dashDX > 0 ? b.blocked.right : b.blocked.left)) || (this.dashDY && (this.dashDY > 0 ? onGround : b.blocked.up)));
+      if (this.dashMs > 0 && !hit) {
+        var k = this.dashDX && this.dashDY ? 0.7071 : 1;
+        b.setVelocity(this.dashDX * D.speed * k, this.dashDY * D.speed * k);
+        this.dashGhost(dt); this.animate(onGround); this.afterMove(dt); return;
+      }
+      this.endDash();
+    } else if (this.dashBuf > 0 && this.dashCd <= 0 && this.dashCharges > 0 && D.enabled && this.ab.dash !== false && !this.hanging && !this.climbing && !this.crouching) {
+      this.startDash(dir, (down ? 1 : 0) - (upKey ? 1 : 0), onGround);
+      this.dashGhost(dt); this.animate(onGround); this.afterMove(dt); return;
+    }
+
     // --- tolérances invisibles (Celeste) : coin de plafond au sommet du saut, bord de mur frôlé de justesse ---
     if (onGround && dir && U.stepUp && !this.hanging && !this.climbing && (dir > 0 ? b.blocked.right : b.blocked.left)) this.ledgeAssist(dir, U.stepUp);
     if (!onGround && !this.hanging && !this.climbing) {
@@ -667,17 +700,43 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       this.animate(onGround); this.afterMove(dt); return;
     }
 
+    // --- murs marqués (L.wall) : accroche, glisse, saut mural ---
+    var W = U.wall, wd = 0;
+    this.wallLock -= dt; this.wallCd -= dt;
+    if (!onGround && this.wallZones && this.wallZones.length && this.ab.wall !== false) wd = this.wallContact();
+    if (wd) { this.wallSide = wd; this.wallCoyote = W.coyote; if (this.dashMs <= 0) this.dashCharges = D.charges; }
+    else { this.wallCoyote -= dt; this.wallHold = 0; }
+    if (!onGround && (this.buffer > 0 || jumpPressed) && this.wallCoyote > 0 && this.wallCd <= 0) {   // saut mural : on s'éloigne du mur
+      b.setVelocity(-this.wallSide * W.jumpX, W.jumpY);
+      this.wallLock = W.lockMs; this.wallLockVX = -this.wallSide * W.jumpX; this.wallCd = W.jumpDelay; this.wallCoyote = 0;
+      this.buffer = 0; this.coyote = 0; this.jumping = true; p.setFlipX(this.wallSide > 0);
+      GP.Sfx.play('wall');
+      this.events.emit('playtest-event', { type: 'walljump', x: p.x, y: p.y });
+      this.animate(false); this.afterMove(dt); return;
+    }
+    if (wd && dir === wd && b.velocity.y > 0 && this.wallLock <= 0) {   // en poussant vers le mur : on s'y accroche un instant, puis on glisse
+      this.wallHold += dt;
+      b.setVelocityY(this.wallHold < W.stickMs ? 0 : Math.min(b.velocity.y, W.slideSpeed));
+      this.wallSliding = true;
+    } else this.wallSliding = false;
+
     // --- accroupi (↓) : plus bas, plus lent, pas de saut ---
     if (this.ab.crouch) this.setCrouch(onGround && down);
 
     // course : accélération douce vers la vitesse cible (le sol mouillé ou enneigé glisse un peu plus)
     var max = this.crouching ? U.crouchSpeed : U.speed;
-    var target = dir * max + (onGround ? this.surfaceMotion : 0), a = (onGround ? X.accelGround : X.accelAir) * dt / 1000;
+    var accel = onGround ? X.accelGround : X.accelAir;
+    if (!onGround) {   // en l'air : on garde son élan quand on lâche la direction, et le demi-tour est plus vif
+      if (!dir) accel = U.airBrake * X.accelAir / U.accelAir;
+      else if (dir * b.velocity.x < 0) accel *= U.airTurn;
+    }
+    var target = dir * max + (onGround ? this.surfaceMotion : 0), a = accel * dt / 1000;
     if (this.boost > 0) this.boost = onGround ? 0 : this.boost - dt;   // élan d'un anneau rouge : on garde sa vitesse en l'air
     if (this.slideMs > 0) { this.slideMs -= dt; b.setVelocityX(this.slideDir * 175); }                     // peau de banane : on glisse tout droit
     else if (!(this.boost > 0)) b.setVelocityX(b.velocity.x + Phaser.Math.Clamp(target - b.velocity.x, -a, a));
     if (!onGround && X.airPush) b.setVelocityX(Phaser.Math.Clamp(b.velocity.x + X.airPush * dt / 1000, -180, 180));   // le vent pousse les sauts
     if (this.gz && this.gz.impulseMs > 0 && !onGround) b.setVelocityX(this.gz.impulseVX);
+    if (this.wallLock > 0 && !onGround) b.setVelocityX(this.wallLockVX);   // juste après un saut mural, on garde l'élan loin du mur
     if (dir) p.setFlipX(dir < 0);
 
     // saut : temps de grâce au bord (coyote), tampon d'appui, saut variable
@@ -700,10 +759,53 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     // demi-gravité près du sommet : tant que le saut est maintenu, on flotte un peu (viser l'atterrissage est plus facile)
     var apex = !onGround && !this.hanging && jumpDown && Math.abs(b.velocity.y) < U.apexThreshold;
     // dans un courant d'air (Tour LU) la gravité allégée de GP.Dangers prime : sans cela cette ligne l'écrasait à chaque image et le courant d'air ne portait plus
-    b.setGravityY(this.dangers && this.dangers.inDraft ? -600 : (apex ? -(1 - U.apexGravityMult) * GP.Tuning.worldGravity : 0));
+    b.setGravityY(this.dangers && this.dangers.inDraft ? -600 : (apex ? -(1 - U.apexGravityMult) * GP.Tuning.worldGravity : (!onGround && b.velocity.y > 0 ? (U.fallGravityMult - 1) * GP.Tuning.worldGravity : 0)));
 
     this.animate(onGround);
     this.afterMove(dt);
+  }
+
+  /** Côté du mur marqué touché : 1 (à droite), -1 (à gauche) ou 0. Le mur doit être plein là où se trouve le héros et sa face marquée. */
+  wallContact() {
+    var b = this.player.body, cy = b.y + b.height / 2, dirs = [1, -1];
+    for (var d = 0; d < 2; d++) {
+      var dir = dirs[d], x = dir > 0 ? b.right + 1 : b.x - 1, col = Math.floor(x / 16);
+      for (var i = 0; i < this.wallZones.length; i++) {
+        var z = this.wallZones[i];
+        if (z.col !== col || cy < z.y0 || cy > z.y1) continue;
+        if (z.face !== 'both' && z.face !== (dir > 0 ? 'left' : 'right')) continue;
+        if (this.solidAt(col * 16 + 8, cy)) return dir;
+      }
+    }
+    return 0;
+  }
+
+  /** Lance un dash dans la direction tenue (8 directions) ; sans direction, vers où le héros regarde. Au sol, ↓ ne fait pas plonger. */
+  startDash(dx, dy, onGround) {
+    var p = this.player, b = p.body, D = this.TUNE.dash;
+    if (onGround && dy > 0) dy = 0;
+    if (!dx && !dy) dx = p.flipX ? -1 : 1;
+    this.dashDX = dx; this.dashDY = dy; this.dashMs = D.ms; this.dashCd = D.cooldown; this.dashCharges--;
+    this.jumping = false; this.coyote = 0; this.buffer = 0; this.ghostMs = 0;
+    if (dx) p.setFlipX(dx < 0);
+    b.setAllowGravity(false); b.setGravityY(0);
+    GP.Sfx.play('dash');
+    this.events.emit('playtest-event', { type: 'dash', x: p.x, y: p.y });
+  }
+
+  /** Fin du dash : la gravité revient et on garde une partie de l'élan (le reste s'efface avec le contrôle aérien). */
+  endDash() {
+    var b = this.player.body, D = this.TUNE.dash, k = this.dashDX && this.dashDY ? 0.7071 : 1;
+    this.dashMs = 0; b.setAllowGravity(true);
+    b.setVelocity(this.dashDX * D.speed * k * D.endSpeed, this.dashDY < 0 ? this.dashDY * D.speed * k * D.endSpeed : (this.dashDY > 0 ? b.velocity.y : 0));
+  }
+
+  /** Traînée du dash : des copies bleutées du héros qui s'estompent (pas de clignotement ; omise si les animations sont réduites). */
+  dashGhost(dt) {
+    if (GP.reducedMotion || (this.ghostMs -= dt) > 0) return;
+    this.ghostMs = 35;
+    var p = this.player, g = this.add.image(p.x, p.y, p.texture.key, p.frame.name).setOrigin(p.originX, p.originY).setFlipX(p.flipX).setTint(0x7fd4ff).setAlpha(0.55).setDepth(p.depth - 1);
+    this.tweens.add({ targets: g, alpha: 0, duration: 200, onComplete: function () { g.destroy(); } });
   }
 
   /**
@@ -781,7 +883,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
 
   animate(onGround) {
     var p = this.player, b = p.body;
-    var anim = this.hanging ? 'hero-hang' : this.climbing ? 'hero-climb' : this.crouching ? 'hero-crouch'
+    var anim = this.hanging || this.wallSliding ? 'hero-hang' : this.climbing ? 'hero-climb' : this.crouching ? 'hero-crouch'
       : !onGround ? 'hero-jump' : (Math.abs(b.velocity.x) > 12 ? 'hero-walk' : 'hero-idle');
     if (p.anims.getName() !== anim) p.play(anim);
     if (this.climbing && !b.velocity.y) p.anims.pause(); else if (p.anims.isPaused) p.anims.resume();

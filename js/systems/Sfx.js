@@ -6,6 +6,9 @@ GP.Sfx = {
   ctx: null,
   tones: {
     step:    [[330, 0.05, 'square']],
+    dash:    [[520, 0.04, 'square'], [300, 0.07, 'square']],
+    wall:    [[260, 0.04, 'square']],
+    tick:    [[880, 0.05, 'square']],
     select:  [[440, 0.06, 'square'], [660, 0.08, 'square']],
     pixel:   [[988, 0.05, 'square'], [1319, 0.10, 'square']],   // pixel ramassé : deux notes aiguës, plus claires que « select »
     confirm: [[523, 0.07, 'square'], [659, 0.07, 'square'], [784, 0.12, 'square']],

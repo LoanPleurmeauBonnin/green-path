@@ -6,7 +6,7 @@ GP.Prompts = (function () {
   var device = 'keyboard', profile = 'standard', listeners = [], started = false;
   var MENU = { navX: [37, 39], navY: [38, 40], fields: [9], sections: [9], confirm: [13], back: [27], pause: [27], help: [72], mute: [77], replay: [82], preview: [32], pages: [37, 39] };
   var PAD = { left: '←', right: '→', up: '↑', down: '↓', move: '← →', navX: '← →', navY: '↑ ↓', fields: '↑ ↓', sections: 'LB/RB', pages: 'LB/RB',
-    jump: 'A', confirm: 'A', back: 'B', pause: 'START', help: 'Y', mute: 'X', replay: 'X', preview: 'X' };
+    jump: 'A', dash: 'RB / RT', confirm: 'A', back: 'B', pause: 'START', help: 'Y', mute: 'X', replay: 'X', preview: 'X' };
   // Indices de l'API Gamepad standard : utilisés aussi par Controls, pas seulement par les libellés.
   var BUTTONS = { confirm: 0, back: 1, secondary: 2, help: 3, previous: 4, next: 5, pause: 9, up: 12, down: 13, left: 14, right: 15 };
   function notify() { listeners.slice().forEach(function (fn) { fn(); }); }
@@ -25,7 +25,7 @@ GP.Prompts = (function () {
       if (profile === 'sony') label = ({ A: 'CROIX', B: 'ROND', X: 'CARRÉ', Y: 'TRIANGLE', START: 'OPTIONS', 'LB/RB': 'L1/R1' })[label] || label;
       return [GP.t(label)];
     }
-    if (device === 'touch') return [({ move: '← →', jump: '↑', up: '↑', down: '↓', pause: 'PAUSE', confirm: 'TOUCHER', back: 'FERMER', help: 'AIDE', pages: '← →' })[action] || labelsKeyboard(action).join(' / ')];
+    if (device === 'touch') return [({ move: '← →', jump: '↑', dash: 'BOUTON ›', up: '↑', down: '↓', pause: 'PAUSE', confirm: 'TOUCHER', back: 'FERMER', help: 'AIDE', pages: '← →' })[action] || labelsKeyboard(action).join(' / ')];
     return labelsKeyboard(action);
   }
   function labelsKeyboard(action) {

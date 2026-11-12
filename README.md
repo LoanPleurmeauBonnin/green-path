@@ -91,9 +91,10 @@ Chaque niveau a un temps limité (3 min par défaut, plus pour les niveaux longs
 | ← → ou A D : lieu précédent / suivant | ← → ou Q/A D : courir |
 | Entrée / Espace : fiche du lieu, JOUER | Espace, W ou Z : sauter (maintenir = plus haut) |
 | Clic sur un piédestal : y aller | ↓ ou S : s'accroupir · ↑ : grimper, se hisser |
+| | Maj ou K : **dash** (8 directions, une fois en l'air, recharge au sol) · murs marqués en vert : s'y accrocher, glisser, sauter |
 | H : aide en 4 pages | Échap : pause (reprendre, point de contrôle, rejouer, aide, quitter) |
-| Échap : menu · M ou pictogramme haut-parleur : son | Téléphone : ← → ↓ et saut à l'écran, bouton PAUSE |
-| Manette : croix ou stick, A valider | Manette : stick = bouger, A = sauter, Start = pause |
+| Échap : menu · M ou pictogramme haut-parleur : son | Téléphone : joystick, saut et dash à l'écran, bouton PAUSE |
+| Manette : croix ou stick, A valider | Manette : stick = bouger, A = sauter, RB ou RT = dash, Start = pause |
 
 Ronces, pointes, flèches, gouttes, tonneaux ou chute = une mort : retour à la dernière lanterne allumée, pixels conservés. Le niveau en cours est sauvegardé (reprise après fermeture).
 
