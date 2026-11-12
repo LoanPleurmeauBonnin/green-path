@@ -46,7 +46,7 @@ GP.LOCATIONS = [
     grammar: "VARIATION VERTICALE : les colonnes répétées deviennent des zones d'escalade et les corniches des appuis. L'image remonte ligne par ligne. Les gargouilles évoquent l'évacuation de l'eau : sous la pluie, les gouttes tombent plus souvent.",
     notice: "Édifice gothique dont la construction débute en 1434 et s'achève au XIXe siècle. Elle abrite le tombeau de François II. Sa nef de pierre blanche est très haute.",
     element: { label: 'Façade et deux tours', verify: false }, verify: false,
-    anecdote: { who: "MICHEL COLOMBE, SCULPTEUR", text: "Savais-tu que le tombeau de François II a demandé cinq ans de travail à Michel Colombe, de 1502 à 1507 ? Il a été sauvé de la destruction et installé ici en 1817.", source: "Ville de Nantes (histoire de la cathédrale) ; ministère de la Culture", look: {"hair": "courts", "hairColor": "chatain", "eyes": "ronds", "eyeColor": "marron", "skin": "clair", "top": "chemise", "topColor": "orange", "bottom": "pantalon", "bottomColor": "marron", "shoes": "sombres", "acc": "beret"} }
+    anecdote: { who: "MICHEL COLOMBE, SCULPTEUR", text: "Savais-tu que j'ai mis cinq ans, de 1502 à 1507, à sculpter le tombeau de François II ? Il a été sauvé de la destruction et installé ici en 1817.", source: "Ville de Nantes (histoire de la cathédrale) ; ministère de la Culture", look: {"hair": "courts", "hairColor": "chatain", "eyes": "ronds", "eyeColor": "marron", "skin": "clair", "top": "chemise", "topColor": "orange", "bottom": "pantalon", "bottomColor": "marron", "shoes": "sombres", "acc": "beret"} }
   },
   {
     id: 'chateau', name: 'Château des ducs de Bretagne',
@@ -55,7 +55,7 @@ GP.LOCATIONS = [
     grammar: "SOURCE PRINCIPALE : les murs, les tours et les portes du Château deviennent masse, élévation et seuils à franchir. La reconstruction révèle l'assise, la courtine centrale puis les tours latérales. Les herses imposent une alternance passage / attente. C'est une traduction ludique, pas une reconstitution historique.",
     notice: "Forteresse des ducs de Bretagne, reconstruite à la fin du XVe siècle par François II puis Anne de Bretagne. Ses remparts entourent un palais résidentiel. Le site abrite aujourd'hui le musée d'histoire de Nantes.",
     element: { label: 'Remparts et tours', verify: false }, verify: false,
-    anecdote: { who: "ANNE DE BRETAGNE", text: "Savais-tu qu'Anne de Bretagne est née dans ce château, en janvier 1477 ? Duchesse de Bretagne, elle est devenue deux fois reine de France !", source: "Ville de Nantes, « Anne, duchesse de Bretagne et reine de France »", look: {"hair": "milong", "hairColor": "brun", "eyes": "ronds", "eyeColor": "marron", "skin": "pale", "top": "veste", "topColor": "noir", "bottom": "jupe", "bottomColor": "noir", "shoes": "sombres", "acc": "coiffe"} }
+    anecdote: { who: "ANNE DE BRETAGNE", text: "Savais-tu que je suis née dans ce château, en janvier 1477 ? Duchesse de Bretagne, je suis devenue deux fois reine de France !", source: "Ville de Nantes, « Anne, duchesse de Bretagne et reine de France »", look: {"hair": "milong", "hairColor": "brun", "eyes": "ronds", "eyeColor": "marron", "skin": "pale", "top": "veste", "topColor": "noir", "bottom": "jupe", "bottomColor": "noir", "shoes": "sombres", "acc": "coiffe"} }
 
   },
   {
@@ -64,7 +64,7 @@ GP.LOCATIONS = [
     playable: true, level: 'feydeau', parTime: 120,
     notice: "Ancienne île de la Loire, rattachée à la ville au XXe siècle. Ses hôtels d'armateurs du XVIIIe siècle, aux façades ornées de mascarons, se penchent légèrement.",
     element: { label: 'Façades des hôtels d\'armateurs', verify: false }, verify: false,
-    anecdote: { who: "JULES VERNE", text: "Savais-tu que, enfant, Jules Verne regardait passer les navires sur la Loire ? Il se rêvait en Robinson, naufragé sur l'île Feydeau !", source: "Jules Verne, Souvenirs d'enfance et de jeunesse (1890)", look: {"hair": "courts", "hairColor": "gris", "eyes": "petits", "eyeColor": "bleu", "skin": "pale", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "gris", "shoes": "sombres", "acc": "barbe"} }
+    anecdote: { who: "JULES VERNE", text: "Savais-tu que, enfant, je regardais passer les navires sur la Loire ? Je me rêvais en Robinson, naufragé sur l'île Feydeau !", source: "Jules Verne, Souvenirs d'enfance et de jeunesse (1890)", look: {"hair": "courts", "hairColor": "gris", "eyes": "petits", "eyeColor": "bleu", "skin": "pale", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "gris", "shoes": "sombres", "acc": "barbe"} }
   },
   {
     id: 'graslin', name: 'Place Graslin',
@@ -72,7 +72,7 @@ GP.LOCATIONS = [
     playable: true, level: 'graslin', parTime: 120,
     notice: "Place dominée par le Grand Théâtre, de style néoclassique, achevé en 1788. Sa façade à colonnes corinthiennes est couronnée de statues de muses.",
     element: { label: 'Façade du Grand Théâtre', verify: false }, verify: false,
-    anecdote: { who: "J.-J.-L. GRASLIN", text: "Savais-tu que ce théâtre a été inauguré en 1788 ? Sa place en demi-cercle rappelle l'intérieur de la salle.", source: "Presses universitaires de Rennes, J.-J.-L. Graslin et la place du théâtre (OpenEdition)", look: {"hair": "boucles", "hairColor": "gris", "eyes": "petits", "eyeColor": "gris", "skin": "pale", "top": "veste", "topColor": "violet", "bottom": "pantalon", "bottomColor": "blanc", "shoes": "sombres", "acc": "boutons"} }
+    anecdote: { who: "J.-J.-L. GRASLIN", text: "Savais-tu que j'ai lancé la construction de ce théâtre, inauguré en 1788 ? Sa place en demi-cercle rappelle l'intérieur de la salle.", source: "Presses universitaires de Rennes, J.-J.-L. Graslin et la place du théâtre (OpenEdition)", look: {"hair": "boucles", "hairColor": "gris", "eyes": "petits", "eyeColor": "gris", "skin": "pale", "top": "veste", "topColor": "violet", "bottom": "pantalon", "bottomColor": "blanc", "shoes": "sombres", "acc": "boutons"} }
   },
   {
     id: 'machines', name: "Machines de l'île",
@@ -120,7 +120,7 @@ GP.LOCATIONS = [
     playable: true, level: 'pommeraye', parTime: 150,
     notice: "Galerie commerçante ouverte en 1843, sur trois niveaux reliés par un escalier monumental. Verrière, statues et décors en font un passage couvert célèbre.",
     element: { label: 'Verrière et escalier', verify: false }, verify: false,
-    anecdote: { who: "LOUIS POMMERAYE", text: "Savais-tu que ce passage a ouvert en 1843 ? Son créateur, un notaire, s'y est ruiné, mais il est classé monument historique depuis 1976.", source: "Wikipédia, Passage Pommeraye ; Routard", look: {"hair": "courts", "hairColor": "chatain", "eyes": "ronds", "eyeColor": "noir", "skin": "clair", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "gris", "shoes": "sombres", "acc": "hautdeforme+favoris"} }
+    anecdote: { who: "LOUIS POMMERAYE", text: "Savais-tu que j'ai ouvert ce passage en 1843 ? Notaire devenu promoteur, je m'y suis ruiné, mais il est classé monument historique depuis 1976.", source: "Wikipédia, Passage Pommeraye ; Routard", look: {"hair": "courts", "hairColor": "chatain", "eyes": "ronds", "eyeColor": "noir", "skin": "clair", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "gris", "shoes": "sombres", "acc": "hautdeforme+favoris"} }
   },
   {
     id: 'tour-lu', name: 'Tour LU',
@@ -128,7 +128,7 @@ GP.LOCATIONS = [
     playable: true, level: 'tour-lu', parTime: 200,
     notice: "Tour de l'ancienne biscuiterie LU, face au château. Avec sa coupole, elle signalait l'usine au bord de l'eau ; le bâtiment accueille aujourd'hui une scène culturelle, le Lieu Unique.",
     element: { label: 'La tour et sa coupole', verify: true }, verify: true,
-    anecdote: { who: "LOUIS LEFÈVRE-UTILE", text: "Savais-tu que le Petit-Beurre a été imaginé en 1886 ? Pour l'Exposition universelle de 1900, Louis Lefèvre-Utile a fait élever une tour de 36 mètres !", source: "Hérodote ; Ville de Nantes (Tour LU)", look: {"hair": "courts", "hairColor": "noir", "eyes": "ronds", "eyeColor": "noir", "skin": "clair", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "noir", "shoes": "sombres", "acc": "moustache"} }
+    anecdote: { who: "LOUIS LEFÈVRE-UTILE", text: "Savais-tu que j'ai imaginé le Petit-Beurre en 1886 ? Pour l'Exposition universelle de 1900, j'ai fait élever une tour de 36 mètres !", source: "Hérodote ; Ville de Nantes (Tour LU)", look: {"hair": "courts", "hairColor": "noir", "eyes": "ronds", "eyeColor": "noir", "skin": "clair", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "noir", "shoes": "sombres", "acc": "moustache"} }
   }
 ];
 

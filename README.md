@@ -76,8 +76,8 @@ L'ordre suit la séquence de la page [« Arpenter la ligne verte »](https://www
 | 7 | Parc des Chantiers (Grue Titan) | chariots au poids, ascenseur |
 | 8 | Anneaux de Buren | impulsions et chaînes d'anneaux |
 | 9 | Hangar à Bananes | conteneurs, portes basses, boss à lampes UV |
-| 10 | Passage Pommeraye | trois strates, dalles fragiles |
-| 11 | Mémorial de l'abolition de l'esclavage | séquences de dalles, eau lente |
+| 10 | Mémorial de l'abolition de l'esclavage | séquences de dalles, eau lente |
+| 11 | Passage Pommeraye | trois strates, dalles fragiles |
 | 12 | Tour LU (Lieu Unique) | courants ascendants, boss à quatre lanternes |
 
 Chaque niveau a un temps limité (3 min par défaut, plus pour les niveaux longs).

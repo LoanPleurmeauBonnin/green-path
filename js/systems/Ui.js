@@ -45,11 +45,11 @@ GP.UI = (function () {
   }
 
   /** Bouton retour en icône (flèche), en haut à gauche, à la même place et au même style que le bouton compte de l'accueil. */
-  function backIcon(scene, cb, y) {
-    var dx = GP.Config.DX; y = y === undefined ? 6 : y;
+  function backIcon(scene, cb, y, x) {
+    var dx = GP.Config.DX; y = y === undefined ? 6 : y; x = x === undefined ? 6 - dx : x;
     if (!scene.textures.exists('ui_back')) GP.PixelArt.sprite(scene, 'ui_back', ['...k.....', '..kwk....', '.kwwkkkkk', 'kwwwwwwwk', '.kwwkkkkk', '..kwk....', '...k.....']);
-    var box = scene.add.rectangle(6 - dx, y, 22, 15, GP.int(P.d), 0.95).setOrigin(0).setStrokeStyle(2, GP.int(P.k)).setInteractive({ useHandCursor: true }).setDepth(50);
-    var img = scene.add.image(6 - dx + 11, y + 7.5, 'ui_back').setOrigin(0.5).setDepth(51);
+    var box = scene.add.rectangle(x, y, 22, 15, GP.int(P.d), 0.95).setOrigin(0).setStrokeStyle(2, GP.int(P.k)).setInteractive({ useHandCursor: true }).setDepth(50);
+    var img = scene.add.image(x + 11, y + 7.5, 'ui_back').setOrigin(0.5).setDepth(51);
     box.on('pointerover', function () { box.setFillStyle(GP.int(P.G), 0.95); });
     box.on('pointerout', function () { box.setFillStyle(GP.int(P.d), 0.95); });
     box.on('pointerdown', function () { cb(); });
