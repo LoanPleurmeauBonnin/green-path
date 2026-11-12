@@ -8,6 +8,7 @@ const A = after.GZONES.map(metrics), B = before.GZONES.map(metrics);
 test('Équilibrage : les obstacles ajoutés sont sur un sol plat et dégagé, loin du reste', () => {
   const table = after.GZoneLevels.balance;
   Object.keys(table).forEach(n => (table[n].ajouter || []).forEach(h => {
+    if (after.Redesigns && after.Redesigns[n]) return;   // niveau redessiné (GP.LevelGen) : ses obstacles suivent les règles du générateur
     const d = after.GZONES[n - 1], placed = d.dangers.find(x => x.x === h.x && x.y === h.y && x.sprite === h.sprite);
     assert.ok(placed, 'niveau ' + n + ' : obstacle (' + h.x + ',' + h.y + ') absent');
     assert.deepEqual(checkAddition(d, placed), [], 'niveau ' + n + ' obstacle (' + h.x + ',' + h.y + ')');
@@ -20,9 +21,12 @@ test('Équilibrage : début plus doux, pic du niveau 6 écrêté, niveau 7 renfo
   // Son plafond est donc propre à la refonte ; les niveaux 2 et 3 gardent la règle d'origine.
   assert.ok(A[0].per100 <= 13, 'niveau 1 : ' + A[0].per100.toFixed(1));
   [1, 2].forEach(i => assert.ok(A[i].per100 <= 10, 'niveau ' + (i + 1) + ' : ' + A[i].per100.toFixed(1)));
-  assert.ok(A[1].per100 < B[1].per100);
-  assert.ok(A[5].per100 < B[5].per100);
-  assert.ok(A[6].per100 > B[6].per100);
+  // niveaux 2 et 4 à 12 : construits par GP.LevelGen (« intensité » croissante, voir js/data/Redesigns.js). La courbe est mesurée en
+  // événements de danger par 100 tuiles : début doux, montée jusqu'au niveau 8, Mémorial le plus calme.
+  const ev = n => after.GZONES[n - 1].__events * 100 / after.GZONES[n - 1].largeur;
+  assert.ok(ev(2) < ev(5) && ev(5) < ev(8), [ev(2), ev(5), ev(8)].join(' '));
+  assert.ok(ev(4) < ev(7) && ev(11) < ev(2), 'le Mémorial reste contemplatif');
+  [2, 4, 5, 6, 7, 8, 9, 10, 11, 12].forEach(n => assert.ok(ev(n) >= 3 && ev(n) <= 9, 'niveau ' + n + ' : ' + ev(n).toFixed(1)));
 });
 
 test('Équilibrage : retraits ciblés, rien d’autre ne disparaît', () => {
