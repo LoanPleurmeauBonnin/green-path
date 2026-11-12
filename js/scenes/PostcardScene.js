@@ -19,7 +19,8 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
     this.add.rectangle(20, 12, 440, 252, GP.int(P.k)).setOrigin(0);
     this.add.rectangle(22, 14, 436, 248, GP.int(P.d)).setOrigin(0);
     this.add.rectangle(22, 33, 436, 1, GP.int(P.G)).setOrigin(0);
-    UI.txt(this, 32, 20, 'CARTE POSTALE', P.g);
+    UI.backIcon(this, function () { self.leave('Menu'); }, 15, 26);   // retour à l'accueil, dans la barre de titre
+    UI.txt(this, 58, 20, 'CARTE POSTALE', P.g);
     UI.txt(this, 450, 20, 'NANTES', P.y).setOrigin(1, 0);
 
     // aperçu de la carte, grand et centré (la vraie carte fait 1800 × 1200)
@@ -34,11 +35,10 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
     this.fondTxt = UI.txt(this, 64 + DX, 114, '', P.y).setOrigin(0.5, 0);
     this.labels();
 
-    // en dessous : le pseudo (facultatif, la phrase est déjà sur la carte), TÉLÉCHARGER et RETOUR À LA CARTE
-    this.makeInput(32, 224, 84, 18);
-    var bDl = UI.button(this, 122 + DX, 224, 170, 'TÉLÉCHARGER MA CARTE', function () { self.download(); }, { primary: true, height: 18 });
-    var bRe = UI.button(this, 298 + DX, 224, 150, 'RETOUR À LA CARTE', function () { self.leave('Map'); }, { height: 18 });
-    [bDl, bRe].forEach(function (b) { b.objs.forEach(function (o) { o.setDepth(10); }); });
+    // en dessous : le pseudo (facultatif, la phrase est déjà sur la carte), TÉLÉCHARGER ; la flèche en haut à gauche ramène à l'accueil
+    this.makeInput(32, 224, 150, 18);
+    var bDl = UI.button(this, 190 + DX, 224, 258, 'TÉLÉCHARGER MA CARTE', function () { self.download(); }, { primary: true, height: 18 });
+    bDl.objs.forEach(function (o) { o.setDepth(10); });
     this.status = UI.txt(this, 240, 245, '', P.g).setOrigin(0.5, 0);
 
     this.hint = UI.txt(this, 240, 254, '', P.m).setOrigin(0.5);

@@ -35,14 +35,22 @@ GP.Scenes.Score = class ScoreScene extends Phaser.Scene {
     else this.state.setText('EN DIRECT').setColor(P.g);
     if (!r.rows.length) { this.txt(W / 2, 110, 'PERSONNE AU CLASSEMENT POUR L\'INSTANT.', P.m).setOrigin(0.5, 0); return; }
     function fmt(ms) { var s = Math.round(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+    // classement : plus d'étoiles d'abord, puis plus de niveaux terminés, puis temps cumulé le plus court (un joueur qui a fini moins de niveaux n'a pas un « meilleur » temps)
+    var rows = r.rows.slice().sort(function (a, b) {
+      return (b.total_stars - a.total_stars) || ((b.levels || 0) - (a.levels || 0)) || (a.total_time_ms - b.total_time_ms) || a.pseudo.localeCompare(b.pseudo);
+    });
     var y0 = 44, dy = 16, self = this;
-    this.txt(46, y0, '#', P.m); this.txt(76, y0, 'PSEUDO', P.m); this.txt(330, y0, 'ÉTOILES', P.m).setOrigin(1, 0); this.txt(432, y0, 'TEMPS', P.m).setOrigin(1, 0);
-    r.rows.slice(0, 10).forEach(function (row, i) {
+    this.txt(46, y0, '#', P.m); this.txt(76, y0, 'PSEUDO', P.m); this.txt(286, y0, 'NIV.', P.m).setOrigin(1, 0);
+    this.txt(354, y0, 'ÉTOILES', P.m).setOrigin(1, 0); this.txt(432, y0, 'TEMPS', P.m).setOrigin(1, 0);
+    rows.slice(0, 10).forEach(function (row, i) {
       var y = y0 + 16 + i * dy, mine = me && row.pseudo.toLowerCase() === me.toLowerCase(), c = mine ? P.y : (i < 3 ? P.w : P.m);
       if (mine) self.add.rectangle(40, y - 3, 400, 14, GP.int(P.G), 0.6).setOrigin(0);
-      self.txt(46, y, String(row.rank), c); self.txt(76, y, row.pseudo, c);
-      self.txt(330, y, String(row.total_stars), c).setOrigin(1, 0); self.txt(432, y, fmt(row.total_time_ms), c).setOrigin(1, 0);
+      self.txt(46, y, String(i + 1), c); self.txt(76, y, row.pseudo, c);
+      self.txt(286, y, String(row.levels || 0), c).setOrigin(1, 0);
+      self.txt(354, y, String(row.total_stars), c).setOrigin(1, 0); self.txt(432, y, fmt(row.total_time_ms), c).setOrigin(1, 0);
     });
+    // d'où vient le temps : on l'explique sous le tableau
+    this.txt(W / 2, GP.Config.HEIGHT - 36, 'TEMPS = SOMME DE TES MEILLEURS TEMPS PAR NIVEAU', P.m).setOrigin(0.5, 0);
   }
 
   leave() {

@@ -105,13 +105,14 @@ GP.UI = (function () {
     return w;
   }
 
-  // ---------- Aide sur 4 pages ----------
+  // ---------- Aide sur 5 pages ----------
   var PAGES = [
     {
       title: 'LA CARTE', rows: [
         [['@navX'], 'CHANGER DE NIVEAU'],
         [['@confirm'], 'OUVRIR LA FICHE DU LIEU, JOUER'],
-        [['@back'], 'FERMER, REVENIR AU MENU'], [['@mute'], 'COUPER / REMETTRE LE SON'], [['@help'], 'OUVRIR CETTE AIDE'],
+        [['@back'], 'FERMER, REVENIR AU MENU'], [['@mute'], 'COUPER / REMETTRE LE SON'],
+        [[], "PERSONNAGES SUR LE CHEMIN : ARRÊTE-TOI, ILS RACONTENT UNE ANECDOTE (ENTRÉE POUR FERMER LA BULLE). SUR TÉLÉPHONE, LA FLÈCHE EN HAUT À GAUCHE RAMÈNE À L'ACCUEIL."],
         [['@pages'], 'FEUILLETER LES PAGES']
       ]
     },
@@ -119,15 +120,17 @@ GP.UI = (function () {
       title: 'DANS UN NIVEAU', rows: [
         [['@move'], 'COURIR'], [['@jump'], 'SAUTER ; MAINTENIR = PLUS HAUT'],
         [['@down'], "S'ACCROUPIR SOUS LES FLÈCHES"], [['@up'], 'GRIMPER AUX COLONNES, SE HISSER SUR UN REBORD'],
-        [['@pause'], 'PAUSE'], [[], 'SUR TÉLÉPHONE : BOUTONS À L\'ÉCRAN, EN PAYSAGE']
+        [['@pause'], 'PAUSE : REPRENDRE, POINT DE CONTRÔLE, REJOUER, QUITTER'],
+        [[], "SUR TÉLÉPHONE, EN PAYSAGE : JOYSTICK À GAUCHE (HAUT = GRIMPER, BAS = S'ACCROUPIR), SAUT À DROITE."]
       ]
     },
     {
       title: 'BUT DU JEU', icons: true, rows: [
         [['#lv_pixel'], 'RAMASSE LES PIXELS : CHACUN RÉVÈLE UNE PARTIE DE LA PHOTO DU LIEU.'],
-        [['#lv_thorn'], 'RONCES, POINTES, FLÈCHES, TONNEAUX, CHUTE = UNE MORT : RETOUR À LA LANTERNE.'],
-        [['#lv_lantern_on'], 'LANTERNE ALLUMÉE = POINT DE CONTRÔLE.'],
-        [['#star_on', '#star_on', '#star_on'], 'IMAGE COMPLÈTE, SANS MOURIR, SOUS LE TEMPS CIBLE.']
+        [['#lv_thorn', '#lv_lantern_on'], 'RONCES, POINTES, FLÈCHES, TONNEAUX, CHUTE = UNE MORT : RETOUR À LA LANTERNE ALLUMÉE (POINT DE CONTRÔLE).'],
+        [[], "AVEC TOUS LES PIXELS, REJOINS L'ARCHE D'ARRIVÉE. LE TEMPS EST LIMITÉ (3 MIN ET PLUS)."],
+        [['#star_on', '#star_on', '#star_on'], 'IMAGE COMPLÈTE, SANS MOURIR, SOUS LE TEMPS CIBLE.'],
+        [[], '3 ÉTOILES DANS CHAQUE NIVEAU : UN NIVEAU BONUS APPARAÎT SUR LA CARTE.']
       ]
     },
     {
@@ -137,6 +140,15 @@ GP.UI = (function () {
         [['#wx_cloud'], 'VENT : IL POUSSE LES SAUTS. BRUME, NUIT : PIXELS VISIBLES DE PRÈS.'],
         [['#wx_sun'], 'SOLEIL : DES FLEURS FONT DES PLATEFORMES.'],
         [[], 'EN DIRECT TOUTES LES 5 MIN ; HORS LIGNE, LA DERNIÈRE MÉTÉO REÇUE.']
+      ]
+    },
+    {
+      title: 'COMPTE ET OPTIONS', rows: [
+        [[], 'OPTIONS : LANGUE, SON, MUSIQUE, PLEIN ÉCRAN, TOUCHES, ANIMATIONS, MANETTE.'],
+        [[], 'PSEUDO FACULTATIF : SAUVEGARDE EN LIGNE ET CLASSEMENT. ON PEUT JOUER SANS COMPTE.'],
+        [[], 'CLASSEMENT : ÉTOILES, PUIS NIVEAUX TERMINÉS, PUIS TEMPS CUMULÉ.'],
+        [[], "LES 12 NIVEAUX TERMINÉS : TA CARTE POSTALE DE NANTES T'ATTEND (ACCUEIL, MA CARTE)."],
+        [[], 'HORS LIGNE, LE JEU MARCHE : LA MÉTÉO DE SECOURS PREND LE RELAIS.']
       ]
     }
   ];
@@ -177,7 +189,7 @@ GP.UI = (function () {
       });
       // points de pagination
       for (var i = 0; i < PAGES.length; i++)
-        addC(scene.add.rectangle(GP.Config.DW / 2 - 15 + i * 10, 203, 6, 6, GP.int(i === cur ? P.g : P.e)).setOrigin(0.5));
+        addC(scene.add.rectangle(GP.Config.DW / 2 - (PAGES.length - 1) * 5 + i * 10, 203, 6, 6, GP.int(i === cur ? P.g : P.e)).setOrigin(0.5));
       prev.label.setAlpha(cur > 0 ? 1 : 0.35);
       next.label.setAlpha(cur < PAGES.length - 1 ? 1 : 0.35);
     }
