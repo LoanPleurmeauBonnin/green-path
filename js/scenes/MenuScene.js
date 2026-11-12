@@ -49,6 +49,8 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     lb.on('pointerout', function () { lb.setFillStyle(GP.int(GP.PAL.d), 0.95); });
     lb.on('pointerdown', function () { self.toggleLang(); });
 
+    GP.UI.soundIcon(this, W + DX - 62, 6, 20);   // pictogramme du son, à gauche du sélecteur de langue
+
     // bouton compte : en haut à gauche (connexion joueur ou admin, ouvre la fenêtre du compte)
     GP.PixelArt.sprite(this, 'ui_user', ['...kkk...', '..kwwwk..', '..kwwwk..', '...kkk...', '.kkkkkkk.', 'kwwwwwwwk', 'kwwwwwwwk', 'kwwwwwwwk']);
     var ub = this.add.rectangle(6 - DX, 6, 22, 15, GP.int(GP.PAL.d), 0.95).setOrigin(0).setStrokeStyle(2, GP.int(GP.Cloud.isAdmin ? GP.PAL.y : GP.Cloud.isAccount ? GP.PAL.g : GP.PAL.k)).setInteractive({ useHandCursor: true });

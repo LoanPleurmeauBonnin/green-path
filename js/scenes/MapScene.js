@@ -388,6 +388,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     }
     // retour à l'accueil sans clavier (sur téléphone il n'y a pas d'Échap) : flèche dans le cadre GREEN PATH, à gauche du titre
     GP.UI.backIcon(this, function () { self.onEsc(); }, 15, 8).objs.forEach(function (o) { o.setScrollFactor(0); });
+    GP.UI.soundIcon(this, 4, 48, 52);   // pictogramme du son, sous le compteur
     this.hud = true;
     this.navHint = fix(this.txt(W / 2, H - 35, '', GP.PAL.m, { backgroundColor: GP.PAL.k, padding: { x: 4, y: 3 } })).setOrigin(0.5);
     GP.Prompts.bind(this, this.navHint, '{navX} ÉTAPES  {confirm} FICHE  {help} AIDE');
