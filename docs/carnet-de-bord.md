@@ -288,3 +288,4 @@
 **Tests** : trois tests décrivaient l'état d'avant la fusion (douze lieux jouables, temps cibles, empreintes des définitions Jardin/Cathédrale/Bouffay) ; ils sont alignés sur l'état fusionné.
 
 **Non réalisé** : aucun playtest humain des niveaux 4 à 12 de la branche.
+- 12 novembre 2026 — REFONTE : le Grand Éléphant a maintenant une surface solide continue (8 segments de 6 px d'épaisseur le long de sa silhouette : croupe, marche, dos, toit, oreille, front, tête, défenses) : on ne traverse plus l'éléphant en sautant dessus (Machines et niveau secret). Testé : chute à 8 abscisses le long de l'éléphant, on se pose partout sauf sur les 4 premiers pixels de la croupe.

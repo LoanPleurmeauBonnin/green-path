@@ -267,8 +267,8 @@ GP.Dangers = function (scene) {
   this.elephants = (L.elephants || []).map(function (e) {
     var floorY = 15 * 16 + 8, x0 = e.west * 16 - 10, dx = e.east * 16 + 16 - 128 - x0;                    // pieds dans l'eau du canal
     var img = scene.add.image(x0, floorY, 'lv_elephant').setOrigin(0, 1).setDepth(7), topY = floorY - img.height;
-    var parts = [[8, 58, 18], [22, 32, 18], [40, 12, 34], [78, 24, 20], [102, 66, 24]].map(function (q) {   // [x, y, largeur] dans l'image : croupe, dos, toit du balcon, oreille, défenses
-      var pl = scene.add.image(x0 + q[0] + 2, topY + q[1] + 2, 'lv_tileset').setOrigin(0, 0).setDisplaySize(q[2], 4).setVisible(false);
+    var parts = [[8, 58, 20], [20, 46, 10], [24, 32, 20], [42, 12, 36], [78, 24, 22], [98, 34, 14], [110, 46, 12], [102, 66, 26]].map(function (q) {   // [x, y, largeur] dans l'image : croupe, marche, dos, toit du balcon, oreille, front, tête, défenses : une surface continue le long de la silhouette, sans trou où l'on traverse l'éléphant
+      var pl = scene.add.image(x0 + q[0] + 2, topY + q[1] + 2, 'lv_tileset').setOrigin(0, 0).setDisplaySize(q[2], 6).setVisible(false);   // 6 px d'épaisseur : on ne traverse plus en retombant vite
       scene.physics.add.existing(pl);
       var b = pl.body; b.setAllowGravity(false); b.setImmovable(true); b.checkCollision.down = false; b.checkCollision.left = false; b.checkCollision.right = false;
       scene.physics.add.collider(scene.player, pl);
