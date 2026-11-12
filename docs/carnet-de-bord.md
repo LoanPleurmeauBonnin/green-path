@@ -287,3 +287,13 @@
 **Tests** : trois tests décrivaient l'état d'avant la fusion (douze lieux jouables, temps cibles, empreintes des définitions Jardin/Cathédrale/Bouffay) ; ils sont alignés sur l'état fusionné.
 
 **Non réalisé** : aucun playtest humain des niveaux 4 à 12 de la branche.
+
+## Jeudi 12 novembre 2026 — chargement, avatar, personnages de la carte
+
+**Chargement** : l'écran n'affiche plus que la barre de progression (titre, sous-titre et texte retirés ; `prefers-reduced-motion` : barre immobile).
+
+**Avatar** : l'avatar d'un compte récupéré à la connexion n'était pas redessiné pour le héros (il gardait l'ancien jusqu'au rechargement, alors que l'écran de personnalisation montrait le nouveau). Le héros est maintenant refait après la synchronisation (`Cloud.js`) et à l'ouverture de l'écran de personnalisation (`CharacterScene`). Les images du héros et de l'aperçu sont identiques pour une même configuration (vérifié).
+
+**Personnages de la carte** : posés sur le chemin à la hauteur des pieds du héros (ils étaient au bord du talus, 3 px plus haut) et immobiles (plus de flottement). Quand le héros passe devant un personnage dont le niveau est terminé, une bulle affiche son anecdote ; elle se ferme quand il s'éloigne. La fiche RENCONTRE reste disponible.
+
+**Non réalisé** : les anecdotes gardent leur formulation à la première personne (pas de « Savais-tu que… ») ; aucun playtest humain.

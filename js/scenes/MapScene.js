@@ -68,6 +68,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
 
   update(time, delta) {
     this.sky.update(this.cameras.main, delta);
+    this.updateTalk();
     if (this.panel || GP.Pad.capture || !this.travel.moving) return;
     var arrived = this.travel.tick(delta);
     this.moving = this.travel.moving;
@@ -158,9 +159,17 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       var a = l.anecdote || l.panneau;
       if (!a) return null;
       var key = MapScene.personKey(self, l), x = self.nx(i) + 40;
-      var im = self.add.image(x, GP.MapArt.vergeY(x), key).setOrigin(0.5, 1).setScale(1).setDepth(5).setVisible(false);   // même taille que le héros
+      // posé sur le chemin, à la même hauteur que les pieds du héros, et immobile
+      var im = self.add.image(x, GP.MapArt.walkY(x), key).setOrigin(0.5, 1).setScale(1).setDepth(5).setVisible(false);   // même taille que le héros
       im.bulle = GP.UI.txt(self, x, im.y - 28, '!', GP.PAL.y).setOrigin(0.5, 1).setDepth(6).setVisible(false);   // « j'ai quelque chose à te raconter »
-      if (l.anecdote && !GP.reducedMotion) self.tweens.add({ targets: [im, im.bulle], y: '-=2', duration: 700 + i * 37, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      // bulle d'anecdote : visible seulement quand le héros passe devant (niveau terminé)
+      var who = GP.UI.txt(self, 0, 0, a.who, GP.PAL.g, { wordWrap: { width: 236 }, lineSpacing: 3 }).setOrigin(0.5, 0);
+      var body = GP.UI.txt(self, 0, 0, a.text, GP.PAL.w, { wordWrap: { width: 236 }, lineSpacing: 4 }).setOrigin(0.5, 0);
+      var h = who.height + 4 + body.height + 10, bx = Math.max(130, Math.min(GP.MapArt.WIDTH - 130, x)), by = im.y - 30;
+      var box = self.add.rectangle(bx, by, 252, h, GP.int(GP.PAL.d), 0.97).setOrigin(0.5, 1).setStrokeStyle(2, GP.int(GP.PAL.k));
+      who.setPosition(bx, by - h + 5); body.setPosition(bx, by - h + 5 + who.height + 4);
+      im.talk = [box, who, body];
+      im.talk.forEach(function (o, k) { o.setDepth(30 + k).setVisible(false); });
       return im;
     });
   }
@@ -246,6 +255,18 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
    * Descente sur le piédestal : près d'une étape, les pieds de l'avatar passent du bord haut du disque à son centre
    * (là où est le chiffre), progressivement sur la largeur du piédestal (28 px). Ailleurs, il marche sur la ligne.
    */
+  /** Bulle d'anecdote : elle s'ouvre quand le héros passe devant un personnage dont le niveau est terminé, et se ferme quand il s'éloigne. */
+  updateTalk() {
+    if (!this.pers || !this.hero) return;
+    for (var i = 0; i < this.pers.length; i++) {
+      var im = this.pers[i]; if (!im || !im.talk) continue;
+      var on = this.P.status(i) === 'completed' && !this.panel && Math.abs(this.hero.x - im.x) < 34;
+      if (im.talk[0].visible !== on) { im.talk.forEach(function (o) { o.setVisible(on); }); }
+      if (on) im.bulle.setVisible(false);
+      else if (this.P.status(i) !== 'locked' && this.P.status(i) !== 'coming') im.bulle.setVisible(!!this.locs[i].anecdote);
+    }
+  }
+
   heroDrop(x) {
     var near = 99;
     for (var i = 0; i < this.locs.length; i++) near = Math.min(near, Math.abs(x - this.nx(i)));
