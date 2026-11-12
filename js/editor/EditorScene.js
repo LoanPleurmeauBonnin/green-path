@@ -172,7 +172,7 @@ GP.Scenes.Editor = class EditorScene extends Phaser.Scene {
     (d.courants || []).forEach(function (c) { self.rect(c.x * T, Math.min(c.y1, c.y2) * T, c.w * T, Math.abs(c.y2 - c.y1) * T, 0xf4d35e, 0.18, 8); });
     (d.signes || []).forEach(function (s) { self.put(self.textures.exists(s.sprite) ? s.sprite : (self.textures.exists('commun_panneau') ? 'commun_panneau' : null), s.x * T, (s.y + 1) * T, 0, 1, 7); });
     (d.checkpoints || []).forEach(function (c) { self.put(GP.GZoneArt.key(self, c.sprite_off || 'commun_lanterne_eteinte'), c.x * T, (c.y + 1) * T, 0, 1, 7); });
-    (d.pixels || []).forEach(function (p) { self.put(GP.GZoneArt.key(self, p.sprite || 'commun_pixel'), p.x * T, p.y * T, 0, 0, 8); });
+    (d.pixels || []).forEach(function (p) { self.put(GP.GZoneArt.key(self, p.sprite || 'commun_pixel'), p.x * T + 8, p.y * T + 8, 0.5, 0.5, 8); });   // centré dans sa case, comme dans le jeu
     if (d.spawn) { self.put('hero_idle', d.spawn.x * T + 8, (d.spawn.y + 1) * T, 0.5, 1, 20); }
     if (d.arrivee && d.arrivee.declencheur) { var a = d.arrivee.declencheur; self.put(GP.GZoneArt.key(self, 'signes_arche_arrivee'), a.x * T, (a.y + 1) * T, 0, 1, 7); }
   }
