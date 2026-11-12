@@ -1,6 +1,6 @@
 # Niveau secret — « La Ligne Verte » (spécification)
 
-Décidé avec Florine le 12 novembre 2026. **Pas encore construit** : à faire après le gel fonctionnel (jeudi 12 novembre 2026, midi).
+Décidé avec Florine le 12 novembre 2026. **Version 1 (démo) construite** le 12 novembre 2026 : à retoucher ensemble (difficulté, durées, décor, pixels). Pour y accéder sans les 36 étoiles : ouvrir le jeu avec `?dev=1&demo36=1` dans l'adresse (3 étoiles partout, en mémoire seulement : la vraie sauvegarde n'est pas touchée), puis le bouton « LIGNE VERTE » apparaît en haut à droite de la carte.
 
 ## Déverrouillage
 - Condition : **36 étoiles**, c'est-à-dire **3 étoiles dans chacun des 12 niveaux** (`GP.Progression.totalStars() >= 36`).
@@ -44,3 +44,8 @@ Pas de flash, `prefers-reduced-motion` respecté, jouable au clavier, au tactile
 - Le niveau (`GP.LEVELS['ligne-verte']`) est assemblé à partir des sections des niveaux existants (même constructeur `GP.LevelBuilder`), dans `js/data/levels-ville.js`.
 - Sa progression (meilleur temps, badge) est sauvegardée dans une clé à part, sans toucher à `completed`, `unlocked` ni aux étoiles.
 - Tests : déverrouillage à 35 puis 36 étoiles, arche, limite de temps, reprise, console sans erreur, `file://`.
+
+## État de la version 1
+- Fichiers : `js/data/levels-ville.js` (`GP.SECRET_LOCATION`, `GP.LEVELS['ligne-verte']`, démo 36 étoiles), `js/scenes/MapScene.js` (bouton), `js/scenes/GameScene.js` (niveau à part : pas de sauvegarde de reprise, meilleur temps dans `localStorage` clé `gp_secret`), `js/systems/Dangers.js` (météo qui change).
+- 12 sections de 24 à 30 tuiles, 310 tuiles au total, 52 pixels, arche à la fin, limite de 6 minutes, points de contrôle aux sections 4, 7 et 10.
+- Pas encore fait : badge « Maître de la Ligne Verte » sur la carte, carte postale spéciale, réglage de la difficulté au playtest.

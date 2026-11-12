@@ -22,7 +22,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   init(data) {
     this.restarting = false;
     this.index = (data && data.index) || 0;
-    this.loc = GP.LOCATIONS[this.index];
+    this.secret = !!(data && data.secret);   // niveau secret « La Ligne Verte » : lieu à part, hors de la liste des 12 étapes
+    this.loc = this.secret ? GP.SECRET_LOCATION : GP.LOCATIONS[this.index];
     this.L = GP.LEVELS[this.loc.level];
     this.leaving = false;
     this.bot = null;   // robot de test (tools/bot.js), jamais actif en jeu normal
@@ -76,7 +77,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
 
   /** Reprise au dernier point sûr ; les pixels restent acquis, même après un refresh. */
   saveRun() {
-    if (this.restarting) return;   // « rejouer le niveau » : la sauvegarde a été effacée, on ne la recrée pas
+    if (this.restarting || this.secret) return;   // le niveau secret ne se sauvegarde pas ; « rejouer le niveau » : la sauvegarde a été effacée, on ne la recrée pas
     GP.Progression.data.runs[this.loc.id] = { signature: GP.Save.runSignature(this.L),
       taken: this.pixels.reduce(function (a, p, i) { if (p.taken) a.push(i); return a; }, []),
       checkpoint: this.checkpointIndex, time: this.time_ms, deaths: this.deaths };
@@ -85,6 +86,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   }
 
   restoreRun() {
+    if (this.secret) return;
     var r = GP.Progression.data.runs[this.loc.id], self = this;
     if (!r || r.signature !== GP.Save.runSignature(this.L)) return;
     r.taken.forEach(function (i) { var p = self.pixels[i]; if (p && !p.taken) { p.taken = true; p.img.destroy(); self.pc.reveal(); } });
@@ -394,7 +396,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   /** Bandeau d'entrée : l'étape, puis ce que la météo de Nantes change aujourd'hui. */
   showIntro() {
     var self = this, P = GP.PAL, UI = GP.UI, lines = GP.WeatherRules.announce(this.env, this.L);
-    var head = 'ÉTAPE ' + String(this.index + 1).padStart(2, '0') + ' / 12';
+    var head = this.secret ? 'NIVEAU SECRET' : 'ÉTAPE ' + String(this.index + 1).padStart(2, '0') + ' / 12';
     this.introMs = lines.length > 1 ? 2600 : 1900;
     var maxW = Math.min(400, GP.Config.WIDTH - 32);
     var title = UI.txt(this, 0, 0, head, P.g, { fontSize: '12px' }).setOrigin(0.5, 0);
@@ -985,6 +987,15 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     GP.Sfx.play('unlock');
     var t = GP.UI.txt(this, GP.Config.WIDTH / 2, 110, 'IMAGE COMPLÈTE !', GP.PAL.g, { fontSize: '16px', backgroundColor: GP.PAL.k, padding: { x: 6, y: 6 } })
       .setOrigin(0.5).setScrollFactor(0).setDepth(80);
+    if (this.secret) {   // niveau secret : on garde le meilleur temps à part (jamais dans les étoiles) et on retourne à la carte
+      try { var old = JSON.parse(localStorage.getItem('gp_secret') || 'null'); var tps = Math.round(this.time_ms / 1000); if (!old || tps < old.time) localStorage.setItem('gp_secret', JSON.stringify({ time: tps, deaths: this.deaths })); } catch (e) { /* sans stockage : pas de record */ }
+      t.setText('MAÎTRE DE LA LIGNE VERTE !');
+      this.time.delayedCall(2600, function () {
+        self.cameras.main.fadeOut(350, 20, 24, 46);
+        self.cameras.main.once('camerafadeoutcomplete', function () { self.scene.start('Map'); });
+      });
+      return;
+    }
     this.time.delayedCall(1700, function () {
       self.cameras.main.fadeOut(350, 20, 24, 46);
       self.cameras.main.once('camerafadeoutcomplete', function () {

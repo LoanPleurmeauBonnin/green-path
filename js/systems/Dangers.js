@@ -87,6 +87,11 @@ GP.Dangers = function (scene) {
     return { def: b, cone: cone, core: core, x: b.x0 * 16, ph: i * 1.7 };
   });
 
+  // ---------- Météo qui change toute seule (niveau secret) : toutes les L.weatherCycle ms on passe à la météo simulée suivante ----------
+  if (L.weatherCycle && GP.Weather && GP.Weather.nextSim) {
+    scene.time.addEvent({ delay: L.weatherCycle, loop: true, callback: function () { var st = GP.Weather.nextSim(); if (st && !scene.finished) scene.applyWeather(st); } });
+  }
+
   // ---------- Gardes (Château) : un garde sur place dont le regard balaie ; à hauteur de tête on passe accroupi, à hauteur de chevilles on saute ; entre deux regards il se retourne ----------
   this.gardes = (L.gardes || []).map(function (g) {
     var floor = (L.top(g.x) * 16), img = scene.add.image(g.x * 16 + 8, floor, 'lv_garde').setOrigin(0.5, 1).setDepth(7).setFlipX(g.dir < 0);
