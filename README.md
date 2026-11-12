@@ -111,6 +111,7 @@ python3 -m http.server 8123
 ```
 puis http://localhost:8123. **Mode test** : ajouter `?dev=1` (tous les niveaux ouverts ; W météo simulée sur la carte, N en niveau, K ramasse tous les pixels ; `?dev=1&level=chateau` lance un niveau, sur localhost seulement).
 
+Contrôles : `node tools/smoke.cjs` (scripts, JSON, liens, secrets) et `node tools/verify-credits.cjs` (empreintes des crédits), aussi lancés en CI à chaque pull request.
 Publication : `node tools/bump-sw.cjs` (change le nom du cache hors ligne) puis `npx vercel --prod`.
 
 ## Source, grammaire et mapping
@@ -152,6 +153,9 @@ js/editor/               éditeur de niveaux et de textures (admin)
 assets/                  police, logo, images pixélisées des lieux
 supabase/                schema.sql et migrations (pseudo, sauvegarde, classement, éditeur)
 sketch/                  sketch p5.js (livrable J1)
+tools/                   bump-sw.cjs (cache hors ligne), smoke.cjs et verify-credits.cjs (contrôles)
+.github/workflows/       CI : smoke à chaque push et pull request
+captation/               hero, détail, process, démo, vignette (livrable J3)
 ```
 
 ## Contributions
@@ -159,6 +163,9 @@ sketch/                  sketch p5.js (livrable J1)
 
 ## AI usage
 L'avatar a été créé de toutes pièces sur Figma par l'équipe ; ses variantes ont été réalisées avec Claude. Le code a été assisté par Claude Code sous la direction de l'équipe ; les planches de décor ont été générées avec Claude Design. L'équipe relit, comprend et doit pouvoir défendre le code livré ; aucune contribution individuelle ni observation d'utilisateur n'a été inventée.
+
+## Licence
+Code, sprites et logo de l'équipe : **MIT** ([LICENSE](LICENSE)). Éléments tiers (Phaser, police Press Start 2P, photographies Wikimedia Commons pixélisées, données Open-Meteo) : leur propre licence, avec auteur, lien et empreinte SHA-1 dans [CREDITS.md](CREDITS.md) et [docs/credits.json](docs/credits.json) ; contrôle : `node tools/verify-credits.cjs [--online]`. Contribuer : [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Sources et droits
 Photo du Palmarium : Pymouss44, CC BY-SA 3.0, via Wikimedia Commons, recadrée et pixélisée. Données météo : Open-Meteo (CC BY 4.0). Police Press Start 2P (OFL). Phaser (MIT). Détails, licences et obligations : [CREDITS.md](CREDITS.md).
