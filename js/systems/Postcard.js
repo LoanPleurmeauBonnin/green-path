@@ -200,18 +200,18 @@ GP.Postcard = (function () {
     // éclats de pixels et petits décors (soleil ou lune, nuages), posés sans recouvrir le reste
     function free(x, y, r) {
       if (y < 44 && (x < 340 || x > 420)) return false;             // titre et météo
-      if (y > 318 || Math.abs(x - CX) < 56 && Math.abs(y - CY) < 100) return false;   // bandeau de texte, avatar
+      if (y + r > 306 || Math.abs(x - CX) < 56 && Math.abs(y - CY) < 100) return false;   // bandeau de texte, avatar
       return spots.every(function (q) { return Math.abs(q.x - x) > 30 + r || Math.abs(q.y - y) > 30 + r; });   // hors du carré de chaque monument
     }
     var placed = [], tries, k;
-    function spot(r) { for (tries = 0; tries < 60; tries++) { var x = 12 + rnd() * (LW - 24), y = 14 + rnd() * (LH - 28); if (free(x, y, r) && placed.every(function (q) { return Math.hypot(q.x - x, q.y - y) > r + q.r + 6; })) { placed.push({ x: x, y: y, r: r }); return { x: x, y: y }; } } return null; }
+    function spot(r) { for (tries = 0; tries < 60; tries++) { var x = 12 + r + rnd() * (LW - 24 - 2 * r), y = 14 + r + rnd() * (LH - 28 - 2 * r); if (free(x, y, r) && placed.every(function (q) { return Math.hypot(q.x - x, q.y - y) > r + q.r + 6; })) { placed.push({ x: x, y: y, r: r }); return { x: x, y: y }; } } return null; }
     var deco = [kind === 'night' ? 'ciel_lune_croissant' : (st.cat === 'clear' || st.cat === 'cloudy') ? 'ciel_soleil' : null];
     var clouds = { day: ['ciel_nuage_blanc_a', 'ciel_nuage_blanc_b'], cloudy: ['ciel_nuage_blanc_b', 'ciel_nuage_gris_c'], grey: ['ciel_nuage_gris_a', 'ciel_nuage_gris_b'], storm: ['ciel_nuage_orage_a', 'ciel_nuage_gris_b'], night: ['ciel_nuage_nuit_a', 'ciel_nuage_nuit_b'] }[kind] || [];
     deco = deco.concat(clouds).filter(Boolean);
     deco.forEach(function (key) { var im = tex(key), p = im && spot(Math.max(im.width, im.height) / 2); if (im && p) c.drawImage(im, Math.round(p.x - im.width / 2), Math.round(p.y - im.height / 2)); });
     var starGrid = STAR.map(function (row) { return row.replace(/y/g, 'x'); });                                 // une étoile autocollant par étoile gagnée
-    for (k = 0; k < Math.min(36, fin.etoiles); k++) { var ps = spot(6); if (ps) { drawGrid(c, starGrid, Math.round(ps.x) - 1, Math.round(ps.y) - 1, '#2a1f0a'); drawGrid(c, starGrid, Math.round(ps.x), Math.round(ps.y), '#f4d35e'); } }
-    for (k = 0; k < 90; k++) { var p = spot(3); if (p) drawGrid(c, SPARKS[SPARK_KEYS[k % SPARK_KEYS.length]], Math.round(p.x), Math.round(p.y), SPARK_COLORS[Math.floor(rnd() * SPARK_COLORS.length)]); }
+    for (k = 0; k < Math.min(36, fin.etoiles); k++) { var ps = spot(9); if (ps) { drawGrid(c, starGrid, Math.round(ps.x) - 1, Math.round(ps.y) - 1, '#2a1f0a'); drawGrid(c, starGrid, Math.round(ps.x), Math.round(ps.y), '#f4d35e'); } }
+    for (k = 0; k < 90; k++) { var p = spot(5); if (p) drawGrid(c, SPARKS[SPARK_KEYS[k % SPARK_KEYS.length]], Math.round(p.x), Math.round(p.y), SPARK_COLORS[Math.floor(rnd() * SPARK_COLORS.length)]); }
 
     // les monuments en autocollants : contour crème, puis le dessin
     spots.forEach(function (q) {
