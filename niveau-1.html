@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.open-meteo.com https://jvmswcgkfgnjxccmfksd.supabase.co; object-src 'none'; base-uri 'none'; form-action 'none'; worker-src 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#14182e">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Green Path">
+  <title>Green Path — Niveau 1, Jardin des Plantes</title>
+  <meta name="description" content="Jeu de plateforme pixel art qui reconstruit le patrimoine de Nantes sur la ligne verte, sous la vraie météo de la ville.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Green Path — Nantes en mille pixels">
+  <meta property="og:description" content="Cours, saute et ramasse les pixels qui reconstruisent 12 patrimoines nantais. La météo réelle de Nantes change le jeu.">
+  <meta property="og:image" content="https://green-path-game.vercel.app/assets/brand/og-image.jpg">
+  <meta property="og:url" content="https://green-path-game.vercel.app/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/brand/favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" href="assets/brand/favicon-32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="assets/brand/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+  <div id="game" role="region" aria-label="Green Path — jeu de plateforme" aria-describedby="instructions"></div>
+  <p id="instructions" class="sr-only">Flèches pour naviguer, Entrée pour valider. En jeu : gauche et droite pour courir, Espace pour sauter, haut pour grimper, bas pour s'accroupir. Échap : pause. H sur la carte : aide. Le jeu reste visuel et n'est pas entièrement accessible aux lecteurs d'écran.</p>
+  <div id="loading" role="status" aria-label="Chargement">
+    <span class="ld-bar" aria-hidden="true"><span class="ld-fill"></span></span>
+  </div>
+  <!-- Téléphone tenu en portrait : on demande de le tourner (le jeu est en pause). -->
+  <div id="rotate" role="alertdialog" aria-live="assertive" aria-label="Veuillez tourner votre téléphone">
+    <svg class="rotate-icon" viewBox="0 0 16 16" width="96" height="96" shape-rendering="crispEdges" aria-hidden="true">
+      <rect x="5" y="1" width="6" height="11" fill="#f4f7f2"/><rect x="6" y="2" width="4" height="8" fill="#2b3a55"/>
+      <rect x="7" y="10" width="2" height="1" fill="#2b3a55"/><rect x="1" y="13" width="3" height="1" fill="#2fbf71"/>
+      <rect x="12" y="13" width="3" height="1" fill="#2fbf71"/><rect x="3" y="12" width="1" height="1" fill="#2fbf71"/>
+      <rect x="12" y="12" width="1" height="1" fill="#2fbf71"/><rect x="4" y="14" width="8" height="1" fill="#2fbf71"/>
+    </svg>
+    <p>VEUILLEZ TOURNER<br>VOTRE TÉLÉPHONE</p>
+    <p class="small">GREEN PATH SE JOUE EN PAYSAGE</p>
+  </div>
+  <!-- Fenêtre pseudo / code de sauvegarde (HTML : vrai champ de saisie, copier-coller) : voir js/systems/Account.js -->
+  <div id="acct" role="dialog" aria-modal="true" hidden></div>
+  <!-- iPhone / iPad (Safari) : pas de plein écran possible dans le navigateur ; une seule fois, on explique comment. -->
+  <div id="ios-tip" role="note" hidden><span id="ios-tip-text"></span></div>
+  <noscript><p class="msg">Green Path nécessite JavaScript.</p></noscript>
+
+  <script src="js/vendor/phaser.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/data/tuning.js"></script>
+  <script src="js/data/lang/fr.js"></script>
+  <script src="js/data/lang/en.js"></script>
+  <script src="js/systems/I18n.js"></script>
+  <script src="js/systems/Settings.js"></script>
+  <script src="js/systems/Controls.js"></script>
+  <script src="js/systems/Prompts.js"></script>
+  <script src="js/systems/MapTravel.js"></script>
+  <script src="js/systems/Cloud.js"></script>
+  <script src="js/systems/Account.js"></script>
+  <script src="js/data/sprites/palette.js"></script>
+  <script src="js/data/sprites/commun.js"></script>
+  <script src="js/data/sprites/carte.js"></script>
+  <script src="js/data/sprites/ciel.js"></script>
+  <script src="js/data/sprites/signes.js"></script>
+  <script src="js/data/sprites/jardin.js"></script>
+  <script src="js/data/sprites/cathedrale.js"></script>
+  <script src="js/data/sprites/chateau.js"></script>
+  <script src="js/data/sprites/centre.js"></script>
+  <script src="js/data/sprites/ile.js"></script>
+  <script src="js/data/sprites/bouffay.js"></script>
+  <script src="js/data/sprites/retouches.js"></script>
+  <script src="js/data/locations.js"></script>
+  <script src="js/systems/SaveManager.js"></script>
+  <script src="js/systems/ProgressionManager.js"></script>
+  <script src="js/systems/Stars.js"></script>
+  <script src="js/systems/Sfx.js"></script>
+  <script src="js/systems/Music.js"></script>
+  <script src="js/systems/PixelArt.js"></script>
+  <script src="js/systems/Sprites.js"></script>
+  <script src="js/systems/MapArt.js"></script>
+  <script src="js/systems/MapDecor.js"></script>
+  <script src="js/systems/CharacterSprite.js"></script>
+  <script src="js/systems/WeatherManager.js"></script>
+  <script src="js/systems/WeatherFX.js"></script>
+  <script src="js/systems/WeatherRules.js"></script>
+  <script src="js/systems/WeatherShelters.js"></script>
+  <script src="js/systems/Ui.js"></script>
+  <script src="js/systems/LevelArt.js"></script>
+  <script src="js/systems/CastleArt.js"></script>
+  <script src="js/systems/LevelMechanics.js"></script>
+  <script src="js/systems/GZoneArt.js"></script>
+  <script src="js/systems/GZoneRuntime.js"></script>
+  <script src="js/systems/LevelBoss.js"></script>
+  <script src="js/systems/PixelCollection.js"></script>
+  <script src="js/systems/Postcard.js"></script>
+  <script src="js/data/levels.js"></script>
+  <script src="js/data/gzones.js"></script>
+  <script src="js/data/LevelGen.js"></script>
+  <script src="js/data/Redesigns.js"></script>
+  <script src="js/data/GZoneLevels.js"></script>
+  <script src="js/systems/Dangers.js"></script>
+  <script src="js/data/levels-ville.js"></script>
+  <script src="js/systems/Content.js"></script>
+  <script src="assets/locations/jardin-des-plantes.js"></script>
+  <script src="assets/locations/cathedrale.js"></script>
+  <script src="assets/locations/chateau.js"></script>
+  <script src="assets/locations/feydeau.js"></script>
+  <script src="assets/locations/graslin.js"></script>
+  <script src="assets/locations/chantiers.js"></script>
+  <script src="assets/locations/hangar.js"></script>
+  <script src="assets/locations/pommeraye.js"></script>
+  <script src="assets/locations/tour-lu.js"></script>
+  <script src="assets/locations/machines.js"></script>
+  <script src="assets/locations/buren.js"></script>
+  <script src="assets/locations/memorial.js"></script>
+  <script src="js/scenes/BootScene.js"></script>
+  <script src="js/scenes/MenuScene.js"></script>
+  <script src="js/scenes/AboutScene.js"></script>
+  <script src="js/scenes/CharacterScene.js"></script>
+  <script src="js/scenes/OptionsScene.js"></script>
+  <script src="js/scenes/ScoreScene.js"></script>
+  <script src="js/scenes/MapScene.js"></script>
+  <script src="js/scenes/GameScene.js"></script>
+  <script src="js/scenes/ResultScene.js"></script>
+  <script src="js/scenes/PostcardScene.js"></script>
+  <script src="js/niveau-1.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

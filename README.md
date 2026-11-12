@@ -3,7 +3,7 @@
 > *« Psst… par ici ! Je suis le gardien de la ligne verte. Cette nuit, un grand coup de vent a soufflé sur Nantes. Ses monuments se sont envolés en mille pixels ! »*
 
 **Un jeu de plateforme pixel art qui reconstruit le patrimoine de Nantes, pixel par pixel, sous la vraie météo de la ville.**
-Suis la ligne verte, du Jardin des Plantes à la Tour LU : cours, saute, grimpe, ramasse les pixels et regarde chaque monument retrouver ses couleurs.
+Suis la ligne verte, du Jardin des Plantes à la Tour LU : cours, saute, grimpe, ramasse les pixels et regarde chaque monument retrouver ses couleurs. Envie d'un essai rapide ? [`niveau-1.html`](niveau-1.html) lance directement le premier niveau (Jardin des Plantes).
 
 ### ▶ [Jouer maintenant : green-path-game.vercel.app](https://green-path-game.vercel.app)
 Ordinateur, ou téléphone tenu en paysage · clavier, tactile ou manette · français et anglais · sans compte, même hors ligne
