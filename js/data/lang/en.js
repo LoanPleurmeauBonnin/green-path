@@ -18,6 +18,8 @@ GP.EN = {
     privacy6: "Controller: the Green Path team (educational project, ESD Nantes). Questions and requests: issues on the GitHub repository LoanPleurmeauBonnin/green-path. This text informs; it is not legal advice."
   },
   words: {
+    // --- météo de test (admin) ---
+    'MÉTÉO': 'WEATHER', 'RÉELLE': 'LIVE', 'SOLEIL': 'SUN', 'NUIT': 'NIGHT', 'NUAGES': 'CLOUDS', 'VENT': 'WIND', 'NEIGE': 'SNOW', 'NUIT PLUIE': 'NIGHT RAIN', 'ORAGE': 'STORM',
     // --- À propos (mise en page par groupes) ---
     "Green Path - jeu de plateforme et d'exploration patrimoniale à Nantes.": "Green Path - a platform and heritage exploration game in Nantes.",
     "Développeur web & IA Ops": "Web Developer & AI Ops",

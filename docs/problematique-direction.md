@@ -1,6 +1,6 @@
 # Problématique et direction créative — Green Path
 
-> Trace de direction initiale. État effectif et limites actualisées : [HERITAGE_GRAMMAR.md](../HERITAGE_GRAMMAR.md), [GAME_DESIGN.md](../GAME_DESIGN.md). La palette n'est pas teintée par la température ; le masque du Château est géométrique, pas une segmentation sémantique ; le terrain n'est pas généré depuis les relevés.
+> Trace de direction initiale. État effectif et limites actualisées : [HERITAGE_GRAMMAR.md](../HERITAGE_GRAMMAR.md), [README.md](../README.md). La palette n'est pas teintée par la température ; le masque du Château est géométrique, pas une segmentation sémantique ; le terrain n'est pas généré depuis les relevés.
 
 ## Problématique
 Comment transformer un geste de jeu (collecter des pixels) en reconstruction de la mémoire d'un lieu, de sorte que **l'ordre dans lequel l'image réapparaît traduise la structure du patrimoine** plutôt que son apparence ?
