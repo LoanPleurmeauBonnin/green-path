@@ -199,7 +199,7 @@ GP.Ed = (function () {
 
   // ---------- Poser des objets ----------
   function placeAt(cx, cy, tx, ty) {
-    var d = S.doc, b = S.brush, x = S.scene ? S.scene.snap(tx, 'decor') : cx, y = cy, o, list;
+    var d = S.doc, b = S.brush, x = cx, y = cy, o, list;   // un clic pose sur la case cliquée (l'aimantation de 0,5 coupait la case en deux) ; le glisser affine ensuite
     if (!d) return;
     var cat = S.cat;
     if (cat === 'appuis') {

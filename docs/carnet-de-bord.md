@@ -224,3 +224,11 @@
 **Réalisé** : `js/editor/EditorHub.js` (accueil, contrôle segmenté, cartes, galerie des textures, aperçu dessiné `GP.EdThumb`) ; atelier refait (`EditorUI.js`, `EditorScene.js`, `css/editor.css`) : barre d'outils verticale à icônes, onglets Palette / Calques / Motifs, mini-carte cliquable, zoom vers le curseur, molette ou deux doigts pour déplacer, Maj+1 (tout voir), Maj+2 (cadrer la sélection), sélection au rectangle et Maj+clic, déplacement de groupe, copier / coller / dupliquer / supprimer, panneau des calques (visibilité, verrouillage, liste des objets), brouillon repris automatiquement (bouton « Abandonner le brouillon »), plus de fenêtre de confirmation à l'ouverture. **Motifs** : 22 tronçons du générateur (trou, pontons, escalier, bloc, mur à accrocher, pointes, rangée, oiseau, colonne, gargouille, gabares, balcon penché, vapeur, porte, anneau, marée, parasol) se posent sur le sol le plus proche aux couleurs du lieu et coupent le sol si besoin.
 
 **Recette** : tests Node (motifs sur chaque niveau redessiné) ; Chrome, compte admin factice en local : accueil, ouverture d'un niveau, motif posé, rectangle de sélection (10 objets), défilement horizontal, copier-coller, suppression, onglet Calques, aller-retour textures, sans erreur console. **Non testé** : pincer sur un vrai pavé tactile, mobile ; les motifs ne sont disponibles que pour les niveaux redessinés (pas le Château).
+
+## Jeudi 12 novembre 2026 — éditeur : pixels centrés, blocs sur la grille
+
+**Constat** : dans l'éditeur, le pixel s'affichait dans le coin haut gauche de sa case (le jeu le centre) ; un élément posé d'un clic prenait l'aimantation de 0,5 tuile, donc tombait à cheval sur deux cases quand on cliquait au milieu.
+
+**Corrections** : le pixel est dessiné centré dans sa case (`EditorScene.overlay`) ; un clic de pose place l'objet sur la case cliquée (`EditorUI.placeAt`), le glisser garde l'aimantation choisie.
+
+**Recette exécutée** : tests Node. **Non réalisé** : contrôle à l'écran (l'éditeur exige un compte admin).
