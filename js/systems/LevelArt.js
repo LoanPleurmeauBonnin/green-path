@@ -999,6 +999,34 @@ GP.LevelArt = (function () {
     for (y = 26; y < h - 24; y += 48) for (x = 8; x < w - 14; x += 26) { R(ctx, x, y, 12, 18, '#ecd9a8'); R(ctx, x + 2, y + 2, 8, 16, '#2c3e66'); R(ctx, x + 2, y + 2, 8, 2, '#4a6196'); R(ctx, x + 5, y + 2, 1, 16, '#ecd9a8'); }   // fenêtres
     return o.cv;
   }
+  /** Sol d'un monument du niveau secret (wpx × hpx) : surface (haut) et masse (dessous) propres à chaque lieu. */
+  function drawSolSection(kind, w, h) {
+    var o = PA.canvas(w, h), ctx = o.ctx, rnd = PA.rng(w * 7 + h), x, y;
+    var T = {
+      herbe: ['#7a5232', '#4f9a3c', '#6fbf52', '#5e3f26'], pierre: ['#d9d4c4', '#e8e4d6', '#f4f1e6', '#b3ad99'], tuffeau: ['#d8c89a', '#e8dcb4', '#f2e8c8', '#b9a574'],
+      quai: ['#cfc6aa', '#e0d8be', '#efe8d2', '#a89f84'], moquette: ['#5e1a26', '#d9a93c', '#f2d57e', '#7d2a38'], metal: ['#4a5560', '#6a7a88', '#8fa0b0', '#38424c'],
+      chantier: ['#a79e8c', '#6fa24a', '#8cc060', '#8a8070'], buren: ['#8a949c', '#3a8bd8', '#7ac0f8', '#6a747c'], hangar: ['#b9b9b2', '#f2c200', '#ffe066', '#9a9a94'],
+      pommeraye: ['#efe4c8', '#a8301c', '#d8503a', '#d3c6a4'], memorial: ['#a3a39e', '#c4c4bd', '#dcdcd6', '#868681'], tourlu: ['#3a3f4a', '#2a2e38', '#ffffff', '#4a505c']
+    }[kind] || ['#888', '#aaa', '#ccc', '#666'];
+    R(ctx, 0, 0, w, h, T[0]);
+    if (kind !== 'herbe' && kind !== 'chantier') for (y = 8; y < h; y += 8) { R(ctx, 0, y, w, 1, T[3]); for (x = ((y / 8) % 2) * 8; x < w; x += 16) R(ctx, x, y, 1, 8, T[3]); }      // joints (briques, dalles, plaques) ; la terre n'en a pas
+    for (x = 0; x < w * h / 90; x++) R(ctx, Math.floor(rnd() * w), Math.floor(rnd() * h), 1, 1, T[3]);                              // grain
+    if (kind === 'pommeraye') for (y = 16; y < h; y += 16) for (x = ((y / 16) % 2) * 16; x < w; x += 32) R(ctx, x, y, 16, 16, T[3]);   // damier
+    R(ctx, 0, 0, w, 5, T[1]); R(ctx, 0, 0, w, 2, T[2]); R(ctx, 0, 5, w, 1, T[3]);                                                   // surface
+    if (kind === 'herbe' || kind === 'chantier') for (x = 0; x < w; x += 3) R(ctx, x, 5, 1, 1 + Math.floor(rnd() * 3), T[1]);       // herbes qui pendent
+    if (kind === 'hangar') for (x = 0; x < w; x += 12) R(ctx, x, 1, 5, 3, '#1c1c1c');                                              // bande de sécurité jaune et noire
+    if (kind === 'tourlu') for (x = 6; x < w; x += 24) R(ctx, x, 2, 10, 1, '#ffffff');                                              // marquage routier
+    if (kind === 'moquette') for (x = 4; x < w; x += 12) { R(ctx, x, 9, 4, 2, T[3]); R(ctx, x + 1, 8, 2, 4, T[3]); }
+    return o.cv;
+  }
+  /** Seuil entre deux monuments du niveau secret (48×56, transparent) : deux piliers de pierre et un linteau vert « ligne verte ». */
+  function drawSeuil() {
+    var o = PA.canvas(48, 56), ctx = o.ctx, x;
+    R(ctx, 2, 10, 8, 46, '#b9b3a0'); R(ctx, 38, 10, 8, 46, '#b9b3a0'); R(ctx, 2, 10, 2, 46, '#d6d1c0'); R(ctx, 38, 10, 2, 46, '#d6d1c0'); R(ctx, 8, 10, 2, 46, '#8a8574'); R(ctx, 44, 10, 2, 46, '#8a8574');
+    R(ctx, 0, 4, 48, 8, '#2f8a52'); R(ctx, 0, 4, 48, 2, '#5cc07e'); R(ctx, 0, 10, 48, 2, '#1f5e38');
+    for (x = 4; x < 44; x += 8) R(ctx, x, 7, 4, 2, '#fff4d8');                                  // pointillé de la ligne verte
+    return finir(o.cv);
+  }
   /** Héron mécanique en vol (30×20, tourné vers la droite) : corps d'acier gris-bleu, longues ailes, cou tendu et long bec jaune, pattes qui pendent. */
   function drawHeronVol() {
     var o = PA.canvas(30, 20), c = o.ctx;
@@ -1273,7 +1301,8 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_fond_nef', drawFondNef());
     PA.toTexture(scene, 'lv_fond_hangar', drawFondHangar());
     [3, 5].forEach(function (n) { PA.toTexture(scene, 'lv_balcon_' + n, drawBalcon(n)); }); PA.toTexture(scene, 'lv_sol_foyer', drawSolFoyer()); PA.toTexture(scene, 'lv_sol_salle', drawSolSalle()); PA.toTexture(scene, 'lv_sol_scene', drawSolScene()); PA.toTexture(scene, 'lv_rampe', drawRampe());
-    PA.toTexture(scene, 'lv_fond_chantiers', drawFondChantiers()); PA.toTexture(scene, 'lv_garde', drawGarde());
+    PA.toTexture(scene, 'lv_fond_chantiers', drawFondChantiers()); PA.toTexture(scene, 'lv_garde', drawGarde()); PA.toTexture(scene, 'lv_seuil', drawSeuil());
+    Object.keys(GP.SOL_NEEDS || {}).forEach(function (k) { var n = GP.SOL_NEEDS[k]; PA.toTexture(scene, k, drawSolSection(n.kind, n.w * 16, n.h * 16)); });   // sols du niveau secret
     [[10, 13], [5, 11], [5, 9], [5, 7], [5, 5], [6, 3], [8, 2]].forEach(function (d) { PA.toTexture(scene, 'lv_tcorps_' + d[0] + '_' + d[1], drawTourCorps(d[0], d[1])); });
     PA.toTexture(scene, 'lv_fond_foyer', drawFondFoyer()); PA.toTexture(scene, 'lv_fond_salle', drawFondSalle()); PA.toTexture(scene, 'lv_fond_scene', drawFondScene());
     PA.toTexture(scene, 'lv_elephant', drawElephant());

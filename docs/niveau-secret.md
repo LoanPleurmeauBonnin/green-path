@@ -48,4 +48,5 @@ Pas de flash, `prefers-reduced-motion` respecté, jouable au clavier, au tactile
 ## État de la version 1
 - Fichiers : `js/data/levels-ville.js` (`GP.SECRET_LOCATION`, `GP.LEVELS['ligne-verte']`, démo 36 étoiles), `js/scenes/MapScene.js` (bouton), `js/scenes/GameScene.js` (niveau à part : pas de sauvegarde de reprise, meilleur temps dans `localStorage` clé `gp_secret`), `js/systems/Dangers.js` (météo qui change).
 - 12 sections de 24 à 30 tuiles, 310 tuiles au total, 52 pixels, arche à la fin, limite de 6 minutes, points de contrôle aux sections 4, 7 et 10.
+- Habillage graphique (12 novembre 2026) : un sol propre à chaque monument (herbe, pierre, tuffeau, quai, moquette, métal, gravier, ponton, béton jaune et noir, damier, béton, bitume ; `drawSolSection` dans `LevelArt.js`), 2 ou 3 décors par monument repris des niveaux, et un seuil vert (`lv_seuil`) à l'entrée de chaque monument à partir du deuxième.
 - Pas encore fait : badge « Maître de la Ligne Verte » sur la carte, carte postale spéciale, réglage de la difficulté au playtest.
