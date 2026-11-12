@@ -385,15 +385,15 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var P = GP.PAL, D = 50;
     function fix(o, d) { return o.setScrollFactor(0).setDepth(d || D); }
     var g = fix(this.add.graphics());
-    g.fillStyle(GP.int(P.k), 1); g.fillRect(4, 4, 186, 48);
-    g.fillStyle(GP.int(P.d), 1); g.fillRect(6, 6, 182, 44);
-    g.fillStyle(GP.int(P.k), 1); g.fillRect(8, 8, 52, 36);
+    g.fillStyle(GP.int(P.k), 1); g.fillRect(4, 4, 174, 52);   // marges de 6 px partout : vignette, textes et bords
+    g.fillStyle(GP.int(P.d), 1); g.fillRect(6, 6, 170, 48);
+    g.fillStyle(GP.int(P.k), 1); g.fillRect(12, 12, 52, 36);
     // image à reconstruire, agrandie (photo 48×32 ×2, ou monument de la planche)
     var tex = this.textures.get(this.pc.key).getSourceImage();
-    this.hudImg = fix(this.add.image(34, 26, this.pc.key).setScale(Math.min(1, 48 / tex.width, 32 / tex.height)), D + 1);
-    this.hudPix = fix(GP.UI.txt(this, 68, 10, '', P.y), D + 1);
-    this.hudTime = fix(GP.UI.txt(this, 68, 23, '', P.w), D + 1);
-    this.hudDeaths = fix(GP.UI.txt(this, 68, 36, '', P.m), D + 1);
+    this.hudImg = fix(this.add.image(38, 30, this.pc.key).setScale(Math.min(1, 48 / tex.width, 32 / tex.height)), D + 1);
+    this.hudPix = fix(GP.UI.txt(this, 72, 14, '', P.y), D + 1);
+    this.hudTime = fix(GP.UI.txt(this, 72, 26, '', P.w), D + 1);
+    this.hudDeaths = fix(GP.UI.txt(this, 72, 38, '', P.m), D + 1);
     var self = this;
     // Bouton PAUSE : seulement sur écran tactile. Au clavier c'est Échap, à la manette Start (pas de bouton à l'écran).
     this.pauseButton = null;
@@ -401,7 +401,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       this.pauseButton = GP.UI.button(this, GP.Config.WIDTH - 66, 4, 62, 'PAUSE', function () { self.onEsc(); }, { height: 28 });
       this.pauseButton.objs.forEach(function (o) { o.setDepth(D + 1); });
     }
-    this.shelterLabel = fix(GP.UI.txt(this, 8, 58, '', P.c, { backgroundColor: P.k, padding: { x: 3, y: 3 }, wordWrap: { width: 184 } }), D + 1).setAlpha(0);
+    this.shelterLabel = fix(GP.UI.txt(this, 8, 62, '', P.c, { backgroundColor: P.k, padding: { x: 3, y: 3 }, wordWrap: { width: 184 } }), D + 1).setAlpha(0);
     this.updateHud();
   }
 
