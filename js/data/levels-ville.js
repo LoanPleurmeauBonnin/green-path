@@ -657,7 +657,7 @@ GP.LEVELS['chateau'] = (function () {
   });
   L.id = 'chateau';
   L.reveal = 'bottomUp';
-  L.abilities = { crouch: true };
+  L.abilities = { crouch: true, grab: true };   // le rebord appris à la Cathédrale reste disponible ; ce niveau enseigne l'accroupi
   L.skin = {
     top: 'chateau_sol_pave_chateau', fill: ['chateau_mur_tuffeau_plein_1', 'chateau_mur_tuffeau_plein_2', 'chateau_mur_tuffeau_plein_3'],
     left: 'chateau_mur_gauche', right: 'chateau_mur_droite', block: ['chateau_mur_tuffeau_plein_1', 'chateau_mur_tuffeau_plein_2'],
@@ -674,9 +674,9 @@ GP.LEVELS['chateau'] = (function () {
 })();
 
 /**
- * NIVEAU 3 — CATHÉDRALE SAINT-PIERRE-ET-SAINT-PAUL (120 tuiles). Nouvelles capacités : GRIMPER aux colonnes et
- * S'ACCROCHER aux rebords. Gargouilles qui laissent tomber des gouttes (plus souvent sous la pluie), corniches qui
- * s'effritent au-dessus de pointes de pierre, tour à gravir, puis la nef et la façade. Révélation : du bas vers le haut.
+ * NIVEAU 2 — CATHÉDRALE SAINT-PIERRE-ET-SAINT-PAUL (120 tuiles). Maîtrise du saut et du contrôle aérien : une colonne à GRIMPER,
+ * des rebords où S'ACCROCHER (mur, tour). Gargouilles qui laissent tomber des gouttes (plus souvent sous la pluie), une seule fosse de pointes
+ * avec ses corniches qui s'effritent, puis la nef et la façade (allégé au lot B1 : une colonne, une fosse, 24 pixels). Révélation : du bas vers le haut.
  */
 GP.LEVELS['cathedrale'] = (function () {
   var L = GP.LevelBuilder.create(120, function (L) {
@@ -687,11 +687,11 @@ GP.LEVELS['cathedrale'] = (function () {
     L.deco(6, 'lv_banc_eglise', { depth: 3 }); L.deco(14, 'lv_banc_eglise', { depth: 3 }); L.deco(18, 'lv_banc_eglise', { depth: 3 });
     L.climb(9, 7, 13);
     L.plat(10, 7, 4);
-    L.pix(9, 9); L.pix(11, 6); L.pix(12, 6);
+    L.pix(9, 9); L.pix(11, 6);
     // 2. S'accrocher à un rebord trop haut pour un saut
     L.hint(16, 'SAUTE CONTRE LE MUR ET ACCROCHE-TOI');
     L.ground(22, 6, 7);
-    L.pix(24, 9); L.pix(25, 9);
+    L.pix(24, 9);
     L.ground(28, 12, 3);
     L.check(29);
     // 3. Gargouilles : la goutte se forme, puis tombe
@@ -699,7 +699,7 @@ GP.LEVELS['cathedrale'] = (function () {
     L.block(30, 0, 12, 1); L.gargoyle(32, 0, 2400);      // une arche de la voûte : l'eau suinte d'une fissure
     L.gargoyle(36, 0, 2400);
     L.pix(34, 13); L.pix(38, 13);
-    L.plat(33, 9, 3); L.plat(37, 8, 3); L.pix(34, 8); L.pix(38, 7);          // la voie haute de la nef, au-dessus des gouttes
+    L.plat(33, 9, 3); L.plat(37, 8, 3); L.pix(34, 8);          // la voie haute de la nef, au-dessus des gouttes
     // 4. Corniches qui s'effritent au-dessus des pointes
     L.ground(40, 2, 3); L.check(40);
     L.hint(41, "LES CORNICHES S'EFFRITENT : AVANCE");
@@ -708,26 +708,23 @@ GP.LEVELS['cathedrale'] = (function () {
     L.crumble(43, 11, 2); L.crumble(47, 11, 2); L.crumble(51, 11, 2);
     L.pix(44, 10); L.pix(48, 10); L.pix(52, 10);
     L.plat(44, 7, 2); L.plat(49, 6, 2); L.pix(45, 6); L.pix(50, 5);          // la voie haute : une chapelle latérale à pixels, loin des pointes
-    // 5. La tour : colonne, sommet, rebord haut, puis redescente
+    // 5. La tour : un rebord à saisir (comme le mur de la partie 2), puis un balcon et la redescente
     L.ground(53, 10, 3);
-    L.climb(62, 8, 13);
-    L.ground(63, 4, 9);
-    L.pix(62, 10); L.pix(64, 7); L.pix(65, 7);
-    L.plat(68, 5, 3); L.pix(69, 4); L.pix(70, 4);
+    L.ground(63, 4, 7);
+    L.pix(62, 13); L.pix(64, 8); L.pix(65, 8);
+    L.plat(68, 8, 3); L.pix(69, 7); L.pix(70, 7);
     L.ground(67, 13, 3);
     L.check(73);
-    L.block(67, 0, 8, 1); L.gargoyle(70, 0, 2000);
     // 6. Un dernier mur à saisir, puis la nef
     L.ground(80, 5, 7);
     L.pix(81, 9); L.pix(83, 9);
-    L.ground(85, 12, 3);                                              // 6e travée : des gouttes, une fosse de pointes, des corniches qui s'effritent
+    L.ground(85, 12, 3);                                              // 6e travée : des gouttes (déjà vues), puis la nef
     L.block(88, 0, 10, 1); L.gargoyle(90, 0, 2200); L.gargoyle(94, 0, 2200);
     L.pix(88, 13); L.pix(92, 13);
-    L.hint(95, "LES CORNICHES S'EFFRITENT : AVANCE"); L.ground(97, 7, 2); L.thorn(97, 7);
-    L.crumble(98, 11, 2); L.crumble(101, 11, 2); L.pix(99, 10); L.pix(102, 10);
+    L.ground(97, 7, 3); L.pix(99, 13); L.pix(102, 13);
     L.ground(104, 16, 3); L.check(104);
     L.deco(88, 'lv_banc_eglise', { depth: 3 }); L.deco(92, 'lv_banc_eglise', { depth: 3 }); L.deco(96, 'lv_banc_eglise', { depth: 3 }); L.deco(107, 'lv_banc_eglise', { depth: 3 }); L.deco(112, 'lv_banc_eglise', { depth: 3 });
-    L.plat(110, 11, 3); L.pix(111, 10); L.pix(112, 10); L.pix(108, 13); L.pix(116, 13);
+    L.plat(110, 11, 3); L.pix(111, 10); L.pix(108, 13);
   });
   L.id = 'cathedrale';
   L.reveal = 'bottomUp';
