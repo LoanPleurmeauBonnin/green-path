@@ -3,16 +3,19 @@
  */
 (function () {
   var started = false;
-  /**
-   * Fin de l'écran de chargement : la barre (CSS) avance de 0 à 90 % pendant au moins 1,7 s depuis l'ouverture de la page, puis,
-   * dès que le jeu est prêt (appelé par BootScene), elle se complète jusqu'à 100 % et l'écran disparaît. Valable aussi à l'actualisation.
-   */
+  /** Avancement réel de la barre de l'écran de chargement (0 à 100), piloté par BootScene étape par étape. */
+  GP.setLoading = function (pct) {
+    var fill = document.querySelector('#loading .ld-fill');
+    if (fill) fill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+  };
+  /** Fin de l'écran de chargement : la barre se complète à 100 % (au moins 0,6 s après l'ouverture de la page) puis l'écran disparaît. */
   GP.finishLoading = function () {
     var loading = document.getElementById('loading');
     if (!loading || loading.classList.contains('done')) return;
-    var wait = Math.max(0, 1700 - (window.performance && performance.now ? performance.now() : 1700));
+    var wait = Math.max(0, 600 - (window.performance && performance.now ? performance.now() : 600));
     setTimeout(function () {
-      loading.classList.add('done');                       // la barre se complète (0,4 s)
+      GP.setLoading(100);
+      loading.classList.add('done');                       // l'écran s'efface après un court instant
       setTimeout(function () { if (loading.parentNode) loading.remove(); }, 650);
     }, wait);
   };

@@ -24,6 +24,22 @@ const idx = scripts(read('index.html')), ed = scripts(read('editor.html'));
 const upTo = list => list.slice(0, list.indexOf('js/scenes/BootScene.js') + 1).filter(s => s !== 'js/systems/Music.js');
 check("editor.html charge les mêmes scripts que index.html jusqu'à BootScene.js", JSON.stringify(upTo(idx)) === JSON.stringify(upTo(ed)));
 
+// 1 bis. parité éditeur / jeu : l'éditeur montre exactement les niveaux que le jeu joue (ordre des lieux + bonus)
+try {
+  const sb = { window: { location: { search: '', hostname: 'localhost' }, localStorage: null }, document: {}, navigator: {}, console };
+  sb.window.window = sb.window; sb.self = sb.window;
+  vm.createContext(sb);
+  const ctxRun = f => vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), sb, { filename: f });
+  ['js/config.js', 'js/data/tuning.js'].forEach(f => { try { ctxRun(f); } catch (e) { /* le contexte minimal suffit au contrôle des ids */ } });
+  const levelsVille = read('js/data/levels-ville.js'), locs = read('js/data/locations.js');
+  const gameIds = [...locs.matchAll(/^\s+id: '([a-z-]+)', name:/gm)].map(m => m[1]);
+  const defined = new Set([...levelsVille.matchAll(/GP\.LEVELS\['([a-z-]+)'\]\s*=/g)].map(m => m[1]).concat([...read('js/data/levels.js').matchAll(/GP\.LEVELS\['([a-z-]+)'\]\s*=/g)].map(m => m[1])));
+  check('12 lieux jouables dans locations.js', gameIds.length === 12, gameIds.length + ' trouvés');
+  gameIds.forEach(id => { const g = read('js/data/GZoneLevels.js'); check('niveau « ' + id + ' » défini pour le jeu (levels-ville.js ou GZoneLevels)', defined.has(id) || g.indexOf("'" + id + "'") >= 0); });
+  check("l'éditeur montre « ligne-verte »", defined.has('ligne-verte') && read('js/editor/EditorHub.js').indexOf("'ligne-verte'") >= 0);
+  check("l'éditeur lit GP.LOCATIONS et GP.LEVELS (niveaux joués), pas seulement GP.GZONES", /playedIds[\s\S]*GP\.LOCATIONS/.test(read('js/editor/EditorHub.js')) && /drawLevel/.test(read('js/editor/EditorHub.js')));
+} catch (e) { check('parité éditeur / jeu', false, e.message); }
+
 // 2. JSON
 ['manifest.json', 'manifest.webmanifest', 'data/fallback.json', 'docs/credits.json'].forEach(f => { try { JSON.parse(read(f)); check(f + ' : JSON valide', true); } catch (e) { check(f + ' : JSON valide', false, e.message); } });
 const man = JSON.parse(read('manifest.json'));
