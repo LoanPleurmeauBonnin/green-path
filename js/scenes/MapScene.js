@@ -363,12 +363,13 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     var self = this, W = GP.Config.WIDTH, H = GP.Config.HEIGHT;
     function fix(o, d) { return o.setScrollFactor(0).setDepth(d || 51); }
     var g = fix(this.add.graphics(), 50);
-    g.fillStyle(GP.int(GP.PAL.k), 1); g.fillRect(4, 4, 138, 42);
-    g.fillStyle(GP.int(GP.PAL.d), 1); g.fillRect(6, 6, 134, 38);
-    fix(this.txt(37, 10, 'GREEN PATH', GP.PAL.g));
-    this.hudCount = fix(this.txt(37, 21, '', GP.PAL.m));
-    fix(this.add.image(40, 35, 'star_on'));
-    this.hudStars = fix(this.txt(48, 32, '', GP.PAL.y));
+    // trois lignes : [retour] GREEN PATH / niveaux terminés / étoiles
+    g.fillStyle(GP.int(GP.PAL.k), 1); g.fillRect(4, 4, 112, 46);
+    g.fillStyle(GP.int(GP.PAL.d), 1); g.fillRect(6, 6, 108, 42);
+    fix(this.txt(36, 12, 'GREEN PATH', GP.PAL.g));
+    this.hudCount = fix(this.txt(11, 27, '', GP.PAL.m));
+    fix(this.add.image(14, 42, 'star_on'));
+    this.hudStars = fix(this.txt(22, 38, '', GP.PAL.y));
 
     // barre du bas : nom de l'étape + état, bouton d'aide à droite
     var bar = fix(this.add.graphics(), 50);
@@ -386,8 +387,8 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
         self.cameras.main.once('camerafadeoutcomplete', function () { self.scene.start('Game', { index: 0, secret: true }); });
       }, { primary: true }).objs.forEach(function (o) { o.setDepth(52); o.setScrollFactor(0); });
     }
-    // retour à l'accueil sans clavier (sur téléphone il n'y a pas d'Échap) : flèche dans le cadre GREEN PATH, à gauche du titre
-    GP.UI.backIcon(this, function () { self.onEsc(); }, 15, 8).objs.forEach(function (o) { o.setScrollFactor(0); });
+    // retour à l'accueil sans clavier (sur téléphone il n'y a pas d'Échap) : flèche dans le cadre, sur la ligne du titre GREEN PATH
+    GP.UI.backIcon(this, function () { self.onEsc(); }, 8, 8).objs.forEach(function (o) { o.setScrollFactor(0); });
     this.hud = true;
     this.navHint = fix(this.txt(W / 2, H - 35, '', GP.PAL.m, { backgroundColor: GP.PAL.k, padding: { x: 4, y: 3 } })).setOrigin(0.5);
     GP.Prompts.bind(this, this.navHint, '{navX} ÉTAPES  {confirm} FICHE  {help} AIDE');
