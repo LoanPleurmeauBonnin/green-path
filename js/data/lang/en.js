@@ -15,6 +15,13 @@ GP.EN = {
     privacy6: "Controller: the Green Path team (educational project, ESD Nantes). Questions and requests: issues on the GitHub repository LoanPleurmeauBonnin/green-path. This text informs; it is not legal advice."
   },
   words: {
+    // --- dash, murs, pics (13 novembre) ---
+    "DASH ; MURS VERTS : COLLER + SAUT": "DASH; GREEN WALLS: CLING + JUMP",
+    "GRIMPER (COLONNES, REBORDS)": "CLIMB (COLUMNS, LEDGES)",
+    "TÉLÉPHONE : JOYSTICK À GAUCHE, SAUT ET DASH À DROITE.": "PHONE: JOYSTICK ON THE LEFT, JUMP AND DASH ON THE RIGHT.",
+    "DES PICS ! LIS LE RYTHME": "SPIKES! READ THE RHYTHM",
+    "DASH": "DASH",
+    "BOUTON ›": "BUTTON ›",
     "RONCES, POINTES, FLÈCHES, TONNEAUX, CHUTE = UNE MORT : RETOUR À LA LANTERNE ALLUMÉE (POINT DE CONTRÔLE).": "THORNS, SPIKES, ARROWS, BARRELS, FALLING = A DEATH: BACK TO THE LIT LANTERN (CHECKPOINT).",
     // --- aide, classement (12 novembre) ---
     "PERSONNAGES SUR LE CHEMIN : ARRÊTE-TOI, ILS RACONTENT UNE ANECDOTE (ENTRÉE POUR FERMER LA BULLE). SUR TÉLÉPHONE, LA FLÈCHE EN HAUT À GAUCHE RAMÈNE À L'ACCUEIL.": "CHARACTERS ON THE PATH: STOP, THEY TELL AN ANECDOTE (ENTER CLOSES THE BUBBLE). ON A PHONE, THE ARROW AT THE TOP LEFT TAKES YOU BACK TO THE HOME SCREEN.",

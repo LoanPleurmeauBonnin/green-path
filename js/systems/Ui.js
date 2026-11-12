@@ -119,9 +119,10 @@ GP.UI = (function () {
     {
       title: 'DANS UN NIVEAU', rows: [
         [['@move'], 'COURIR'], [['@jump'], 'SAUTER ; MAINTENIR = PLUS HAUT'],
-        [['@down'], "S'ACCROUPIR SOUS LES FLÈCHES"], [['@up'], 'GRIMPER AUX COLONNES, SE HISSER SUR UN REBORD'],
+        [['@dash'], 'DASH ; MURS VERTS : COLLER + SAUT'],
+        [['@down'], "S'ACCROUPIR SOUS LES FLÈCHES"], [['@up'], 'GRIMPER (COLONNES, REBORDS)'],
         [['@pause'], 'PAUSE : REPRENDRE, POINT DE CONTRÔLE, REJOUER, QUITTER'],
-        [[], "SUR TÉLÉPHONE, EN PAYSAGE : JOYSTICK À GAUCHE (HAUT = GRIMPER, BAS = S'ACCROUPIR), SAUT À DROITE."]
+        [[], 'TÉLÉPHONE : JOYSTICK À GAUCHE, SAUT ET DASH À DROITE.']
       ]
     },
     {
@@ -249,6 +250,13 @@ GP.UI = (function () {
     function jOff() { state.jump = false; c.setFillStyle(GP.int(P.d), 0.55); }
     c.on('pointerdown', jOn); c.on('pointerup', jOff); c.on('pointerout', jOff);
     objs.push(c, im);
+    // dash : bouton plus petit à gauche du saut ; la direction est celle du joystick
+    var dc = scene.add.circle(W - 76, H - 24, 17, GP.int(P.d), 0.55).setStrokeStyle(2, GP.int(P.k)).setScrollFactor(0).setDepth(55).setInteractive();
+    var di = scene.add.image(W - 76, H - 24, 'ui_arr_r').setScale(2).setScrollFactor(0).setDepth(56).setTint(0xf4f7f2);
+    function dOn() { state.dash = true; dc.setFillStyle(GP.int(P.G), 0.8); }
+    function dOff() { state.dash = false; dc.setFillStyle(GP.int(P.d), 0.55); }
+    dc.on('pointerdown', dOn); dc.on('pointerup', dOff); dc.on('pointerout', dOff);
+    objs.push(dc, di);
     // joystick flottant : zone du bas à gauche ; la base se pose sous le doigt, le bouton suit dans un rayon limité
     var REST = { x: 52, y: H - 48 }, RADIUS = 26, DEAD = 8;
     var base = scene.add.circle(REST.x, REST.y, 28, GP.int(P.d), 0.45).setStrokeStyle(2, GP.int(P.k)).setScrollFactor(0).setDepth(55);

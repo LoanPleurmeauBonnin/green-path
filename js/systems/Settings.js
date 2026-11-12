@@ -9,10 +9,10 @@
  *   GP.Settings.clearAll()          efface réglages, sauvegarde et météo mémorisée
  */
 GP.Settings = (function () {
-  var KEY = 'greenpath.settings', KC = { LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, SPACE: 32, A: 65, D: 68, Q: 81, S: 83, W: 87, Z: 90 };
+  var KEY = 'greenpath.settings', KC = { LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, SPACE: 32, A: 65, D: 68, Q: 81, S: 83, W: 87, Z: 90, SHIFT: 16, K: 75 };
   /** Touches par défaut : 3 emplacements par action (AZERTY : Q Z ; QWERTY : A W). */
   var DEFAULT_KEYS = {
-    left: [KC.LEFT, KC.Q, KC.A], right: [KC.RIGHT, KC.D, 0], jump: [KC.SPACE, KC.W, KC.Z], up: [KC.UP, 0, 0], down: [KC.DOWN, KC.S, 0]
+    left: [KC.LEFT, KC.Q, KC.A], right: [KC.RIGHT, KC.D, 0], jump: [KC.SPACE, KC.W, KC.Z], up: [KC.UP, 0, 0], down: [KC.DOWN, KC.S, 0], dash: [KC.SHIFT, KC.K, 0]
   };
   /** Touches réservées au menu et à l'aide : on ne peut pas les affecter à une action de jeu. */
   var RESERVED = [27, 13, 72, 77, 9];   // Échap, Entrée, H, M, Tab
@@ -21,7 +21,7 @@ GP.Settings = (function () {
   function storage() { try { return window.localStorage; } catch (e) { return null; } }
 
   var S = {
-    DEFAULT_KEYS: DEFAULT_KEYS, RESERVED: RESERVED, ACTIONS: ['left', 'right', 'jump', 'up', 'down'],
+    DEFAULT_KEYS: DEFAULT_KEYS, RESERVED: RESERVED, ACTIONS: ['left', 'right', 'jump', 'up', 'down', 'dash'],
     lang: 'fr', keys: clone(DEFAULT_KEYS),
     /** Animations : 'auto' (suit le système), 'on' (activées) ou 'reduced' (réduites). */
     motion: 'auto',

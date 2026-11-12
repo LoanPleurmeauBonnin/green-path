@@ -31,7 +31,7 @@ GP.Controls = {
 };
 
 GP.Pad = (function () {
-  var ENTER = 0.65, RELEASE = 0.35, state = { left: false, right: false, up: false, down: false, jump: false }, prev = {}, held = {}, started = false;
+  var ENTER = 0.65, RELEASE = 0.35, state = { left: false, right: false, up: false, down: false, jump: false, dash: false }, prev = {}, held = {}, started = false;
   var KEYCODE = { UP: 38, DOWN: 40, LEFT: 37, RIGHT: 39, ENTER: 13, SPACE: 32, ESC: 27, H: 72, M: 77, R: 82, PAGEUP: 33, PAGEDOWN: 34 };
 
   function pads() { try { return (navigator.getGamepads && navigator.getGamepads()) || []; } catch (e) { return []; } }
@@ -63,7 +63,7 @@ GP.Pad = (function () {
     var intent = Object.keys(now).some(function (k) { return now[k] && !prev[k]; }) || buttons.some(function (v, i) { return v && !(prev.buttons && prev.buttons[i]); });
     if (intent && GP.Prompts) GP.Prompts.padActivity(p);
     if (GP.Pad.capture) {
-      state.left = state.right = state.up = state.down = state.jump = false;
+      state.left = state.right = state.up = state.down = state.jump = state.dash = false;
       if (GP.Account && GP.Account.isOpen) GP.Account.padInput(now, prev, time);
       else if (now.B && !prev.B && GP.game) GP.game.scene.getScenes(true).forEach(function (sc) {
         if (sc.input && sc.input.keyboard) sc.input.keyboard.emit('keydown-ESC', { keyCode: 27, fromGamepad: true });
@@ -71,6 +71,7 @@ GP.Pad = (function () {
       now.buttons = buttons; prev = now; return;
     }
     state.left = now.LEFT; state.right = now.RIGHT; state.up = now.UP; state.down = now.DOWN; state.jump = now.A;
+    state.dash = !!(buttons[5] || buttons[7]);   // dash : bouton RB ou gâchette droite (RT)
     // événements de menu : à l'appui, puis répétition (0,4 s puis toutes les 0,13 s) pour les directions
     ['UP', 'DOWN', 'LEFT', 'RIGHT'].forEach(function (d) {
       if (now[d] && !prev[d]) { emit(d); held[d] = time + 400; }
