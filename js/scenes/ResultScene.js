@@ -15,6 +15,14 @@ GP.Scenes.Result = class ResultScene extends Phaser.Scene {
     var stars = GP.Stars.compute({ rate: rate, deaths: deaths, time: r.time }, loc);
     var res = GP.Progression.complete(r.index, r.pixels, rate, stars, Math.round(r.time * 10) / 10, deaths);
     this.leaving = false;
+    // dernier niveau du parcours terminé pour la première fois : on va directement à la carte postale (pas d'écran de résultat intermédiaire)
+    if (res.allDone && res.first && GP.Progression.completedCount() === GP.LOCATIONS.filter(function (l) { return l.playable; }).length) {
+      GP.Postcard.record();   // garde la date et la météo du moment exact de la fin
+      this.leaving = true;
+      this.cameras.main.fadeOut(300, 20, 24, 46);
+      this.cameras.main.once('camerafadeoutcomplete', function () { self.scene.start('Postcard'); });
+      return;
+    }
 
     this.cameras.main.fadeIn(350, 20, 24, 46);
     UI.backdrop(this, 0.6);

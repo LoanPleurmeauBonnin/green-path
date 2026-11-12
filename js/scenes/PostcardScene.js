@@ -15,25 +15,25 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
     if (!fin) { this.leave('Menu'); return; }   // pas de carte tant que la partie n'est pas terminée
     this.fin = fin;
 
-    var DX = GP.Config.DX;   // l'écran est centré : la mise en page de 480 px est décalée de DX sur les écrans plus larges
-    this.add.rectangle(20 + DX, 12, 440, 252, GP.int(P.k)).setOrigin(0);
-    this.add.rectangle(22 + DX, 14, 436, 248, GP.int(P.d)).setOrigin(0);
-    this.add.rectangle(22 + DX, 33, 436, 1, GP.int(P.G)).setOrigin(0);
-    UI.txt(this, 32 + DX, 20, 'CARTE POSTALE', P.g);
-    UI.txt(this, 450 + DX, 20, 'NANTES', P.y).setOrigin(1, 0);
+    var DX = GP.Config.DX;   // l'écran est centré par UI.backdrop (caméra décalée de DX) : seuls les boutons (sans défilement) et le champ HTML ajoutent DX
+    this.add.rectangle(20, 12, 440, 252, GP.int(P.k)).setOrigin(0);
+    this.add.rectangle(22, 14, 436, 248, GP.int(P.d)).setOrigin(0);
+    this.add.rectangle(22, 33, 436, 1, GP.int(P.G)).setOrigin(0);
+    UI.txt(this, 32, 20, 'CARTE POSTALE', P.g);
+    UI.txt(this, 450, 20, 'NANTES', P.y).setOrigin(1, 0);
 
     // aperçu de la carte, grand et centré (la vraie carte fait 1800 × 1200)
     this.card = GP.Postcard.render(this, fin, GP.Progression.data.character);
     GP.PixelArt.toTexture(this, 'postcard_preview', GP.Postcard.preview(this.card, 264, 176));
-    this.add.rectangle(106 + DX, 36, 268, 180, GP.int(P.k)).setOrigin(0);
-    this.add.image(108 + DX, 38, 'postcard_preview').setOrigin(0);
+    this.add.rectangle(106, 36, 268, 180, GP.int(P.k)).setOrigin(0);
+    this.add.image(108, 38, 'postcard_preview').setOrigin(0);
 
     // à gauche et à droite de la carte : changer la couleur de fond et le monument (ou l'avatar) au centre
     var bFond = UI.button(this, 26 + DX, 92, 76, 'FOND', function () { GP.Postcard.nextFond(); self.redraw(); }, { height: 18 });
     var bCentre = UI.button(this, 378 + DX, 92, 76, 'CENTRE', function () { GP.Postcard.nextCentre(); self.redraw(); }, { height: 18 });
     [bFond, bCentre].forEach(function (b) { b.objs.forEach(function (o) { o.setDepth(10); }); });
-    this.fondTxt = UI.txt(this, 64 + DX, 114, '', P.y).setOrigin(0.5, 0);
-    this.centreTxt = UI.txt(this, 416 + DX, 114, '', P.y).setOrigin(0.5, 0);
+    this.fondTxt = UI.txt(this, 64, 114, '', P.y).setOrigin(0.5, 0);
+    this.centreTxt = UI.txt(this, 416, 114, '', P.y).setOrigin(0.5, 0);
     this.labels();
 
     // en dessous : le pseudo (facultatif, la phrase est déjà sur la carte), TÉLÉCHARGER et REJOUER
@@ -41,9 +41,9 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
     var bDl = UI.button(this, 158 + DX, 224, 170, 'TÉLÉCHARGER MA CARTE', function () { self.download(); }, { primary: true, height: 18 });
     var bRe = UI.button(this, 334 + DX, 224, 106, 'REJOUER', function () { self.leave('Map'); }, { height: 18 });
     [bDl, bRe].forEach(function (b) { b.objs.forEach(function (o) { o.setDepth(10); }); });
-    this.status = UI.txt(this, 240 + DX, 245, '', P.g).setOrigin(0.5, 0);
+    this.status = UI.txt(this, 240, 245, '', P.g).setOrigin(0.5, 0);
 
-    this.hint = UI.txt(this, 240 + DX, 254, '', P.m).setOrigin(0.5);
+    this.hint = UI.txt(this, 240, 254, '', P.m).setOrigin(0.5);
     GP.Prompts.bind(this, this.hint, '{confirm} TÉLÉCHARGER  {back} MENU');
 
     var kb = this.input.keyboard;
