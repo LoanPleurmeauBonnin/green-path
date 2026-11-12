@@ -354,10 +354,12 @@ GP.LEVELS['hangar'] = (function () {
     L.ground(55, 8, 6);
     L.check(56);
     L.pix(58, 10); L.pix(61, 10);
-    // 3. La halle : de la tôle coupante pourrie, des pixels à cueillir entre deux
+    // 3. La halle de manutention : deux tapis roulants, des caisses de bananes y tombent et glissent avec eux : il faut sauter par-dessus
     L.ground(63, 37, 3);
     L.deco(70, 'hangar_hangar_facade', { depth: 1 }); L.deco(88, 'hangar_conteneur_rouge', { depth: 3 });
-    L.mold(66, 5, 8000, 0); L.mold(76, 4, 8000, 2500); L.mold(86, 5, 8000, 5000); L.mold(94, 4, 8000, 1200);   // la moisissure gagne du terrain, puis recule
+    L.hint(64, "LES CAISSES GLISSENT SUR LE TAPIS : SAUTE PAR-DESSUS");
+    L.belt(66, 84, -1, 45); L.faller(72, 1, 4400, 0, 'lv_caisse_bananes', "UNE CAISSE DE BANANES T'A ÉCRASÉ !"); L.faller(79, 1, 4400, 2200, 'lv_caisse_bananes', "UNE CAISSE DE BANANES T'A ÉCRASÉ !");   // le premier tapis tire en arrière
+    L.belt(88, 99, 1, 50); L.faller(92, 1, 4000, 1000, 'lv_caisse_bananes', "UNE CAISSE DE BANANES T'A ÉCRASÉ !");                  // le second pousse en avant
     L.pix(69, 11); L.pix(76, 11); L.pix(85, 11); L.pix(92, 11);
     L.pix(72, 13); L.pix(80, 13); L.pix(88, 13); L.pix(96, 13);
     L.check(78);
@@ -380,7 +382,7 @@ GP.LEVELS['hangar'] = (function () {
     L.pix(124, 13); L.pix(127, 13); L.pix(129, 13); L.pix(124, 11); L.pix(128, 11);
   });
   L.id = 'hangar';
-  L.maxTime = 240;                // il faut parfois attendre qu'un pixel jaunisse
+  L.maxTime = 240;
   L.reveal = 'topDown';
   L.abilities = { crouch: true, grab: true };
   L.skin = {
@@ -389,8 +391,8 @@ GP.LEVELS['hangar'] = (function () {
   };
   L.thornKey = 'hangar_obstacle_tole_coupante'; L.thornText = 'AÏE, DE LA TÔLE COUPANTE !';
   L.sky = { farKey: 'lv_fond_hangar_quai', farBottom: 236 };       // le quai des Antilles : long hangar blanc, grue Titan grise, anneaux, Loire
-  L.wxm = { sun: { mold: 0.8 }, rain: { mold: 1.3 } };
-  L.weatherText = { sun: 'LE SOLEIL SÈCHE LA MOISISSURE : ELLE RECULE VITE', rain: "L'HUMIDITÉ FAIT POUSSER LA MOISISSURE" };
+  L.wxm = { sun: { belt: 1.25 }, rain: { belt: 0.8 }, wind: { fall: 0.8 } };
+  L.weatherText = { sun: 'LA CHALEUR ACCÉLÈRE LES TAPIS ROULANTS', rain: 'LA PLUIE RALENTIT LES TAPIS ROULANTS', wind: 'LE VENT BALANCE LA GRUE : LES CAISSES TOMBENT PLUS VITE' };
   return L;
 })();
 
