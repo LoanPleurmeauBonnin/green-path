@@ -17,6 +17,8 @@ GP.Tuning = {
     airTurn: 1.35,          // × l'accélération en l'air quand on inverse la direction : demi-tour aérien plus vif (neutre : 1)
     fallGravityMult: 1,     // × la gravité en descente (> 1 = plus lourd ; 1 = désactivé)
     // Dash (touche Maj / K, RB ou RT à la manette, bouton tactile) : 8 directions, une charge, rechargée au sol, sur une colonne ou un mur
+    // Niveau (n° de l'étape) où chaque capacité est débloquée ; avant, elle est coupée (L.abilities.dash / .wall = true|false force le choix d'un niveau)
+    unlock: { dash: 4, wall: 5 },
     dash: { enabled: true, speed: 300, ms: 140, cooldown: 220, charges: 1, endSpeed: 0.55, buffer: 90 },
     // Murs marqués seulement (L.wall dans un niveau) : accroche, glisse et saut mural
     wall: { slideSpeed: 55, stickMs: 180, jumpX: 150, jumpY: -300, lockMs: 170, jumpDelay: 220, coyote: 90 } },       // marche de 6 px au plus (rampe en petites marches) : franchie en marchant, sans saut       // pieds à moins de 8 px sous un rebord, poussé contre le mur : on monte dessus (0 = désactivé)

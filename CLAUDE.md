@@ -48,7 +48,7 @@ Projet noté (ESD Nantes B3, atelier PATRIMOINE.EXE / NANTES 001). **Gel fonctio
 python3 -m http.server 8123
 ```
 Puis http://localhost:8123 (ajouter `?dev=1` pour les raccourcis de test : W/N météo simulée, K tout ramasser). Vérifier aussi l'ouverture directe d'`index.html` en `file://`, la console sans erreur, un mobile en paysage (et l'écran « tournez votre téléphone » en portrait).
-Contrôles : `node tools/smoke.cjs` et `node tools/verify-credits.cjs` (aussi en CI) ; les anciens tests restent consultables dans l'historique git. Vérifier ensuite à la main : jeu, éditeur, console sans erreur. Toute image ajoutée : entrée dans `docs/credits.json` et `CREDITS.md` (voir CONTRIBUTING.md). Licence MIT dans `LICENSE`.
+Contrôles : `node tools/smoke.cjs` et `node tools/verify-credits.cjs` (aussi en CI), `node tools/audit-niveaux.cjs` (niveaux : obstacles, capacités, trous) ; les anciens tests restent consultables dans l'historique git. Vérifier ensuite à la main : jeu, éditeur, console sans erreur. Toute image ajoutée : entrée dans `docs/credits.json` et `CREDITS.md` (voir CONTRIBUTING.md). Licence MIT dans `LICENSE`.
 
 ## Déploiement
 Vercel, projet `green-path` (https://green-path-game.vercel.app). `.vercelignore` exclut notamment `docs`, `tools`, `tests`, `supabase` et les fichiers `.env*`. **Ne déployer qu'avec l'accord de l'utilisateur** (`npx vercel --prod`). Ne jamais commiter ni pousser sans accord.
