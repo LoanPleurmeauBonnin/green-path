@@ -61,3 +61,17 @@ test('Niveaux redessinés : tous les niveaux sauf le Château, chaque sprite cit
 test('Générateur : mêmes règles partout (≥ 3 tuiles de sol avant un danger, une lanterne toutes les 45 tuiles)', () => {
   for (const n of nums) assert.deepEqual(Array.from(G.LevelGen.notes(n)), [], 'niveau ' + n);
 });
+
+test('Éditeur : les motifs de conception se posent sur chaque niveau redessiné (objets finis, sol de 3 tuiles de chaque côté)', () => {
+  for (const n of nums) {
+    const d = G.GZONES[n - 1]; let ok = 0;
+    for (const m of G.LevelGen.MOTIFS) {
+      let st = null; try { st = G.LevelGen.stamp(n, m[0], d.sol_y, d.hauteur); } catch (e) { st = null; }   // un motif absent du thème du lieu (colonne…) est simplement refusé
+      if (!st) continue; ok++;
+      const all = [].concat(st.plateformes, st.dangers, st.pixels, st.signes, st.checkpoints, st.ennemis);
+      assert.ok(all.every(o => [o.x, o.x0, o.x1].some(Number.isFinite)), 'niveau ' + n + ' ' + m[0]);
+      assert.ok(st.width >= 9, 'niveau ' + n + ' ' + m[0] + ' : 3 tuiles de sol de chaque côté');
+    }
+    assert.ok(ok >= 16, 'niveau ' + n + ' : ' + ok + ' motifs');
+  }
+});

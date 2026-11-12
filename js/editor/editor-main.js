@@ -21,18 +21,19 @@
     else deny(['Ce compte (' + GP.Cloud.pseudo + ') n’est pas admin.', document.createElement('br'), document.createElement('br'), link('index.html', '← Retour au jeu')]);
   });
 
+  /** Phaser démarre à l'ouverture du premier niveau (la page d'accueil n'en a pas besoin). */
+  GP.EdBoot = function () {
+    GP.BOOT_NEXT = 'Editor';
+    GP.game = new Phaser.Game({
+      type: Phaser.AUTO, parent: 'game', pixelArt: true, roundPixels: true, antialias: false, backgroundColor: '#8fc4ec',
+      scale: { mode: Phaser.Scale.RESIZE, width: '100%', height: '100%' },
+      input: { mouse: { preventDefaultWheel: true } },
+      scene: [GP.Scenes.Boot, GP.Scenes.Editor]
+    });
+  };
+
   function start(online) {
     gate.hidden = true; document.getElementById('ed').hidden = false;
     GP.Ed.init(online);
-    GP.BOOT_NEXT = 'Editor';
-    var go = function () {
-      GP.game = new Phaser.Game({
-        type: Phaser.AUTO, parent: 'game', pixelArt: true, roundPixels: true, antialias: false, backgroundColor: '#8fc4ec',
-        scale: { mode: Phaser.Scale.RESIZE, width: '100%', height: '100%' },
-        input: { mouse: { preventDefaultWheel: true } },
-        scene: [GP.Scenes.Boot, GP.Scenes.Editor]
-      });
-    };
-    go();
   }
 })();
