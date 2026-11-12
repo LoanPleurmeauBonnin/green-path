@@ -1,7 +1,7 @@
 /**
  * PostcardScene — la carte postale de fin de partie : aperçu de la carte, sa phrase en texte normal, le champ du pseudo
  * (facultatif, saisi dans un vrai champ HTML posé sur le jeu pour le clavier tactile), TÉLÉCHARGER MA CARTE (PNG 1800 × 1200)
- * et REJOUER (retour à la carte du jeu). Accessible depuis l'écran de fin et, plus tard, depuis le menu (MA CARTE).
+ * et RETOUR À LA CARTE (retour à la carte du jeu). Accessible depuis l'écran de fin et, plus tard, depuis le menu (MA CARTE).
  * Rien n'est envoyé : la carte est fabriquée dans le navigateur (voir GP.Postcard).
  */
 GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
@@ -36,10 +36,10 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
     this.centreTxt = UI.txt(this, 416, 114, '', P.y).setOrigin(0.5, 0);
     this.labels();
 
-    // en dessous : le pseudo (facultatif, la phrase est déjà sur la carte), TÉLÉCHARGER et REJOUER
-    this.makeInput(32, 224, 120, 18);
-    var bDl = UI.button(this, 158 + DX, 224, 170, 'TÉLÉCHARGER MA CARTE', function () { self.download(); }, { primary: true, height: 18 });
-    var bRe = UI.button(this, 334 + DX, 224, 106, 'REJOUER', function () { self.leave('Map'); }, { height: 18 });
+    // en dessous : le pseudo (facultatif, la phrase est déjà sur la carte), TÉLÉCHARGER et RETOUR À LA CARTE
+    this.makeInput(32, 224, 84, 18);
+    var bDl = UI.button(this, 122 + DX, 224, 170, 'TÉLÉCHARGER MA CARTE', function () { self.download(); }, { primary: true, height: 18 });
+    var bRe = UI.button(this, 298 + DX, 224, 150, 'RETOUR À LA CARTE', function () { self.leave('Map'); }, { height: 18 });
     [bDl, bRe].forEach(function (b) { b.objs.forEach(function (o) { o.setDepth(10); }); });
     this.status = UI.txt(this, 240, 245, '', P.g).setOrigin(0.5, 0);
 

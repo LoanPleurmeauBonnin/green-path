@@ -390,3 +390,5 @@ README réécrit pour donner envie de jouer (accroche, lien en premier, pourquoi
 ## Jeudi 12 novembre 2026 — marges du cadre, carte postale réparée, accès direct à la carte postale
 
 **Cadre de la carte** : marges égales (8 px de part et d'autre du texte le plus long, 6 px en haut et en bas), le texte « 11/12 NIVEAUX » ne touche plus le bord. **Carte postale** : la mise en page était décalée sur les écrans larges (les fonds, textes et l'aperçu ajoutaient le décalage DX alors que la caméra le fait déjà : seuls les boutons et le champ HTML doivent l'ajouter) ; l'écran est de nouveau centré et aligné. **Fin du parcours** : en terminant pour la première fois le dernier des 12 niveaux, le joueur arrive directement sur la carte postale, sans écran « PARCOURS COMPLÉTÉ ! » ; les rejeux ultérieurs gardent l'écran de résultat. Captures du README `carte.png` et `carte-postale.png` refaites. **Non réalisé** : la carte postale sur téléphone et sur un écran 16:9 strict n'a pas été revue.
+
+**Carte postale** : le bouton REJOUER devient « RETOUR À LA CARTE » (traduction anglaise ajoutée) ; la rangée du bas est réajustée (champ du nom 84 px, TÉLÉCHARGER 170 px, retour 150 px).
