@@ -24,7 +24,8 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     this.hover = -1;
     this.revealing = -1;
     this.cur = Math.min(this.P.data.current, this.locs.length - 1);
-    this.travel = new GP.MapTravel(this.cur, this.locs.length, this.nx(0), GP.MapArt.GAP, GP.MapArt.walkY);
+    this.bonusOn = !!(GP.SECRET_LOCATION && this.P.totalStars() >= 36);   // niveau secret : une 13e étape au bout du chemin
+    this.travel = new GP.MapTravel(this.cur, this.locs.length + (this.bonusOn ? 1 : 0), this.nx(0), GP.MapArt.GAP, GP.MapArt.walkY);
     this.alive = true;   // faux après la fermeture de la scène (réponses réseau tardives)
     this.events.once('shutdown', function () { self.alive = false; });
 
@@ -58,7 +59,6 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     kb.on('keydown-A', function (ev) { move(-1, ev); });
     kb.on('keydown-RIGHT', function (ev) { move(1, ev); });
     kb.on('keydown-D', function (ev) { move(1, ev); });
-    kb.on('keydown-UP', function () { if (self.bonus && self.cur === self.locs.length - 1 && !self.panel && !self.moving) self.enterBonus(); });
     kb.on('keydown-ENTER', function () { self.onConfirm(); });
     kb.on('keydown-SPACE', function () { self.onConfirm(); });
     kb.on('keydown-ESC', function () { self.onEsc(); });
@@ -69,46 +69,43 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
   }
 
   /**
-   * Niveau secret « La Ligne Verte » : avec 36 étoiles, un chemin de points lumineux monte du dernier monument vers un nœud étoilé.
+   * Niveau secret « La Ligne Verte » : avec 36 étoiles, un chemin de points lumineux prolonge la ligne après le dernier monument jusqu'à une 13e étape étoilée.
    * La première fois (ou avec ?demo36=1), tout apparaît petit à petit comme sur une carte de Mario : les points un à un, puis le nœud qui rebondit.
    */
   makeBonus() {
-    var self = this, last = this.locs.length - 1;
-    if (!GP.SECRET_LOCATION || this.P.totalStars() < 36) return;
-    var x0 = this.nx(last), y0 = this.ny(last) - 16, cx = x0 + 64, cy = y0 - 40, x1 = x0, y1 = y0 - 86;   // courbe vers la droite, puis retour au-dessus du monument
+    var self = this, n = this.locs.length, M = GP.MapArt;
+    if (!this.bonusOn) return;
+    var xa = this.nx(n - 1), xb = this.nx(n), yb = this.ny(n);
     var seen = false; try { seen = localStorage.getItem('gp_bonus_vu') === '1'; } catch (e) { seen = false; }
     var animate = !seen || /[?&]demo36=1/.test(location.search);
-    var dots = [], N = 8;
-    for (var k = 1; k <= N; k++) {
-      var t = k / (N + 1), px = (1 - t) * (1 - t) * x0 + 2 * (1 - t) * t * cx + t * t * x1, py = (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * cy + t * t * y1;
-      var d = this.add.rectangle(px, py, 4, 4, GP.int(GP.PAL.g)).setDepth(11);
-      dots.push(d);
-    }
-    var node = this.add.image(x1, y1, 'node_available').setDepth(12).setInteractive({ useHandCursor: true });
-    var star = this.add.image(x1, y1, 'star_on').setDepth(13);
+    var dots = [], N = 8;   // le tracé reste linéaire : des points posés sur le chemin, entre le dernier monument et l'étape bonus
+    for (var k = 1; k <= N; k++) { var px = xa + (xb - xa) * k / (N + 1); dots.push(this.add.rectangle(px, M.pathY(px) - 2, 4, 4, GP.int(GP.PAL.g)).setDepth(11)); }
+    var ped = this.add.image(xb, yb + 6, 'carte_piedestal_disponible').setOrigin(0.5, 1).setDepth(10).setInteractive({ useHandCursor: true });
+    var star = this.add.image(xb, yb - 3, 'star_on').setDepth(12);
     var rec = null; try { rec = JSON.parse(localStorage.getItem('gp_secret') || 'null'); } catch (e) { rec = null; }
-    var label = this.txt(x1, y1 + 15, GP.t('LIGNE VERTE') + (rec ? ' ' + Math.floor(rec.time / 60) + ':' + String(rec.time % 60).padStart(2, '0') : ''), GP.PAL.y, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 2 } }).setOrigin(0.5, 0).setDepth(13);
-    var hint = this.txt(x1, y1 - 24, GP.t('HAUT : Y ALLER'), GP.PAL.w, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 2 } }).setOrigin(0.5, 1).setDepth(13).setAlpha(0);
-    this.bonus = { node: node, star: star, label: label, hint: hint };
-    node.on('pointerdown', function () { if (!self.panel && !self.moving) self.enterBonus(); });
-    this.events.on('update', function () { hint.setAlpha(self.cur === last && !self.panel ? 1 : 0); });
-    if (!GP.reducedMotion) this.tweens.add({ targets: star, y: y1 - 2, duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    var label = this.txt(xb, yb - 26, GP.t('LIGNE VERTE') + (rec ? ' ' + Math.floor(rec.time / 60) + ':' + String(rec.time % 60).padStart(2, '0') : ''), GP.PAL.y, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 2 } }).setOrigin(0.5, 1).setDepth(13);
+    this.bonus = { ped: ped, star: star, label: label };
+    ped.on('pointerover', function () { self.hover = n; self.updateBar(); });
+    ped.on('pointerout', function () { if (self.hover === n) { self.hover = -1; self.updateBar(); } });
+    ped.on('pointerdown', function () { if (!self.panel) self.goTo(n, true); });
+    if (!GP.reducedMotion) this.tweens.add({ targets: star, y: yb - 6, duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     if (!animate) return;
-    // apparition : points un à un, puis le nœud qui rebondit, avec le son de déblocage
-    dots.forEach(function (d) { d.setAlpha(0).setScale(0); });
-    [node, star, label].forEach(function (o) { o.setAlpha(0).setScale(0); });
+    // apparition, comme sur une carte de Mario : les points s'allument un à un (son), puis l'étape bonus rebondit avec des éclats
+    dots.forEach(function (d) { d.setAlpha(0); });
+    [ped, star, label].forEach(function (o) { o.setAlpha(0).setScale(0); });
     dots.forEach(function (d, i) {
       self.time.delayedCall(900 + i * 190, function () {
-        GP.Sfx.play('step'); self.tweens.add({ targets: d, alpha: 1, scale: 1.6, duration: 160, yoyo: true, onComplete: function () { d.setScale(1); } }); d.setAlpha(1);
+        GP.Sfx.play('step'); d.setAlpha(1);
+        if (!GP.reducedMotion) self.tweens.add({ targets: d, scale: 1.8, duration: 140, yoyo: true });
       });
     });
     this.time.delayedCall(900 + dots.length * 190 + 150, function () {
       GP.Sfx.play('unlock');
-      self.tweens.add({ targets: [node, star], alpha: 1, scale: 1, duration: GP.reducedMotion ? 1 : 500, ease: 'Back.easeOut' });
+      self.tweens.add({ targets: [ped, star], alpha: 1, scale: 1, duration: GP.reducedMotion ? 1 : 500, ease: 'Back.easeOut' });
       self.tweens.add({ targets: label, alpha: 1, scale: 1, duration: 300, delay: 300 });
-      if (!GP.reducedMotion) for (var j = 0; j < 6; j++) {   // petits éclats autour du nœud
-        var sp = self.add.rectangle(x1, y1, 3, 3, GP.int(GP.PAL.y)).setDepth(14);
-        self.tweens.add({ targets: sp, x: x1 + Math.cos(j * 1.05) * 26, y: y1 + Math.sin(j * 1.05) * 26, alpha: 0, duration: 700, onComplete: function () { sp.destroy(); } });
+      if (!GP.reducedMotion) for (var j = 0; j < 6; j++) {   // éclats autour de l'étape
+        var sp = self.add.rectangle(xb, yb - 6, 3, 3, GP.int(GP.PAL.y)).setDepth(14);
+        self.tweens.add({ targets: sp, x: xb + Math.cos(j * 1.05) * 26, y: yb - 6 + Math.sin(j * 1.05) * 26, alpha: 0, duration: 700, onComplete: function () { sp.destroy(); } });
       }
       try { if (!/[?&]demo36=1/.test(location.search)) localStorage.setItem('gp_bonus_vu', '1'); } catch (e) { /* sans stockage : l'animation rejoue */ }
     });
@@ -133,7 +130,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     if (!arrived && this.stopAtPerson(before, this.travel.x)) return;
     this.placeHero(this.travel.x);
     if (arrived) {
-      this.cur = this.travel.target; this.P.setCurrent(this.cur);
+      this.cur = this.travel.target; if (this.cur < this.locs.length) this.P.setCurrent(this.cur);
       this.startIdle(); this.updateBar(); GP.Sfx.play('select');
       if (this.travel.open) this.openPanel(this.cur);
     }
@@ -380,7 +377,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     this.travel.to(j, openOnArrival);
     this.syncTravel();
     if (!this.moving) {
-      this.cur = this.travel.target; this.P.setCurrent(this.cur); this.placeHero(this.travel.x);
+      this.cur = this.travel.target; if (this.cur < this.locs.length) this.P.setCurrent(this.cur); this.placeHero(this.travel.x);
       this.startIdle(); this.updateBar();
       if (openOnArrival) this.openPanel(this.cur);
     }
@@ -442,7 +439,9 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
   }
 
   updateBar() {
-    var i = this.hover >= 0 ? this.hover : this.cur, l = this.locs[i], st = this.P.status(i);
+    var i = this.hover >= 0 ? this.hover : this.cur;
+    if (i >= this.locs.length) { this.barName.setText(GP.t('NIVEAU SECRET') + ' · ' + GP.t('LIGNE VERTE')); this.barState.setText(''); return; }
+    var l = this.locs[i], st = this.P.status(i);
     var label = MapScene.LABELS[st];
     // 41 caractères tiennent à gauche du bouton d'aide ; le nom est tronqué pour laisser la place à l'état
     var room = 41 - (label ? label.length + 2 : 0);
@@ -497,6 +496,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
    * Après réussite : pages BILAN (photo reconstruite, chiffres, étoiles) puis FICHE DU LIEU (texte complet).
    */
   openPanel(i) {
+    if (i >= this.locs.length) { this.enterBonus(); return; }   // l'étape bonus n'a pas de fiche : on entre dans le niveau secret
     if (this.panel) return;
     var self = this, l = this.locs[i], st = this.P.status(i), UI = GP.UI;
     var compact = st !== 'completed';

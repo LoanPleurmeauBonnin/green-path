@@ -65,7 +65,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.makeTouch();
     this.restoreRun();
     this.updateShelter(0, true);   // recalcul à partir du point sûr, jamais un état ancien sérialisé
-    GP.Progression.setCurrent(this.index);
+    if (!this.secret) GP.Progression.setCurrent(this.index);   // le niveau secret ne change pas la position du héros sur la carte
     var saveRun = function () { if (!self.finished) self.saveRun(); };
     window.addEventListener('pagehide', saveRun);
     window.addEventListener('blur', saveRun);
