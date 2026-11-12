@@ -119,7 +119,7 @@ GP.UI = (function () {
     {
       title: 'DANS UN NIVEAU', rows: [
         [['@move'], 'COURIR'], [['@jump'], 'SAUTER ; MAINTENIR = PLUS HAUT'],
-        [['@dash'], 'DASH ; MURS VERTS : COLLER + SAUT'],
+        [['@dash'], 'DASH (DÈS LE NIVEAU 4) ; MURS MARQUÉS (DÈS LE 5) : COLLER + SAUT'],
         [['@down'], "S'ACCROUPIR SOUS LES FLÈCHES"], [['@up'], 'GRIMPER (COLONNES, REBORDS)'],
         [['@pause'], 'PAUSE : REPRENDRE, POINT DE CONTRÔLE, REJOUER, QUITTER'],
         [[], 'TÉLÉPHONE : JOYSTICK À GAUCHE, SAUT ET DASH À DROITE.']
@@ -238,7 +238,8 @@ GP.UI = (function () {
    * Écrit l'état dans l'objet state ({ left, right, up, down, jump }) ; plusieurs doigts à la fois.
    * N'apparaît que sur écran tactile (pointer: coarse). Renvoie la liste des objets (ou []).
    */
-  function touchPad(scene, state, onPause) {
+  function touchPad(scene, state, onPause, opts) {
+    opts = opts || {};
     if (!isTouch()) return [];
     makeTextures(scene);
     scene.input.addPointer(3);
@@ -256,6 +257,7 @@ GP.UI = (function () {
     function dOn() { state.dash = true; dc.setFillStyle(GP.int(P.G), 0.8); }
     function dOff() { state.dash = false; dc.setFillStyle(GP.int(P.d), 0.55); }
     dc.on('pointerdown', dOn); dc.on('pointerup', dOff); dc.on('pointerout', dOff);
+    if (opts.dash === false) { dc.setVisible(false).disableInteractive(); di.setVisible(false); }   // dash pas encore débloqué
     objs.push(dc, di);
     // joystick flottant : zone du bas à gauche ; la base se pose sous le doigt, le bouton suit dans un rayon limité
     var REST = { x: 52, y: H - 48 }, RADIUS = 26, DEAD = 8;

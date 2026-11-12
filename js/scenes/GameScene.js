@@ -34,7 +34,10 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.pauseMenu = null; this.help = null; this.toastObj = null; this.upLock = false;
     this.checkpointIndex = -1; this.saveMs = 0;
     this.W = L.width * T; this.H = L.rows * T;
-    this.ab = L.abilities || {};
+    // Capacités : celles du niveau (L.abilities), plus le dash et les murs marqués, débloqués progressivement (GP.Tuning.player.unlock)
+    var no = this.secret ? 99 : this.index + 1, UL = GP.Tuning.player.unlock;
+    this.ab = Object.assign({ dash: no >= UL.dash, wall: no >= UL.wall }, L.abilities || {});
+    this.newAbility = !this.secret && no === UL.dash ? 'dash' : (!this.secret && no === UL.wall ? 'wall' : null);
     this.TUNE = Object.assign({}, GP.Tuning.player);
     this.shelter = { rain: 0, snow: 0, wind: 0, id: null };
     this.surfaceMotion = 0;
@@ -74,6 +77,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       window.removeEventListener('pagehide', saveRun); window.removeEventListener('blur', saveRun);
     });
     this.showIntro();
+    this.announceAbility();
     if (this.pc.done() && !L.exit) this.finish();
     this.updateExit();
   }
@@ -419,6 +423,14 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.updateHud();
   }
 
+  /** Première fois que le joueur peut dash (niveau 4) ou s'accrocher aux murs (niveau 5) : un message court, une fois le bandeau passé. */
+  announceAbility() {
+    var self = this, kind = this.newAbility;
+    if (!kind || (kind === 'wall' && !(this.L.walls || []).length)) return;
+    var msg = kind === 'dash' ? 'NOUVEAU : DASH ({dash}), DANS LA DIRECTION TENUE' : 'NOUVEAU : MURS MARQUÉS, COLLE-TOI PUIS {jump}';
+    this.time.delayedCall(this.introMs + 300, function () { if (self.alive) self.toast(GP.Prompts.format(msg), GP.PAL.y); });
+  }
+
   /** Bandeau d'entrée : l'étape, puis ce que la météo de Nantes change aujourd'hui. */
   showIntro() {
     var self = this, P = GP.PAL, UI = GP.UI, lines = GP.WeatherRules.announce(this.env, this.L);
@@ -573,7 +585,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   /** Boutons à l'écran sur écran tactile (gauche, droite, accroupi, saut, pause) : voir GP.UI.touchPad. */
   makeTouch() {
     var self = this;
-    GP.UI.touchPad(this, this.touch, function () { self.onEsc(); });
+    GP.UI.touchPad(this, this.touch, function () { self.onEsc(); }, { dash: this.ab.dash !== false });
   }
 
   /** Zone d'escalade (colonne) sous le joueur, ou null. */
