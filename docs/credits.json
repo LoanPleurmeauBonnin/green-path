@@ -174,8 +174,26 @@
     },
     {
       "type": "image-commons",
-      "lieu": "Passage Pommeraye",
+      "lieu": "Mémorial de l'abolition de l'esclavage",
       "ordre": 10,
+      "titre_commons": "Mémorial de l'abolition de l'esclavage.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:M%C3%A9morial_de_l'abolition_de_l'esclavage.jpg",
+      "auteur": "Jean-Marc Ayrault",
+      "licence_url": "https://creativecommons.org/licenses/by/2.0",
+      "dimensions": "3872x2592",
+      "sha1_original_commons": "72904cc813e07fa81e7f40a3af3d30b425e4de88",
+      "verifie_le": "2026-11-12",
+      "integre_au_jeu": false,
+      "fichier_du_jeu": null,
+      "sha1_copie_locale": "72904cc813e07fa81e7f40a3af3d30b425e4de88",
+      "copie_conforme": true,
+      "licence_api": "CC BY 2.0",
+      "licence_retenue": "CC BY 2.0"
+    },
+    {
+      "type": "image-commons",
+      "lieu": "Passage Pommeraye",
+      "ordre": 11,
       "titre_commons": "Galerie Régnier du passage Pommeraye.jpg",
       "page": "https://commons.wikimedia.org/wiki/File:Galerie_R%C3%A9gnier_du_passage_Pommeraye.jpg",
       "auteur": "Tgllyn",
@@ -193,24 +211,6 @@
     },
     {
       "type": "image-commons",
-      "lieu": "Mémorial de l'abolition de l'esclavage",
-      "ordre": 11,
-      "titre_commons": "Mémorial de l'abolition de l'esclavage.jpg",
-      "page": "https://commons.wikimedia.org/wiki/File:M%C3%A9morial_de_l'abolition_de_l'esclavage.jpg",
-      "auteur": "Jean-Marc Ayrault",
-      "licence_url": "https://creativecommons.org/licenses/by/2.0",
-      "dimensions": "3872x2592",
-      "sha1_original_commons": "72904cc813e07fa81e7f40a3af3d30b425e4de88",
-      "verifie_le": "2026-11-12",
-      "integre_au_jeu": false,
-      "fichier_du_jeu": null,
-      "sha1_copie_locale": "72904cc813e07fa81e7f40a3af3d30b425e4de88",
-      "copie_conforme": true,
-      "licence_api": "CC BY 2.0",
-      "licence_retenue": "CC BY 2.0"
-    },
-    {
-      "type": "image-commons",
       "lieu": "Tour LU (Lieu Unique)",
       "ordre": 12,
       "titre_commons": "Nantes-TourLU.jpg",
@@ -224,7 +224,9 @@
       "fichier_du_jeu": "assets/locations/tour-lu.js",
       "sha1_fichier_du_jeu": "60a6dec4658222eca3a52b0ed7869e96a9ff1417",
       "licence_api": "CC BY-SA 4.0",
-      "licence_retenue": "CC BY-SA 4.0"
+      "licence_retenue": "CC BY-SA 4.0",
+      "sha1_copie_locale": "ea600cba0904aeb13d6122ceea67890b591535c3",
+      "copie_conforme": true
     },
     {
       "type": "police",
