@@ -71,6 +71,8 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     var kb = this.input.keyboard;
     kb.on('keydown-UP', function () { self.move(-1); });
     kb.on('keydown-DOWN', function () { self.move(1); });
+    kb.on('keydown-LEFT', function () { self.side(); });
+    kb.on('keydown-RIGHT', function () { self.side(); });
     kb.on('keydown-W', function () { self.move(-1); });
     kb.on('keydown-S', function () { self.move(1); });
     kb.on('keydown-ENTER', function () { self.activate(); });
@@ -109,15 +111,18 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     this.items = [];
   }
 
-  setItems(list, top, step) {
-    var self = this, W = GP.Config.DW;
+  /** Affiche les boutons ; avec pairLast, les deux derniers (OPTIONS, CRÉDITS) partagent une ligne, moitié-moitié. */
+  setItems(list, top, step, pairLast) {
+    var self = this, W = GP.Config.DW, n = list.length;
     this.clear();
+    this.pair = pairLast && n > 2 ? [n - 2, n - 1] : null;
     list.forEach(function (def, i) {
-      var y = top + i * (step || 26);
-      var box = self.add.rectangle(W / 2, y, 240, 20, GP.int(GP.PAL.d), 0.95).setStrokeStyle(2, GP.int(GP.PAL.k));
+      var half = self.pair && i >= n - 2, row = half ? n - 2 : i;
+      var y = top + row * (step || 26), w = half ? 118 : 240, cx = half ? W / 2 + (i === n - 2 ? -61 : 61) : W / 2;
+      var box = self.add.rectangle(cx, y, w, 20, GP.int(GP.PAL.d), 0.95).setStrokeStyle(2, GP.int(GP.PAL.k));
       // Le libellé est centré seul : la flèche de sélection est un objet à part, sinon elle décale le texte.
-      var label = self.txt(W / 2, y + 1, def.label, GP.PAL.w, 8).setOrigin(0.5);
-      var arrow = self.txt(W / 2 - 110, y + 1, '>', GP.PAL.g, 8).setOrigin(0.5).setVisible(false);
+      var label = self.txt(cx, y + 1, def.label, GP.PAL.w, 8).setOrigin(0.5);
+      var arrow = self.txt(cx - w / 2 + (half ? 9 : 10), y + 1, '>', GP.PAL.g, 8).setOrigin(0.5).setVisible(false);
       box.setInteractive({ useHandCursor: true });
       box.on('pointerover', function () { self.sel = i; self.refreshSel(); });
       box.on('pointerdown', function () { self.sel = i; self.activate(); });
@@ -139,7 +144,19 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
 
   move(d) {
     if (!this.items.length) return;
-    this.sel = (this.sel + d + this.items.length) % this.items.length;
+    var n = this.items.length, pr = this.pair;
+    if (pr) {   // la ligne OPTIONS | CRÉDITS compte pour une seule ligne en haut / bas
+      var rows = pr[0] + 1, row = this.sel >= pr[0] ? pr[0] : this.sel, next = (row + d + rows) % rows;
+      this.sel = next === pr[0] ? (row === pr[0] ? this.sel : pr[0]) : next;
+    } else this.sel = (this.sel + d + n) % n;
+    GP.Sfx.play('step');
+    this.refreshSel();
+  }
+
+  /** Gauche / droite : passe de OPTIONS à CRÉDITS quand les deux sont sur la même ligne. */
+  side() {
+    if (!this.pair || this.sel < this.pair[0]) return;
+    this.sel = this.sel === this.pair[0] ? this.pair[1] : this.pair[0];
     GP.Sfx.play('step');
     this.refreshSel();
   }
@@ -161,7 +178,9 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     list.push({ label: 'CLASSEMENT', action: function () { self.goTo('Score'); } });
     list.push({ label: 'OPTIONS', action: function () { self.goTo('Options'); } });
     list.push({ label: 'CRÉDITS', action: function () { self.buildCredits(); } });
-    this.setItems(list, list.length > 6 ? 108 : 116, list.length > 7 ? 19 : list.length > 6 ? 21 : 23);
+    // au-delà de 6 boutons, OPTIONS et CRÉDITS partagent une ligne (moitié-moitié) : une ligne de moins à placer
+    var pair = list.length > 6, rows = pair ? list.length - 1 : list.length;
+    this.setItems(list, rows > 6 ? 108 : 116, rows > 7 ? 19 : rows > 6 ? 21 : 23, pair);
   }
 
   buildConfirm() {

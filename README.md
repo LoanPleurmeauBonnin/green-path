@@ -16,7 +16,8 @@ Ordinateur, ou téléphone tenu en paysage · clavier, tactile ou manette · fra
 - 🗣️ **Des rencontres.** Anne de Bretagne, Jules Verne, un docker… s'arrêtent pour te dire « Savais-tu que… » quand tu passes devant eux sur la carte.
 - ⭐ **Trois étoiles par niveau** : image complète, sans mourir, sous le temps cible.
 - 🎵 **Une ambiance musicale douce** (originale, désactivable) et un avatar à personnaliser.
-- 💌 **Une carte postale de Nantes reconstruite** à la fin, avec ton avatar et la météo du jour.
+- 💌 **Une carte postale de Nantes reconstruite** à la fin, en planche d'autocollants, avec ton avatar et la météo du jour.
+- 🔒 **Un niveau secret** pour celles et ceux qui décrochent les 36 étoiles.
 
 | La carte du monde | Une rencontre |
 |---|---|
@@ -28,9 +29,11 @@ Ordinateur, ou téléphone tenu en paysage · clavier, tactile ou manette · fra
 | **Machines de l'île** (niveau 6) | **Tour LU** (niveau 12) |
 | ![Machines de l'île](docs/screenshots/niveau-machines.png) | ![Tour LU](docs/screenshots/niveau-tourlu.png) |
 
-La carte postale de fin, fabriquée dans ton navigateur (1800 × 1200 px) :
+À la fin du dernier niveau, tu arrives directement sur ta **carte postale de Nantes**, une planche d'autocollants fabriquée dans ton navigateur (1800 × 1200 px) : tu choisis le fond et ce qui trône au centre (un monument ou ton avatar), tu ajoutes ton nom, tu la télécharges.
 
-![Carte postale de fin](docs/screenshots/carte-postale.png)
+| L'écran de la carte postale | La carte postale téléchargée |
+|---|---|
+| ![Écran de la carte postale](docs/screenshots/carte-postale-ecran.png) | ![Carte postale de fin](docs/screenshots/carte-postale.png) |
 
 Projet noté ESD Nantes (B3), atelier PATRIMOINE.EXE / NANTES 001 — Florine RACINE (UX/UI, game design) et Loan PLEURMEAU (développement web, IA Ops). Version **0.6**, gel fonctionnel le jeudi 12 novembre 2026 à midi. Dépôt : https://github.com/LoanPleurmeauBonnin/green-path
 
@@ -56,7 +59,7 @@ Projet noté ESD Nantes (B3), atelier PATRIMOINE.EXE / NANTES 001 — Florine RA
 - **Une ligne verte à suivre** : sur la carte, le chemin s'allume en vert à chaque lieu terminé, et le monument passe du gris à la couleur.
 - **Des rencontres** : une fois un niveau terminé, un petit personnage se tient sur le chemin près du monument. Quand le héros passe devant, une bulle raconte une anecdote « Savais-tu que… » (sources dans [docs/sources.md](docs/sources.md)). Au Mémorial, un simple panneau.
 - **Trois étoiles par niveau** : image complète, sans mourir, sous le temps cible.
-- **La carte postale de fin** : une fois les 12 lieux terminés, une carte postale PNG de Nantes reconstruite (monuments, avatar, ciel et météo du moment).
+- **La carte postale de fin** : une fois les 12 lieux terminés, on arrive directement sur une carte postale PNG de Nantes reconstruite (planche d'autocollants : monuments, avatar, ciel et météo du moment), avec choix du fond et du centre.
 - **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou l'un des 8 modèles.
 - **Pseudo, sauvegarde et classement** (facultatifs, sans e-mail) : voir [docs/confidentialite.md](docs/confidentialite.md). Le jeu fonctionne sans compte et hors ligne.
 - **Musique** : ambiance originale composée par code, activable ou non dans OPTIONS → MUSIQUE (et coupée avec SON).

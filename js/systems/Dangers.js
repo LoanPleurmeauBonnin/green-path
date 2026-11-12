@@ -724,6 +724,7 @@ GP.Dangers.prototype = {
       if (p.x > d.x0 && p.x < d.x1 && p.y > d.y0 && p.y < d.y1 + 16) inDraft = true;
       d.sparks.forEach(function (sp) { sp.r.y -= sp.v * k; if (sp.r.y < d.y0) sp.r.y = d.y1; });
     });
+    this.inDraft = inDraft;   // lu par GameScene, qui applique la gravité allégée (-600) après la demi-gravité d'apex
     if (this.drafts.length) b.setGravityY(inDraft ? -600 : 0);
 
     // pourriture des pixels

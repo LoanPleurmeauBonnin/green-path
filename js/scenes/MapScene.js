@@ -419,12 +419,13 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     var self = this, W = GP.Config.WIDTH, H = GP.Config.HEIGHT;
     function fix(o, d) { return o.setScrollFactor(0).setDepth(d || 51); }
     var g = fix(this.add.graphics(), 50);
-    g.fillStyle(GP.int(GP.PAL.k), 1); g.fillRect(4, 4, 138, 42);
-    g.fillStyle(GP.int(GP.PAL.d), 1); g.fillRect(6, 6, 134, 38);
-    fix(this.txt(37, 10, 'GREEN PATH', GP.PAL.g));
-    this.hudCount = fix(this.txt(37, 21, '', GP.PAL.m));
-    fix(this.add.image(40, 35, 'star_on'));
-    this.hudStars = fix(this.txt(48, 32, '', GP.PAL.y));
+    // cadre : marges égales (8 px à gauche et à droite du texte le plus long, 6 px en haut et en bas), trois lignes de 8 px espacées de 4 px
+    g.fillStyle(GP.int(GP.PAL.k), 1); g.fillRect(4, 4, 124, 48);
+    g.fillStyle(GP.int(GP.PAL.d), 1); g.fillRect(6, 6, 120, 44);
+    fix(this.txt(14, 12, 'GREEN PATH', GP.PAL.g));
+    this.hudCount = fix(this.txt(14, 24, '', GP.PAL.m));
+    fix(this.add.image(17, 40, 'star_on'));
+    this.hudStars = fix(this.txt(26, 36, '', GP.PAL.y));
 
     // barre du bas : nom de l'étape + état, bouton d'aide à droite
     var bar = fix(this.add.graphics(), 50);
@@ -435,6 +436,8 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     GP.UI.button(this, W - 4 - 128, H - 19, 128, 'COMMENT JOUER ?', function () { if (!self.panel && !self.moving) self.openHelp(); })
       .objs.forEach(function (o) { o.setDepth(52); });
     GP.UI.soundIcon(this, 4, 48, 52);   // pictogramme du son, sous le compteur
+    // retour à l'accueil pour le joueur sur téléphone (pas d'Échap) : flèche sous le cadre ; au clavier et à la manette, Échap suffit
+    if (GP.UI.isTouch()) GP.UI.backIcon(this, function () { self.onEsc(); }, 56, 6).objs.forEach(function (o) { o.setScrollFactor(0); });
     this.hud = true;
     this.navHint = fix(this.txt(W / 2, H - 35, '', GP.PAL.m, { backgroundColor: GP.PAL.k, padding: { x: 4, y: 3 } })).setOrigin(0.5);
     GP.Prompts.bind(this, this.navHint, '{navX} ÉTAPES  {confirm} FICHE  {help} AIDE');
