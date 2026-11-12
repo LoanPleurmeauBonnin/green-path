@@ -154,9 +154,9 @@ test('Reconstruction : ordre fortification déterministe sans perte de cases', (
   c.GP.PixelCollection.sortCells(cells, 'fortification');
   assert.equal(cells[0].y, 9); assert.equal(cells[1].x, 5); assert.equal(cells[2].x, 0);
 });
-test('Socle isolé avant GZones : 12 lieux, 3 accessibles, 4 définitions conservées', () => {
+test('Socle isolé avant GZones : 12 lieux, 12 accessibles, 4 définitions conservées', () => {
   const G = context().GP;
-  assert.equal(G.LOCATIONS.length, 12); assert.equal(G.LOCATIONS.filter(l => l.playable).length, 3); assert.equal(Object.keys(G.LEVELS).length, 4);
+  assert.equal(G.LOCATIONS.length, 12); assert.equal(G.LOCATIONS.filter(l => l.playable).length, 12); assert.equal(Object.keys(G.LEVELS).length, 4);
   Object.values(G.LEVELS).forEach(L => {
     assert.equal(L.grid.length, L.rows * L.width);
     L.pixels.forEach(p => { const tile = L.grid[p.y * L.width + p.x]; assert.ok(!tile || tile === 3, L.id + ':' + p.x + ',' + p.y); });

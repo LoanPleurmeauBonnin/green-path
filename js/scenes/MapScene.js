@@ -61,7 +61,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     kb.on('keydown-SPACE', function () { self.onConfirm(); });
     kb.on('keydown-ESC', function () { self.onEsc(); });
     kb.on('keydown-H', function () { if (!self.panel) self.openHelp(); else if (self.panelKind === 'help') self.closePanel(); });
-    kb.on('keydown-M', function () { self.P.muted = !self.P.muted; self.toast(self.P.muted ? 'SON COUPÉ' : 'SON ACTIVÉ'); });
+    kb.on('keydown-M', function () { self.P.muted = !self.P.muted; self.toast(self.P.muted ? 'SON DÉSACTIVÉ' : 'SON ACTIVÉ'); });
     if (GP.Config.DEV_TOOLS) kb.on('keydown-W', function () { self.cycleWeather(); });
     this.events.once('shutdown', function () { kb.removeAllListeners(); });
   }

@@ -18,7 +18,7 @@ test('Équilibrage : les valeurs physiques et temps cibles existants sont conser
   const G = harness().GP;
   assert.equal(G.Tuning.worldGravity, 950); assert.equal(G.Tuning.player.speed, 110); assert.equal(G.Tuning.player.jump, -320);
   assert.equal(G.Tuning.player.coyote, 90); assert.equal(G.Tuning.player.buffer, 110);
-  assert.deepEqual(Array.from(G.LOCATIONS.filter(l => l.playable).map(l => l.parTime)), [90, 110, 100]);
+  assert.deepEqual(Array.from(G.LOCATIONS.filter(l => l.playable).map(l => l.parTime)), [90, 110, 100, 120, 120, 120, 130, 110, 140, 150, 150, 200]);
 });
 test('Piédestaux : modèle et rendu atteignent la vraie surface des 12 nœuds, aller/retour', () => {
   const G = harness().GP, M = G.MapArt;

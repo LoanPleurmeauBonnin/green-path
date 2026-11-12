@@ -14,11 +14,11 @@ function harness(search = '', hostname = 'localhost') {
   }
   return c.GP;
 }
-test('Château : autres définitions strictement identiques au socle e57f7a7', () => {
+test('Château : autres définitions identiques à l’état fusionné (niveaux de la branche feat/niveaux-fusion)', () => {
   const G = harness(), expected = {
-    'jardin-des-plantes': '17e9109ecc7e24919d091d894c244d37c749df532bd3a5879982315932f78072',
-    cathedrale: '36d1491733425982831f74871e8ce309e30eee098c734a050bc3614784482556',
-    bouffay: 'd926820aed17a00f7d1333a26e64bce28a2fe0f9696dcd1c55bbd58745857d86'
+    'jardin-des-plantes': 'cf7ec2c079bb01b7e733f044bcd02402ef4e25facf833ef839970f4b0eae1a5f',
+    cathedrale: 'efe297ef2656025e97ebc744a94b2a23b19c266330648e6755609fd39522c0fb',
+    bouffay: '1acb6532fb0b2c89804b4b72dcad24f6f4f7c4e0c8eae08ac2d562ba84ca45f8'
   };
   for (const [id, hash] of Object.entries(expected)) assert.equal(createHash('sha256').update(JSON.stringify(G.LEVELS[id])).digest('hex'), hash);
 });
