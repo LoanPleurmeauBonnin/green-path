@@ -110,7 +110,7 @@ Abris : passages du Château, nef de la Cathédrale, verrière de Pommeraye, gal
 - **Compte** : tout appel réseau passe par `GP.Cloud` (délai 4 s, échec silencieux) ; le mode invité est local.
 - **Carte postale** : se télécharge sans Internet, sans mention de la météo.
 - **Difficulté** : réglée sur les données (contrôle de faisabilité du joueur simulé), jamais validée par des joueurs.
-- **Droits** : la provenance de la référence de l'avatar reste à clarifier avant diffusion large ; les notices secondaires demandent une vérification documentaire.
+- **Droits** : les notices secondaires demandent encore une vérification documentaire.
 - **Tactile** : pensé pour le paysage ; pas testé sur un vrai iOS/Android ; l'éditeur est conçu pour ordinateur.
 
 ## Architecture du code
@@ -134,7 +134,7 @@ sketch/                  sketch p5.js (livrable J1)
 **Florine RACINE** — UX/UI Designer, Game Design · **Loan PLEURMEAU** — Développeur web, IA Ops (ESD Nantes, atelier PATRIMOINE.EXE).
 
 ## AI usage
-Le code a été assisté par Claude Code sous la direction de l'équipe ; les planches de décor ont été générées avec Claude Design ; l'avatar provient du fichier Figma fourni. Une partie de l'audit initial, des correctifs, des tests et de la documentation a été réalisée avec GPT-6.1 Sol via OpenCode. L'équipe relit, comprend et doit pouvoir défendre le code livré ; aucune contribution individuelle ni observation d'utilisateur n'a été inventée.
+L'avatar a été créé de toutes pièces sur Figma par l'équipe ; ses variantes ont été réalisées avec Claude. Le code a été assisté par Claude Code sous la direction de l'équipe ; les planches de décor ont été générées avec Claude Design. L'équipe relit, comprend et doit pouvoir défendre le code livré ; aucune contribution individuelle ni observation d'utilisateur n'a été inventée.
 
 ## Sources et droits
 Photo du Palmarium : Pymouss44, CC BY-SA 3.0, via Wikimedia Commons, recadrée et pixélisée. Données météo : Open-Meteo (CC BY 4.0). Police Press Start 2P (OFL). Phaser (MIT). Détails, licences et obligations : [CREDITS.md](CREDITS.md).

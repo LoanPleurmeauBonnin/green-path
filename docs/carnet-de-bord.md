@@ -319,3 +319,11 @@
 **Nettoyage** : le dépôt ne garde que le jeu, l'éditeur, la base Supabase et les documents de mission ; tests, outils (sauf `tools/bump-sw.cjs`), rapports internes et captures non citées sont retirés (toujours consultables dans l'historique git).
 
 **Non réalisé** : test croisé, captation et soutenance (à faire par l'équipe) ; lien « Webapp » du formulaire à corriger (`green-path-sepia.vercel.app` répond 404, le jeu est sur `green-path-game.vercel.app`).
+
+## Jeudi 12 novembre 2026 — personnages face à face, fiche sans « source → règle », crédits
+
+**Personnages de la carte** : le héros s'arrête en face du personnage, du côté d'où il arrive (à gauche en allant vers la droite, à droite en revenant), et le regarde ; le personnage se tourne toujours vers le héros. L'anecdote s'affiche, puis le héros repart d'un côté ou de l'autre.
+
+**Fiches des lieux** : la page « SOURCE → RÈGLE » est retirée (le joueur n'a pas besoin de la règle de grammaire ; elle reste dans `docs/grammaire.md`).
+
+**Crédits** : README, manifest et CREDITS suivent la version de l'équipe : avatar créé de toutes pièces sur Figma, variantes réalisées avec Claude ; assistance de l'IA limitée à Claude Code, Claude Design et Claude. Anciens textes de crédits inutilisés retirés des fichiers de langue.

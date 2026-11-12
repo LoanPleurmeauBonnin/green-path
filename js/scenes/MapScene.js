@@ -258,17 +258,20 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
    * Descente sur le piédestal : près d'une étape, les pieds de l'avatar passent du bord haut du disque à son centre
    * (là où est le chiffre), progressivement sur la largeur du piédestal (28 px). Ailleurs, il marche sur la ligne.
    */
-  /** Le héros s'arrête devant un personnage dont le niveau est terminé (une fois par visite de la carte) pour lire son anecdote ; il repart ensuite à gauche ou à droite. */
+  /** Le héros s'arrête face à un personnage dont le niveau est terminé (une fois par visite de la carte), du côté d'où il arrive : il le regarde, le personnage le regarde, l'anecdote s'affiche. Il repart ensuite à gauche ou à droite. */
   stopAtPerson(from, to) {
     if (!this.pers) return false;
     this.heard = this.heard || {};
+    var dir = to > from ? 1 : -1;
     for (var i = 0; i < this.pers.length; i++) {
       var im = this.pers[i];
       if (!im || !im.talk || this.heard[i] || this.P.status(i) !== 'completed') continue;
-      if ((from - im.x) * (to - im.x) > 0) continue;   // le personnage n'est pas entre les deux positions
+      var sx = im.x - dir * 22;                        // place d'arrêt : en face du personnage, côté arrivée
+      if (!(dir > 0 ? from < sx && sx <= to : to <= sx && sx < from)) continue;
       this.heard[i] = true;
-      this.travel.x = im.x; this.travel.moving = false; this.travel.open = false; this.travel.y = this.travel.heightAt(im.x);
-      this.moving = false; this.placeHero(im.x); this.startIdle(); this.updateBar();
+      this.travel.x = sx; this.travel.moving = false; this.travel.open = false; this.travel.y = this.travel.heightAt(sx);
+      this.moving = false; this.placeHero(sx); this.startIdle(); this.updateBar();
+      this.hero.setFlipX(im.x < sx);                   // le héros regarde le personnage
       return true;
     }
     return false;
@@ -279,6 +282,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     if (!this.pers || !this.hero) return;
     for (var i = 0; i < this.pers.length; i++) {
       var im = this.pers[i]; if (!im || !im.talk) continue;
+      if (!this.locs[i].panneau) im.setFlipX(this.hero.x < im.x);   // le personnage regarde toujours le héros
       var on = this.P.status(i) === 'completed' && !this.panel && Math.abs(this.hero.x - im.x) < 34;
       if (im.talk[0].visible !== on) { im.talk.forEach(function (o) { o.setVisible(on); }); }
       if (on) im.bulle.setVisible(false);
@@ -445,9 +449,6 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       });
       if ((l.anecdote || l.panneau) && st !== 'locked' && st !== 'coming') pages.push({ title: l.panneau ? 'PANNEAU' : 'RENCONTRE', draw: function (add) { self.drawAnecdote(add, l); } });   // le personnage raconte son anecdote dès l'arrivée
     }
-    if (l.grammar) GP.UI.paginate(this, [GP.t(l.grammar)], compact ? 388 : 412, compact ? 78 : 156).forEach(function (text) {
-      pages.push({ title: 'SOURCE → RÈGLE', draw: function (add) { add(UI.txt(self, compact ? 46 : 34, compact ? 36 : 40, text, GP.PAL.w, { wordWrap: { width: compact ? 388 : 412 }, lineSpacing: 4 })); } });
-    });
     this.sheet = { pages: pages, page: 0, content: [], m: m, compact: compact };
 
     // boutons du bas

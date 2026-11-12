@@ -16,7 +16,7 @@
   "heritage_source": {
     "title": "Château des ducs de Bretagne — masse, seuils et élévations",
     "url": "https://www.chateaunantes.fr/le-chateau/histoire/",
-    "rights": "Référence documentaire, photographies institutionnelles non réutilisées. Photo secondaire Palmarium : Pymouss44, CC BY-SA 3.0, recadrée et pixélisée ; voir CREDITS.md. Origine de la référence avatar à clarifier."
+    "rights": "Référence documentaire, photographies institutionnelles non réutilisées. Photo secondaire Palmarium : Pymouss44, CC BY-SA 3.0, recadrée et pixélisée ; voir CREDITS.md. Avatar créé de toutes pièces sur Figma par l'équipe, variantes réalisées avec Claude."
   },
   "mode": [
     "interactive",
@@ -35,7 +35,7 @@
   "data_sources": [
     "Open-Meteo : météo de Nantes (précipitations, vent, jour/nuit), cache, dernière météo reçue et secours local neutre"
   ],
-  "ai_usage": "Claude Code et Claude Design pour le prototype, le code et les planches de sprites ; GPT-6.1 Sol via OpenCode pour une partie de l'audit, des correctifs, des tests et de la documentation. Voir README.md, section AI usage.",
+  "ai_usage": "Claude Code pour le prototype, le code, les niveaux, les tests et la documentation ; Claude Design pour les planches de sprites ; Claude pour les variantes de l'avatar (créé de toutes pièces sur Figma par l'équipe). Voir README.md, section AI usage.",
   "version": "0.6",
   "status": "Version livrée au gel fonctionnel du 12 novembre 2026 : 12 niveaux jouables et 3 boss ; réglages à confirmer par des tests humains.",
   "webapp": "https://green-path-game.vercel.app",
