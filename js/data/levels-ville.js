@@ -169,9 +169,7 @@ GP.LEVELS['machines'] = (function () {
     L.hint(38, "UNE ARAIGNÉE DESCEND : REGARDE-LA POUR LA FIGER OU ACCROUPIS-TOI");
     // 3. L'horlogerie : rails à contre-sens, des robots te poursuivent
     L.ground(62, 38, 3);
-    L.hint(64, "LES ARAIGNÉES AVANCENT SI TU NE LES REGARDES PAS");
-    L.deco(90, 'lv_gardienne', { depth: 2.5 });                  // la Gardienne des Ténèbres (l'araignée)
-    L.patrol(66, 76, 'araignee', 40); L.patrol(82, 96, 'araignee', 44);
+    L.hint(64, "ATTENTION : DES ARAIGNÉES DESCENDENT DU PLAFOND");
     L.patrol(70, 92, 'oiseau', 55);                       // un héron mécanique plonge au-dessus du quai
     L.plat(70, 12, 3); L.pix(71, 11); L.plat(86, 12, 3); L.pix(87, 11);
     L.thorn(78, 1); L.pix(78, 11); L.thorn(94, 1); L.pix(94, 11);
@@ -188,7 +186,6 @@ GP.LEVELS['machines'] = (function () {
     // 5. L'esplanade : le Grand Éléphant traverse le canal, on grimpe sur son dos (croupe, dos, toit, oreille, défenses)
     L.ground(122, 10, 3);
     L.jet(125, 4, 3600, 0); L.jet(128, 4, 3600, 1800);
-    L.patrol(123, 127, 'araignee', 36);
     L.hint(129, "MONTE SUR LE GRAND ÉLÉPHANT : IL TRAVERSE LE CANAL");
     L.pix(124, 13); L.pix(126, 11);
     L.check(122);
@@ -641,7 +638,6 @@ GP.LEVELS['chateau'] = (function () {
     L.pix(72, 11); L.pix(74, 11);
     L.deco(70, 'chateau_tonneau', { depth: 3 }); L.deco(71, 'chateau_caisse', { depth: 3 });
     L.check(76);
-    L.patrol(67, 74, 'esprit', 24);                     // un autre garde, entre la herse et la lanterne
     // 4. Remparts : flèches et marches combinées
     L.ground(81, 10, 5);
     L.slit(90, 11, -1, 1400, 400, 8);
@@ -671,7 +667,6 @@ GP.LEVELS['chateau'] = (function () {
   L.thornKey = 'commun_pointes_fer_1'; L.thornText = 'AÏE, LES POINTES !';
   L.sky = { farKey: 'lv_fond_chateau', farBottom: 236 };
   L.rooms = [{ x: 55, key: 'lv_salle_herses' }, { x: 77, key: 'lv_salle_gardes' }];   // le châtelet aux herses, puis la salle des gardes (intérieur)
-  L.backdrop = { x: 112, key: 'chateau_grand_logis', scale: 1, tint: false };
   L.wxm = { rain: { enemy: 0.8 }, sun: { enemy: 1.2 } };
   L.weatherText = { wind: 'LE VENT FAIT ROULER LES TONNEAUX', rain: 'LA PLUIE RALENTIT LES ESPRITS DE LA GARDE', sun: 'LE SOLEIL AGITE LES ESPRITS DE LA GARDE' };
   return L;
@@ -745,8 +740,97 @@ GP.LEVELS['cathedrale'] = (function () {
   L.sky = { farKey: 'lv_fond_nef', farBottom: 236 };           // l'intérieur : piliers, vitraux et rosace
   L.gargoyleKey = 'lv_fuite';                                  // plus de statues : des fissures de la voûte laissent tomber des gouttes
   L.supports = true;                                           // les corniches reposent sur des piliers de pierre
-  L.backdrop = { x: 108, key: 'cathedrale_tour_facade', scale: 1, tint: false };
   L.rainGargoyle = true;
   L.weatherText = { rain: 'LES GARGOUILLES COULENT PLUS SOUVENT' };
   return L;
 })();
+
+// ---------- NIVEAU SECRET « LA LIGNE VERTE » (débloqué à 36 étoiles) : les 12 monuments à la suite, sans panneaux d'aide, un point de contrôle tous les trois monuments ----------
+GP.SECRET_LOCATION = {
+  id: 'ligne-verte', name: 'La Ligne Verte', playable: true, secret: true, level: 'ligne-verte', parTime: 300,
+  notice: "Le parcours de l'examen : les douze monuments de la ligne verte à la suite, sans aide. Chaque mécanique que tu as apprise revient une fois.",
+  element: { label: 'La ligne verte', verify: false }, verify: false
+};
+GP.LEVELS['ligne-verte'] = (function () {
+  var starts = [], names = ['JARDIN DES PLANTES', 'CATHÉDRALE', 'CHÂTEAU DES DUCS', 'ÎLE FEYDEAU', 'PLACE GRASLIN', "MACHINES DE L'ÎLE", 'PARC DES CHANTIERS', 'ANNEAUX DE BUREN', 'HANGAR À BANANES', 'PASSAGE POMMERAYE', 'MÉMORIAL', 'TOUR LU'];
+  var fonds = ['lv_fond_parc', 'lv_fond_nef', 'lv_fond_chateau', 'lv_fond_feydeau', 'lv_fond_salle', 'lv_fond_hangar', 'lv_fond_chantiers', 'lv_fond_buren_jour', 'lv_fond_hangar_quai', 'lv_fond_pommeraye', 'lv_fond_memorial_corten', 'lv_fond_quartier'];
+  var L = GP.LevelBuilder.create(310, function (L) {
+    var s = 4, i, kind = 'herbe';
+    function G(x, w, h) { var key = 'lv_solsec_' + kind + '_' + w + '_' + h; GP.SOL_NEEDS = GP.SOL_NEEDS || {}; GP.SOL_NEEDS[key] = { kind: kind, w: w, h: h }; L.ground(x, w, h); L.deco(x, key, { dx: (w - 1) * 8, dy: h * 16 - 1, depth: 5 }); }   // sol propre à chaque monument (habillage posé sur la grille)
+    function D(x, key) { L.deco(x, key, { depth: 3 }); }
+    function arche(x) { L.deco(x, 'lv_seuil', { depth: 3 }); }   // seuil entre deux monuments (portique vert, pas l'arche d'arrivée)
+    G(0, 4, 3); L.start(2);
+    L.hint(2, 'LA LIGNE VERTE : TOUT CE QUE TU AS APPRIS, SANS AIDE');
+    // 1. Jardin des Plantes : sauter, une dalle, des pointes
+    starts.push(s); kind = 'herbe'; D(s + 5, 'lv_arbre_rue'); D(s + 21, 'lv_banc_eglise'); G(s, 8, 3); L.plat(s + 8, 12, 3); G(s + 12, 12, 3); L.thorn(s + 17, 2);
+    L.pix(s + 2, 13); L.pix(s + 9, 11); L.pix(s + 14, 13); L.pix(s + 21, 13); s += 24;
+    // 2. Cathédrale : des gouttes sous la voûte, des corniches qui s'effritent au-dessus des pointes
+    starts.push(s); kind = 'pierre'; arche(s + 1); D(s + 2, 'lv_banc_eglise'); D(s + 9, 'lv_banc_eglise'); G(s, 12, 3); L.block(s + 2, 0, 18, 1); L.gargoyle(s + 4, 0, 2000); L.gargoyle(s + 9, 0, 2000);
+    G(s + 12, 12, 2); L.thorn(s + 12, 12); L.crumble(s + 13, 11, 2); L.crumble(s + 17, 11, 2); L.crumble(s + 21, 11, 2);
+    L.pix(s + 3, 13); L.pix(s + 10, 13); L.pix(s + 14, 10); L.pix(s + 18, 10); s += 24;
+    // 3. Château : le garde (regard haut : accroupi ; regard bas : saut), une herse
+    starts.push(s); kind = 'tuffeau'; arche(s + 1); D(s + 8, 'chateau_torche_murale'); D(s + 21, 'chateau_banniere_hermine'); G(s, 24, 3); L.garde(s + 3, 1); L.block(s + 12, 0, 3, 11); L.gate(s + 13, 1800, 1500); L.garde(s + 19, -1);
+    L.pix(s + 7, 13); L.pix(s + 10, 13); L.pix(s + 17, 13); L.pix(s + 22, 13); s += 24;
+    // 4. Île Feydeau : traverser l'eau de barque en barque
+    starts.push(s); kind = 'quai'; arche(s + 1); D(s + 1, 'feydeau_bollard'); D(s + 22, 'feydeau_bollard'); L.check(s); G(s, 4, 3); L.pond(s + 4, s + 20, 15); L.boat(s + 5, 14, 2); L.boat(s + 9, 13, 2); L.boat(s + 13, 14, 2); L.boat(s + 17, 13, 2); G(s + 20, 4, 3);
+    L.pix(s + 2, 13); L.pix(s + 6, 12); L.pix(s + 10, 11); L.pix(s + 14, 12); L.pix(s + 18, 11); L.pix(s + 22, 13); s += 24;
+    // 5. Place Graslin : projecteurs « 1-2-3 soleil » et balcons
+    starts.push(s); kind = 'moquette'; arche(s + 1); D(s + 3, 'graslin_colonne_corinthienne'); D(s + 18, 'graslin_colonne_corinthienne'); D(s + 22, 'graslin_lampadaire_ornemente'); G(s, 24, 3); L.spots(s, s + 24); L.balcon(s + 6, 10, 3); L.balcon(s + 12, 8, 3);
+    L.pix(s + 3, 13); L.pix(s + 7, 9); L.pix(s + 13, 7); L.pix(s + 20, 13); s += 24;
+    // 6. Machines de l'île : araignée au plafond, puis le Grand Éléphant traverse le canal
+    starts.push(s); kind = 'metal'; arche(s + 1); D(s + 5, 'lv_feu'); D(s + 28, 'lv_feu'); G(s, 8, 3); L.hanger(s + 3); L.pond(s + 8, s + 26, 15); L.elephant(s + 8, s + 26, 13000); G(s + 26, 4, 3);
+    L.pix(s + 2, 13); L.pix(s + 15, 8); L.pix(s + 19, 8); L.pix(s + 28, 13); s += 30;
+    // 7. Chantiers : conteneurs qui tombent, puis la grue
+    starts.push(s); kind = 'chantier'; arche(s + 1); D(s + 2, 'chantiers_poteau_amarrage'); D(s + 8, 'chantiers_buisson_friche'); D(s + 22, 'chantiers_poteau_amarrage'); L.check(s); G(s, 12, 3); L.faller(s + 4, 1, 3800, 0); L.faller(s + 9, 1, 3800, 1900); L.crane(s + 13, 12, 5, 0, 6000, 0); G(s + 20, 4, 3);
+    L.pix(s + 2, 13); L.pix(s + 7, 13); L.pix(s + 15, 10); L.pix(s + 22, 13); s += 24;
+    // 8. Anneaux de Buren : les bornes de couleur allument les passerelles
+    starts.push(s); kind = 'buren'; arche(s + 1); D(s + 1, 'feydeau_bollard'); D(s + 23, 'feydeau_bollard'); G(s, 6, 3); L.borne(s + 3, 'blue'); L.pond(s + 6, s + 22, 15); L.cplat(s + 8, 13, 3, 'blue'); G(s + 13, 2, 3); L.borne(s + 13, 'red'); L.cplat(s + 17, 13, 3, 'red'); G(s + 22, 2, 3);
+    L.pix(s + 1, 13); L.pix(s + 9, 12); L.pix(s + 18, 12); L.pix(s + 23, 13); s += 24;
+    // 9. Hangar à Bananes : des caisses, puis la grue au-dessus du vide
+    starts.push(s); kind = 'hangar'; arche(s + 1); D(s + 10, 'chantiers_poteau_amarrage'); D(s + 22, 'chantiers_poteau_amarrage'); G(s, 14, 3); L.caisse(s + 3, 1); L.caisse(s + 5, 2); L.crane(s + 15, 12, 4, 0, 6000, 0); G(s + 20, 4, 3);
+    L.pix(s + 1, 13); L.pix(s + 9, 13); L.pix(s + 12, 13); L.pix(s + 22, 13); s += 24;
+    // 10. Passage Pommeraye : les statues avancent si on ne les regarde pas, ponts de verre
+    starts.push(s); kind = 'pommeraye'; arche(s + 1); D(s + 4, 'pommeraye_pilier_galerie'); D(s + 12, 'pommeraye_pilier_galerie'); D(s + 8, 'lv_boutique_chapeaux'); L.check(s); G(s, 16, 3); L.patrol(s + 3, s + 13, 'statue', 34); L.glass(s + 16, 14, 3); L.glass(s + 20, 14, 3);
+    L.pix(s + 2, 13); L.pix(s + 14, 13); L.pix(s + 17, 13); L.pix(s + 21, 13); s += 24;
+    // 11. Mémorial : la frise de dates, à frapper dans l'ordre
+    starts.push(s); kind = 'memorial'; arche(s + 1); D(s + 1, 'memorial_lampadaire_sobre'); D(s + 7, 'memorial_banc_beton'); D(s + 21, 'memorial_lampadaire_sobre'); G(s, 24, 3); L.frise({ blocs: [[s + 4, 11, 1848], [s + 8, 11, 1777], [s + 12, 11, 1888], [s + 16, 11, 1794]], porte: s + 19 });
+    L.pix(s + 2, 13); L.pix(s + 6, 13); L.pix(s + 10, 13); L.pix(s + 14, 13); L.pix(s + 22, 13); s += 24;
+    // 12. Tour LU : jets de vapeur, un parasol, puis l'arche
+    starts.push(s); kind = 'tourlu'; arche(s + 1); D(s + 8, 'lv_pan_stop'); D(s + 20, 'lv_abribus'); D(s + 30, 'lv_arbre_rue'); G(s, 36, 3); L.jet(s + 4, 4, 3200, 0); L.jet(s + 10, 4, 3000, 1500); L.spring(s + 16);
+    L.pix(s + 2, 13); L.pix(s + 7, 13); L.pix(s + 14, 13); L.pix(s + 21, 13); L.pix(s + 27, 13);
+  });
+  L.silhouettes = [{ x: starts[0] + 2, key: 'lv_sil_orange' }, { x: starts[0] + 15, key: 'lv_sil_jaune' }, { x: starts[0] + 20, key: 'lv_sil_ruban' }, { x: starts[0] + 23, key: 'lv_sil_oiseau' }];   // les sculptures en silhouette du Jardin des Plantes (section 1)
+  L.id = 'ligne-verte';
+  L.maxTime = 360;
+  L.reveal = 'bottomUp';
+  L.abilities = { crouch: true, grab: true };
+  L.skin = GP.LEVELS['machines'].skin;
+  L.thornKey = 'commun_pointes_fer_1'; L.thornText = 'AÏE, LES POINTES !';
+  L.gargoyleKey = 'lv_fuite';
+  L.sky = { farKey: fonds[0], farBottom: 236 };
+  L.farSwitch = starts.map(function (x, k) { return k === 0 ? [0, fonds[0]] : [x, fonds[k], names[k]]; });   // le fond change à chaque monument, son nom s'affiche
+  L.weatherCycle = 20000;                                       // la météo change toute seule toutes les 20 s (effets : docs/grammaire.md)
+  L.weatherText = { rain: 'LA MÉTÉO CHANGE TOUTE SEULE', sun: 'LA MÉTÉO CHANGE TOUTE SEULE' };
+  return L;
+})();
+
+// ---------- Arche d'arrivée (comme dans les niveaux de main) : à la fin de chaque niveau, on termine en rejoignant l'arche une fois tous les pixels pris ----------
+['cathedrale', 'chateau', 'feydeau', 'graslin', 'machines', 'chantiers', 'buren', 'hangar', 'pommeraye', 'memorial', 'tour-lu', 'ligne-verte'].forEach(function (id) {
+  var L = GP.LEVELS[id], x = L.width - 5;
+  L.exit = { x: x, y: L.top(x), key: 'signes_arche_arrivee' };
+});
+
+// ---------- Démo « 36 étoiles » : ?demo36=1 dans l'adresse donne 3 étoiles partout (en mémoire seulement : la vraie sauvegarde n'est pas touchée) ----------
+if (/[?&]demo36=1/.test(location.search) && GP.Progression) {
+  var initDemo = GP.Progression.init;
+  GP.Progression.init = function () {
+    initDemo.call(this);
+    var d = this.data;
+    GP.LOCATIONS.forEach(function (l, i) { if (l.playable) d.completed[l.id] = { pixels: 24, rate: 1, stars: 3, time: 60, deaths: 0 }; });
+    d.unlocked = GP.LAST_PLAYABLE;
+    this.persist = function () {};   // rien n'est enregistré pendant la démo
+  };
+}
+
+// ---------- Jardin des Plantes : les sculptures en silhouette du jardin (orange, jaune, ruban, oiseau), comme vu ensemble ----------
+GP.LEVELS['jardin-des-plantes'].silhouettes = [{ x: 49, key: 'lv_sil_orange' }, { x: 73, key: 'lv_sil_jaune' }, { x: 109, key: 'lv_sil_ruban' }, { x: 124, key: 'lv_sil_oiseau' }];

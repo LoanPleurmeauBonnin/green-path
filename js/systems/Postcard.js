@@ -163,83 +163,138 @@ GP.Postcard = (function () {
     return lines;
   }
 
+  // Planche de stickers : fond sombre, l'avatar en grand au centre, les monuments reconstruits en couronne autour de lui, des éclats de pixels
+  var SPARK_COLORS = ['#f4d35e', '#6fb7ff', '#ff7eb6', '#7ddc8a', '#ffffff', '#ffa94d'];
+  var SPARKS = {
+    plus: ['..x..', '..x..', 'xxxxx', '..x..', '..x..'],
+    diamond: ['..x..', '.xxx.', 'xxxxx', '.xxx.', '..x..'],
+    dot: ['xx', 'xx'],
+    cross: ['x.x', '.x.', 'x.x']
+  };
+  var SPARK_KEYS = ['plus', 'diamond', 'dot', 'cross', 'plus', 'dot'];
+  function drawGrid(c, grid, x, y, color) { grid.forEach(function (row, yy) { for (var xx = 0; xx < row.length; xx++) if (row[xx] === 'x') { c.fillStyle = color; c.fillRect(x + xx, y + yy, 1, 1); } }); }
+
+  // Choix du joueur : couleur de fond et monument au centre (gardés dans le navigateur, avec la carte)
+  var FONDS = [{ n: 'NUIT', bg: '#12141d', dot: '#1b1e2b' }, { n: 'MARINE', bg: '#0c1830', dot: '#13264a' }, { n: 'FORÊT', bg: '#0f2218', dot: '#183626' },
+    { n: 'BORDEAUX', bg: '#2a0f1a', dot: '#3b1626' }, { n: 'VIOLET', bg: '#1d1233', dot: '#2a1c4a' }];
+  var SHORT = { 'jardin-des-plantes': 'JARDIN', cathedrale: 'CATHÉDR.', chateau: 'CHÂTEAU', feydeau: 'FEYDEAU', graslin: 'GRASLIN', machines: 'MACHINES', chantiers: 'CHANTIERS',
+    buren: 'BUREN', hangar: 'HANGAR', pommeraye: 'POMMERAYE', memorial: 'MÉMORIAL', 'tour-lu': 'TOUR LU' };
+  var OPT_KEY = 'greenpath.postcard.options', opts = { fond: 0, centre: 'avatar' };
+  try { var rawOpt = storage() && storage().getItem(OPT_KEY); if (rawOpt) { var po = JSON.parse(rawOpt); opts.fond = num(po.fond, 0, FONDS.length - 1, 0); opts.centre = typeof po.centre === 'string' ? po.centre : 'avatar'; } } catch (e) { /* choix par défaut */ }
+  function saveOpts() { try { if (storage()) storage().setItem(OPT_KEY, JSON.stringify(opts)); } catch (e) { /* ignoré */ } }
+  /** Fonds et centres possibles : « avatar » puis chaque monument reconstruit, dans l'ordre du parcours. */
+  function centres() { var done = GP.Progression.data.completed; return ['avatar'].concat(GP.LOCATIONS.filter(function (l) { return done[l.id]; }).map(function (l) { return l.id; })); }
+  function centreValide() { return centres().indexOf(opts.centre) >= 0 ? opts.centre : 'avatar'; }
+  function nextFond() { opts.fond = (opts.fond + 1) % FONDS.length; saveOpts(); return FONDS[opts.fond].n; }
+  function nextCentre() { var l = centres(); opts.centre = l[(l.indexOf(centreValide()) + 1) % l.length]; saveOpts(); return centreName(); }
+  function fondName() { return FONDS[opts.fond % FONDS.length].n; }
+  function centreName() { var c = centreValide(); return c === 'avatar' ? 'AVATAR' : (SHORT[c] || c.toUpperCase()); }
+
   /** Dessine la carte (1800 × 1200 px). scene : pour lire les textures du jeu (ciel, monuments, météo). */
-  function render(scene, fin, character) {
+  function render(scene, fin, character, variant) {
+    var grand = (variant || GP.Postcard.style) === 'grand';   // « grand » : un grand personnage au centre et quatre grands monuments aux coins (planche de référence n° 2)
     var PA = GP.PixelArt, lo = PA.canvas(LW, LH), c = lo.ctx, rnd = PA.rng(20261112);
     var meteo = fin.meteo, lang = GP.I18n.lang;
     var st = meteo.disponible ? { isDay: !!meteo.estJour, cat: GP.Weather.categorize(meteo.code).cat } : { isDay: true, cat: 'clear' };
-    var kind = GP.LevelArt.skyKind(st), file = SKY_FILE[kind];
+    var kind = GP.LevelArt.skyKind(st);
     function tex(key) { return scene.textures.exists(key) ? scene.textures.get(key).getSourceImage() : null; }
     function put(key, x, y) { var im = tex(key); if (im) c.drawImage(im, Math.round(x), Math.round(y)); return im; }
 
-    // ciel en bandes (comme dans le jeu), puis soleil ou lune, étoiles et nuages
-    c.fillStyle = GP.PAL.d; c.fillRect(0, 0, LW, LH);
-    for (var b = 1; b <= 5; b++) { put('ciel_' + file + '_' + b, 0, (b - 1) * 54); put('ciel_' + file + '_' + b, 480, (b - 1) * 54); }
-    put('ciel_' + file + '_5', 0, 270); put('ciel_' + file + '_5', 480, 270);
-    var k;
-    if (kind === 'night' && st.cat !== 'overcast') for (k = 0; k < 46; k++) put('ciel_etoile_' + (1 + k % 3), rnd() * LW, rnd() * 150);
-    if (kind === 'night') put('ciel_lune_croissant', 440, 62);
-    else if (st.cat === 'clear' || st.cat === 'cloudy') put('ciel_soleil', 440, 62);
-    var clouds = CLOUDS[kind];
-    for (k = 0; k < (CLOUD_COUNT[st.cat] || 2); k++) put(clouds[k % clouds.length], rnd() * (LW - 50), 24 + rnd() * 150);
-
-    // les immeubles de Nantes au loin
-    c.fillStyle = SKYLINE[kind];
-    for (var bx = -4; bx < LW; ) {
-      var bw = 14 + Math.floor(rnd() * 14), bh = 30 + Math.floor(rnd() * 34);
-      c.fillStyle = SKYLINE[kind]; c.fillRect(bx, LINE_Y - bh, bw, bh);
-      c.fillStyle = kind === 'night' ? '#f4d35e' : 'rgba(255,255,255,0.22)';
-      for (var wy = LINE_Y - bh + 6; wy < LINE_Y - 8; wy += 9) for (var wx = bx + 3; wx < bx + bw - 3; wx += 6) if (kind !== 'night' || rnd() < 0.4) c.fillRect(wx, wy, 2, 3);
-      bx += bw + 1 + Math.floor(rnd() * 3);
+    // fond sombre légèrement grenu
+    if (grand) {   // marine profond, semé de petits carrés
+      c.fillStyle = '#0c1830'; c.fillRect(0, 0, LW, LH);
+      for (var gx0 = 6; gx0 < LW; gx0 += 12) for (var gy0 = 6; gy0 < LH; gy0 += 12) if (rnd() < 0.55) { c.fillStyle = rnd() < 0.12 ? '#2c5a78' : '#13264a'; c.fillRect(gx0 + Math.floor(rnd() * 5) - 2, gy0 + Math.floor(rnd() * 5) - 2, 3, 3); }
+    } else {
+      var pal = FONDS[opts.fond % FONDS.length];
+      c.fillStyle = pal.bg; c.fillRect(0, 0, LW, LH);
+      c.fillStyle = pal.dot; for (var g = 0; g < 900; g++) c.fillRect(Math.floor(rnd() * LW), Math.floor(rnd() * LH), 1, 1);
     }
 
-    // sol d'herbe, et la ligne verte
-    c.fillStyle = GP.PAL.G; c.fillRect(0, LINE_Y - 4, LW, BAND_Y - LINE_Y + 4);
-    c.fillStyle = GP.PAL.g; c.fillRect(0, LINE_Y - 4, LW, 1);
-    for (var lx = 0; lx < LW; lx += 8) { c.fillStyle = GP.PAL.h; c.fillRect(lx, LINE_Y, 6, 4); c.fillStyle = GP.PAL.g; c.fillRect(lx + 1, LINE_Y + 1, 4, 2); }
-
-    // les monuments reconstruits, dans l'ordre du parcours (un sur deux un peu en retrait pour qu'ils ne se cachent pas)
-    var done = GP.Progression.data.completed, list = GP.LOCATIONS.filter(function (l) { return done[l.id]; });
-    var x0 = 24, x1 = 500, step = list.length > 1 ? Math.min(52, (x1 - x0 - 48) / (list.length - 1)) : 0;
-    [1, 0].forEach(function (parity) {
-      list.forEach(function (l, i) {
-        if (i % 2 !== parity) return;
-        var key = GP.MapArt.monument(l, false), im = tex(key);
-        if (!im) return;
-        c.drawImage(im, Math.round(x0 + i * step + (48 - im.width) / 2), LINE_Y - 1 - im.height - (parity ? 6 : 0));
-      });
+    // couronne des monuments reconstruits, dans l'ordre du parcours, autour de l'avatar
+    var CX = 300, CY = 176, RX = 205, RY = 98, done = GP.Progression.data.completed;
+    var centreId = grand ? 'avatar' : centreValide();
+    var list = GP.LOCATIONS.filter(function (l) { return done[l.id] && l.id !== centreId; }), spots = [], n = list.length;
+    var bigs = [];
+    if (grand) {   // quatre grands monuments aux coins (×2), les autres en petit autour
+      var wish = ['cathedrale', 'chateau', 'machines', 'graslin'], corners = [[104, 98], [496, 98], [104, 236], [496, 236]];
+      wish.forEach(function (id, i) { var l = list.filter(function (q) { return q.id === id; })[0]; if (l) bigs.push({ l: l, x: corners[i][0], y: corners[i][1], rad: 56, big: true }); });
+      var rest = list.filter(function (l) { return !bigs.some(function (q) { return q.l === l; }); });
+      bigs.forEach(function (q) { spots.push(q); });
+      rest.forEach(function (l) { spots.push({ l: l, x: -999, y: -999, rad: 30, pending: true }); });
+    } else list.forEach(function (l, i) {
+      var a = -Math.PI / 2 + i * Math.PI * 2 / n;
+      spots.push({ l: l, x: Math.round(CX + RX * Math.cos(a)), y: Math.round(CY + RY * Math.sin(a)), rad: 30 });
     });
+    // la ligne verte : un pointillé qui relie la couronne
+    for (var an = 0; an < 360 && !grand; an += 1.2) if (Math.floor(an / 3.6) % 2) { c.fillStyle = '#2f8a52'; c.fillRect(Math.round(CX + RX * Math.cos(an * Math.PI / 180)), Math.round(CY + RY * Math.sin(an * Math.PI / 180)), 2, 2); }
 
-    // précipitations et brume, devant le décor
-    var n;
-    if (st.cat === 'rain' || st.cat === 'drizzle' || st.cat === 'storm') {
-      c.fillStyle = st.cat === 'storm' ? 'rgba(150,175,215,0.8)' : 'rgba(180,210,240,0.75)';
-      for (n = st.cat === 'drizzle' ? 50 : 110; n > 0; n--) c.fillRect(Math.floor(rnd() * LW), Math.floor(rnd() * LINE_Y), 1, 3);
-    } else if (st.cat === 'snow') {
-      c.fillStyle = 'rgba(255,255,255,0.9)';
-      for (n = 80; n > 0; n--) c.fillRect(Math.floor(rnd() * LW), Math.floor(rnd() * LINE_Y), 2, 2);
-    } else if (st.cat === 'fog') {
-      c.fillStyle = 'rgba(232,236,240,0.38)'; c.fillRect(0, 150, LW, LINE_Y - 150);
-      c.fillStyle = 'rgba(232,236,240,0.25)'; c.fillRect(0, 100, LW, 60);
+    // éclats de pixels et petits décors (soleil ou lune, nuages), posés sans recouvrir le reste
+    function free(x, y, r) {
+      if (y < 44 && (x < 340 || x > 420)) return false;             // titre et météo
+      if (r > 20 && y - r < 42) return false;                         // un monument ne recouvre pas le titre
+      if (y + r > 306 || Math.abs(x - CX) < (grand ? 74 : 56) && Math.abs(y - CY) < (grand ? 112 : 100)) return false;   // bandeau de texte, avatar
+      return spots.every(function (q) { return q.pending || Math.abs(q.x - x) > q.rad + r || Math.abs(q.y - y) > q.rad + r; });   // hors du carré de chaque monument
     }
+    var placed = [], tries, k;
+    function spot(r) { for (tries = 0; tries < 60; tries++) { var x = 12 + r + rnd() * (LW - 24 - 2 * r), y = 14 + r + rnd() * (LH - 28 - 2 * r); if (free(x, y, r) && placed.every(function (q) { return Math.hypot(q.x - x, q.y - y) > r + q.r + 6; })) { placed.push({ x: x, y: y, r: r }); return { x: x, y: y }; } } return null; }
+    var deco = [kind === 'night' ? 'ciel_lune_croissant' : (st.cat === 'clear' || st.cat === 'cloudy') ? 'ciel_soleil' : null];
+    var clouds = { day: ['ciel_nuage_blanc_a', 'ciel_nuage_blanc_b'], cloudy: ['ciel_nuage_blanc_b', 'ciel_nuage_gris_c'], grey: ['ciel_nuage_gris_a', 'ciel_nuage_gris_b'], storm: ['ciel_nuage_orage_a', 'ciel_nuage_gris_b'], night: ['ciel_nuage_nuit_a', 'ciel_nuage_nuit_b'] }[kind] || [];
+    deco = deco.concat(clouds).filter(Boolean);
+    deco.forEach(function (key) { var im = tex(key), p = im && spot(Math.max(im.width, im.height) / 2); if (im && p) c.drawImage(im, Math.round(p.x - im.width / 2), Math.round(p.y - im.height / 2)); });
+    spots.forEach(function (q) { if (q.pending) { var pm = spot(28); if (pm) { q.x = Math.round(pm.x); q.y = Math.round(pm.y); q.pending = false; } } });
+    var starGrid = STAR.map(function (row) { return row.replace(/y/g, 'x'); });                                 // une étoile autocollant par étoile gagnée
+    for (k = 0; k < Math.min(36, fin.etoiles); k++) { var ps = spot(9); if (ps) { drawGrid(c, starGrid, Math.round(ps.x) - 1, Math.round(ps.y) - 1, '#2a1f0a'); drawGrid(c, starGrid, Math.round(ps.x), Math.round(ps.y), '#f4d35e'); } }
+    for (k = 0; k < 90; k++) { var p = spot(5); if (p) drawGrid(c, SPARKS[SPARK_KEYS[k % SPARK_KEYS.length]], Math.round(p.x), Math.round(p.y), SPARK_COLORS[Math.floor(rnd() * SPARK_COLORS.length)]); }
+
+    // les monuments en autocollants : contour crème, puis le dessin
+    spots.forEach(function (q) {
+      if (q.big || q.pending) return;
+      var im = tex(GP.MapArt.monument(q.l, false));
+      if (!im) return;
+      var x = Math.round(q.x - im.width / 2), y = Math.round(q.y - im.height / 2), o = PA.canvas(im.width, im.height);
+      o.ctx.drawImage(im, 0, 0); o.ctx.globalCompositeOperation = 'source-in'; o.ctx.fillStyle = '#fff4d8'; o.ctx.fillRect(0, 0, im.width, im.height);
+      [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(function (d) { c.drawImage(o.cv, x + d[0], y + d[1]); });
+      c.drawImage(im, x, y);
+    });
 
     // agrandissement ×3 sans lissage, puis les éléments dessinés en grand : texte, avatar, étoile
     var cv = PA.canvas(LW * S, LH * S), ctx = cv.ctx;
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(lo.cv, 0, 0, LW * S, LH * S);
-    var W = LW * S, H = LH * S, font = GP.Config.FONT;
+    var W = LW * S, H = LH * S, font = GP.Config.FONT, ink = '#f4f7f2';
     ctx.textBaseline = 'top';
     function text(s, x, y, px, color, align) { ctx.font = px + 'px ' + font; ctx.fillStyle = color; ctx.textAlign = align || 'left'; ctx.fillText(s, x, y); }
 
-    // avatar du joueur, à côté de la ligne verte
-    var cfg = GP.Character.sanitize(character || GP.Character.defaultConfig()), grid = GP.Character.compose(cfg, 'cheer0'), AS = 8;
-    var ax = 540 * S, ay = (LINE_Y - 1) * S - GP.Character.H * AS;
-    ctx.fillStyle = 'rgba(20,24,46,0.35)'; ctx.fillRect(ax - 4, (LINE_Y - 1) * S - 4, GP.Character.W * AS + 8, 10);
-    for (var gy = 0; gy < GP.Character.H; gy++) for (var gx = 0; gx < GP.Character.W; gx++)
+    // les quatre grands monuments (×2), autocollants à contour crème
+    bigs.forEach(function (q) {
+      var im = tex(GP.MapArt.monument(q.l, false));
+      if (!im) return;
+      var K = 6, bw = im.width * K, bh = im.height * K, bx = Math.round(q.x * S - bw / 2), by = Math.round(q.y * S - bh / 2), o = PA.canvas(im.width, im.height);
+      o.ctx.drawImage(im, 0, 0); o.ctx.globalCompositeOperation = 'source-in'; o.ctx.fillStyle = '#fff4d8'; o.ctx.fillRect(0, 0, im.width, im.height);
+      [[-K, 0], [K, 0], [0, -K], [0, K]].forEach(function (d) { ctx.drawImage(o.cv, bx + d[0], by + d[1], bw, bh); });
+      ctx.drawImage(im, bx, by, bw, bh);
+    });
+
+    // l'avatar du joueur, grand, au centre : c'est le sujet de la carte
+    var cfg = GP.Character.sanitize(character || GP.Character.defaultConfig()), grid = GP.Character.compose(cfg, 'cheer0'), AS = grand ? 22 : (centreId === 'avatar' ? 13 : 8);
+    var aw = GP.Character.W * AS, ah = GP.Character.H * AS, ax = Math.round(CX * S - aw / 2), ay = Math.round(CY * S - ah / 2);
+    if (centreId !== 'avatar') {   // le monument choisi, en grand au centre (autocollant), l'avatar plus petit devant lui
+      var cm = tex(GP.MapArt.monument(GP.LOCATIONS.filter(function (l) { return l.id === centreId; })[0], false));
+      if (cm) {
+        var K = 9, mw = cm.width * K, mh = cm.height * K, mx = Math.round(CX * S - mw / 2), my = Math.round(CY * S - mh / 2 - 10), mo = PA.canvas(cm.width, cm.height);
+        mo.ctx.drawImage(cm, 0, 0); mo.ctx.globalCompositeOperation = 'source-in'; mo.ctx.fillStyle = '#fff4d8'; mo.ctx.fillRect(0, 0, cm.width, cm.height);
+        [[-K, 0], [K, 0], [0, -K], [0, K]].forEach(function (d) { ctx.drawImage(mo.cv, mx + d[0], my + d[1], mw, mh); });
+        ctx.drawImage(cm, mx, my, mw, mh);
+      }
+      ax = Math.round(CX * S + 150); ay = Math.round(CY * S + 330 - ah);   // l'avatar, en bas à droite du monument
+    }
+    ctx.fillStyle = 'rgba(255,244,216,0.10)'; ctx.fillRect(ax - 18, ay + ah + 4, aw + 36, 14);   // ombre au sol
+    // contour crème : même style d'autocollant
+    for (var gy = 0; gy < GP.Character.H; gy++) for (var gx = 0; gx < GP.Character.W; gx++) if (grid[gy][gx]) [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(function (d) { ctx.fillStyle = '#fff4d8'; ctx.fillRect(ax + (gx + d[0]) * AS, ay + (gy + d[1]) * AS, AS, AS); });
+    for (gy = 0; gy < GP.Character.H; gy++) for (gx = 0; gx < GP.Character.W; gx++)
       if (grid[gy][gx]) { ctx.fillStyle = grid[gy][gx]; ctx.fillRect(ax + gx * AS, ay + gy * AS, AS, AS); }
 
-    // titre et météo : dark sur ciel clair, clair sur ciel sombre
-    var ink = luminance(c, 8, 8) > 0.55 ? '#23233a' : '#f4f7f2';
+    // titre et météo
     text('GREEN PATH · NANTES', 60, 54, 48, ink);
     if (meteo.disponible) {
       GP.WeatherFX.makeTextures(scene);
@@ -253,19 +308,18 @@ GP.Postcard = (function () {
       text(temp, W - 60, 62, 40, ink, 'right');
     }
 
-    // bandeau de texte : clair sous un ciel clair (texte foncé), sombre sous un ciel sombre (texte clair)
-    var light = luminance(c, 8, 200) > 0.55, band = light ? '#f1ead6' : '#14182e', fg = light ? '#23233a' : '#f4f7f2';
-    ctx.fillStyle = band; ctx.fillRect(0, BAND_Y * S, W, H - BAND_Y * S);
+    // bandeau de texte (comme la légende d'une planche d'autocollants) : sombre, liseré vert, phrase, pseudo et étoiles
+    ctx.fillStyle = 'rgba(8,9,14,0.92)'; ctx.fillRect(0, BAND_Y * S, W, H - BAND_Y * S);
     ctx.fillStyle = GP.PAL.g; ctx.fillRect(0, BAND_Y * S, W, 6);
     ctx.font = '32px ' + font;
-    wrap(ctx, sentence(fin, lang), W - 120).slice(0, 3).forEach(function (line, i) { text(line, 60, BAND_Y * S + 44 + i * 50, 32, fg); });
+    wrap(ctx, sentence(fin, lang), W - 120).slice(0, 3).forEach(function (line, i) { text(line, 60, BAND_Y * S + 44 + i * 50, 32, ink); });
     var fy = H - 32 - 36;
-    if (fin.pseudo) text(fin.pseudo, 60, fy, 32, fg);
+    if (fin.pseudo) text(fin.pseudo, 60, fy, 32, ink);
     var label = fin.etoiles + ' / ' + fin.total;
     ctx.font = '32px ' + font;
     var lw = ctx.measureText(label).width, sx = W - 60 - lw - 20 - 9 * 4;
     STAR.forEach(function (row, yy) { for (var xx = 0; xx < 9; xx++) if (row[xx] === 'y') { ctx.fillStyle = '#e0a82e'; ctx.fillRect(sx + xx * 4, fy - 2 + yy * 4, 4, 4); } });
-    text(label, W - 60, fy, 32, fg, 'right');
+    text(label, W - 60, fy, 32, ink, 'right');
     return cv.cv;
   }
 
@@ -293,6 +347,7 @@ GP.Postcard = (function () {
   return {
     W: LW * S, H: LH * S, levels: levels, allDone: allDone, get: get, record: record, setPseudo: setPseudo, clear: clear,
     clean: clean, cleanPseudo: cleanPseudo, isoLocal: isoLocal, skyPhrase: skyPhrase, sentence: sentence, fileName: fileName,
-    render: render, preview: preview, download: download
+    render: render, preview: preview, download: download, style: 'planche',
+    nextFond: nextFond, nextCentre: nextCentre, fondName: fondName, centreName: centreName
   };
 })();

@@ -378,6 +378,14 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     this.barState = fix(this.txt(6, H - 15, '', GP.PAL.y));
     GP.UI.button(this, W - 4 - 128, H - 19, 128, 'COMMENT JOUER ?', function () { if (!self.panel && !self.moving) self.openHelp(); })
       .objs.forEach(function (o) { o.setDepth(52); });
+    if (GP.SECRET_LOCATION && GP.Progression.totalStars() >= 36) {   // niveau secret : visible seulement avec 3 étoiles dans chacun des 12 niveaux
+      var rec = null; try { rec = JSON.parse(localStorage.getItem('gp_secret') || 'null'); } catch (e) { rec = null; }
+      GP.UI.button(this, W - 4 - 128, 48, 128, 'LIGNE VERTE' + (rec ? ' ' + Math.floor(rec.time / 60) + ':' + String(rec.time % 60).padStart(2, '0') : ''), function () {
+        if (self.panel || self.moving) return;
+        GP.Sfx.play('confirm'); self.cameras.main.fadeOut(300, 20, 24, 46);
+        self.cameras.main.once('camerafadeoutcomplete', function () { self.scene.start('Game', { index: 0, secret: true }); });
+      }, { primary: true }).objs.forEach(function (o) { o.setDepth(52); o.setScrollFactor(0); });
+    }
     // retour à l'accueil sans clavier (sur téléphone il n'y a pas d'Échap) : flèche dans le cadre GREEN PATH, à gauche du titre
     GP.UI.backIcon(this, function () { self.onEsc(); }, 15, 8).objs.forEach(function (o) { o.setScrollFactor(0); });
     this.hud = true;

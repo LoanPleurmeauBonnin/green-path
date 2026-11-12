@@ -87,6 +87,11 @@ GP.Dangers = function (scene) {
     return { def: b, cone: cone, core: core, x: b.x0 * 16, ph: i * 1.7 };
   });
 
+  // ---------- Météo qui change toute seule (niveau secret) : toutes les L.weatherCycle ms on passe à la météo simulée suivante ----------
+  if (L.weatherCycle && GP.Weather && GP.Weather.nextSim) {
+    scene.time.addEvent({ delay: L.weatherCycle, loop: true, callback: function () { var st = GP.Weather.nextSim(); if (st && !scene.finished) scene.applyWeather(st); } });
+  }
+
   // ---------- Gardes (Château) : un garde sur place dont le regard balaie ; à hauteur de tête on passe accroupi, à hauteur de chevilles on saute ; entre deux regards il se retourne ----------
   this.gardes = (L.gardes || []).map(function (g) {
     var floor = (L.top(g.x) * 16), img = scene.add.image(g.x * 16 + 8, floor, 'lv_garde').setOrigin(0.5, 1).setDepth(7).setFlipX(g.dir < 0);
@@ -262,10 +267,10 @@ GP.Dangers = function (scene) {
   this.elephants = (L.elephants || []).map(function (e) {
     var floorY = 15 * 16 + 8, x0 = e.west * 16 - 10, dx = e.east * 16 + 16 - 128 - x0;                    // pieds dans l'eau du canal
     var img = scene.add.image(x0, floorY, 'lv_elephant').setOrigin(0, 1).setDepth(7), topY = floorY - img.height;
-    var parts = [[8, 58, 18], [22, 32, 18], [40, 12, 34], [78, 24, 20], [102, 66, 24]].map(function (q) {   // [x, y, largeur] dans l'image : croupe, dos, toit du balcon, oreille, défenses
-      var pl = scene.add.image(x0 + q[0] + 2, topY + q[1] + 2, 'lv_tileset').setOrigin(0, 0).setDisplaySize(q[2], 4).setVisible(false);
+    var parts = [[8, 58, 20], [20, 46, 10], [24, 32, 20], [42, 12, 36], [78, 24, 22], [98, 34, 14], [110, 46, 12], [102, 66, 26]].map(function (q) {   // [x, y, largeur] dans l'image : croupe, marche, dos, toit du balcon, oreille, front, tête, défenses : une surface continue le long de la silhouette, sans trou où l'on traverse l'éléphant
+      var pl = scene.add.image(x0 + q[0] + 2, topY + q[1] + 2, 'lv_tileset').setOrigin(0, 0).setDisplaySize(q[2], 98 - q[1]).setVisible(false);   // chaque segment est une colonne pleine jusqu'aux pattes : tout l'éléphant est de la matière, on ne le traverse plus
       scene.physics.add.existing(pl);
-      var b = pl.body; b.setAllowGravity(false); b.setImmovable(true); b.checkCollision.down = false; b.checkCollision.left = false; b.checkCollision.right = false;
+      var b = pl.body; b.setAllowGravity(false); b.setImmovable(true);
       scene.physics.add.collider(scene.player, pl);
       return { body: b, ox: q[0] + 2 };
     });

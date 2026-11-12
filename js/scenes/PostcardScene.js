@@ -15,30 +15,35 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
     if (!fin) { this.leave('Menu'); return; }   // pas de carte tant que la partie n'est pas terminée
     this.fin = fin;
 
-    this.add.rectangle(20, 12, 440, 246, GP.int(P.k)).setOrigin(0);
-    this.add.rectangle(22, 14, 436, 242, GP.int(P.d)).setOrigin(0);
-    this.add.rectangle(22, 33, 436, 1, GP.int(P.G)).setOrigin(0);
-    UI.txt(this, 32, 20, 'CARTE POSTALE', P.g);
-    UI.txt(this, 450, 20, 'NANTES', P.y).setOrigin(1, 0);
+    var DX = GP.Config.DX;   // l'écran est centré : la mise en page de 480 px est décalée de DX sur les écrans plus larges
+    this.add.rectangle(20 + DX, 12, 440, 252, GP.int(P.k)).setOrigin(0);
+    this.add.rectangle(22 + DX, 14, 436, 248, GP.int(P.d)).setOrigin(0);
+    this.add.rectangle(22 + DX, 33, 436, 1, GP.int(P.G)).setOrigin(0);
+    UI.txt(this, 32 + DX, 20, 'CARTE POSTALE', P.g);
+    UI.txt(this, 450 + DX, 20, 'NANTES', P.y).setOrigin(1, 0);
 
-    // aperçu de la carte (la vraie carte fait 1800 × 1200)
+    // aperçu de la carte, grand et centré (la vraie carte fait 1800 × 1200)
     this.card = GP.Postcard.render(this, fin, GP.Progression.data.character);
-    GP.PixelArt.toTexture(this, 'postcard_preview', GP.Postcard.preview(this.card, 240, 160));
-    this.add.rectangle(30, 42, 244, 164, GP.int(P.k)).setOrigin(0);
-    this.add.image(32, 44, 'postcard_preview').setOrigin(0);
-    UI.txt(this, 32, 212, 'CARTE 1800 × 1200 PX · PNG', P.m);
+    GP.PixelArt.toTexture(this, 'postcard_preview', GP.Postcard.preview(this.card, 264, 176));
+    this.add.rectangle(106 + DX, 36, 268, 180, GP.int(P.k)).setOrigin(0);
+    this.add.image(108 + DX, 38, 'postcard_preview').setOrigin(0);
 
-    // la phrase de la carte, en texte normal
-    this.sentence = UI.txt(this, 286, 42, GP.Postcard.sentence(fin, GP.I18n.lang), P.w, { wordWrap: { width: 164 }, lineSpacing: 3 });
-    UI.txt(this, 286, 112, 'TON NOM SUR LA CARTE (FACULTATIF)', P.m, { wordWrap: { width: 164 }, lineSpacing: 3 });
-    this.makeInput(286, 134, 164, 16);
+    // à gauche et à droite de la carte : changer la couleur de fond et le monument (ou l'avatar) au centre
+    var bFond = UI.button(this, 26 + DX, 92, 76, 'FOND', function () { GP.Postcard.nextFond(); self.redraw(); }, { height: 18 });
+    var bCentre = UI.button(this, 378 + DX, 92, 76, 'CENTRE', function () { GP.Postcard.nextCentre(); self.redraw(); }, { height: 18 });
+    [bFond, bCentre].forEach(function (b) { b.objs.forEach(function (o) { o.setDepth(10); }); });
+    this.fondTxt = UI.txt(this, 64 + DX, 114, '', P.y).setOrigin(0.5, 0);
+    this.centreTxt = UI.txt(this, 416 + DX, 114, '', P.y).setOrigin(0.5, 0);
+    this.labels();
 
-    var bDl = UI.button(this, 286 + GP.Config.DX, 160, 164, 'TÉLÉCHARGER MA CARTE', function () { self.download(); }, { primary: true, height: 18 });
-    var bRe = UI.button(this, 286 + GP.Config.DX, 184, 164, 'REJOUER', function () { self.leave('Map'); }, { height: 18 });
+    // en dessous : le pseudo (facultatif, la phrase est déjà sur la carte), TÉLÉCHARGER et REJOUER
+    this.makeInput(32, 224, 120, 18);
+    var bDl = UI.button(this, 158 + DX, 224, 170, 'TÉLÉCHARGER MA CARTE', function () { self.download(); }, { primary: true, height: 18 });
+    var bRe = UI.button(this, 334 + DX, 224, 106, 'REJOUER', function () { self.leave('Map'); }, { height: 18 });
     [bDl, bRe].forEach(function (b) { b.objs.forEach(function (o) { o.setDepth(10); }); });
-    this.status = UI.txt(this, 286, 210, '', P.g, { wordWrap: { width: 164 }, lineSpacing: 3 });
+    this.status = UI.txt(this, 240 + DX, 245, '', P.g).setOrigin(0.5, 0);
 
-    this.hint = UI.txt(this, 240, 246, '', P.m).setOrigin(0.5);
+    this.hint = UI.txt(this, 240 + DX, 254, '', P.m).setOrigin(0.5);
     GP.Prompts.bind(this, this.hint, '{confirm} TÉLÉCHARGER  {back} MENU');
 
     var kb = this.input.keyboard;
@@ -46,6 +51,18 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
     kb.on('keydown-SPACE', function () { self.download(); });
     kb.on('keydown-ESC', function () { self.leave('Menu'); });
     this.events.once('shutdown', function () { kb.removeAllListeners(); self.removeInput(); });
+  }
+
+  /** Noms des choix en cours (fond, centre) sous les boutons. */
+  labels() { this.fondTxt.setText(GP.Postcard.fondName()); this.centreTxt.setText(GP.Postcard.centreName()); }
+
+  /** Redessine la carte après un choix de fond ou de centre. */
+  redraw() {
+    this.card = GP.Postcard.render(this, GP.Postcard.get() || this.fin, GP.Progression.data.character);
+    GP.PixelArt.toTexture(this, 'postcard_preview', GP.Postcard.preview(this.card, 264, 176));
+    this.labels();
+    this.status.setText('');
+    GP.Sfx.play('select');
   }
 
   /** Télécharge la carte et confirme. */
@@ -62,7 +79,7 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
     if (!fin) return;
     this.fin = fin;
     this.card = GP.Postcard.render(this, fin, GP.Progression.data.character);
-    GP.PixelArt.toTexture(this, 'postcard_preview', GP.Postcard.preview(this.card, 240, 160));
+    GP.PixelArt.toTexture(this, 'postcard_preview', GP.Postcard.preview(this.card, 264, 176));
     this.status.setText('');
   }
 
@@ -70,7 +87,7 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
   makeInput(x, y, w, h) {
     var self = this, el = document.createElement('input'), timer = null;
     el.type = 'text'; el.maxLength = 16; el.value = this.fin.pseudo || '';
-    el.autocomplete = 'off'; el.spellcheck = false; el.setAttribute('aria-label', GP.t('TON NOM SUR LA CARTE (FACULTATIF)'));
+    el.placeholder = GP.t('TON NOM'); el.autocomplete = 'off'; el.spellcheck = false; el.setAttribute('aria-label', GP.t('TON NOM SUR LA CARTE (FACULTATIF)'));
     el.style.cssText = 'position:fixed;z-index:5;box-sizing:border-box;margin:0;padding:0 4px;border:2px solid ' + GP.PAL.g +
       ';background:' + GP.PAL.k + ';color:' + GP.PAL.w + ';outline:none;font-family:' + GP.Config.FONT + ';';
     document.body.appendChild(el);
