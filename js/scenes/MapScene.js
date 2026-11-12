@@ -62,7 +62,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     kb.on('keydown-ESC', function () { self.onEsc(); });
     kb.on('keydown-H', function () { if (!self.panel) self.openHelp(); else if (self.panelKind === 'help') self.closePanel(); });
     kb.on('keydown-M', function () { self.P.muted = !self.P.muted; self.toast(self.P.muted ? 'SON DÉSACTIVÉ' : 'SON ACTIVÉ'); });
-    if (GP.Config.DEV_TOOLS) kb.on('keydown-W', function () { self.cycleWeather(); });
+    if (GP.Config.DEV_TOOLS || GP.Cloud.isAdmin) kb.on('keydown-W', function () { self.cycleWeather(); });
     this.events.once('shutdown', function () { kb.removeAllListeners(); });
   }
 
@@ -211,7 +211,8 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       // piédestal de la planche « carte » : disponible, terminé, verrouillé, à venir
       var img = self.add.image(x, y + 6, 'carte_piedestal_disponible').setOrigin(0.5, 1).setDepth(10).setInteractive({ useHandCursor: true });
       var num = self.txt(x, y - 2, String(i + 1), GP.PAL.k).setOrigin(0.5).setDepth(11);
-      var stars = [0, 1, 2].map(function (k) { return self.add.image(x - 8 + k * 8, y + 12, 'star_off').setDepth(12).setVisible(false); });
+      // trois étoiles en arc de cercle sous le piédestal, centre de l'arc au-dessus d'elles (le milieu est le plus bas)
+      var stars = [0, 1, 2].map(function (k) { return self.add.image(x + (k - 1) * 11, y + (k === 1 ? 12 : 9), 'star_off').setDepth(12).setVisible(false); });
       img.on('pointerover', function () { self.hover = i; self.updateBar(); });
       img.on('pointerout', function () { if (self.hover === i) { self.hover = -1; self.updateBar(); } });
       img.on('pointerdown', function () { if (!self.panel) self.goTo(i, true); });

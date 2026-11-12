@@ -85,7 +85,7 @@
 
 **Causes et corrections** : le libellé du menu était centré avec sa flèche de sélection (le mot se décalait de 8 px) → flèche séparée ; les boutons de hauteur 20 plaçaient le texte 2 px trop haut → centrage vertical dans `GP.UI.button` ; l'avatar de l'accueil ne marchait pas parce que le système demandait moins d'animations (`prefers-reduced-motion`) → option **OPTIONS → ANIMATIONS** (Auto, Activées, Réduites), et en mouvement réduit l'avatar attend au milieu de la ligne au lieu de marcher sur place ; sur la carte les pieds descendent au centre du disque (chiffre derrière l'avatar), progressivement près de chaque étape ; le bouton PAUSE n'existe plus que sur écran tactile (la météo se cale alors sur le bord droit) ; les blocs de terrain étaient peints en coupe franche → rebords (sprites d'herbe et de terre dédiés au Jardin, liseré, reflet, ombre et coins arrondis ailleurs, dessous des blocs suspendus), tuiles variées.
 
-**Équilibrage** : voir [equilibrage.md](equilibrage.md). Début plus doux, pic du niveau 6 écrêté, ennemis +10 % aux niveaux 7 à 12, Mémorial durci sans ennemi ni pointe (leurres de plus en plus lisibles à retenir, marée plus lourde). `tools/balance.cjs` et `tests/balance.test.js`.
+**Équilibrage** : voir equilibrage.md (document retiré du dépôt, voir l\'historique git). Début plus doux, pic du niveau 6 écrêté, ennemis +10 % aux niveaux 7 à 12, Mémorial durci sans ennemi ni pointe (leurres de plus en plus lisibles à retenir, marée plus lourde). `tools/balance.cjs` et `tests/balance.test.js`.
 
 **Recette exécutée** : 57 tests Node ; contrôles dans le navigateur local (menu, onglets, Options, carte, Jardin, Chantiers). **Non réalisé** : aucun playtest humain, pas de test sur téléphone physique ; les neuf diagnostics géométriques n'ont pas été relancés (Playwright absent) ; les douze niveaux n'ont pas tous été revus à l'écran.
 
@@ -95,7 +95,7 @@
 
 **Causes et corrections** : le service worker servait son cache d'abord et son nom ne changeait pas → réseau d'abord (copie locale hors ligne ou après 4 s), nom de cache changé à chaque publication (`tools/bump-sw.cjs`), rechargement unique à la mise à jour ; chargement et compte étaient en pixels fixes → échelle `--u` (un pixel de jeu en pixels d'écran) pour avoir la taille de texte du reste du jeu ; les tuiles d'herbe ont leur première rangée presque vide, donc le trait du sol était 1 px sous la collision (vérifié pixel par pixel : un pixel vide entre les pieds et l'herbe) → tuile remontée d'un pixel ; sur la carte, un arbre recouvrait le monument (tronqué) → distance minimale aux monuments.
 
-**Ressenti** : réglage `feel-1`, voir [ressenti.md](ressenti.md) : demi-gravité à l'apex, correction de coin de plafond, rebord frôlé, saut depuis l'accroupi, hisser en poussant vers le mur ; conservation de la vitesse des plateformes essayée et écartée.
+**Ressenti** : réglage `feel-1`, voir ressenti.md (document retiré du dépôt, voir l\'historique git) : demi-gravité à l'apex, correction de coin de plafond, rebord frôlé, saut depuis l'accroupi, hisser en poussant vers le mur ; conservation de la vitesse des plateformes essayée et écartée.
 
 **Recette exécutée** : 60 tests Node ; essais scriptés dans le navigateur (saut, coin de plafond, rebord, accroupi, marche de la Cathédrale). **Non réalisé** : aucun playtest humain ; niveaux 7 à 12 non rejoués ; la « troncature » exacte vue sur les captures n'a pas pu être identifiée au-delà du décor sur la carte.
 
@@ -103,7 +103,7 @@
 
 **Demandes** : plus d'icône check sur les niveaux finis (le piédestal doré suffit) ; plantage en coupant le son ; niveau 2 infinissable ; une méthode (skills) pour des niveaux cohérents à la Mario.
 
-**Corrections** : la méthode `sound()` de l'écran Options était masquée par `scene.sound` de Phaser (« self.sound is not a function ») → `toggleSound()` ; icône check retirée de la carte. Skills `level-design` et `platformer` installés (non versionnés). Nouveau **contrôleur de faisabilité** (`tools/solvability.cjs`, [methode-niveaux.md](methode-niveaux.md)) : il simule le joueur au pixel contre la géométrie. Il a retrouvé exactement le blocage du niveau 2 (x=95 : les montants de la porte des toits étaient des murs de 4 tuiles sur le chemin) et un second, au niveau 4 (x=132 : une colonne de balcon barrait l'accès depuis les bateaux). Corrigés par des retouches (`REPAIRS` dans `GZoneLevels.js`). Les 11 niveaux du moteur actuel passent (arrivée, pixels, lanternes).
+**Corrections** : la méthode `sound()` de l'écran Options était masquée par `scene.sound` de Phaser (« self.sound is not a function ») → `toggleSound()` ; icône check retirée de la carte. Skills `level-design` et `platformer` installés (non versionnés). Nouveau **contrôleur de faisabilité** (`tools/solvability.cjs`, methode-niveaux.md (document retiré du dépôt, voir l\'historique git)) : il simule le joueur au pixel contre la géométrie. Il a retrouvé exactement le blocage du niveau 2 (x=95 : les montants de la porte des toits étaient des murs de 4 tuiles sur le chemin) et un second, au niveau 4 (x=132 : une colonne de balcon barrait l'accès depuis les bateaux). Corrigés par des retouches (`REPAIRS` dans `GZoneLevels.js`). Les 11 niveaux du moteur actuel passent (arrivée, pixels, lanternes).
 
 **Recette exécutée** : 72 tests Node (dont un test de faisabilité par niveau). **Non réalisé** : refonte « à la Mario » des 12 niveaux (rythme, mécaniques une à une, textures et décor du niveau 2) ; le Château (ancien moteur), les timings de pièges, les ennemis et les courants d'air du niveau 12 ne sont pas contrôlés ; aucun playtest humain.
 
@@ -169,7 +169,7 @@
 
 ## Mercredi 11 novembre 2026 (suite 8) — carte postale de fin de partie
 
-**Demande** : le butin de fin de partie décrit dans [spec-carte-postale.md](spec-carte-postale.md) : une carte postale de Nantes reconstruite, unique car elle garde l'avatar, les étoiles, la date et la **météo réelle de Nantes au moment de la fin**.
+**Demande** : le butin de fin de partie décrit dans spec-carte-postale.md (document retiré du dépôt, voir l\'historique git) : une carte postale de Nantes reconstruite, unique car elle garde l'avatar, les étoiles, la date et la **météo réelle de Nantes au moment de la fin**.
 
 **Réalisé** : `js/systems/Postcard.js` (enregistrement de la fin de partie, phrase, rendu 1800 × 1200, téléchargement), `js/scenes/PostcardScene.js` (aperçu, phrase en texte normal, champ du pseudo, TÉLÉCHARGER MA CARTE, REJOUER), bouton MA CARTE du menu, suite de l'écran de fin après le dernier niveau. Rendu net : illustration dessinée en 600 × 400 puis agrandie ×3 sans lissage ; texte dessiné directement en grand, par multiples de 8 px ; ciel, nuages, soleil et lune du jeu ; fond de texte clair sous un ciel clair, sombre sous un ciel sombre.
 
@@ -307,3 +307,15 @@
 **À propos** : texte des crédits fourni par l'équipe (faute « hénergement » corrigée en « hébergement ») ; mise en page par groupes séparés par un filet, libellés verts à gauche et texte à droite (crédits, sources), intitulés verts au-dessus de chaque paragraphe (confidentialité). Contenu des trois rubriques dans `AboutScene.content()`, traductions dans `en.js`.
 
 **Non réalisé** : la mention « GPT-6.1 Sol via OpenCode » n'apparaît plus dans les crédits du jeu (texte fourni) ; à rapprocher de la déclaration d'usage de l'IA. Aucun playtest humain.
+
+## Jeudi 12 novembre 2026 — étoiles en arc, météo de test admin, livrables et nettoyage du dépôt
+
+**Étoiles** : les trois étoiles de chaque niveau forment un arc sous le piédestal (milieu plus bas), plus proche de lui.
+
+**Météo de test (admin)** : avec un compte admin connecté, le menu pause d'un niveau a une ligne MÉTÉO qui fait défiler les météos simulées (soleil, nuit, pluie, nuages, vent, brume, neige, nuit pluie, orage) puis revient à la vraie météo ; touche N en niveau, W sur la carte. Pour les autres joueurs rien ne change.
+
+**Livrables** : README réécrit (tableau des livrables, mapping data, fallback, architecture du code) ; manifest et cartel mis à jour (12 niveaux, version 0.6, URL du jeu) ; sketch p5.js ajouté (`sketch/`, assise → centre → côtés, météo d'Open-Meteo avec secours) ; fiche de test croisé à remplir (`docs/test-croise.md`).
+
+**Nettoyage** : le dépôt ne garde que le jeu, l'éditeur, la base Supabase et les documents de mission ; tests, outils (sauf `tools/bump-sw.cjs`), rapports internes et captures non citées sont retirés (toujours consultables dans l'historique git).
+
+**Non réalisé** : test croisé, captation et soutenance (à faire par l'équipe) ; lien « Webapp » du formulaire à corriger (`green-path-sepia.vercel.app` répond 404, le jeu est sur `green-path-game.vercel.app`).
