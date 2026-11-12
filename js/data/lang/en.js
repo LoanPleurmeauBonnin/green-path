@@ -15,6 +15,7 @@ GP.EN = {
     privacy6: "Controller: the Green Path team (educational project, ESD Nantes). Questions and requests: issues on the GitHub repository LoanPleurmeauBonnin/green-path. This text informs; it is not legal advice."
   },
   words: {
+    'RETOUR À LA CARTE': 'BACK TO THE MAP',
     'MUSIQUE': 'MUSIC', 'ACTIVÉE': 'ON', 'DÉSACTIVÉE': 'OFF',
     // --- météo de test (admin) ---
     'MÉTÉO': 'WEATHER', 'RÉELLE': 'LIVE', 'SOLEIL': 'SUN', 'NUIT': 'NIGHT', 'NUAGES': 'CLOUDS', 'VENT': 'WIND', 'NEIGE': 'SNOW', 'NUIT PLUIE': 'NIGHT RAIN', 'ORAGE': 'STORM',
