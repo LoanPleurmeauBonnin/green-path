@@ -10,6 +10,11 @@ Ordinateur, ou téléphone tenu en paysage · clavier, tactile ou manette · fra
 
 ![Écran d'accueil](docs/screenshots/menu.png)
 
+### 🎬 Le trailer
+<video src="https://github.com/LoanPleurmeauBonnin/green-path/raw/main/captation/trailer.mp4" controls muted width="100%"></video>
+
+[Voir le trailer (MP4)](captation/trailer.mp4) · [La synthèse A4 du projet (PDF)](docs/synthese.pdf) · [Post LinkedIn](https://lnkd.in/eYca6xJr) · [Moodboard UI (Pinterest)](https://fr.pinterest.com/Floflo_rce/green-path)
+
 ## Pourquoi on y revient
 - 🌦️ **La météo de Nantes entre dans le jeu.** Il pleut à Nantes ? Le sol glisse et la pluie tombe dans ton niveau. Du vent ? Il pousse tes sauts. Nuit ou brume ? Les pixels se voient moins loin.
 - 🏰 **12 lieux, 12 manières de jouer** : tonneaux et herses au Château, colonnes à escalader à la Cathédrale, parasols qui font rebondir à Graslin, le Grand Éléphant des Machines de l'île… et 3 boss.
@@ -51,6 +56,8 @@ Projet noté ESD Nantes (B3), atelier PATRIMOINE.EXE / NANTES 001 — Florine RA
 | Test croisé silencieux | [docs/test-croise.md](docs/test-croise.md) |
 | Manifest, cartel (12 patrimoines) | [manifest.json](manifest.json), [CARTEL.md](CARTEL.md) |
 | Captation (hero, détail, process, démo 23 s, vignette) | [captation/](captation/) |
+| Trailer vidéo | [captation/trailer.mp4](captation/trailer.mp4) |
+| Synthèse A4 (recherche, météo, V1 à V3, test croisé Sowam, rôles, liens) | [docs/synthese.pdf](docs/synthese.pdf) |
 | Droits, crédits, sources | [CREDITS.md](CREDITS.md), [docs/sources.md](docs/sources.md), [docs/images-candidates.md](docs/images-candidates.md) |
 | Carnet de bord (décisions, itérations) | [docs/carnet-de-bord.md](docs/carnet-de-bord.md) |
 
@@ -159,7 +166,7 @@ supabase/                schema.sql et migrations (pseudo, sauvegarde, classemen
 sketch/                  sketch p5.js (livrable J1)
 tools/                   bump-sw.cjs (cache hors ligne), smoke.cjs et verify-credits.cjs (contrôles)
 .github/workflows/       CI : smoke à chaque push et pull request
-captation/               hero, détail, process, démo, vignette (livrable J3)
+captation/               hero, détail, process, démo, trailer, vignette (livrable J3)
 ```
 
 ## Contributions
