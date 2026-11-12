@@ -946,6 +946,59 @@ GP.LevelArt = (function () {
     R(ctx, 4, 6, 2, 8, '#6a4a1a'); R(ctx, 2, 12, 6, 2, '#6a4a1a'); PA.disc(ctx, 5, 4, 4, '#fff1a8'); PA.disc(ctx, 5, 4, 2, '#ffffff');
     return finir(o.cv);
   }
+  /** Grue Titan (portique à tour treillis, flèche à droite, contre-flèche et contrepoids à gauche) : x = pied de la tour, y = sol, h = hauteur de la tour. */
+  function grueTitan(ctx, x, y, h, clair, fonce) {
+    var top = y - h, i;
+    R(ctx, x - 7, top, 3, h, fonce); R(ctx, x + 4, top, 3, h, fonce);                                              // montants de la tour
+    for (i = 0; i < h - 6; i += 10) { seg(ctx, x - 6, top + i, x + 6, top + i + 10, 1.4, clair); seg(ctx, x + 6, top + i, x - 6, top + i + 10, 1.4, clair); R(ctx, x - 7, top + i, 14, 1, fonce); }   // treillis en croix
+    R(ctx, x - 12, y - 6, 24, 6, fonce);                                                                            // pied
+    R(ctx, x - 6, top - 8, 14, 8, clair); R(ctx, x - 4, top - 6, 5, 3, '#dfeaf2');                                  // cabine
+    R(ctx, x - 40, top - 2, 112, 3, fonce); R(ctx, x - 40, top, 112, 2, clair);                                     // flèche et contre-flèche
+    for (i = 0; i < 100; i += 8) { seg(ctx, x - 36 + i, top + 2, x - 28 + i, top + 8, 1, fonce); seg(ctx, x - 28 + i, top + 8, x - 20 + i, top + 2, 1, fonce); }   // treillis de la flèche
+    R(ctx, x - 40, top + 2, 112, 1, fonce); R(ctx, x - 44, top - 4, 12, 12, fonce);                                 // contrepoids
+    seg(ctx, x + 60, top + 2, x + 60, top + 36, 1, '#3a3a3a'); R(ctx, x + 58, top + 36, 5, 4, '#3a3a3a');           // câble et crochet
+    seg(ctx, x, top - 8, x + 70, top, 1, '#5a5a5a'); seg(ctx, x, top - 8, x - 40, top, 1, '#5a5a5a');               // haubans
+  }
+  /** Fond du Parc des Chantiers (480×236, se répète) : d'après les anciens chantiers navals de l'île de Nantes (Wikimédia Commons et sites officiels, référence seulement) : la grue Titan jaune (1954) et la grue Titan grise (1966), les cales de lancement (rails dans l'herbe), la Loire et l'autre rive. */
+  function drawFondChantiers() {
+    var w = 480, h = 236, o = PA.canvas(w, h), ctx = o.ctx, rnd = PA.rng(55), x, y, i;
+    var ciel = ctx.createLinearGradient(0, 0, 0, 130); ciel.addColorStop(0, '#bcd8ee'); ciel.addColorStop(1, '#e8f1f6'); ctx.fillStyle = ciel; ctx.fillRect(0, 0, w, 130);
+    for (i = 0; i < 4; i++) { var cx = 30 + i * 125 + rnd() * 30, cy = 24 + rnd() * 40; PA.disc(ctx, cx, cy, 12, 'rgba(255,255,255,0.85)'); PA.disc(ctx, cx + 14, cy + 2, 9, 'rgba(255,255,255,0.8)'); }
+    R(ctx, 0, 118, w, 30, '#9aa6ae');                                                                               // l'autre rive : bâtiments bas
+    for (x = 0; x < w; x += 22) { var bh = 8 + Math.floor(rnd() * 16); R(ctx, x, 148 - bh, 20, bh, rnd() < 0.5 ? '#8a969e' : '#a9b3b9'); for (y = 150 - bh; y < 146; y += 5) R(ctx, x + 3, y, 3, 2, '#d6dde2'); }
+    R(ctx, 0, 148, w, 34, '#7f9db4'); for (y = 152; y < 182; y += 5) for (x = Math.floor(rnd() * 20); x < w; x += 22 + Math.floor(rnd() * 14)) R(ctx, x, y, 6 + Math.floor(rnd() * 8), 1, '#a8c2d2');   // la Loire
+    R(ctx, 0, 182, w, 4, '#c9bfa6');                                                                                // quai
+    grueTitan(ctx, 340, 186, 104, '#9aa2a8', '#6f767c');                                                            // grue Titan grise, au loin
+    R(ctx, 0, 186, w, h - 186, '#6fa24a'); for (i = 0; i < 500; i++) R(ctx, Math.floor(rnd() * w), 188 + Math.floor(rnd() * 48), 1 + Math.floor(rnd() * 2), 1, rnd() < 0.5 ? '#5c8f3c' : '#80b25a');   // pelouse
+    grueTitan(ctx, 110, 204, 150, '#f2c200', '#b88a00');                                                            // grue Titan jaune, au premier plan
+    R(ctx, 0, 206, w, 14, '#a79e8c'); for (x = 0; x < w; x += 8) R(ctx, x, 206, 1, 14, '#8c8472');                    // cale de lancement : bande de ballast
+    R(ctx, 0, 210, w, 2, '#4a4a4a'); R(ctx, 0, 216, w, 2, '#4a4a4a'); for (x = 2; x < w; x += 10) R(ctx, x, 208, 4, 12, '#6a5a44');   // rails et traverses
+    [[40, 168], [250, 172], [420, 166]].forEach(function (t) { R(ctx, t[0] - 1, t[1], 3, 40, '#5a4630'); PA.disc(ctx, t[0], t[1] - 6, 14, '#4f8a3c'); PA.disc(ctx, t[0] - 4, t[1] - 2, 9, '#5f9c48'); });   // quelques arbres
+    return o.cv;
+  }
+  /** Garde du Château (20×32, tourné vers la droite) : casque d'acier à plumet rouge et fente de visière, cotte de mailles, tunique blanche à mouchetures d'hermine, bouclier, lance à fanion. */
+  function drawGarde() {
+    var o = PA.canvas(20, 32), c = o.ctx;
+    R(c, 5, 29, 4, 3, '#4a4a52'); R(c, 11, 29, 4, 3, '#4a4a52');                                                    // bottes
+    R(c, 5, 19, 4, 10, '#7a828c'); R(c, 11, 19, 4, 10, '#7a828c');                                                  // jambes en mailles
+    R(c, 4, 10, 12, 12, '#f2f0e8'); R(c, 4, 20, 12, 2, '#c9c6b8');                                                 // tunique blanche
+    [[6, 13], [10, 16], [13, 12], [7, 19]].forEach(function (m) { R(c, m[0], m[1], 2, 2, '#2a2a2e'); });          // mouchetures d'hermine
+    R(c, 3, 9, 14, 3, '#9aa4ae');                                                                                   // épaulières
+    R(c, 6, 1, 8, 9, '#aeb8c2'); R(c, 6, 1, 8, 2, '#d0d8e0'); R(c, 8, 5, 6, 2, '#2a2a2e');                         // casque et fente de visière
+    R(c, 9, -1, 2, 3, '#c0392b'); R(c, 8, 0, 4, 2, '#c0392b');                                                      // plumet
+    R(c, 14, 12, 5, 8, '#f2f0e8'); R(c, 14, 12, 5, 1, '#2a2a2e'); R(c, 16, 14, 1, 4, '#2a2a2e');                   // bouclier d'hermine
+    R(c, 1, 2, 1, 28, '#6a4a2a'); R(c, 0, 0, 3, 4, '#c0392b');                                                      // lance et fanion
+    return finir(o.cv);
+  }
+  /** Corps de la tour LU (wt×ht tuiles) : mur de briques couleur biscuit, bandeaux crème, fenêtres en arc. Habille la masse sous le belvédère et ses paliers. */
+  function drawTourCorps(wt, ht) {
+    var w = wt * 16, h = ht * 16, o = PA.canvas(w, h), ctx = o.ctx, x, y;
+    R(ctx, 0, 0, w, h, '#c98f55');
+    for (y = 0; y < h; y += 6) { R(ctx, 0, y, w, 1, '#a86f3a'); for (x = (y / 6) % 2 ? 0 : 8; x < w; x += 16) R(ctx, x, y, 1, 6, '#a86f3a'); }
+    for (y = 14; y < h - 10; y += 48) { R(ctx, 0, y, w, 4, '#ecd9a8'); R(ctx, 0, y + 4, w, 1, '#b99a60'); }                // bandeaux crème
+    for (y = 26; y < h - 24; y += 48) for (x = 8; x < w - 14; x += 26) { R(ctx, x, y, 12, 18, '#ecd9a8'); R(ctx, x + 2, y + 2, 8, 16, '#2c3e66'); R(ctx, x + 2, y + 2, 8, 2, '#4a6196'); R(ctx, x + 5, y + 2, 1, 16, '#ecd9a8'); }   // fenêtres
+    return o.cv;
+  }
   /** Héron mécanique en vol (30×20, tourné vers la droite) : corps d'acier gris-bleu, longues ailes, cou tendu et long bec jaune, pattes qui pendent. */
   function drawHeronVol() {
     var o = PA.canvas(30, 20), c = o.ctx;
@@ -1220,6 +1273,8 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_fond_nef', drawFondNef());
     PA.toTexture(scene, 'lv_fond_hangar', drawFondHangar());
     [3, 5].forEach(function (n) { PA.toTexture(scene, 'lv_balcon_' + n, drawBalcon(n)); }); PA.toTexture(scene, 'lv_sol_foyer', drawSolFoyer()); PA.toTexture(scene, 'lv_sol_salle', drawSolSalle()); PA.toTexture(scene, 'lv_sol_scene', drawSolScene()); PA.toTexture(scene, 'lv_rampe', drawRampe());
+    PA.toTexture(scene, 'lv_fond_chantiers', drawFondChantiers()); PA.toTexture(scene, 'lv_garde', drawGarde());
+    [[10, 13], [5, 11], [5, 9], [5, 7], [5, 5], [6, 3], [8, 2]].forEach(function (d) { PA.toTexture(scene, 'lv_tcorps_' + d[0] + '_' + d[1], drawTourCorps(d[0], d[1])); });
     PA.toTexture(scene, 'lv_fond_foyer', drawFondFoyer()); PA.toTexture(scene, 'lv_fond_salle', drawFondSalle()); PA.toTexture(scene, 'lv_fond_scene', drawFondScene());
     PA.toTexture(scene, 'lv_elephant', drawElephant());
     PA.toTexture(scene, 'lv_carrousel', drawCarrousel());

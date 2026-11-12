@@ -87,6 +87,12 @@ GP.Dangers = function (scene) {
     return { def: b, cone: cone, core: core, x: b.x0 * 16, ph: i * 1.7 };
   });
 
+  // ---------- Gardes (Château) : un garde sur place dont le regard balaie ; à hauteur de tête on passe accroupi, à hauteur de chevilles on saute ; entre deux regards il se retourne ----------
+  this.gardes = (L.gardes || []).map(function (g) {
+    var floor = (L.top(g.x) * 16), img = scene.add.image(g.x * 16 + 8, floor, 'lv_garde').setOrigin(0.5, 1).setDepth(7).setFlipX(g.dir < 0);
+    return { x: g.x * 16 + 8, floor: floor, img: img, dir: g.dir, step: 0, t: 1500, gfx: scene.add.graphics().setDepth(15) };
+  });
+
   // ---------- Projecteurs « 1-2-3 soleil » : trois projecteurs en haut de l'écran ; ils chauffent doucement, puis allumés il faut rester immobile (au sol), éteints on peut avancer ----------
   this.spot = null;
   if (L.spotZone) {
@@ -386,6 +392,18 @@ GP.Dangers.prototype = {
     var self = this, s = this.s, p = s.player, b = p.body, k = dt / 1000, H = s.H;
     this.t += dt;
     var onGround = b.blocked.down || b.touching.down;
+
+    // gardes : regard haut (accroupis-toi) → il se retourne → regard bas (saute) → il se retourne ; repéré = retour au point de contrôle
+    this.gardes.forEach(function (g) {
+      g.t -= dt * self.f('enemy');
+      if (g.t <= 0) { g.step = (g.step + 1) % 4; g.t = (g.step % 2 === 0) ? 2400 : 800; if (g.step % 2 === 0) { g.dir = -g.dir; g.img.setFlipX(g.dir < 0); } }
+      var actif = g.step % 2 === 0, y0 = g.floor - (g.step === 0 ? 28 : 9), y1 = g.floor - (g.step === 0 ? 12 : 1), x0 = g.x + g.dir * 8, x1 = g.x + g.dir * 104;
+      g.gfx.clear();
+      if (actif) {
+        g.gfx.fillStyle(g.step === 0 ? 0xffb02e : 0xff4a2d, g.step === 0 ? 0.5 : 0.7).fillPoints([{ x: x0, y: (y0 + y1) / 2 }, { x: x1, y: y0 }, { x: x1, y: y1 }], true);
+        if (!s.dying && b.right > Math.min(x0, x1) && b.x < Math.max(x0, x1) && b.top < y1 && b.bottom > y0) s.die('LE GARDE T\'A VU !');
+      }
+    });
 
     // projecteurs « 1-2-3 soleil » : off (on avance) → warn (ça chauffe) → on (immobile au sol sinon repéré)
     var sp = this.spot;

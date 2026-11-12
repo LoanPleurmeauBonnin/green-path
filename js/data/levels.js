@@ -34,7 +34,7 @@ GP.LevelBuilder = {
       width: width, rows: 17, grid: new Int8Array(width * 17),
       plats: [], thorns: [], pixels: [], checks: [], hints: [], deco: [], startX: 2, startRow: 13,
       climbs: [], crumbles: [], gargoyles: [], slits: [], gates: [], barrels: [], movers: [], rainThorns: [], sunPlats: [],
-      muses: [], molds: [], glasses: [], hangers: [], plaques: [], regimes: [], peaux: [], caisses: [], cranes: [], elephants: [], cbornes: [], cplats: [], memos: [], frises: [], drafts: [],
+      muses: [], molds: [], glasses: [], hangers: [], plaques: [], regimes: [], peaux: [], caisses: [], cranes: [], elephants: [], cbornes: [], cplats: [], memos: [], frises: [], gardes: [], drafts: [],
       patrols: [], tides: [], boats: [], liars: [], fallers: [], jets: [], beams: [], springs: [], seqs: [], belts: [], carts: [], rings: [], aligns: [], ponds: [],
       rot: false, wxm: {},
       abilities: {}, skin: null
@@ -71,6 +71,7 @@ GP.LevelBuilder = {
       liar: function (x, y, text, blur) { L.liars.push({ x: x, y: y, text: text, blur: blur }); },                                            // visage qui ment
       faller: function (x, y, period, offset, key, msg) { L.fallers.push({ x: x, y: y, period: period, offset: offset, key: key, msg: msg }); },   // objet suspendu qui tombe (conteneur par défaut ; key : autre sprite, ex. caisse de bananes)                            // conteneur qui tombe
       jet: function (x, h, period, offset) { L.jets.push({ x: x, h: h, period: period, offset: offset }); },                                  // jet de vapeur ou d'eau
+      garde: function (x, dir) { L.gardes.push({ x: x, dir: dir || 1 }); },   // garde du Château : son regard balaie à hauteur de tête (s'accroupir) puis de chevilles (sauter)
       spots: function (x0, x1) { L.spotZone = { x0: x0, x1: x1 }; },   // projecteurs « 1-2-3 soleil » : allumés on s'arrête, éteints on avance (entre les tuiles x0 et x1)
       beam: function (x0, x1, speed) { L.beams.push({ x0: x0, x1: x1, speed: speed }); },                                                     // projecteur qui balaie
       spring: function (x) { L.springs.push({ x: x, y: L.top(x) - 1 }); },                                                                    // parasol qui fait rebondir
@@ -220,7 +221,8 @@ GP.LEVELS['chateau'] = (function () {
     L.pix(21, 13); L.pix(24, 13); L.pix(27, 13);
     L.deco(17, 'chateau_torche_murale', { depth: 3, dy: -20 }); L.deco(25, 'chateau_banniere_hermine', { depth: 3, dy: -20 });
     L.check(32);
-    L.patrol(14, 24, 'esprit', 26);                     // esprit de la garde : il patrouille dans la cour
+    L.hint(8, "LE GARDE REGARDE : ACCROUPIS-TOI SOUS SON REGARD HAUT, SAUTE SON REGARD BAS");
+    L.garde(19, 1);                                    // un garde dans la cour : regard haut (accroupi), regard bas (saut)
     L.pix(35, 13); L.pix(37, 13);
     // 2. Douves et tonneaux : sauter
     L.hint(38, 'SAUTE PAR-DESSUS LES TONNEAUX');
@@ -254,7 +256,7 @@ GP.LEVELS['chateau'] = (function () {
     L.plat(107, 9, 2); L.pix(107, 8);
     L.pix(112, 13); L.pix(113, 13); L.pix(114, 13);
     L.deco(110, 'chateau_blason_simple', { depth: 3, dy: -24 });
-    L.patrol(102, 112, 'esprit', 28);                   // le dernier esprit garde la cour du Grand Logis
+    L.garde(108, -1);                                   // le garde du Grand Logis
   });
   L.id = 'chateau';
   L.reveal = 'bottomUp';
@@ -301,6 +303,7 @@ GP.LEVELS['cathedrale'] = (function () {
     L.block(30, 0, 12, 1); L.gargoyle(32, 0, 2400);      // une arche de la voûte : l'eau suinte d'une fissure
     L.gargoyle(36, 0, 2400);
     L.pix(34, 13); L.pix(38, 13);
+    L.plat(33, 9, 3); L.plat(37, 8, 3); L.pix(34, 8); L.pix(38, 7);          // la voie haute de la nef, au-dessus des gouttes
     // 4. Corniches qui s'effritent au-dessus des pointes
     L.ground(40, 2, 3); L.check(40);
     L.hint(41, "LES CORNICHES S'EFFRITENT : AVANCE");
@@ -308,6 +311,7 @@ GP.LEVELS['cathedrale'] = (function () {
     L.thorn(42, 11);
     L.crumble(43, 11, 2); L.crumble(47, 11, 2); L.crumble(51, 11, 2);
     L.pix(44, 10); L.pix(48, 10); L.pix(52, 10);
+    L.plat(44, 7, 2); L.plat(49, 6, 2); L.pix(45, 6); L.pix(50, 5);          // la voie haute : une chapelle latérale à pixels, loin des pointes
     // 5. La tour : colonne, sommet, rebord haut, puis redescente
     L.ground(53, 10, 3);
     L.climb(62, 8, 13);
@@ -320,10 +324,14 @@ GP.LEVELS['cathedrale'] = (function () {
     // 6. Un dernier mur à saisir, puis la nef
     L.ground(80, 5, 7);
     L.pix(81, 9); L.pix(83, 9);
-    L.ground(85, 35, 3);
-    L.pix(90, 13); L.pix(94, 13); L.pix(98, 13);
-    L.deco(88, 'lv_banc_eglise', { depth: 3 }); L.deco(92, 'lv_banc_eglise', { depth: 3 }); L.deco(96, 'lv_banc_eglise', { depth: 3 }); L.deco(103, 'lv_banc_eglise', { depth: 3 }); L.deco(108, 'lv_banc_eglise', { depth: 3 });
-    L.plat(100, 11, 3); L.pix(101, 10); L.pix(102, 10);
+    L.ground(85, 12, 3);                                              // 6e travée : des gouttes, une fosse de pointes, des corniches qui s'effritent
+    L.block(88, 0, 10, 1); L.gargoyle(90, 0, 2200); L.gargoyle(94, 0, 2200);
+    L.pix(88, 13); L.pix(92, 13);
+    L.hint(95, "LES CORNICHES S'EFFRITENT : AVANCE"); L.ground(97, 7, 2); L.thorn(97, 7);
+    L.crumble(98, 11, 2); L.crumble(101, 11, 2); L.pix(99, 10); L.pix(102, 10);
+    L.ground(104, 16, 3); L.check(104);
+    L.deco(88, 'lv_banc_eglise', { depth: 3 }); L.deco(92, 'lv_banc_eglise', { depth: 3 }); L.deco(96, 'lv_banc_eglise', { depth: 3 }); L.deco(107, 'lv_banc_eglise', { depth: 3 }); L.deco(112, 'lv_banc_eglise', { depth: 3 });
+    L.plat(110, 11, 3); L.pix(111, 10); L.pix(112, 10); L.pix(108, 13); L.pix(116, 13);
   });
   L.id = 'cathedrale';
   L.reveal = 'bottomUp';

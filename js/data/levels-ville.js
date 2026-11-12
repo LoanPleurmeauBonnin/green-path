@@ -266,7 +266,7 @@ GP.LEVELS['chantiers'] = (function () {
     ledge: ['chantiers_tole_g', 'chantiers_tole_m', 'chantiers_tole_d'], mover: ['chantiers_tole_g', 'chantiers_tole_m', 'chantiers_tole_d'], cart: ['chantiers_tole_g', 'chantiers_tole_m', 'chantiers_tole_d']
   };
   L.thornKey = 'chantiers_obstacle_ferraille'; L.thornText = 'AÏE, DE LA FERRAILLE !';
-  L.sky = { farKey: 'chantiers_fond_tile_x', farBottom: 236 };
+  L.sky = { farKey: 'lv_fond_chantiers', farBottom: 236 };         // le parc des anciens chantiers navals : grues Titan jaune et grise, cales de lancement, Loire
   L.wxm = { rain: { belt: 1.3 }, sun: { mover: 1.3 }, wind: { fall: 0.8 } };
   L.weatherText = { rain: 'LA PLUIE LUBRIFIE LA CALE : PENTE PLUS VIVE', sun: 'LE SOLEIL ÉCHAUFFE LES CÂBLES : LA GRUE VA PLUS VITE', wind: 'LE VENT AGITE LA GRUE : CONTENEURS PLUS VITE' };
   return L;
@@ -508,9 +508,13 @@ GP.LEVELS['pommeraye'] = (function () {
     L.deco(99, 'lv_boutique_vetements', { depth: 1 }); L.deco(105, 'lv_boutique_boulangerie', { depth: 1 }); L.deco(115, 'lv_boutique_chaussettes', { depth: 1 }); L.deco(121, 'lv_boutique_chapeaux', { depth: 1 }); L.deco(127, 'lv_boutique_sacs', { depth: 1 });
     L.check(98);
     L.patrol(106, 122, 'statue', 34);
-    L.plat(104, 8, 3); L.pix(105, 7);
-    L.mover(112, 7, 3, 5, 0, 3600); L.pix(114, 6);
-    L.pix(100, 9); L.pix(110, 9); L.pix(124, 9);
+    // Le « Y » : un escalier de marches flottantes au centre ; en haut la galerie sous la verrière (pont de verre, plus de pixels), en bas les devantures (statues)
+    L.hint(98, "AU CENTRE, L'ESCALIER : GALERIE HAUTE EN VERRE, OU DEVANTURES EN BAS");
+    L.plat(100, 9, 2); L.plat(102, 8, 2); L.plat(104, 7, 2); L.plat(106, 6, 2);
+    L.plat(108, 5, 6); L.glass(114, 5, 3); L.plat(117, 5, 5);
+    L.plat(122, 6, 2); L.plat(124, 7, 2); L.plat(126, 8, 2); L.plat(128, 9, 2);
+    L.pix(110, 4); L.pix(112, 4); L.pix(115, 4); L.pix(119, 4); L.pix(121, 4);
+    L.pix(98, 9); L.pix(110, 9); L.pix(124, 9);
     // 4. Sous la verrière : on monte tout en haut, puis un dernier pont de verre
     L.ground(132, 6, 8); L.ground(138, 6, 9); L.ground(144, 6, 10); L.ground(150, 6, 11);
     for (var ux = 132; ux < 156; ux++) L.deco(ux, 'lv_tapis_rouge', { depth: 5, dy: 1 });                              // tapis rouge sur la dernière montée
@@ -579,11 +583,14 @@ GP.LEVELS['tour-lu'] = (function () {
     L.plat(152, 3, 4);
     L.pix(133, 13); L.pix(137, 13); L.pix(143, 9); L.pix(148, 7); L.pix(150, 3); L.pix(154, 2);
     // 5. La terrasse du sommet : un dernier jet, un dernier tapis
-    L.ground(156, 44, 14);
+    L.ground(156, 10, 14);                                          // le belvédère, puis la descente par les paliers de l'escalier de la tour
     L.check(158);
-    L.jet(166, 4, 3200, 0); L.jet(172, 4, 3200, 1600);
-    L.deco(188, 'lv_pan_stop', { depth: 3 }); L.deco(184, 'lv_abribus', { depth: 3 });
-    L.pix(162, 2); L.pix(169, 2); L.pix(176, 2); L.pix(182, 2); L.pix(190, 2);
+    L.ground(166, 5, 12); L.ground(171, 5, 10); L.ground(176, 5, 8); L.ground(181, 5, 6); L.ground(186, 6, 4); L.ground(192, 8, 3);
+    [[156, 10, 3], [166, 5, 5], [171, 5, 7], [176, 5, 9], [181, 5, 11], [186, 6, 13], [192, 8, 14]].forEach(function (b) { L.deco(b[0], 'lv_tcorps_' + b[1] + '_' + (16 - b[2]), { dx: (b[1] - 1) * 8, dy: 271 - b[2] * 16, depth: 5 }); });   // la tour habille ses paliers (briques, fenêtres)
+    L.jet(168, 4, 3200, 0); L.jet(178, 4, 3200, 1600);
+    L.deco(184, 'lv_abribus', { depth: 3 }); L.deco(195, 'lv_pan_stop', { depth: 3 });
+    L.pix(162, 2); L.pix(168, 4); L.pix(173, 6); L.pix(178, 8); L.pix(183, 10); L.pix(188, 12); L.pix(196, 12);
+    L.hint(160, "LE BELVÉDÈRE : DESCENDS PAR L'ESCALIER DE LA TOUR");
   });
   L.id = 'tour-lu';
   L.backdrop = { x: 28, key: 'lv_tour_lu', scale: 1, tint: false };   // la tour se dresse derrière le quai de départ
