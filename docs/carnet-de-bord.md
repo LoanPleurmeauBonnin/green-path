@@ -337,3 +337,7 @@
 **Musique** : ambiance originale composée par code (WebAudio, `js/systems/Music.js`) : pad lent sur quatre accords et rares notes de pentatonique avec écho, très discrète ; aucun fichier audio, donc aucun droit à vérifier. Elle démarre au premier geste, se coupe avec SON (menu, touche M) ou avec **OPTIONS → MUSIQUE** (réglage mémorisé), et s'arrête quand l'onglet est masqué.
 
 **Bulle d'anecdote** : Entrée, Espace, Échap ou un toucher sur la bulle la ferment, après un délai de lecture (1,2 s au clavier, 2,5 s au toucher) ; elle se rouvre au passage suivant. **Étoiles** : espacées de 12 px, arc léger, au plus près de la maquette. **Non réalisé** : aucun réglage du volume de la musique ; écoute sur appareil mobile non testée.
+
+## Jeudi 12 novembre 2026 — README et captures, vidéo de présentation
+
+README réécrit pour donner envie de jouer (accroche, lien en premier, pourquoi on y revient, captures récentes : menu, carte, rencontre, niveaux 1, 2, 3 sous la pluie, 5, 6 et 12, options, à propos, carte postale 1800 × 1200). Les captures sont refaites depuis le jeu en cours (1920 × 1080, pixels agrandis sans lissage) ; la règle « refaire les captures à chaque évolution visible » est inscrite dans `CLAUDE.md`. Vidéo de présentation enregistrée depuis le jeu (menu, carte et rencontres, niveau sous la pluie simulée, carte postale) : fichier `.webm`, sans son, gardée hors du dépôt. **Non réalisé** : la vidéo montre un parcours automatisé (pas un joueur), sans commentaire ni musique.

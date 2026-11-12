@@ -1,20 +1,38 @@
-# Green Path — Nantes en mille pixels
-
-Jeu de plateforme pixel art qui suit la **ligne verte** de Nantes : de lieu en lieu, on court, on saute et on ramasse des pixels qui reconstruisent, case après case, chaque monument. **La vraie météo de Nantes change le jeu.**
-Projet noté ESD Nantes (B3), atelier PATRIMOINE.EXE / NANTES 001 — Florine RACINE (UX/UI, game design) et Loan PLEURMEAU (développement web, IA Ops).
-
-**▶ Jouer : https://green-path-game.vercel.app** (ordinateur, ou téléphone tenu en paysage) · Dépôt : https://github.com/LoanPleurmeauBonnin/green-path
-Version **0.6** — gel fonctionnel le jeudi 12 novembre 2026, midi. Les douze niveaux sont jouables ; aucun playtest humain n'est revendiqué au-delà de ce qui figure dans le [carnet de bord](docs/carnet-de-bord.md).
+# 🟢 Green Path — Nantes en mille pixels
 
 > *« Psst… par ici ! Je suis le gardien de la ligne verte. Cette nuit, un grand coup de vent a soufflé sur Nantes. Ses monuments se sont envolés en mille pixels ! »*
 
+**Un jeu de plateforme pixel art qui reconstruit le patrimoine de Nantes, pixel par pixel, sous la vraie météo de la ville.**
+Suis la ligne verte, du Jardin des Plantes à la Tour LU : cours, saute, grimpe, ramasse les pixels et regarde chaque monument retrouver ses couleurs.
+
+### ▶ [Jouer maintenant : green-path-game.vercel.app](https://green-path-game.vercel.app)
+Ordinateur, ou téléphone tenu en paysage · clavier, tactile ou manette · français et anglais · sans compte, même hors ligne
+
 ![Écran d'accueil](docs/screenshots/menu.png)
 
-| La carte du monde | 1 · Jardin des Plantes |
+## Pourquoi on y revient
+- 🌦️ **La météo de Nantes entre dans le jeu.** Il pleut à Nantes ? Le sol glisse et la pluie tombe dans ton niveau. Du vent ? Il pousse tes sauts. Nuit ou brume ? Les pixels se voient moins loin.
+- 🏰 **12 lieux, 12 manières de jouer** : tonneaux et herses au Château, colonnes à escalader à la Cathédrale, parasols qui font rebondir à Graslin, le Grand Éléphant des Machines de l'île… et 3 boss.
+- 🗣️ **Des rencontres.** Anne de Bretagne, Jules Verne, un docker… s'arrêtent pour te dire « Savais-tu que… » quand tu passes devant eux sur la carte.
+- ⭐ **Trois étoiles par niveau** : image complète, sans mourir, sous le temps cible.
+- 🎵 **Une ambiance musicale douce** (originale, désactivable) et un avatar à personnaliser.
+- 💌 **Une carte postale de Nantes reconstruite** à la fin, avec ton avatar et la météo du jour.
+
+| La carte du monde | Une rencontre |
 |---|---|
-| ![Carte du monde](docs/screenshots/carte.png) | ![Niveau du Jardin des Plantes](docs/screenshots/niveau-jardin.png) |
-| **3 · Château** sous la pluie | **2 · Cathédrale** |
-| ![Château sous la pluie](docs/screenshots/niveau-chateau-pluie.png) | ![Cathédrale](docs/screenshots/niveau-cathedrale.png) |
+| ![Carte du monde](docs/screenshots/carte.png) | ![Rencontre avec un personnage](docs/screenshots/rencontre.png) |
+| **Jardin des Plantes** (niveau 1) | **Château** sous la pluie (niveau 3) |
+| ![Jardin des Plantes](docs/screenshots/niveau-jardin.png) | ![Château sous la pluie](docs/screenshots/niveau-chateau-pluie.png) |
+| **Cathédrale** (niveau 2) | **Place Graslin** (niveau 5) |
+| ![Cathédrale](docs/screenshots/niveau-cathedrale.png) | ![Place Graslin](docs/screenshots/niveau-graslin.png) |
+| **Machines de l'île** (niveau 6) | **Tour LU** (niveau 12) |
+| ![Machines de l'île](docs/screenshots/niveau-machines.png) | ![Tour LU](docs/screenshots/niveau-tourlu.png) |
+
+La carte postale de fin, fabriquée dans ton navigateur (1800 × 1200 px) :
+
+![Carte postale de fin](docs/screenshots/carte-postale.png)
+
+Projet noté ESD Nantes (B3), atelier PATRIMOINE.EXE / NANTES 001 — Florine RACINE (UX/UI, game design) et Loan PLEURMEAU (développement web, IA Ops). Version **0.6**, gel fonctionnel le jeudi 12 novembre 2026 à midi. Dépôt : https://github.com/LoanPleurmeauBonnin/green-path
 
 ## Livrables PATRIMOINE.EXE
 | Livrable | Où |
@@ -40,6 +58,7 @@ Version **0.6** — gel fonctionnel le jeudi 12 novembre 2026, midi. Les douze n
 - **La carte postale de fin** : une fois les 12 lieux terminés, une carte postale PNG de Nantes reconstruite (monuments, avatar, ciel et météo du moment).
 - **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou l'un des 8 modèles.
 - **Pseudo, sauvegarde et classement** (facultatifs, sans e-mail) : voir [docs/confidentialite.md](docs/confidentialite.md). Le jeu fonctionne sans compte et hors ligne.
+- **Musique** : ambiance originale composée par code, activable ou non dans OPTIONS → MUSIQUE (et coupée avec SON).
 - **Admin** : un compte admin (bouton compte de l'accueil) débloque l'éditeur de niveaux et de textures (`editor.html`) et la **météo de test en niveau** (ligne MÉTÉO du menu pause, ou touche N ; touche W sur la carte).
 
 ## Les 12 lieux
@@ -79,6 +98,10 @@ Ronces, pointes, flèches, gouttes, tonneaux ou chute = une mort : retour à la 
 - **Options** : langue, son, plein écran, animations (Auto suit le système, Activées ou Réduites), touches réaffectables, manette, confidentialité, effacement des données.
 - **Accessibilité** : pas de flash, `prefers-reduced-motion` respecté, clavier + tactile + manette, jouable sans son, réinitialisation possible. Le canvas n'est pas lisible par les lecteurs d'écran.
 - **À propos** : Crédits, Confidentialité, Sources et licences.
+
+![Options](docs/screenshots/options.png)
+
+![À propos](docs/screenshots/a-propos.png)
 
 ## Lancer en local
 Aucun gestionnaire de paquets ni build. Phaser 3.90 et la police sont inclus. Ouvrir `index.html` directement (scripts classiques, compatible `file://`) ou servir le dossier :
