@@ -16,6 +16,7 @@ GP.Scenes.Character = class CharacterScene extends Phaser.Scene {
   create() {
     var self = this, W = GP.Config.DW, H = GP.Config.HEIGHT, C = GP.Character, P = GP.PAL;
     this.cfg = Object.assign({}, GP.Progression.data.character || C.defaultConfig());
+    C.build(this, this.cfg);   // le héros de la carte et des niveaux repart toujours de la configuration enregistrée, comme cet aperçu
     this.sel = 0;
     this.presetIdx = 0;
     this.poseIdx = 0;
