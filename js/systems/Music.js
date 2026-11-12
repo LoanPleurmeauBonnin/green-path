@@ -48,7 +48,11 @@ GP.Music = (function () {
   function tick() {
     if (!ctx) return;
     var on = audible(), want = on ? 1 : 0;
-    if (want !== level) { level = want; master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(want, ctx.currentTime, 0.6); }   // fondu, pas de coupure sèche
+    if (want !== level) {                                      // fondu court (0,35 s pour couper, 1,5 s pour revenir), jusqu'à un silence exact
+      level = want; var t = ctx.currentTime;
+      master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t);
+      master.gain.linearRampToValueAtTime(want, t + (want ? 1.5 : 0.35));
+    }
     if (!on) { nextChord = Math.max(nextChord, ctx.currentTime); nextNote = Math.max(nextNote, ctx.currentTime); return; }
     if (ctx.state === 'suspended') ctx.resume();
     var now = ctx.currentTime;
@@ -63,10 +67,12 @@ GP.Music = (function () {
   }
 
   var api = {
+    /** Applique tout de suite l'état voulu (SON, MUSIQUE) sans attendre le prochain passage du minuteur. */
+    refresh: function () { try { tick(); } catch (e) { /* audio indisponible */ } },
     /** Démarre (après un geste du joueur) ; sans effet si déjà lancée ou si l'audio est indisponible. */
     start: function () {
       if (started) return;
-      try { if (!build()) return; started = true; nextChord = nextNote = ctx.currentTime + 0.5; timer = setInterval(tick, 500); tick(); } catch (e) { started = false; }
+      try { if (!build()) return; started = true; nextChord = nextNote = ctx.currentTime + 0.5; timer = setInterval(tick, 250); tick(); } catch (e) { started = false; }
     },
     /** Attend le premier geste (clic, touche, toucher) puis démarre. */
     arm: function () {

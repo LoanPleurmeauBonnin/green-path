@@ -3,7 +3,7 @@
  * dont la définition de niveau est GP.LEVELS[loc.level] (js/data/levels.js).
  *
  * Commandes : < > ou Q/A et D courir · Espace, W ou Z sauter (maintenir = plus haut) · ↑ grimper / se hisser
- *             · ↓ ou S s'accroupir / descendre · Échap pause. Tactile : boutons à l'écran (GP.UI.touchPad).
+ *             · ↓ ou S s'accroupir / descendre · Échap pause. Tactile : joystick et bouton de saut à l'écran (GP.UI.touchPad).
  * Mode test (?dev=1) : N météo simulée (W sert au saut), K tout ramasser.
  *
  * Règles : ramasser tous les pixels reconstruit l'image ; si L.exit existe, rejoindre aussi l'arche. Ronce, pointes, flèche, goutte,
@@ -513,7 +513,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   makeInput() {
     var self = this, kb = this.input.keyboard;
     this.ctl = GP.Controls.attach(this);   // clavier (touches réaffectables), tactile et manette
-    this.touch = { left: false, right: false, down: false, jump: false };
+    this.touch = { left: false, right: false, up: false, down: false, jump: false };
     this.jumpWasDown = false; this.upWasDown = false;
     kb.on('keydown-ESC', function () { self.onEsc(); });
     kb.on('keydown-H', function () {

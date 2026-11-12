@@ -58,7 +58,7 @@ GP.Settings = (function () {
     set: function (o) {
       if (o.lang) { this.lang = o.lang; if (GP.I18n) GP.I18n.setLang(o.lang); }
       if (o.motion === 'auto' || o.motion === 'on' || o.motion === 'reduced') { this.motion = o.motion; this.applyMotion(); }
-      if (typeof o.music === 'boolean') this.music = o.music;
+      if (typeof o.music === 'boolean') { this.music = o.music; if (GP.Music) GP.Music.refresh(); }
       this.save();
     },
 
