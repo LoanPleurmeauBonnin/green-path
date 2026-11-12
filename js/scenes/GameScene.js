@@ -191,7 +191,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var signKey = this.key('commun_panneau', 'lv_sign');
     this.signs = L.hints.map(function (h) {
       self.add.image(h.x * 16 + 8, (h.y + 1) * 16, signKey).setOrigin(0.5, 1).setDepth(7);
-      var t = GP.UI.txt(self, h.x * 16 + 8, h.y * 16 - 4, '', GP.PAL.w, { backgroundColor: GP.PAL.d, padding: { x: 3, y: 4 }, align: 'center', wordWrap: { width: Math.min(360, GP.Config.WIDTH - 24) } })
+      var t = GP.UI.txt(self, h.x * 16 + 8, h.y * 16 - 4, '', GP.PAL.w, { backgroundColor: GP.PAL.d, padding: { x: 6, y: 5 }, lineSpacing: 5, align: 'center', wordWrap: { width: Math.min(300, GP.Config.WIDTH - 24) } })   // lignes aérées : les panneaux longs restent lisibles
         .setOrigin(0.5, 1).setDepth(40).setAlpha(0);
       GP.Prompts.bind(self, t, ' ' + h.text + ' ');
       return { x: h.x * 16 + 8, top: h.y * 16 - 4, low: (h.y + 1) * 16 + 4, text: t, shown: false };
