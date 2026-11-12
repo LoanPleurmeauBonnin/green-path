@@ -228,7 +228,7 @@ GP.LEVELS['chantiers'] = (function () {
     L.pix(21, 13);
     L.check(26);
     // 2. La cale de lancement : la pente t'entraîne en arrière, les conteneurs tombent
-    L.hint(37, "LA CALE T'ENTRAÎNE EN ARRIÈRE : AVANCE QUAND MÊME");
+    L.hint(37, "LA CALE EMPORTE LES CONTENEURS : SAUTE PAR-DESSUS");
     L.belt(36, 58, -1, 55);
     L.faller(42, 1, 3800, 0); L.faller(50, 1, 3800, 1900); L.faller(56, 1, 3800, 900);
     L.deco(46, 'chantiers_coque_navire', { depth: 3 });

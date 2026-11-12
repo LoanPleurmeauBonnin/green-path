@@ -67,7 +67,7 @@ GP.Dangers = function (scene) {
     var cable = scene.add.rectangle(x, 0, 2, y0, 0x14182e, 1).setOrigin(0.5, 0).setDepth(8);
     var img = scene.add.image(x, y0, f.key || 'lv_conteneur').setOrigin(0.5, 0).setDepth(9);
     var shadow = scene.add.rectangle(x, floor - 1, img.width, 3, 0x14182e, 0.55).setDepth(6).setVisible(false);
-    return { x: x, y0: y0, floor: floor, period: f.period || 3600, t: -(f.offset || 0), state: 'hang', img: img, cable: cable, shadow: shadow, vy: 0, h: realBottom(img), w: img.width, msg: f.msg || 'UN CONTENEUR TOMBE !' };
+    return { x: x, x0: x, y0: y0, floor: floor, period: f.period || 3600, t: -(f.offset || 0), state: 'hang', img: img, cable: cable, shadow: shadow, vy: 0, h: realBottom(img), w: img.width, msg: f.msg || 'UN CONTENEUR TOMBE !' };
   });
 
   // ---------- Jets (vapeur, eau) : un souffle les annonce, puis la colonne est dangereuse 1,2 s ----------
@@ -505,11 +505,19 @@ GP.Dangers.prototype = {
         if (f.t > period) { f.state = 'fall'; f.vy = 0; f.shadow.setVisible(false); f.cable.setVisible(false); }
       } else if (f.state === 'fall') {
         f.vy = Math.min(f.vy + 900 * k, 520); f.img.y += f.vy * k;
-        if (f.img.y + f.h >= f.floor) { f.img.y = f.floor - f.h; f.state = 'land'; f.t = 0; GP.Sfx.play('step'); }
+        if (f.img.y + f.h >= f.floor) {
+          f.img.y = f.floor - f.h; f.state = 'land'; f.t = 0; GP.Sfx.play('step');
+          f.belt = (s.L.belts || []).filter(function (d) { return f.x >= d.x0 * 16 && f.x <= d.x1 * 16; })[0] || null;   // tombé sur un tapis roulant ?
+          if (f.belt) f.state = 'ride';
+        }
+      } else if (f.state === 'ride') {   // sur le tapis : le conteneur est emporté comme le joueur, il faut sauter par-dessus
+        var v = f.belt.dir * (f.belt.speed || 45) * self.f('belt');
+        f.x += v * k; f.img.x = f.x;
+        if (f.x - f.w / 2 < f.belt.x0 * 16 || f.x + f.w / 2 > f.belt.x1 * 16) { f.state = 'back'; f.t = 0; s.tweens.add({ targets: f.img, alpha: 0, duration: 300 }); }
       } else if (f.state === 'land') {
         if (f.t > 800) { f.state = 'back'; f.t = 0; s.tweens.add({ targets: f.img, alpha: 0, duration: 300 }); }
       } else if (f.state === 'back' && f.t > 400) {
-        f.img.y = f.y0; f.img.setAlpha(0); s.tweens.add({ targets: f.img, alpha: 1, duration: 400 });
+        f.x = f.x0; f.img.x = f.x0; f.img.y = f.y0; f.img.setAlpha(0); s.tweens.add({ targets: f.img, alpha: 1, duration: 400 });
         f.cable.setVisible(true); f.cable.height = f.y0; f.state = 'hang'; f.t = 0;
       }
     });
@@ -750,7 +758,7 @@ GP.Dangers.prototype = {
     }
     for (i = 0; i < this.fallers.length; i++) {
       e = this.fallers[i];
-      if (e.state === 'fall' && hit(e.x - e.w / 2, e.img.y, e.w, e.h)) return e.msg;
+      if ((e.state === 'fall' || e.state === 'ride') && hit(e.x - e.w / 2, e.img.y, e.w, e.h)) return e.msg;
     }
     for (i = 0; i < this.regimes.length; i++) {
       e = this.regimes[i];
