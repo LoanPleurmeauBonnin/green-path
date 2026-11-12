@@ -349,3 +349,9 @@ README réécrit pour donner envie de jouer (accroche, lien en premier, pourquoi
 **Chargement** : la barre avance de 0 à 90 % pendant au moins 1,7 s, se complète à 100 % dès que le jeu est prêt, puis l'écran disparaît ; valable à chaque actualisation de la page (`GP.finishLoading`, appelée par `BootScene`).
 
 **Musique** : OPTIONS → MUSIQUE et SON appliquent leur effet tout de suite (fondu de 0,35 s jusqu'au silence exact, au lieu d'attendre le minuteur). **Non réalisé** : joystick non essayé sur un vrai téléphone (simulé dans le navigateur) ; aucun playtest humain.
+
+## Jeudi 12 novembre 2026 — livrables sur les 12 patrimoines, captation
+
+**Constat** (relecture du cours, sections 08, 10, 11, 12) : les livrables parlaient surtout du Château. **Corrections** : la fiche-source devient une fiche du corpus (12 lieux : contexte, références consultées le 10/11, trois propriétés observables, une propriété écartée) ; la grammaire détaille la règle de chaque lieu ; la problématique, le cartel (105 mots), le manifest (`heritage_source` et `heritage_sources` par lieu), HERITAGE_GRAMMAR et le README parlent des douze patrimoines. **Décision** : la source déclarée est « la ligne verte et ses 12 patrimoines », alors que le cours demande « une seule source principale » ; risque assumé sur la note de provenance, le Château restant le lieu le plus documenté.
+
+**Captation** (§11) : `captation/` contient `hero.jpg`, `detail-01.jpg`, `process.jpg`, `thumb.jpg` (captures du jeu) et `demo.mp4` (23 s, parcours automatisé, sans son). **Non réalisé** : test croisé, fiche individuelle, soutenance (à faire par l'équipe).

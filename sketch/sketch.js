@@ -1,7 +1,8 @@
 /**
  * Green Path — sketch minimal (J1, PATRIMOINE.EXE / NANTES 001)
  *
- * SOURCE : Château des ducs de Bretagne (masse, seuils, élévations).
+ * SOURCE : un lieu du corpus de 12 patrimoines de Green Path, ici le Château des ducs de Bretagne (masse, seuils, élévations),
+ *          pris comme exemple de la règle commune ; chaque autre lieu a sa propre règle (docs/grammaire.md).
  * GRAMMAIRE : une grille de cellules 48×32 ; chaque pixel « collecté » révèle un groupe de cellules,
  *             dans l'ordre assise basse → centre → côtés (le rythme plein / vide du château).
  * DATA : la météo de Nantes (Open-Meteo) pilote la pluie (précipitations), la dérive (vent) et le ciel (jour / nuit).
