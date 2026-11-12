@@ -70,8 +70,10 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     this.sky.update(this.cameras.main, delta);
     this.updateTalk();
     if (this.panel || GP.Pad.capture || !this.travel.moving) return;
+    var before = this.travel.x;
     var arrived = this.travel.tick(delta);
     this.moving = this.travel.moving;
+    if (!arrived && this.stopAtPerson(before, this.travel.x)) return;
     this.placeHero(this.travel.x);
     if (arrived) {
       this.cur = this.travel.target; this.P.setCurrent(this.cur);
@@ -209,7 +211,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       // piédestal de la planche « carte » : disponible, terminé, verrouillé, à venir
       var img = self.add.image(x, y + 6, 'carte_piedestal_disponible').setOrigin(0.5, 1).setDepth(10).setInteractive({ useHandCursor: true });
       var num = self.txt(x, y - 2, String(i + 1), GP.PAL.k).setOrigin(0.5).setDepth(11);
-      var stars = [0, 1, 2].map(function (k) { return self.add.image(x - 8 + k * 8, y + 16, 'star_off').setDepth(12).setVisible(false); });
+      var stars = [0, 1, 2].map(function (k) { return self.add.image(x - 8 + k * 8, y + 12, 'star_off').setDepth(12).setVisible(false); });
       img.on('pointerover', function () { self.hover = i; self.updateBar(); });
       img.on('pointerout', function () { if (self.hover === i) { self.hover = -1; self.updateBar(); } });
       img.on('pointerdown', function () { if (!self.panel) self.goTo(i, true); });
@@ -255,6 +257,22 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
    * Descente sur le piédestal : près d'une étape, les pieds de l'avatar passent du bord haut du disque à son centre
    * (là où est le chiffre), progressivement sur la largeur du piédestal (28 px). Ailleurs, il marche sur la ligne.
    */
+  /** Le héros s'arrête devant un personnage dont le niveau est terminé (une fois par visite de la carte) pour lire son anecdote ; il repart ensuite à gauche ou à droite. */
+  stopAtPerson(from, to) {
+    if (!this.pers) return false;
+    this.heard = this.heard || {};
+    for (var i = 0; i < this.pers.length; i++) {
+      var im = this.pers[i];
+      if (!im || !im.talk || this.heard[i] || this.P.status(i) !== 'completed') continue;
+      if ((from - im.x) * (to - im.x) > 0) continue;   // le personnage n'est pas entre les deux positions
+      this.heard[i] = true;
+      this.travel.x = im.x; this.travel.moving = false; this.travel.open = false; this.travel.y = this.travel.heightAt(im.x);
+      this.moving = false; this.placeHero(im.x); this.startIdle(); this.updateBar();
+      return true;
+    }
+    return false;
+  }
+
   /** Bulle d'anecdote : elle s'ouvre quand le héros passe devant un personnage dont le niveau est terminé, et se ferme quand il s'éloigne. */
   updateTalk() {
     if (!this.pers || !this.hero) return;
