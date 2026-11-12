@@ -330,16 +330,15 @@ GP.LEVELS['buren'] = (function () {
 /** NIVEAU 9 — HANGAR À BANANES : la pourriture. Chaque pixel mûrit (vert, jaune récoltable, brun, effacé) et la moisissure gagne du terrain sur le sol. */
 GP.LEVELS['hangar'] = (function () {
   var L = GP.LevelBuilder.create(140, function (L) {
-    L.rotting(true);
     // décor du quai des Antilles : rails dans le pavage, garde-corps en acier corten, bollards, flèche de la grue grise
     [[1, 31], [64, 99], [101, 139]].forEach(function (seg) { for (var rx = seg[0]; rx <= seg[1]; rx++) L.deco(rx, 'lv_rails', { depth: 5, dy: 1 }); });
     [8, 17, 66, 90, 103, 121, 135].forEach(function (cx) { L.deco(cx, 'lv_corten', { depth: 3 }); });
     [12, 28, 70, 96, 110, 130].forEach(function (bx) { L.deco(bx, 'feydeau_bollard', { depth: 4 }); });
     [22, 107, 112, 125].forEach(function (fx) { L.deco(fx, 'lv_fleche_grue', { depth: 8, dy: -209 }); });
-    // 1. La terrasse de bois : apprendre à récolter au bon moment
+    // 1. La terrasse de bois : des pixels à ramasser, comme dans tous les niveaux
     L.ground(0, 32, 3);
     L.start(2);
-    L.hint(3, 'RÉCOLTE LES PIXELS QUAND ILS SONT JAUNES !');
+    L.hint(3, 'LE HANGAR À BANANES : RAMASSE LES PIXELS');
     L.deco(6, 'hangar_palettes_caisses', { depth: 4 }); L.deco(14, 'hangar_grue_quai', { depth: 1 }); L.deco(24, 'hangar_conteneur_bleu', { depth: 3 });
     L.deco(14, 'hangar_guirlande_lumineuse', { depth: 2, dy: -38 });   // accrochée au sommet de la grue de quai
     L.pix(7, 13); L.pix(10, 13); L.pix(13, 13); L.pix(16, 13);
@@ -390,8 +389,8 @@ GP.LEVELS['hangar'] = (function () {
   };
   L.thornKey = 'hangar_obstacle_tole_coupante'; L.thornText = 'AÏE, DE LA TÔLE COUPANTE !';
   L.sky = { farKey: 'lv_fond_hangar_quai', farBottom: 236 };       // le quai des Antilles : long hangar blanc, grue Titan grise, anneaux, Loire
-  L.wxm = { sun: { rot: 1.3, mold: 0.8 }, rain: { rot: 0.8, mold: 1.3 } };
-  L.weatherText = { sun: 'LA CHALEUR FAIT POURRIR LES PIXELS PLUS VITE', rain: "L'HUMIDITÉ FAIT POUSSER LA MOISISSURE" };
+  L.wxm = { sun: { mold: 0.8 }, rain: { mold: 1.3 } };
+  L.weatherText = { sun: 'LE SOLEIL SÈCHE LA MOISISSURE : ELLE RECULE VITE', rain: "L'HUMIDITÉ FAIT POUSSER LA MOISISSURE" };
   return L;
 })();
 
