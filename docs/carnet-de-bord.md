@@ -297,3 +297,13 @@
 **Personnages de la carte** : posés sur le chemin à la hauteur des pieds du héros (ils étaient au bord du talus, 3 px plus haut) et immobiles (plus de flottement). Quand le héros passe devant un personnage dont le niveau est terminé, une bulle affiche son anecdote ; elle se ferme quand il s'éloigne. La fiche RENCONTRE reste disponible.
 
 **Non réalisé** : les anecdotes gardent leur formulation à la première personne (pas de « Savais-tu que… ») ; aucun playtest humain.
+
+## Jeudi 12 novembre 2026 — étoiles, anecdotes « Savais-tu que », écran À propos
+
+**Étoiles** : rapprochées du piédestal (4 px plus haut).
+
+**Anecdotes** : les onze textes sont réécrits en « Savais-tu que… », deux ou trois phrases courtes, avec les mêmes faits et les mêmes sources (traductions anglaises mises à jour). Le panneau du Mémorial reste sobre, inchangé. Sur la carte, le héros s'arrête devant le personnage d'un niveau terminé (une fois par visite) et l'anecdote s'affiche ; il repart ensuite à gauche ou à droite (`MapScene.stopAtPerson`).
+
+**À propos** : texte des crédits fourni par l'équipe (faute « hénergement » corrigée en « hébergement ») ; mise en page par groupes séparés par un filet, libellés verts à gauche et texte à droite (crédits, sources), intitulés verts au-dessus de chaque paragraphe (confidentialité). Contenu des trois rubriques dans `AboutScene.content()`, traductions dans `en.js`.
+
+**Non réalisé** : la mention « GPT-6.1 Sol via OpenCode » n'apparaît plus dans les crédits du jeu (texte fourni) ; à rapprocher de la déclaration d'usage de l'IA. Aucun playtest humain.
