@@ -28,6 +28,14 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
     this.add.rectangle(106 + DX, 36, 268, 180, GP.int(P.k)).setOrigin(0);
     this.add.image(108 + DX, 38, 'postcard_preview').setOrigin(0);
 
+    // à gauche et à droite de la carte : changer la couleur de fond et le monument (ou l'avatar) au centre
+    var bFond = UI.button(this, 26 + DX, 92, 76, 'FOND', function () { GP.Postcard.nextFond(); self.redraw(); }, { height: 18 });
+    var bCentre = UI.button(this, 378 + DX, 92, 76, 'CENTRE', function () { GP.Postcard.nextCentre(); self.redraw(); }, { height: 18 });
+    [bFond, bCentre].forEach(function (b) { b.objs.forEach(function (o) { o.setDepth(10); }); });
+    this.fondTxt = UI.txt(this, 64 + DX, 114, '', P.y).setOrigin(0.5, 0);
+    this.centreTxt = UI.txt(this, 416 + DX, 114, '', P.y).setOrigin(0.5, 0);
+    this.labels();
+
     // en dessous : le pseudo (facultatif, la phrase est déjà sur la carte), TÉLÉCHARGER et REJOUER
     this.makeInput(32, 224, 120, 18);
     var bDl = UI.button(this, 158 + DX, 224, 170, 'TÉLÉCHARGER MA CARTE', function () { self.download(); }, { primary: true, height: 18 });
@@ -43,6 +51,18 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
     kb.on('keydown-SPACE', function () { self.download(); });
     kb.on('keydown-ESC', function () { self.leave('Menu'); });
     this.events.once('shutdown', function () { kb.removeAllListeners(); self.removeInput(); });
+  }
+
+  /** Noms des choix en cours (fond, centre) sous les boutons. */
+  labels() { this.fondTxt.setText(GP.Postcard.fondName()); this.centreTxt.setText(GP.Postcard.centreName()); }
+
+  /** Redessine la carte après un choix de fond ou de centre. */
+  redraw() {
+    this.card = GP.Postcard.render(this, GP.Postcard.get() || this.fin, GP.Progression.data.character);
+    GP.PixelArt.toTexture(this, 'postcard_preview', GP.Postcard.preview(this.card, 264, 176));
+    this.labels();
+    this.status.setText('');
+    GP.Sfx.play('select');
   }
 
   /** Télécharge la carte et confirme. */
