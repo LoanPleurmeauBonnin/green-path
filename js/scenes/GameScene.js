@@ -600,6 +600,10 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var X = this.phy;
     this.updateMechanics(dt);
     this.dangers.update(dt);
+    if (GP.Config.DEV_TOOLS) {   // mode test : la tuile du joueur s'affiche sous la météo, pour dire « le problème est à la tuile 64 »
+      if (!this.devTile) this.devTile = GP.UI.txt(this, GP.Config.WIDTH - 6, 50, '', GP.PAL.y, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 2 } }).setOrigin(1, 0).setScrollFactor(0).setDepth(60);
+      this.devTile.setText('TUILE ' + Math.floor(this.player.x / 16) + ' / ' + Math.floor(this.player.y / 16));
+    }
     if (this.dying) return;
     if (this.introMs > 0) { this.introMs -= dt; b.setVelocityX(0); return; }
     this.time_ms += dt;
