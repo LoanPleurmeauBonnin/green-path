@@ -43,6 +43,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.introMs = 1700;   // bandeau d'introduction : le joueur attend, le chrono ne tourne pas encore
     this.slideMs = 0; this.slideDir = 1; this.dying = false; this.crouching = false; this.climbing = null; this.hanging = null;
     this.coyote = 0; this.buffer = 0; this.jumping = false; this.lastVy = 0; this.hangReleased = false; this.boost = 0;
+    this.maxTime = (L.maxTime || 180) * 1000; this.timeWarned = false; this.timedOut = false;   // limite douce : 3 min par défaut, plus pour les niveaux qui en demandent
     this.alive = true;
     this.events.once('shutdown', function () { self.alive = false; });
 
@@ -591,6 +592,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     if (this.dying) return;
     if (this.introMs > 0) { this.introMs -= dt; b.setVelocityX(0); return; }
     this.time_ms += dt;
+    if (!this.timeWarned && this.time_ms > this.maxTime - 30000) { this.timeWarned = true; this.toast('PLUS QUE 30 SECONDES', GP.PAL.y); }
+    if (this.time_ms >= this.maxTime) { this.timeUp(); return; }
     this.saveMs += dt;
     if (this.saveMs >= 5000) { this.saveMs = 0; this.saveRun(); }
 
@@ -998,6 +1001,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var self = this;
     if (this.timedOut || this.finished) return;
     this.timedOut = true; this.finished = true;
+    this.restarting = true;   // plus de sauvegarde : le temps écoulé n'enregistre rien et la reprise repart du début
+    delete GP.Progression.data.runs[this.loc.id]; GP.Progression.persist();
     this.physics.pause();
     if (this.toastObj) { this.toastObj.destroy(); this.toastObj = null; }
     GP.Sfx.play('error');

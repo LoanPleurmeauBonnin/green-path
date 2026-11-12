@@ -606,3 +606,147 @@ GP.LEVELS['tour-lu'] = (function () {
   L.weatherText = { rain: 'LA PLUIE REFROIDIT LA VAPEUR : JETS PLUS COURTS', sun: 'LA CHALEUR ALLONGE LES JETS DE VAPEUR', wind: 'LE VENT GONFLE LE PARASOL : REBOND PLUS HAUT' };
   return L;
 })();
+
+// ---------- Château (2) et Cathédrale (3) : nos versions, chargées après celles de levels.js et de GZoneLevels pour les remplacer ----------
+GP.LEVELS['chateau'] = (function () {
+  var L = GP.LevelBuilder.create(120, function (L) {
+    // 1. Cour : s'accroupir sous les flèches
+    L.ground(0, 40, 3);
+    L.start(2);
+    L.hint(4, "BAS OU S : S'ACCROUPIR");
+    L.pixRow(7, 13, 3);
+    L.hint(12, 'LES FLÈCHES VISENT LA TÊTE : ACCROUPIS-TOI');
+    L.deco(29, 'chateau_tour_ronde_milieu', { depth: 3, dy: -16 }); L.deco(29, 'chateau_tour_ronde_pied', { depth: 3 });
+    L.slit(29, 13, -1, 1300, 0, 10);
+    L.pix(21, 13); L.pix(24, 13); L.pix(27, 13);
+    L.deco(17, 'chateau_torche_murale', { depth: 3, dy: -20 }); L.deco(25, 'chateau_banniere_hermine', { depth: 3, dy: -20 });
+    L.check(32);
+    L.hint(8, "LE GARDE REGARDE : ACCROUPIS-TOI SOUS SON REGARD HAUT, SAUTE SON REGARD BAS");
+    L.garde(19, 1);                                    // un garde dans la cour : regard haut (accroupi), regard bas (saut)
+    L.pix(35, 13); L.pix(37, 13);
+    // 2. Douves et tonneaux : sauter
+    L.hint(38, 'SAUTE PAR-DESSUS LES TONNEAUX');
+    L.pix(41, 10);                                     // au-dessus des douves
+    L.deco(40, 'chateau_douve_surface', { depth: 3 }); L.deco(41, 'chateau_douve_surface', { depth: 3 }); L.deco(42, 'chateau_douve_surface', { depth: 3 });
+    L.ground(43, 38, 3);
+    L.barrel(46, 53, 45);
+    L.pix(48, 10); L.pix(51, 10);
+    L.check(55);
+    // 3. Herses : passer au bon moment (un linteau empêche de sauter par-dessus)
+    L.hint(53, 'LA HERSE SE LÈVE : PASSE AU BON MOMENT');
+    L.block(57, 0, 3, 11); L.gate(58, 1800, 1500);       // mur plein au-dessus de la porte : la herse remonte dedans
+    L.pix(61, 13);
+    L.block(63, 0, 3, 11); L.gate(64, 1800, 1500);
+    L.pix(67, 13);
+    L.pix(72, 11); L.pix(74, 11);
+    L.deco(70, 'chateau_tonneau', { depth: 3 }); L.deco(71, 'chateau_caisse', { depth: 3 });
+    L.check(76);
+    L.patrol(67, 74, 'esprit', 24);                     // un autre garde, entre la herse et la lanterne
+    // 4. Remparts : flèches et marches combinées
+    L.ground(81, 10, 5);
+    L.slit(90, 11, -1, 1400, 400, 8);
+    L.pix(84, 11); L.pix(87, 11);
+    L.ground(91, 6, 4);
+    L.barrel(92, 95, 55);
+    L.pix(94, 9);
+    // 5. Cour du Grand Logis
+    L.ground(97, 23, 3);
+    L.pix(99, 13); L.pix(100, 13);
+    L.plat(102, 11, 3); L.pix(103, 10); L.pix(104, 10);
+    L.plat(107, 9, 2); L.pix(107, 8);
+    L.pix(112, 13); L.pix(113, 13); L.pix(114, 13);
+    L.deco(110, 'chateau_blason_simple', { depth: 3, dy: -24 });
+    L.garde(108, -1);                                   // le garde du Grand Logis
+  });
+  L.id = 'chateau';
+  L.reveal = 'bottomUp';
+  L.abilities = { crouch: true };
+  L.skin = {
+    top: 'chateau_sol_pave_chateau', fill: ['chateau_mur_tuffeau_plein_1', 'chateau_mur_tuffeau_plein_2', 'chateau_mur_tuffeau_plein_3'],
+    left: 'chateau_mur_gauche', right: 'chateau_mur_droite', block: ['chateau_mur_tuffeau_plein_1', 'chateau_mur_tuffeau_plein_2'],
+    blockTop: ['chateau_mur_tuffeau_haut_creneaux_a', 'chateau_mur_tuffeau_haut_creneaux_b'], blockBottom: 'chateau_mur_bas',
+    ledge: ['chateau_corniche_pierre_g', 'chateau_corniche_pierre_m', 'chateau_corniche_pierre_d'],
+    bridge: ['chateau_planche_echafaudage_g', 'chateau_planche_echafaudage_m', 'chateau_planche_echafaudage_d']
+  };
+  L.thornKey = 'commun_pointes_fer_1'; L.thornText = 'AÏE, LES POINTES !';
+  L.sky = { farKey: 'lv_fond_chateau', farBottom: 236 };
+  L.rooms = [{ x: 55, key: 'lv_salle_herses' }, { x: 77, key: 'lv_salle_gardes' }];   // le châtelet aux herses, puis la salle des gardes (intérieur)
+  L.backdrop = { x: 112, key: 'chateau_grand_logis', scale: 1, tint: false };
+  L.wxm = { rain: { enemy: 0.8 }, sun: { enemy: 1.2 } };
+  L.weatherText = { wind: 'LE VENT FAIT ROULER LES TONNEAUX', rain: 'LA PLUIE RALENTIT LES ESPRITS DE LA GARDE', sun: 'LE SOLEIL AGITE LES ESPRITS DE LA GARDE' };
+  return L;
+})();
+
+/**
+ * NIVEAU 3 — CATHÉDRALE SAINT-PIERRE-ET-SAINT-PAUL (120 tuiles). Nouvelles capacités : GRIMPER aux colonnes et
+ * S'ACCROCHER aux rebords. Gargouilles qui laissent tomber des gouttes (plus souvent sous la pluie), corniches qui
+ * s'effritent au-dessus de pointes de pierre, tour à gravir, puis la nef et la façade. Révélation : du bas vers le haut.
+ */
+GP.LEVELS['cathedrale'] = (function () {
+  var L = GP.LevelBuilder.create(120, function (L) {
+    // 1. Grimper à une colonne
+    L.ground(0, 22, 3);
+    L.start(2);
+    L.hint(4, 'HAUT : GRIMPE AUX COLONNES');
+    L.deco(6, 'lv_banc_eglise', { depth: 3 }); L.deco(14, 'lv_banc_eglise', { depth: 3 }); L.deco(18, 'lv_banc_eglise', { depth: 3 });
+    L.climb(9, 7, 13);
+    L.plat(10, 7, 4);
+    L.pix(9, 9); L.pix(11, 6); L.pix(12, 6);
+    // 2. S'accrocher à un rebord trop haut pour un saut
+    L.hint(16, 'SAUTE CONTRE LE MUR ET ACCROCHE-TOI');
+    L.ground(22, 6, 7);
+    L.pix(24, 9); L.pix(25, 9);
+    L.ground(28, 12, 3);
+    L.check(29);
+    // 3. Gargouilles : la goutte se forme, puis tombe
+    L.hint(30, 'UNE GOUTTE SE FORME : ATTENDS');
+    L.block(30, 0, 12, 1); L.gargoyle(32, 0, 2400);      // une arche de la voûte : l'eau suinte d'une fissure
+    L.gargoyle(36, 0, 2400);
+    L.pix(34, 13); L.pix(38, 13);
+    L.plat(33, 9, 3); L.plat(37, 8, 3); L.pix(34, 8); L.pix(38, 7);          // la voie haute de la nef, au-dessus des gouttes
+    // 4. Corniches qui s'effritent au-dessus des pointes
+    L.ground(40, 2, 3); L.check(40);
+    L.hint(41, "LES CORNICHES S'EFFRITENT : AVANCE");
+    L.ground(42, 11, 2);
+    L.thorn(42, 11);
+    L.crumble(43, 11, 2); L.crumble(47, 11, 2); L.crumble(51, 11, 2);
+    L.pix(44, 10); L.pix(48, 10); L.pix(52, 10);
+    L.plat(44, 7, 2); L.plat(49, 6, 2); L.pix(45, 6); L.pix(50, 5);          // la voie haute : une chapelle latérale à pixels, loin des pointes
+    // 5. La tour : colonne, sommet, rebord haut, puis redescente
+    L.ground(53, 10, 3);
+    L.climb(62, 8, 13);
+    L.ground(63, 4, 9);
+    L.pix(62, 10); L.pix(64, 7); L.pix(65, 7);
+    L.plat(68, 5, 3); L.pix(69, 4); L.pix(70, 4);
+    L.ground(67, 13, 3);
+    L.check(73);
+    L.block(67, 0, 8, 1); L.gargoyle(70, 0, 2000);
+    // 6. Un dernier mur à saisir, puis la nef
+    L.ground(80, 5, 7);
+    L.pix(81, 9); L.pix(83, 9);
+    L.ground(85, 12, 3);                                              // 6e travée : des gouttes, une fosse de pointes, des corniches qui s'effritent
+    L.block(88, 0, 10, 1); L.gargoyle(90, 0, 2200); L.gargoyle(94, 0, 2200);
+    L.pix(88, 13); L.pix(92, 13);
+    L.hint(95, "LES CORNICHES S'EFFRITENT : AVANCE"); L.ground(97, 7, 2); L.thorn(97, 7);
+    L.crumble(98, 11, 2); L.crumble(101, 11, 2); L.pix(99, 10); L.pix(102, 10);
+    L.ground(104, 16, 3); L.check(104);
+    L.deco(88, 'lv_banc_eglise', { depth: 3 }); L.deco(92, 'lv_banc_eglise', { depth: 3 }); L.deco(96, 'lv_banc_eglise', { depth: 3 }); L.deco(107, 'lv_banc_eglise', { depth: 3 }); L.deco(112, 'lv_banc_eglise', { depth: 3 });
+    L.plat(110, 11, 3); L.pix(111, 10); L.pix(112, 10); L.pix(108, 13); L.pix(116, 13);
+  });
+  L.id = 'cathedrale';
+  L.reveal = 'bottomUp';
+  L.abilities = { crouch: true, grab: true, climb: true };
+  L.skin = {
+    top: 'cathedrale_pierre_haut', fill: ['cathedrale_pierre_blanche_pleine_1', 'cathedrale_pierre_blanche_pleine_2', 'cathedrale_pierre_blanche_pleine_3'],
+    left: 'cathedrale_pierre_gauche', right: 'cathedrale_pierre_droite', block: ['cathedrale_pierre_blanche_pleine_1'],
+    ledge: ['cathedrale_corniche_g', 'cathedrale_corniche_m', 'cathedrale_corniche_d']
+  };
+  L.thornKey = 'cathedrale_pointes_pierre_1'; L.thornText = 'AÏE, LES POINTES DE PIERRE !';
+  L.sky = { farKey: 'lv_fond_nef', farBottom: 236 };           // l'intérieur : piliers, vitraux et rosace
+  L.gargoyleKey = 'lv_fuite';                                  // plus de statues : des fissures de la voûte laissent tomber des gouttes
+  L.supports = true;                                           // les corniches reposent sur des piliers de pierre
+  L.backdrop = { x: 108, key: 'cathedrale_tour_facade', scale: 1, tint: false };
+  L.rainGargoyle = true;
+  L.weatherText = { rain: 'LES GARGOUILLES COULENT PLUS SOUVENT' };
+  return L;
+})();
