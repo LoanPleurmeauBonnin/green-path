@@ -45,11 +45,11 @@ GP.UI = (function () {
   }
 
   /** Bouton retour en icône (flèche), en haut à gauche, à la même place et au même style que le bouton compte de l'accueil. */
-  function backIcon(scene, cb) {
-    var dx = GP.Config.DX;
+  function backIcon(scene, cb, y) {
+    var dx = GP.Config.DX; y = y === undefined ? 6 : y;
     if (!scene.textures.exists('ui_back')) GP.PixelArt.sprite(scene, 'ui_back', ['...k.....', '..kwk....', '.kwwkkkkk', 'kwwwwwwwk', '.kwwkkkkk', '..kwk....', '...k.....']);
-    var box = scene.add.rectangle(6 - dx, 6, 22, 15, GP.int(P.d), 0.95).setOrigin(0).setStrokeStyle(2, GP.int(P.k)).setInteractive({ useHandCursor: true }).setDepth(50);
-    var img = scene.add.image(6 - dx + 11, 6 + 7.5, 'ui_back').setOrigin(0.5).setDepth(51);
+    var box = scene.add.rectangle(6 - dx, y, 22, 15, GP.int(P.d), 0.95).setOrigin(0).setStrokeStyle(2, GP.int(P.k)).setInteractive({ useHandCursor: true }).setDepth(50);
+    var img = scene.add.image(6 - dx + 11, y + 7.5, 'ui_back').setOrigin(0.5).setDepth(51);
     box.on('pointerover', function () { box.setFillStyle(GP.int(P.G), 0.95); });
     box.on('pointerout', function () { box.setFillStyle(GP.int(P.d), 0.95); });
     box.on('pointerdown', function () { cb(); });
@@ -220,8 +220,9 @@ GP.UI = (function () {
   }
 
   /**
-   * Manette tactile (niveaux) : gauche, droite, accroupi (bas) à gauche ; saut à droite ; PAUSE en haut à droite.
-   * Écrit l'état dans l'objet state ({ left, right, down, jump }) ; plusieurs doigts à la fois.
+   * Manette tactile (niveaux) : un joystick flottant à gauche (il apparaît là où le doigt se pose : gauche, droite, haut pour grimper,
+   * bas pour s'accroupir) ; saut à droite ; PAUSE en haut à droite (bouton du HUD).
+   * Écrit l'état dans l'objet state ({ left, right, up, down, jump }) ; plusieurs doigts à la fois.
    * N'apparaît que sur écran tactile (pointer: coarse). Renvoie la liste des objets (ou []).
    */
   function touchPad(scene, state, onPause) {
@@ -229,19 +230,37 @@ GP.UI = (function () {
     makeTextures(scene);
     scene.input.addPointer(3);
     var H = GP.Config.HEIGHT, W = GP.Config.WIDTH, objs = [];
-    function btn(x, y, r, icon, key) {
-      var c = scene.add.circle(x, y, r, GP.int(P.d), 0.55).setStrokeStyle(2, GP.int(P.k)).setScrollFactor(0).setDepth(55).setInteractive();
-      var im = scene.add.image(x, y, icon).setScale(2).setScrollFactor(0).setDepth(56).setTint(0xf4f7f2);
-      function on() { state[key] = true; c.setFillStyle(GP.int(P.G), 0.8); }
-      function off() { state[key] = false; c.setFillStyle(GP.int(P.d), 0.55); }
-      c.on('pointerdown', on); c.on('pointerup', off); c.on('pointerout', off);
-      objs.push(c, im);
+    // saut
+    var c = scene.add.circle(W - 32, H - 34, 24, GP.int(P.d), 0.55).setStrokeStyle(2, GP.int(P.k)).setScrollFactor(0).setDepth(55).setInteractive();
+    var im = scene.add.image(W - 32, H - 34, 'ui_arr_u').setScale(2).setScrollFactor(0).setDepth(56).setTint(0xf4f7f2);
+    function jOn() { state.jump = true; c.setFillStyle(GP.int(P.G), 0.8); }
+    function jOff() { state.jump = false; c.setFillStyle(GP.int(P.d), 0.55); }
+    c.on('pointerdown', jOn); c.on('pointerup', jOff); c.on('pointerout', jOff);
+    objs.push(c, im);
+    // joystick flottant : zone du bas à gauche ; la base se pose sous le doigt, le bouton suit dans un rayon limité
+    var REST = { x: 52, y: H - 48 }, RADIUS = 26, DEAD = 8;
+    var base = scene.add.circle(REST.x, REST.y, 28, GP.int(P.d), 0.45).setStrokeStyle(2, GP.int(P.k)).setScrollFactor(0).setDepth(55);
+    var knob = scene.add.circle(REST.x, REST.y, 13, GP.int(P.m), 0.85).setStrokeStyle(2, GP.int(P.k)).setScrollFactor(0).setDepth(56);
+    var zone = scene.add.zone(0, H * 0.3, W * 0.5, H * 0.7).setOrigin(0).setScrollFactor(0).setDepth(54).setInteractive();
+    var active = null, ox = REST.x, oy = REST.y;
+    function steer(p) {
+      var dx = p.x - ox, dy = p.y - oy, d = Math.sqrt(dx * dx + dy * dy) || 1, k = d > RADIUS ? RADIUS / d : 1;
+      knob.setPosition(ox + dx * k, oy + dy * k).setFillStyle(GP.int(P.g), 0.9);
+      state.left = dx < -DEAD; state.right = dx > DEAD; state.up = dy < -DEAD * 1.6; state.down = dy > DEAD * 1.6;
     }
-    btn(26, H - 30, 19, 'ui_arr_l', 'left');
-    btn(70, H - 30, 19, 'ui_arr_r', 'right');
-    btn(114, H - 26, 15, 'ui_arr_d', 'down');
-    btn(W - 32, H - 34, 24, 'ui_arr_u', 'jump');
-    var release = function () { Object.keys(state).forEach(function (k) { state[k] = false; }); };
+    function free() {
+      active = null; state.left = state.right = state.up = state.down = false;
+      base.setPosition(REST.x, REST.y); knob.setPosition(REST.x, REST.y).setFillStyle(GP.int(P.m), 0.85);
+    }
+    zone.on('pointerdown', function (p) {
+      if (active !== null) return;
+      active = p.id; ox = Math.max(36, Math.min(W * 0.5 - 20, p.x)); oy = Math.max(H * 0.45, Math.min(H - 36, p.y));
+      base.setPosition(ox, oy); steer(p);
+    });
+    scene.input.on('pointermove', function (p) { if (active === p.id) steer(p); });
+    scene.input.on('pointerup', function (p) { if (active === p.id) free(); });
+    objs.push(base, knob, zone);
+    var release = function () { Object.keys(state).forEach(function (k) { state[k] = false; }); free(); };
     window.addEventListener('blur', release);
     scene.input.on('gameout', release);
     scene.events.once('shutdown', function () { window.removeEventListener('blur', release); scene.input.off('gameout', release); });

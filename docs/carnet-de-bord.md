@@ -341,3 +341,11 @@
 ## Jeudi 12 novembre 2026 — README et captures, vidéo de présentation
 
 README réécrit pour donner envie de jouer (accroche, lien en premier, pourquoi on y revient, captures récentes : menu, carte, rencontre, niveaux 1, 2, 3 sous la pluie, 5, 6 et 12, options, à propos, carte postale 1800 × 1200). Les captures sont refaites depuis le jeu en cours (1920 × 1080, pixels agrandis sans lissage) ; la règle « refaire les captures à chaque évolution visible » est inscrite dans `CLAUDE.md`. Vidéo de présentation enregistrée depuis le jeu (menu, carte et rencontres, niveau sous la pluie simulée, carte postale) : fichier `.webm`, sans son, gardée hors du dépôt. **Non réalisé** : la vidéo montre un parcours automatisé (pas un joueur), sans commentaire ni musique.
+
+## Jeudi 12 novembre 2026 — joystick mobile, retour accueil, chargement 0 → 100 %, musique
+
+**Joystick** : sur écran tactile, les trois flèches sont remplacées par un joystick flottant (il apparaît sous le doigt dans la moitié gauche : gauche, droite, haut pour grimper, bas pour s'accroupir) ; le saut reste à droite. **Accueil sur mobile** : une flèche retour sous le cadre en haut à gauche de la carte ramène au menu (il n'y avait pas d'Échap sur téléphone ; le menu pause d'un niveau garde « Quitter vers la carte »).
+
+**Chargement** : la barre avance de 0 à 90 % pendant au moins 1,7 s, se complète à 100 % dès que le jeu est prêt, puis l'écran disparaît ; valable à chaque actualisation de la page (`GP.finishLoading`, appelée par `BootScene`).
+
+**Musique** : OPTIONS → MUSIQUE et SON appliquent leur effet tout de suite (fondu de 0,35 s jusqu'au silence exact, au lieu d'attendre le minuteur). **Non réalisé** : joystick non essayé sur un vrai téléphone (simulé dans le navigateur) ; aucun playtest humain.

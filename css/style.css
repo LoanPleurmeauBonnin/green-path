@@ -42,7 +42,7 @@ html, body {
   font-size: 12px;
 }
 
-/* Écran de chargement : une barre de progression seule (le remplissage avance puis s'arrête à 90 % jusqu'à l'ouverture du jeu). */
+/* Écran de chargement : une barre de progression seule (0 → 90 % pendant le chargement, puis 100 % quand le jeu est prêt). */
 #loading {
   position: fixed;
   inset: 0;
@@ -64,11 +64,15 @@ html, body {
 #loading .ld-fill {
   display: block;
   height: 100%;
-  width: 90%;
+  width: 0;
   background: repeating-linear-gradient(90deg, var(--green) 0 calc(var(--u) * 6), transparent calc(var(--u) * 6) calc(var(--u) * 8));
-  animation: ld-grow 1.6s steps(24, end) both;
+  animation: ld-grow 1.6s steps(24, end) forwards;
 }
+/* le jeu est prêt : la barre se complète jusqu'à 100 %, puis l'écran s'efface */
+#loading.done .ld-fill { animation: ld-finish 0.4s steps(4, end) forwards; }
+#loading.done { opacity: 0; transition: opacity 0.25s linear 0.4s; }
 @keyframes ld-grow { from { width: 0; } to { width: 90%; } }
-@media (prefers-reduced-motion: reduce) { #loading .ld-fill { animation: none; } }
+@keyframes ld-finish { from { width: 90%; } to { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { #loading .ld-fill { animation: none; width: 90%; } #loading.done .ld-fill { animation: none; width: 100%; } }
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

@@ -378,6 +378,8 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     this.barState = fix(this.txt(6, H - 15, '', GP.PAL.y));
     GP.UI.button(this, W - 4 - 128, H - 19, 128, 'COMMENT JOUER ?', function () { if (!self.panel && !self.moving) self.openHelp(); })
       .objs.forEach(function (o) { o.setDepth(52); });
+    // retour à l'accueil sans clavier (sur téléphone il n'y a pas d'Échap) : flèche sous le cadre en haut à gauche
+    GP.UI.backIcon(this, function () { self.onEsc(); }, 50).objs.forEach(function (o) { o.setScrollFactor(0); o.x += GP.Config.DX; });
     this.hud = true;
     this.navHint = fix(this.txt(W / 2, H - 35, '', GP.PAL.m, { backgroundColor: GP.PAL.k, padding: { x: 4, y: 3 } })).setOrigin(0.5);
     GP.Prompts.bind(this, this.navHint, '{navX} ÉTAPES  {confirm} FICHE  {help} AIDE');
