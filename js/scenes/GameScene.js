@@ -57,6 +57,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.makePlayer();
     this.makeMechanics();
     this.makeStructures();
+    this.makeSilhouettes();   // après les structures : les niveaux générés (GZone) n'ont leur sol qu'à ce moment
     this.makeHud();
     this.makeWeather();
     this.makeInput();
@@ -115,6 +116,18 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       var bx = L.backdrop.x * 16, top = L.top(L.backdrop.x) * 16, img = this.add.image(bx, top + 2, L.backdrop.key).setOrigin(0.5, 1).setScale(L.backdrop.scale).setDepth(-5);
       if (L.backdrop.tint !== false) img.setTintFill(0x2b3a55).setAlpha(0.55);
     }
+  }
+
+  /** Monuments en silhouette au fond (comme la serre du Jardin) : L.silhouettes = [{ x, loc, scale }], posés sur le sol de la colonne x (cherché dans le terrain réel). */
+  makeSilhouettes() {
+    var L = this.L, self = this;
+    (L.silhouettes || []).forEach(function (sl) {
+      var loc = GP.LOCATIONS.filter(function (l) { return l.id === sl.loc; })[0], x = sl.x, row = 17;
+      if (!loc) return;
+      for (; x > 0 && row >= 17; x--) for (var r = 0; r < 17; r++) if (self.solidAt(x * 16 + 8, r * 16 + 8)) { row = r; break; }
+      if (row >= 17) return;
+      self.add.image((x + 1) * 16, row * 16 + 2, GP.MapArt.monument(loc, false)).setOrigin(0.5, 1).setScale(sl.scale || 3).setDepth(-5).setTintFill(0x2b3a55).setAlpha(0.55);
+    });
   }
 
   makeTerrain() {
@@ -332,7 +345,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     if (L.exit) {
       var e = L.exit, img = this.add.image(e.x * 16 + 8, e.y * 16, e.key).setOrigin(0.5, 1).setDepth(7);
       var label = GP.UI.txt(this, img.x + 16, img.y - 56, '', GP.PAL.c, {
-        align: 'right', backgroundColor: GP.PAL.k, padding: { x: 4, y: 4 }, wordWrap: { width: 200 }
+        align: 'left', lineSpacing: 5, backgroundColor: GP.PAL.k, padding: { x: 6, y: 5 }, wordWrap: { width: 190 }   // lignes alignées à gauche dans un cadre ancré à droite de l'arche : lisible
       }).setOrigin(1, 1).setDepth(40);
       // Flèche qui rebondit au-dessus de l'arche quand l'image est complète (à la place d'un texte).
       var arrow = this.add.graphics().setDepth(41).setVisible(false), ay = img.y - img.height - 6;

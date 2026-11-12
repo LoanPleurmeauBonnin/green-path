@@ -799,6 +799,7 @@ GP.LEVELS['ligne-verte'] = (function () {
     starts.push(s); kind = 'tourlu'; arche(s + 1); D(s + 8, 'lv_pan_stop'); D(s + 20, 'lv_abribus'); D(s + 30, 'lv_arbre_rue'); G(s, 36, 3); L.jet(s + 4, 4, 3200, 0); L.jet(s + 10, 4, 3000, 1500); L.spring(s + 16);
     L.pix(s + 2, 13); L.pix(s + 7, 13); L.pix(s + 14, 13); L.pix(s + 21, 13); L.pix(s + 27, 13);
   });
+  L.silhouettes = starts.map(function (x, k) { return { x: x + 12, loc: ['jardin-des-plantes', 'cathedrale', 'chateau', 'feydeau', 'graslin', 'machines', 'chantiers', 'buren', 'hangar', 'pommeraye', 'memorial', 'tour-lu'][k], scale: 3 }; });   // le monument de chaque section, en silhouette au fond
   L.id = 'ligne-verte';
   L.maxTime = 360;
   L.reveal = 'bottomUp';
@@ -830,3 +831,6 @@ if (/[?&]demo36=1/.test(location.search) && GP.Progression) {
     this.persist = function () {};   // rien n'est enregistré pendant la démo
   };
 }
+
+// ---------- Jardin des Plantes : le Palmarium en silhouette au fond, puis la Cathédrale et le Château (les prochaines étapes), comme vu ensemble ----------
+GP.LEVELS['jardin-des-plantes'].silhouettes = [{ x: 40, loc: 'cathedrale', scale: 2 }, { x: 86, loc: 'chateau', scale: 2 }, { x: 124, loc: 'jardin-des-plantes', scale: 3 }];
