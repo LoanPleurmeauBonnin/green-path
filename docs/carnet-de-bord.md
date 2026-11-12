@@ -331,3 +331,9 @@
 ## Jeudi 12 novembre 2026 — étoiles d'après la maquette, arrêt à chaque passage
 
 Étoiles : espacées de 14 px, les deux extérieures un peu plus haut que celle du milieu, juste sous le piédestal (d'après la maquette de l'équipe). Personnages de la carte : le héros s'arrête face à eux à chaque passage, plus seulement la première fois. **Non réalisé** : aucun playtest humain.
+
+## Jeudi 12 novembre 2026 — musique d'ambiance, bulle d'anecdote fermable
+
+**Musique** : ambiance originale composée par code (WebAudio, `js/systems/Music.js`) : pad lent sur quatre accords et rares notes de pentatonique avec écho, très discrète ; aucun fichier audio, donc aucun droit à vérifier. Elle démarre au premier geste, se coupe avec SON (menu, touche M) ou avec **OPTIONS → MUSIQUE** (réglage mémorisé), et s'arrête quand l'onglet est masqué.
+
+**Bulle d'anecdote** : Entrée, Espace, Échap ou un toucher sur la bulle la ferment, après un délai de lecture (1,2 s au clavier, 2,5 s au toucher) ; elle se rouvre au passage suivant. **Étoiles** : espacées de 12 px, arc léger, au plus près de la maquette. **Non réalisé** : aucun réglage du volume de la musique ; écoute sur appareil mobile non testée.

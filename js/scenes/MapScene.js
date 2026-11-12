@@ -172,6 +172,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       who.setPosition(bx, by - h + 5); body.setPosition(bx, by - h + 5 + who.height + 4);
       im.talk = [box, who, body];
       im.talk.forEach(function (o, k) { o.setDepth(30 + k).setVisible(false); });
+      box.setInteractive({ useHandCursor: true }).on('pointerdown', function () { self.closeTalk(); });   // toucher la bulle la ferme (après le délai de lecture)
       return im;
     });
   }
@@ -212,7 +213,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       var img = self.add.image(x, y + 6, 'carte_piedestal_disponible').setOrigin(0.5, 1).setDepth(10).setInteractive({ useHandCursor: true });
       var num = self.txt(x, y - 2, String(i + 1), GP.PAL.k).setOrigin(0.5).setDepth(11);
       // trois étoiles en arc de cercle sous le piédestal, centre de l'arc au-dessus d'elles (le milieu est le plus bas)
-      var stars = [0, 1, 2].map(function (k) { return self.add.image(x + (k - 1) * 14, y + (k === 1 ? 13 : 10), 'star_off').setDepth(12).setVisible(false); });
+      var stars = [0, 1, 2].map(function (k) { return self.add.image(x + (k - 1) * 12, y + (k === 1 ? 12 : 10), 'star_off').setDepth(12).setVisible(false); });
       img.on('pointerover', function () { self.hover = i; self.updateBar(); });
       img.on('pointerout', function () { if (self.hover === i) { self.hover = -1; self.updateBar(); } });
       img.on('pointerdown', function () { if (!self.panel) self.goTo(i, true); });
@@ -278,14 +279,32 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
   /** Bulle d'anecdote : elle s'ouvre quand le héros passe devant un personnage dont le niveau est terminé, et se ferme quand il s'éloigne. */
   updateTalk() {
     if (!this.pers || !this.hero) return;
+    this.dismissed = this.dismissed || {};
     for (var i = 0; i < this.pers.length; i++) {
       var im = this.pers[i]; if (!im || !im.talk) continue;
       if (!this.locs[i].panneau) im.setFlipX(this.hero.x < im.x);   // le personnage regarde toujours le héros
-      var on = this.P.status(i) === 'completed' && !this.panel && Math.abs(this.hero.x - im.x) < 34;
-      if (im.talk[0].visible !== on) { im.talk.forEach(function (o) { o.setVisible(on); }); }
-      if (on) im.bulle.setVisible(false);
+      var near = this.P.status(i) === 'completed' && !this.panel && Math.abs(this.hero.x - im.x) < 34;
+      if (!near) delete this.dismissed[i];                          // la bulle se rouvre au prochain passage
+      var on = near && !this.dismissed[i];
+      if (im.talk[0].visible !== on) {
+        im.talk.forEach(function (o) { o.setVisible(on); });
+        if (on) this.talkSince = this.time.now;                     // départ du délai de lecture
+      }
+      if (on || (near && this.dismissed[i])) im.bulle.setVisible(false);
       else if (this.P.status(i) !== 'locked' && this.P.status(i) !== 'coming') im.bulle.setVisible(!!this.locs[i].anecdote);
     }
+  }
+
+  /** Bulle d'anecdote ouverte : Entrée, Espace, Échap ou un toucher sur la bulle la ferment, mais seulement après un délai de lecture (plus long au toucher). Renvoie vrai s'il y avait une bulle (la touche ne fait rien d'autre). */
+  closeTalk() {
+    for (var i = 0; i < (this.pers || []).length; i++) {
+      var im = this.pers[i];
+      if (im && im.talk && im.talk[0].visible) {
+        if (this.time.now - this.talkSince >= (GP.UI.isTouch() ? 2500 : 1200)) { this.dismissed[i] = true; im.talk.forEach(function (o) { o.setVisible(false); }); GP.Sfx.play('back'); }
+        return true;
+      }
+    }
+    return false;
   }
 
   heroDrop(x) {
@@ -324,11 +343,13 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
   }
 
   onConfirm() {
+    if (!this.panel && this.closeTalk()) return;
     if (this.panel) { this.panelPrimary(); return; }
     if (!this.moving) this.openPanel(this.cur);
   }
 
   onEsc() {
+    if (!this.panel && this.closeTalk()) return;
     if (this.panel) { this.closePanel(); return; }
     if (this.moving) return;
     var self = this;

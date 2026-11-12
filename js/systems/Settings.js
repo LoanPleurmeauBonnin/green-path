@@ -25,6 +25,8 @@ GP.Settings = (function () {
     lang: 'fr', keys: clone(DEFAULT_KEYS),
     /** Animations : 'auto' (suit le système), 'on' (activées) ou 'reduced' (réduites). */
     motion: 'auto',
+    /** Musique d'ambiance (GP.Music) : activée par défaut ; coupée aussi quand SON est désactivé. */
+    music: true,
 
     /** Applique le réglage ANIMATIONS à GP.reducedMotion (lu par les scènes à leur création). */
     applyMotion: function () {
@@ -38,6 +40,7 @@ GP.Settings = (function () {
       var nav = (navigator.language || 'fr').slice(0, 2).toLowerCase();
       this.lang = d && (d.lang === 'fr' || d.lang === 'en') ? d.lang : (nav === 'fr' ? 'fr' : 'en');
       this.motion = d && (d.motion === 'on' || d.motion === 'reduced') ? d.motion : 'auto';
+      this.music = !(d && d.music === false);
       this.applyMotion();
       this.keys = clone(DEFAULT_KEYS);
       if (d && d.keys) this.ACTIONS.forEach(function (a) {
@@ -50,11 +53,12 @@ GP.Settings = (function () {
     save: function () {
       if (GP.Prompts) GP.Prompts.refresh();
       var st = storage(); if (!st) return;
-      try { st.setItem(KEY, JSON.stringify({ lang: this.lang, keys: this.keys, motion: this.motion })); } catch (e) { /* stockage plein ou bloqué */ }
+      try { st.setItem(KEY, JSON.stringify({ lang: this.lang, keys: this.keys, motion: this.motion, music: this.music })); } catch (e) { /* stockage plein ou bloqué */ }
     },
     set: function (o) {
       if (o.lang) { this.lang = o.lang; if (GP.I18n) GP.I18n.setLang(o.lang); }
       if (o.motion === 'auto' || o.motion === 'on' || o.motion === 'reduced') { this.motion = o.motion; this.applyMotion(); }
+      if (typeof o.music === 'boolean') this.music = o.music;
       this.save();
     },
 

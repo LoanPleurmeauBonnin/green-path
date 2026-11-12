@@ -40,7 +40,8 @@ Projet noté (ESD Nantes B3, atelier PATRIMOINE.EXE / NANTES 001). **Gel fonctio
 - Accessibilité : pas de flash, `prefers-reduced-motion` respecté, clavier + tactile, jouable sans son, réinitialisation possible.
 
 ## Règle de mise à jour
-**À chaque évolution notable du jeu, mettre à jour `README.md` (fonctionnalités, captures `docs/screenshots/`, statut des niveaux) et `CREDITS.md`.**
+**À chaque évolution notable du jeu, mettre à jour `README.md` (fonctionnalités, statut des niveaux), `CREDITS.md` et le carnet de bord.**
+**Captures du README** : toute évolution visible (carte, niveaux, menus, interface, carte postale, avatar) impose de **refaire les captures concernées** dans `docs/screenshots/` (PNG, noms stables : menu, carte, rencontre, niveau-*, options, carte-postale…) et de vérifier que le README les cite et que chaque capture citée existe ; supprimer celles qui ne sont plus citées. Le README doit donner envie de jouer : accroche courte, lien du jeu en premier, captures et GIF récents, fonctionnalités claires, rien d'obsolète. Même règle pour la vidéo de présentation si elle existe.
 
 ## Tester
 ```bash
