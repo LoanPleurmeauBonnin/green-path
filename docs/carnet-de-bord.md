@@ -430,3 +430,7 @@ README réécrit pour donner envie de jouer (accroche, lien en premier, pourquoi
 
 **Capacités débloquées une à une** : `GP.Tuning.player.unlock` ({ dash: 4, wall: 5 }) ; `GameScene` coupe le dash avant l'étape 4 et les murs marqués avant l'étape 5 (le niveau bonus a tout), sauf si le niveau force le choix par `L.abilities.dash` / `.wall`. Le bouton de dash tactile n'apparaît qu'une fois le dash débloqué. **Message « nouvelle capacité »** à l'entrée de l'étape 4 (dash) et de l'étape 5 (murs, seulement si le niveau en contient), avec la touche selon l'appareil (`Prompts`) et sa traduction anglaise. **Aide** : la page « Dans un niveau » ne parle plus de « murs verts » et dit à partir de quel niveau le dash et les murs marqués servent. **Audit** : `node tools/audit-niveaux.cjs [id]` charge les niveaux dans un bac à sable, compte les obstacles, rappelle les capacités actives et signale erreurs (départ, pixel ou lanterne mal posés, murs avant leur niveau, aucun pixel) et alertes (trous sans appui, écart entre lanternes). Il a trouvé un vrai défaut : trois lanternes de La Ligne Verte posées avant le sol de leur colonne (corrigé). Aucun niveau n'est modifié à ce stade.
 
+
+## Vendredi 13 novembre 2026 — boutons-icônes de l'accueil
+
+Compte, éditeur (admin) et langue FR/EN ont la même taille, 22 × 15 comme la flèche retour.
