@@ -7,3 +7,7 @@ node_modules
 *.key
 *.pem
 .env*
+
+# fichiers de travail locaux, hors dépôt
+docs/frises/
+package-lock.json
