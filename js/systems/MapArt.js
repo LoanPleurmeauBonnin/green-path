@@ -203,6 +203,26 @@ GP.MapArt = (function () {
   }
 
   /** Version grise (luminance, sans teinte, légèrement éclaircie) : le monument « en mémoire ». */
+  /** Le Grand Éléphant en petit (48×44), pour le sélecteur de niveaux : formes lissées puis seuil et contour sombre (même style que les autres monuments). */
+  function drawElephantCarte() {
+    var o = PA.canvas(44, 40), c = o.ctx, i;
+    function ell(cx, cy, rx, ry, col) { c.fillStyle = col; c.beginPath(); c.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); c.fill(); }
+    function seg(x0, y0, x1, y1, w, col) { c.strokeStyle = col; c.lineWidth = w; c.lineCap = 'round'; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke(); }
+    [[6, 6], [13, 6], [21, 6], [28, 6]].forEach(function (l, n) { c.fillStyle = n % 2 ? '#a5723f' : '#c89a5e'; c.fillRect(l[0], 26, l[1], 12); });   // pattes
+    ell(17, 19, 14, 9, '#c89a5e'); ell(17, 24, 12, 5, '#a5723f');                                                       // corps
+    ell(30, 14, 6, 8, '#c89a5e'); ell(26, 14, 4, 8, '#e8d8b0');                                                          // tête et grande oreille
+    for (i = 0; i < 6; i++) { c.fillStyle = i % 2 ? '#2b2e3a' : '#6f7a8e'; c.beginPath(); c.arc(35 + i * 0.7, 18 + i * 3.4, 2.4 - i * 0.2, 0, Math.PI * 2); c.fill(); }   // trompe articulée
+    seg(33, 20, 40, 24, 2, '#f0e4c4');                                                                                 // défense
+    c.fillStyle = '#8a5a30'; c.fillRect(10, 6, 11, 6); c.fillStyle = '#e8873a'; c.fillRect(9, 4, 13, 3);                   // balcon et auvent sur le dos
+    var w = c.canvas.width, h = c.canvas.height, src = c.getImageData(0, 0, w, h), out = PA.canvas(w + 4, h + 4), x, y, W2 = w + 4;
+    var res = out.ctx.createImageData(W2, h + 4);
+    for (y = 0; y < h; y++) for (x = 0; x < w; x++) { var s = (y * w + x) * 4; if (src.data[s + 3] > 130) { var d = ((y + 2) * W2 + x + 2) * 4; res.data[d] = src.data[s]; res.data[d + 1] = src.data[s + 1]; res.data[d + 2] = src.data[s + 2]; res.data[d + 3] = 255; } }
+    function op(px, py) { return px >= 0 && py >= 0 && px < W2 && py < h + 4 && res.data[(py * W2 + px) * 4 + 3] === 255; }
+    var res2 = out.ctx.createImageData(W2, h + 4); res2.data.set(res.data);
+    for (y = 0; y < h + 4; y++) for (x = 0; x < W2; x++) { if (op(x, y)) continue; if (op(x + 1, y) || op(x - 1, y) || op(x, y + 1) || op(x, y - 1)) { var k = (y * W2 + x) * 4; res2.data[k] = 23; res2.data[k + 1] = 14; res2.data[k + 2] = 59; res2.data[k + 3] = 255; } }
+    out.ctx.putImageData(res2, 0, 0);
+    var fin = PA.canvas(48, 44); fin.ctx.drawImage(out.cv, 0, 4); return fin.cv;
+  }
   function toGrey(cv) {
     var o = PA.canvas(cv.width, cv.height);
     o.ctx.drawImage(cv, 0, 0);
@@ -268,6 +288,8 @@ GP.MapArt = (function () {
       PA.toTexture(scene, 'lm_' + l.id, cv);
       PA.toTexture(scene, 'lm_' + l.id + '_gris', toGrey(cv));
     });
+    var el = drawElephantCarte();                                                // Machines de l'île : le Grand Éléphant
+    PA.toTexture(scene, 'lm_machines', el); PA.toTexture(scene, 'lm_machines_gris', toGrey(el));
     GP.MapArt.worldKeys = GP.LevelArt.chunks(scene, 'world_map', drawWorld(scene));
   }
 

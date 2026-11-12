@@ -17,6 +17,7 @@ GP.Progression = {
     var loc = GP.LOCATIONS[i];
     if (!loc.playable) return 'coming';
     if (this.data.completed[loc.id]) return 'completed';
+    if (GP.Config && GP.Config.DEV_TOOLS) return 'available';   // mode test (?dev=1) : tous les niveaux jouables sont ouverts
     return i <= this.data.unlocked ? 'available' : 'locked';
   },
 

@@ -22,9 +22,22 @@ Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en
 | **Prototype Bouffay (hors parcours)** : les étals bougent | **Sur téléphone, en paysage** |
 | ![Bouffay](docs/screenshots/niveau-bouffay.png) | ![Contrôles tactiles](docs/screenshots/mobile-paysage.png) |
 
+| **4 · Île Feydeau** : la marée monte, les bateaux s'enfoncent, les visages des façades mentent | **5 · Place Graslin** : les Muses lancent des notes, parasols qui font rebondir, projecteurs, rideau à ouvrir |
+|---|---|
+| ![Île Feydeau](docs/screenshots/niveau-feydeau.png) | ![Place Graslin](docs/screenshots/niveau-graslin.png) |
+| **6 · Machines de l'île** : rails qui entraînent, jets de vapeur, araignées (au sol ou suspendues à un fil) qui se figent quand on les regarde, et le **Grand Éléphant** sur lequel on monte pour traverser le canal | **7 · Parc des Chantiers** : conteneurs qui tombent de la grue (l'ombre prévient) et **grue jaune qui porte des conteneurs** à franchir, |
+| ![Machines de l'île](docs/screenshots/niveau-machines.png) | ![Parc des Chantiers](docs/screenshots/niveau-chantiers.png) |
+| **8 · Anneaux de Buren** : des **bornes de couleur** allument les passerelles néon de leur couleur au-dessus de la Loire | **9 · Hangar à Bananes** : les pixels pourrissent, la moisissure gagne du terrain |
+| ![Anneaux de Buren](docs/screenshots/niveau-buren.png) | ![Hangar à Bananes](docs/screenshots/niveau-hangar.png) |
+| **10 · Mémorial** : sobre, sans ennemi : une stèle à lire, une porte de lumière, du verre qui se fissure | **11 · Passage Pommeraye** : l'escalier monumental, la verrière, les ponts de verre |
+| ![Mémorial](docs/screenshots/niveau-memorial.png) | ![Passage Pommeraye](docs/screenshots/niveau-pommeraye.png) |
+| **12 · Tour LU** : tout ce qu'on a appris, puis le courant d'air ascendant de la coupole | |
+| ![Tour LU](docs/screenshots/niveau-tourlu.png) | |
+
 ## Le concept
 - **Une archive qui se reconstruit** : chaque niveau cache des pixels. Chacun ramassé révèle un morceau de la photo du lieu (48×32 cases, 16 couleurs), dans un ordre propre au lieu : le Jardin des Plantes pousse **du bas vers le haut**, comme une plante.
 - **Une ligne verte à suivre** : sur la carte, le chemin s'allume en vert à chaque lieu terminé, et le monument passe du gris à la couleur.
+- **Des rencontres** : une fois un niveau terminé, un petit personnage apparaît près du monument sur la carte (Anne de Bretagne, Jules Verne enfant, Louis Pommeraye, un docker…) ; la fiche du lieu a une page **RENCONTRE** avec son anecdote et sa source (un simple panneau au Mémorial). Sources dans [docs/sources.md](docs/sources.md).
 - **Trois étoiles par niveau** : image complète, sans mourir, sous le temps cible.
 - **La vraie météo de Nantes** (Open-Meteo, mise à jour toutes les 5 min) change l'environnement et les niveaux réagissent, avec une annonce à l'entrée de chaque niveau :
 
@@ -104,7 +117,7 @@ Aucun gestionnaire de paquets ni build à installer. Phaser 3.90 et la police so
 ```bash
 python3 -m http.server 8123
 ```
-puis http://localhost:8123. **Mode test** : ajouter `?dev=1` à l'adresse (W : météos simulées sur la carte, N dans un niveau ; K : ramasser tous les pixels).
+puis http://localhost:8123. **Mode test** : ajouter `?dev=1` à l'adresse (W : météos simulées sur la carte, N dans un niveau ; K : ramasser tous les pixels) ; **tous les niveaux sont ouverts** sur la carte.
 
 ### Tester directement les douze niveaux
 
@@ -180,3 +193,6 @@ L'équipe doit relire, comprendre et pouvoir défendre le code livré ; les info
 - Détails, licences et obligations : [CREDITS.md](CREDITS.md).
 
 ![Médiation de la grammaire du Château, dans un cadre de test 1920×1080](docs/screenshots/audit-grammaire.png)
+
+## Niveaux construits à deux (branche `feat/niveaux-fusion`)
+Les niveaux 4 à 12 (Feydeau, Graslin, Machines de l'île, Chantiers, Buren, Hangar, Mémorial, Pommeraye, Tour LU) sont ceux de `js/data/levels-ville.js` (mécaniques dans `js/systems/Dangers.js`) : ils sont chargés **après** les niveaux générés (`GZoneLevels`) et les remplacent. Les niveaux 1 à 3 restent ceux de `js/data/levels.js`. Détails et décisions : `docs/carnet-de-bord.md`, `docs/niveaux.md`. La limite de temps de 3 minutes de notre ancienne branche n'est pas reprise (la reprise au point de contrôle de `main` enregistre déjà la progression).
