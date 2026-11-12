@@ -42,18 +42,18 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     this.hint = this.txt(W / 2, H - 14, '', GP.PAL.m, 8).setOrigin(0.5);
     GP.Prompts.bind(this, this.hint, '{navY} CHOISIR  {confirm} VALIDER  {back} RETOUR');
 
-    // sélecteur de langue : petit bouton en haut à droite de l'écran (FR ↔ EN), touche L
-    var lb = this.add.rectangle(W + DX - 6, 6 - 0, 30, 15, GP.int(GP.PAL.d), 0.95).setOrigin(1, 0).setStrokeStyle(2, GP.int(GP.PAL.k)).setInteractive({ useHandCursor: true });
-    var lt = this.txt(W + DX - 21, 10, GP.I18n.lang.toUpperCase(), GP.PAL.w, 8).setOrigin(0.5, 0);
+    // sélecteur de langue : bouton-icône 22×15 (comme le compte et le retour) en haut à droite (FR ↔ EN), touche L
+    var lb = this.add.rectangle(W + DX - 6, 6, 22, 15, GP.int(GP.PAL.d), 0.95).setOrigin(1, 0).setStrokeStyle(2, GP.int(GP.PAL.k)).setInteractive({ useHandCursor: true });
+    var lt = this.txt(W + DX - 17, 10, GP.I18n.lang.toUpperCase(), GP.PAL.w, 8).setOrigin(0.5, 0);
     lb.on('pointerover', function () { lb.setFillStyle(GP.int(GP.PAL.G), 0.95); });
     lb.on('pointerout', function () { lb.setFillStyle(GP.int(GP.PAL.d), 0.95); });
     lb.on('pointerdown', function () { self.toggleLang(); });
 
-    // admin : bouton de l'éditeur de niveaux, à gauche du sélecteur de langue (touche E)
+    // admin : bouton de l'éditeur de niveaux, à gauche du sélecteur de langue, même taille 22×15 (touche E)
     if (GP.Cloud.isAdmin) {
       GP.PixelArt.sprite(this, 'ui_editor', ['......kk.', '.....kwwk', '....kwwk.', '...kwwk..', '..kwwk...', '.kwwk....', 'kyyk.....', 'kkk......']);
-      var eb = this.add.rectangle(W + DX - 42, 6, 30, 15, GP.int(GP.PAL.d), 0.95).setOrigin(1, 0).setStrokeStyle(2, GP.int(GP.PAL.y)).setInteractive({ useHandCursor: true });
-      this.add.image(W + DX - 57, 6 + 7.5, 'ui_editor').setOrigin(0.5);
+      var eb = this.add.rectangle(W + DX - 34, 6, 22, 15, GP.int(GP.PAL.d), 0.95).setOrigin(1, 0).setStrokeStyle(2, GP.int(GP.PAL.y)).setInteractive({ useHandCursor: true });
+      this.add.image(W + DX - 45, 6 + 7.5, 'ui_editor').setOrigin(0.5);
       eb.on('pointerover', function () { eb.setFillStyle(GP.int(GP.PAL.G), 0.95); });
       eb.on('pointerout', function () { eb.setFillStyle(GP.int(GP.PAL.d), 0.95); });
       eb.on('pointerdown', function () { self.openEditor(); });
