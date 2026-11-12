@@ -8,7 +8,7 @@ Projet noté (ESD Nantes B3, atelier PATRIMOINE.EXE / NANTES 001). **Gel fonctio
 - Résolution de base **270 px de haut** (480 px de large en 16:9, jusqu'à 640 selon l'écran, voir plus bas), agrandie sans lissage (`pixelArt: true`). Police Press Start 2P à 8 px, **jamais de `setScale` sur un texte** (flou).
 - Pas de nouvelle dépendance, pas de CDN, pas de lecture réseau bloquante (la météo a un délai de 4 s et un secours).
 - Style existant : `var`, fonctions courtes, commentaires en français. Code simple et explicable par l'équipe (notation individuelle).
-- Visuels : planches de sprites (`js/data/sprites/*.js`, importées par `node tools/import-sprites.js`) transformées en textures par `GP.Sprites` ; le reste est dessiné par code (`GP.PixelArt`).
+- Visuels : planches de sprites (`js/data/sprites/*.js`, importées autrefois par un outil de l'équipe, retiré du dépôt (historique git)) transformées en textures par `GP.Sprites` ; le reste est dessiné par code (`GP.PixelArt`).
 
 ## Langues, réglages, entrées, écran
 - **Textes en français dans le code** ; l'anglais est dans `js/data/lang/en.js` (phrase exacte → traduction, modèles pour les nombres, lieux par id). Tout texte Phaser passe par `GP.I18n.tr` : une phrase sans traduction reste en français (`GP.I18n.missing()` liste les oublis). **Tout texte ajouté (panneaux de niveau, notices…) doit recevoir sa traduction anglaise.** Texte à couper ou mesurer : `GP.t(...)` d'abord.
@@ -30,7 +30,7 @@ Projet noté (ESD Nantes B3, atelier PATRIMOINE.EXE / NANTES 001). **Gel fonctio
 - L'ordre des 12 étapes n'est **pas** la numérotation officielle du Voyage à Nantes : le dire dans le README.
 
 ## Droits et images
-- Images patrimoniales : **Wikimedia Commons uniquement**, licence relue sur la page `File:`, **jamais téléchargées sans validation de l'utilisateur**. Chaque image est documentée dans `CREDITS.md` et `docs/sources.md` (auteur, licence, lien, modifications). Pixéliser avec `tools/pixelize.swift`.
+- Images patrimoniales : **Wikimedia Commons uniquement**, licence relue sur la page `File:`, **jamais téléchargées sans validation de l'utilisateur**. Chaque image est documentée dans `CREDITS.md` et `docs/sources.md` (auteur, licence, lien, modifications). Pixéliser avec l'outil de l'équipe (retiré du dépôt, voir l'historique git).
 - Références visuelles fournies (captures de jeux, photos de repérage, planches avec filigrane) : inspiration seulement, rien n'est repris.
 
 ## Contraintes du cours
@@ -40,14 +40,15 @@ Projet noté (ESD Nantes B3, atelier PATRIMOINE.EXE / NANTES 001). **Gel fonctio
 - Accessibilité : pas de flash, `prefers-reduced-motion` respecté, clavier + tactile, jouable sans son, réinitialisation possible.
 
 ## Règle de mise à jour
-**À chaque évolution notable du jeu, mettre à jour `README.md` (fonctionnalités, captures `docs/screenshots/`, statut des niveaux) et `CREDITS.md`.**
+**À chaque évolution notable du jeu, mettre à jour `README.md` (fonctionnalités, statut des niveaux), `CREDITS.md` et le carnet de bord.**
+**Captures du README** : toute évolution visible (carte, niveaux, menus, interface, carte postale, avatar) impose de **refaire les captures concernées** dans `docs/screenshots/` (PNG, noms stables : menu, carte, rencontre, niveau-*, options, carte-postale…) et de vérifier que le README les cite et que chaque capture citée existe ; supprimer celles qui ne sont plus citées. Le README doit donner envie de jouer : accroche courte, lien du jeu en premier, captures et GIF récents, fonctionnalités claires, rien d'obsolète. Même règle pour la vidéo de présentation si elle existe.
 
 ## Tester
 ```bash
 python3 -m http.server 8123
 ```
 Puis http://localhost:8123 (ajouter `?dev=1` pour les raccourcis de test : W/N météo simulée, K tout ramasser). Vérifier aussi l'ouverture directe d'`index.html` en `file://`, la console sans erreur, un mobile en paysage (et l'écran « tournez votre téléphone » en portrait).
-`node tools/compare-figma.js` contrôle l'avatar ; `tools/bot.js` (console) parcourt un niveau.
+Contrôles : `node tools/smoke.cjs` et `node tools/verify-credits.cjs` (aussi en CI) ; les anciens tests restent consultables dans l'historique git. Vérifier ensuite à la main : jeu, éditeur, console sans erreur. Toute image ajoutée : entrée dans `docs/credits.json` et `CREDITS.md` (voir CONTRIBUTING.md). Licence MIT dans `LICENSE`.
 
 ## Déploiement
 Vercel, projet `green-path` (https://green-path-game.vercel.app). `.vercelignore` exclut notamment `docs`, `tools`, `tests`, `supabase` et les fichiers `.env*`. **Ne déployer qu'avec l'accord de l'utilisateur** (`npx vercel --prod`). Ne jamais commiter ni pousser sans accord.

@@ -57,6 +57,8 @@ GP.Scenes.Boot = class BootScene extends Phaser.Scene {
     // ----- Carte -----
     GP.MapArt.build(this);
 
+    if (GP.finishLoading) GP.finishLoading();   // la barre de l'écran de chargement se complète puis disparaît
+
     if (GP.Config.DEV_LEVEL) {
       GP.Weather.simIndex = -1; GP.Weather.nextSim();
       this.scene.start('Game', { index: GP.LOCATIONS.findIndex(function (l) { return l.id === GP.Config.DEV_LEVEL; }) });

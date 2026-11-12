@@ -1,0 +1,41 @@
+MIT License
+
+Copyright (c) 2026 Florine RACINE et Loan PLEURMEAU (Green Path, ESD Nantes, B3 Design)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---------------------------------------------------------------------------
+Périmètre / Scope
+
+FR : la licence MIT ci-dessus couvre le code du jeu (index.html, editor.html,
+css/, js/ hors js/vendor/, sw.js, sketch/, supabase/), les planches de sprites
+et le logo créés par l'équipe, ainsi que la documentation. Elle NE couvre PAS
+les éléments tiers, qui gardent leur licence :
+  - js/vendor/phaser.min.js : Phaser 3.90.0, licence MIT (Photon Storm Ltd) ;
+  - assets/fonts/ : police Press Start 2P, SIL Open Font License 1.1 (voir OFL.txt) ;
+  - assets/locations/*.js : versions pixélisées (48x32, 16 couleurs) de photographies
+    Wikimedia Commons, qui restent sous la licence de leur photographie
+    (CC BY, CC BY-SA ; attribution et partage dans les mêmes conditions) ;
+  - données météo Open-Meteo : CC BY 4.0.
+L'attribution, la licence, le lien et l'empreinte SHA-1 de chaque élément tiers
+figurent dans CREDITS.md et docs/credits.json (contrôle : node tools/verify-credits.cjs).
+
+EN: the MIT license above covers the game code, the team-made sprite sheets and logo,
+and the documentation. Third-party material keeps its own license (see above and
+CREDITS.md / docs/credits.json).

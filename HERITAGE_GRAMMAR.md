@@ -1,6 +1,6 @@
 # Green Path — patrimoine et grammaire
 
-État vérifié le 10 novembre 2026. **Source principale : Château des ducs de Bretagne.** Les 11 autres étapes restent un corpus secondaire : variations végétales, verticales, sérielles ou industrielles. Cette organisation est notre réponse de design à l'ambition des 12 lieux ; le cours n'impose ni 12 niveaux ni ce choix de monument.
+État mis à jour le 12 novembre 2026. **Source : la ligne verte et ses 12 patrimoines** (Jardin des Plantes, Cathédrale, Château, Île Feydeau, Place Graslin, Machines de l'île, Parc des Chantiers, Anneaux de Buren, Hangar à Bananes, Passage Pommeraye, Mémorial de l'abolition, Tour LU). Chaque lieu apporte sa propre propriété patrimoniale (fiche par lieu : `docs/fiche-source.md`) et sa propre règle de jeu (`docs/grammaire.md`). Le Château des ducs de Bretagne et la Cathédrale ont été les premiers lieux documentés ; ils servent de références de méthode, pas de source unique. Cette organisation est notre réponse de design à l'ambition des 12 lieux ; le cours demande une source patrimoniale identifiable, ce que le parcours de la ligne verte et ses 12 références documentées fournissent.
 
 ## Références et provenance
 
@@ -64,7 +64,7 @@ La température est **affichée seulement** : aucune teinte pilotée par la temp
 - **Cathédrale** : sprite, pas photo ; colonnes → escalade, corniches → appuis, évacuation de l'eau → fréquence de gouttes. Ordre `bottomUp`, sans reconstruction sémantique des deux tours.
 - **Château** : sprite, pas photo ; ordre `fortification` ci-dessus.
 - **Bouffay** : prototype hors parcours ; ordre `bottomUp`. « Ossature puis remplissage » n'est **pas implémenté**.
-- Neuf lieux futurs : principes détaillés dans `GAME_DESIGN.md`, sans annoncer de sources photographiques validées.
+- Neuf lieux futurs : principes détaillés dans le README, sans annoncer de sources photographiques validées.
 
 Les planches de sprites assistées par IA ne sont pas des preuves patrimoniales. La provenance du personnage Figma, potentiellement liée à une référence Adobe Stock, reste à clarifier avant diffusion large (`CREDITS.md`). Les œuvres contemporaines (Machines, Anneaux…) demandent un examen distinct des droits ; une stylisation n'est pas automatiquement une autorisation.
 

@@ -3,12 +3,26 @@
  */
 (function () {
   var started = false;
+  /**
+   * Fin de l'écran de chargement : la barre (CSS) avance de 0 à 90 % pendant au moins 1,7 s depuis l'ouverture de la page, puis,
+   * dès que le jeu est prêt (appelé par BootScene), elle se complète jusqu'à 100 % et l'écran disparaît. Valable aussi à l'actualisation.
+   */
+  GP.finishLoading = function () {
+    var loading = document.getElementById('loading');
+    if (!loading || loading.classList.contains('done')) return;
+    var wait = Math.max(0, 1700 - (window.performance && performance.now ? performance.now() : 1700));
+    setTimeout(function () {
+      loading.classList.add('done');                       // la barre se complète (0,4 s)
+      setTimeout(function () { if (loading.parentNode) loading.remove(); }, 650);
+    }, wait);
+  };
   function start() {
     if (started) return;
     started = true;
-    var loading = document.getElementById('loading');
-    if (loading) loading.remove();
     GP.Settings.load();   // langue et touches du joueur, avant la création des scènes
+    setTimeout(boot, 60);   // une image de répit : la barre de chargement est déjà peinte et avance
+  }
+  function boot() {
     GP.Prompts.start();
     GP.Content.init();   // niveaux et textures publiés avec l'éditeur (cache local, puis réseau en tâche de fond)
     if (!GP.Config.DEV_LEVEL) GP.Cloud.init();   // le banc local ne charge pas le compte personnel

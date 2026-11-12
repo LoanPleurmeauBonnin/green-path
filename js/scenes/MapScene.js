@@ -62,15 +62,18 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     kb.on('keydown-ESC', function () { self.onEsc(); });
     kb.on('keydown-H', function () { if (!self.panel) self.openHelp(); else if (self.panelKind === 'help') self.closePanel(); });
     kb.on('keydown-M', function () { self.P.muted = !self.P.muted; self.toast(self.P.muted ? 'SON DÉSACTIVÉ' : 'SON ACTIVÉ'); });
-    if (GP.Config.DEV_TOOLS) kb.on('keydown-W', function () { self.cycleWeather(); });
+    if (GP.Config.DEV_TOOLS || GP.Cloud.isAdmin) kb.on('keydown-W', function () { self.cycleWeather(); });
     this.events.once('shutdown', function () { kb.removeAllListeners(); });
   }
 
   update(time, delta) {
     this.sky.update(this.cameras.main, delta);
+    this.updateTalk();
     if (this.panel || GP.Pad.capture || !this.travel.moving) return;
+    var before = this.travel.x;
     var arrived = this.travel.tick(delta);
     this.moving = this.travel.moving;
+    if (!arrived && this.stopAtPerson(before, this.travel.x)) return;
     this.placeHero(this.travel.x);
     if (arrived) {
       this.cur = this.travel.target; this.P.setCurrent(this.cur);
@@ -158,9 +161,18 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       var a = l.anecdote || l.panneau;
       if (!a) return null;
       var key = MapScene.personKey(self, l), x = self.nx(i) + 40;
-      var im = self.add.image(x, GP.MapArt.vergeY(x), key).setOrigin(0.5, 1).setScale(1).setDepth(5).setVisible(false);   // même taille que le héros
+      // posé sur le chemin, à la même hauteur que les pieds du héros, et immobile
+      var im = self.add.image(x, GP.MapArt.walkY(x), key).setOrigin(0.5, 1).setScale(1).setDepth(5).setVisible(false);   // même taille que le héros
       im.bulle = GP.UI.txt(self, x, im.y - 28, '!', GP.PAL.y).setOrigin(0.5, 1).setDepth(6).setVisible(false);   // « j'ai quelque chose à te raconter »
-      if (l.anecdote && !GP.reducedMotion) self.tweens.add({ targets: [im, im.bulle], y: '-=2', duration: 700 + i * 37, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      // bulle d'anecdote : visible seulement quand le héros passe devant (niveau terminé)
+      var who = GP.UI.txt(self, 0, 0, a.who, GP.PAL.g, { wordWrap: { width: 236 }, lineSpacing: 3 }).setOrigin(0.5, 0);
+      var body = GP.UI.txt(self, 0, 0, a.text, GP.PAL.w, { wordWrap: { width: 236 }, lineSpacing: 4 }).setOrigin(0.5, 0);
+      var h = who.height + 4 + body.height + 10, bx = Math.max(130, Math.min(GP.MapArt.WIDTH - 130, x)), by = im.y - 30;
+      var box = self.add.rectangle(bx, by, 252, h, GP.int(GP.PAL.d), 0.97).setOrigin(0.5, 1).setStrokeStyle(2, GP.int(GP.PAL.k));
+      who.setPosition(bx, by - h + 5); body.setPosition(bx, by - h + 5 + who.height + 4);
+      im.talk = [box, who, body];
+      im.talk.forEach(function (o, k) { o.setDepth(30 + k).setVisible(false); });
+      box.setInteractive({ useHandCursor: true }).on('pointerdown', function () { self.closeTalk(); });   // toucher la bulle la ferme (après le délai de lecture)
       return im;
     });
   }
@@ -200,7 +212,8 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       // piédestal de la planche « carte » : disponible, terminé, verrouillé, à venir
       var img = self.add.image(x, y + 6, 'carte_piedestal_disponible').setOrigin(0.5, 1).setDepth(10).setInteractive({ useHandCursor: true });
       var num = self.txt(x, y - 2, String(i + 1), GP.PAL.k).setOrigin(0.5).setDepth(11);
-      var stars = [0, 1, 2].map(function (k) { return self.add.image(x - 8 + k * 8, y + 16, 'star_off').setDepth(12).setVisible(false); });
+      // trois étoiles en arc de cercle sous le piédestal, centre de l'arc au-dessus d'elles (le milieu est le plus bas)
+      var stars = [0, 1, 2].map(function (k) { return self.add.image(x + (k - 1) * 12, y + (k === 1 ? 12 : 10), 'star_off').setDepth(12).setVisible(false); });
       img.on('pointerover', function () { self.hover = i; self.updateBar(); });
       img.on('pointerout', function () { if (self.hover === i) { self.hover = -1; self.updateBar(); } });
       img.on('pointerdown', function () { if (!self.panel) self.goTo(i, true); });
@@ -246,6 +259,54 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
    * Descente sur le piédestal : près d'une étape, les pieds de l'avatar passent du bord haut du disque à son centre
    * (là où est le chiffre), progressivement sur la largeur du piédestal (28 px). Ailleurs, il marche sur la ligne.
    */
+  /** Le héros s'arrête face à un personnage dont le niveau est terminé (à chaque passage), du côté d'où il arrive : il le regarde, le personnage le regarde, l'anecdote s'affiche. Il repart ensuite à gauche ou à droite. */
+  stopAtPerson(from, to) {
+    if (!this.pers) return false;
+    var dir = to > from ? 1 : -1;
+    for (var i = 0; i < this.pers.length; i++) {
+      var im = this.pers[i];
+      if (!im || !im.talk || this.P.status(i) !== 'completed') continue;
+      var sx = im.x - dir * 22;                        // place d'arrêt : en face du personnage, côté arrivée
+      if (!(dir > 0 ? from < sx && sx <= to : to <= sx && sx < from)) continue;
+      this.travel.x = sx; this.travel.moving = false; this.travel.open = false; this.travel.y = this.travel.heightAt(sx);
+      this.moving = false; this.placeHero(sx); this.startIdle(); this.updateBar();
+      this.hero.setFlipX(im.x < sx);                   // le héros regarde le personnage
+      return true;
+    }
+    return false;
+  }
+
+  /** Bulle d'anecdote : elle s'ouvre quand le héros passe devant un personnage dont le niveau est terminé, et se ferme quand il s'éloigne. */
+  updateTalk() {
+    if (!this.pers || !this.hero) return;
+    this.dismissed = this.dismissed || {};
+    for (var i = 0; i < this.pers.length; i++) {
+      var im = this.pers[i]; if (!im || !im.talk) continue;
+      if (!this.locs[i].panneau) im.setFlipX(this.hero.x < im.x);   // le personnage regarde toujours le héros
+      var near = this.P.status(i) === 'completed' && !this.panel && Math.abs(this.hero.x - im.x) < 34;
+      if (!near) delete this.dismissed[i];                          // la bulle se rouvre au prochain passage
+      var on = near && !this.dismissed[i];
+      if (im.talk[0].visible !== on) {
+        im.talk.forEach(function (o) { o.setVisible(on); });
+        if (on) this.talkSince = this.time.now;                     // départ du délai de lecture
+      }
+      if (on || (near && this.dismissed[i])) im.bulle.setVisible(false);
+      else if (this.P.status(i) !== 'locked' && this.P.status(i) !== 'coming') im.bulle.setVisible(!!this.locs[i].anecdote);
+    }
+  }
+
+  /** Bulle d'anecdote ouverte : Entrée, Espace, Échap ou un toucher sur la bulle la ferment, mais seulement après un délai de lecture (plus long au toucher). Renvoie vrai s'il y avait une bulle (la touche ne fait rien d'autre). */
+  closeTalk() {
+    for (var i = 0; i < (this.pers || []).length; i++) {
+      var im = this.pers[i];
+      if (im && im.talk && im.talk[0].visible) {
+        if (this.time.now - this.talkSince >= (GP.UI.isTouch() ? 2500 : 1200)) { this.dismissed[i] = true; im.talk.forEach(function (o) { o.setVisible(false); }); GP.Sfx.play('back'); }
+        return true;
+      }
+    }
+    return false;
+  }
+
   heroDrop(x) {
     var near = 99;
     for (var i = 0; i < this.locs.length; i++) near = Math.min(near, Math.abs(x - this.nx(i)));
@@ -282,11 +343,13 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
   }
 
   onConfirm() {
+    if (!this.panel && this.closeTalk()) return;
     if (this.panel) { this.panelPrimary(); return; }
     if (!this.moving) this.openPanel(this.cur);
   }
 
   onEsc() {
+    if (!this.panel && this.closeTalk()) return;
     if (this.panel) { this.closePanel(); return; }
     if (this.moving) return;
     var self = this;
@@ -300,12 +363,12 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     var self = this, W = GP.Config.WIDTH, H = GP.Config.HEIGHT;
     function fix(o, d) { return o.setScrollFactor(0).setDepth(d || 51); }
     var g = fix(this.add.graphics(), 50);
-    g.fillStyle(GP.int(GP.PAL.k), 1); g.fillRect(4, 4, 112, 42);
-    g.fillStyle(GP.int(GP.PAL.d), 1); g.fillRect(6, 6, 108, 38);
-    fix(this.txt(11, 10, 'GREEN PATH', GP.PAL.g));
-    this.hudCount = fix(this.txt(11, 21, '', GP.PAL.m));
-    fix(this.add.image(14, 35, 'star_on'));
-    this.hudStars = fix(this.txt(22, 32, '', GP.PAL.y));
+    g.fillStyle(GP.int(GP.PAL.k), 1); g.fillRect(4, 4, 138, 42);
+    g.fillStyle(GP.int(GP.PAL.d), 1); g.fillRect(6, 6, 134, 38);
+    fix(this.txt(37, 10, 'GREEN PATH', GP.PAL.g));
+    this.hudCount = fix(this.txt(37, 21, '', GP.PAL.m));
+    fix(this.add.image(40, 35, 'star_on'));
+    this.hudStars = fix(this.txt(48, 32, '', GP.PAL.y));
 
     // barre du bas : nom de l'étape + état, bouton d'aide à droite
     var bar = fix(this.add.graphics(), 50);
@@ -323,6 +386,8 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
         self.cameras.main.once('camerafadeoutcomplete', function () { self.scene.start('Game', { index: 0, secret: true }); });
       }, { primary: true }).objs.forEach(function (o) { o.setDepth(52); o.setScrollFactor(0); });
     }
+    // retour à l'accueil sans clavier (sur téléphone il n'y a pas d'Échap) : flèche dans le cadre GREEN PATH, à gauche du titre
+    GP.UI.backIcon(this, function () { self.onEsc(); }, 15, 8).objs.forEach(function (o) { o.setScrollFactor(0); });
     this.hud = true;
     this.navHint = fix(this.txt(W / 2, H - 35, '', GP.PAL.m, { backgroundColor: GP.PAL.k, padding: { x: 4, y: 3 } })).setOrigin(0.5);
     GP.Prompts.bind(this, this.navHint, '{navX} ÉTAPES  {confirm} FICHE  {help} AIDE');
@@ -413,9 +478,6 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       });
       if ((l.anecdote || l.panneau) && st !== 'locked' && st !== 'coming') pages.push({ title: l.panneau ? 'PANNEAU' : 'RENCONTRE', draw: function (add) { self.drawAnecdote(add, l); } });   // le personnage raconte son anecdote dès l'arrivée
     }
-    if (l.grammar) GP.UI.paginate(this, [GP.t(l.grammar)], compact ? 388 : 412, compact ? 78 : 156).forEach(function (text) {
-      pages.push({ title: 'SOURCE → RÈGLE', draw: function (add) { add(UI.txt(self, compact ? 46 : 34, compact ? 36 : 40, text, GP.PAL.w, { wordWrap: { width: compact ? 388 : 412 }, lineSpacing: 4 })); } });
-    });
     this.sheet = { pages: pages, page: 0, content: [], m: m, compact: compact };
 
     // boutons du bas
