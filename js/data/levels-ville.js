@@ -169,9 +169,7 @@ GP.LEVELS['machines'] = (function () {
     L.hint(38, "UNE ARAIGNÉE DESCEND : REGARDE-LA POUR LA FIGER OU ACCROUPIS-TOI");
     // 3. L'horlogerie : rails à contre-sens, des robots te poursuivent
     L.ground(62, 38, 3);
-    L.hint(64, "LES ARAIGNÉES AVANCENT SI TU NE LES REGARDES PAS");
-    L.deco(90, 'lv_gardienne', { depth: 2.5 });                  // la Gardienne des Ténèbres (l'araignée)
-    L.patrol(66, 76, 'araignee', 40); L.patrol(82, 96, 'araignee', 44);
+    L.hint(64, "ATTENTION : DES ARAIGNÉES DESCENDENT DU PLAFOND");
     L.patrol(70, 92, 'oiseau', 55);                       // un héron mécanique plonge au-dessus du quai
     L.plat(70, 12, 3); L.pix(71, 11); L.plat(86, 12, 3); L.pix(87, 11);
     L.thorn(78, 1); L.pix(78, 11); L.thorn(94, 1); L.pix(94, 11);
@@ -188,7 +186,6 @@ GP.LEVELS['machines'] = (function () {
     // 5. L'esplanade : le Grand Éléphant traverse le canal, on grimpe sur son dos (croupe, dos, toit, oreille, défenses)
     L.ground(122, 10, 3);
     L.jet(125, 4, 3600, 0); L.jet(128, 4, 3600, 1800);
-    L.patrol(123, 127, 'araignee', 36);
     L.hint(129, "MONTE SUR LE GRAND ÉLÉPHANT : IL TRAVERSE LE CANAL");
     L.pix(124, 13); L.pix(126, 11);
     L.check(122);
@@ -641,7 +638,6 @@ GP.LEVELS['chateau'] = (function () {
     L.pix(72, 11); L.pix(74, 11);
     L.deco(70, 'chateau_tonneau', { depth: 3 }); L.deco(71, 'chateau_caisse', { depth: 3 });
     L.check(76);
-    L.patrol(67, 74, 'esprit', 24);                     // un autre garde, entre la herse et la lanterne
     // 4. Remparts : flèches et marches combinées
     L.ground(81, 10, 5);
     L.slit(90, 11, -1, 1400, 400, 8);
