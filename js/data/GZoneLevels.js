@@ -156,10 +156,13 @@ GP.GZoneLevels = (function () {
       pedagogie: [{ x: [72, 80], texte: 'Oiseau à hauteur de tête sur sol plat : apprendre ↓ (panneau x=72).' }, { x: [86, 93], texte: "Jet d'eau au sec avant la traversée des pontons." }]
     }
   };
+  // niveaux 2 à 12 redessinés : js/data/Redesigns.js (GP.Redesigns), chargé avant ce fichier
+  Object.keys(GP.Redesigns || {}).forEach(function (n) { if (!REDESIGNS[n]) REDESIGNS[n] = GP.Redesigns[n]; });
   function redesign(d) {
     var r = REDESIGNS[d.num];
     if (!r || d.refonte) return;
-    d.refonte = true; Object.assign(d, JSON.parse(JSON.stringify(r)));
+    // un niveau redessiné n'a plus besoin des retouches ni de l'équilibrage du document importé
+    d.refonte = true; d.retouche = true; d.equilibre = true; Object.assign(d, JSON.parse(JSON.stringify(r)));
     d.sourceHash = 'refonte' + d.num + '-20261111-' + d.sourceHash;   // nouvelle révision : les parties en cours de l'ancien tracé sont écartées
   }
   function repair(d) {

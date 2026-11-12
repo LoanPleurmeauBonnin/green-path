@@ -18,6 +18,7 @@ G.GZONES.forEach(d => {
 test('Faisabilité : les retouches de géométrie visent des plateformes qui existent', () => {
   const rep = G.GZoneLevels.repairs;
   Object.keys(rep).forEach(n => {
+    if (G.Redesigns && G.Redesigns[n]) return;   // niveau redessiné : ses retouches sont désormais dans le nouveau plan
     const ids = new Set(G.GZONES[n - 1].plateformes.map(p => p.id));
     Object.keys(rep[n].modifier || {}).forEach(id => assert.ok(ids.has(id), 'niveau ' + n + ' : ' + id));
   });
