@@ -4,17 +4,43 @@
 GP.Scenes.Boot = class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
 
+  /**
+   * Le travail est découpé en étapes exécutées l'une après l'autre : entre deux, le navigateur repeint l'écran de chargement
+   * (la barre avance avec le vrai travail au lieu de geler).
+   */
   create() {
-    var PA = GP.PixelArt;
-    GP.Progression.init();
+    var self = this, PA = GP.PixelArt, steps = [];
+    steps.push(function () {
+      GP.Progression.init();
+      // Sprites des planches : une texture par sprite et par image
+      GP.Sprites.build(self);
+    });
+    // Personnage : généré par calques depuis la configuration sauvegardée
+    steps.push(function () { GP.Character.build(self, GP.Progression.data.character || GP.Character.defaultConfig()); });
+    steps.push(function () { self.makeIcons(PA); });
+    steps.push(function () { GP.WeatherFX.makeTextures(self); });   // météo : icônes, ombres de nuages, halos
+    steps.push(function () { GP.UI.makeTextures(self); });          // flèches des touches
+    steps.push(function () { GP.LevelArt.makeTextures(self); });    // décor des niveaux
+    steps.push(function () { GP.MapArt.build(self); });             // carte
 
-    // ----- Sprites des planches (Claude Design) : une texture par sprite et par image -----
-    GP.Sprites.build(this);
+    var i = 0, stopped = false;
+    this.events.once('shutdown', function () { stopped = true; });
+    function next() {
+      if (stopped) return;
+      if (i >= steps.length) { self.done(); return; }
+      steps[i++]();
+      if (GP.setLoading) GP.setLoading(Math.round(i / steps.length * 96));
+      // une image pour peindre la barre, puis l'étape suivante (repli par minuterie si l'onglet est en arrière-plan : rAF y est suspendu)
+      var go = false;
+      function once() { if (go) return; go = true; next(); }
+      requestAnimationFrame(function () { setTimeout(once, 0); });
+      setTimeout(once, 60);
+    }
+    next();
+  }
 
-    // ----- Personnage : généré par calques depuis la configuration sauvegardée -----
-    GP.Character.build(this, GP.Progression.data.character || GP.Character.defaultConfig());
-
-    // ----- Nœuds 22×22 -----
+  /** Nœuds de la carte, badges, étoiles, étincelle. */
+  makeIcons(PA) {
     var styles = { available: ['g', 'w'], completed: ['y', 'w'], locked: ['e', 'm'], coming: ['p', 'm'] };
     Object.keys(styles).forEach(function (st) {
       var o = PA.canvas(22, 22);
@@ -46,17 +72,10 @@ GP.Scenes.Boot = class BootScene extends Phaser.Scene {
     PA.sprite(this, 'star_on', star);
     PA.sprite(this, 'star_off', star.map(function (row) { return row.replace(/y/g, 'e'); }));
     PA.sprite(this, 'spark', ['.w.', 'wyw', '.w.']);
+  }
 
-    // ----- Météo (icônes, ombres de nuages, halos) -----
-    GP.WeatherFX.makeTextures(this);
-
-    // ----- Interface (flèches des touches) et décor des niveaux -----
-    GP.UI.makeTextures(this);
-    GP.LevelArt.makeTextures(this);
-
-    // ----- Carte -----
-    GP.MapArt.build(this);
-
+  /** Tout est prêt : la barre se complète, puis le menu (ou le niveau de test). */
+  done() {
     if (GP.finishLoading) GP.finishLoading();   // la barre de l'écran de chargement se complète puis disparaît
 
     if (GP.Config.DEV_LEVEL) {

@@ -19,7 +19,7 @@ GP.Scenes.Postcard = class PostcardScene extends Phaser.Scene {
     this.add.rectangle(20, 12, 440, 252, GP.int(P.k)).setOrigin(0);
     this.add.rectangle(22, 14, 436, 248, GP.int(P.d)).setOrigin(0);
     this.add.rectangle(22, 33, 436, 1, GP.int(P.G)).setOrigin(0);
-    UI.backIcon(this, function () { self.leave('Menu'); }, 15, 26);   // retour à l'accueil, dans la barre de titre
+    UI.backIcon(this, function () { self.leave('Menu'); });   // retour à l'accueil, à la position standard (comme Score, Options, Crédits)
     UI.txt(this, 58, 20, 'CARTE POSTALE', P.g);
     UI.txt(this, 450, 20, 'NANTES', P.y).setOrigin(1, 0);
 

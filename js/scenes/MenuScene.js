@@ -49,12 +49,21 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     lb.on('pointerout', function () { lb.setFillStyle(GP.int(GP.PAL.d), 0.95); });
     lb.on('pointerdown', function () { self.toggleLang(); });
 
+    // admin : bouton de l'éditeur de niveaux, à gauche du sélecteur de langue (touche E)
+    if (GP.Cloud.isAdmin) {
+      GP.PixelArt.sprite(this, 'ui_editor', ['......kk.', '.....kwwk', '....kwwk.', '...kwwk..', '..kwwk...', '.kwwk....', 'kyyk.....', 'kkk......']);
+      var eb = this.add.rectangle(W + DX - 42, 6, 30, 15, GP.int(GP.PAL.d), 0.95).setOrigin(1, 0).setStrokeStyle(2, GP.int(GP.PAL.y)).setInteractive({ useHandCursor: true });
+      this.add.image(W + DX - 57, 6 + 7.5, 'ui_editor').setOrigin(0.5);
+      eb.on('pointerover', function () { eb.setFillStyle(GP.int(GP.PAL.G), 0.95); });
+      eb.on('pointerout', function () { eb.setFillStyle(GP.int(GP.PAL.d), 0.95); });
+      eb.on('pointerdown', function () { self.openEditor(); });
+    }
 
     // bouton compte : en haut à gauche (connexion joueur ou admin, ouvre la fenêtre du compte)
     GP.PixelArt.sprite(this, 'ui_user', ['...kkk...', '..kwwwk..', '..kwwwk..', '...kkk...', '.kkkkkkk.', 'kwwwwwwwk', 'kwwwwwwwk', 'kwwwwwwwk']);
     var ub = this.add.rectangle(6 - DX, 6, 22, 15, GP.int(GP.PAL.d), 0.95).setOrigin(0).setStrokeStyle(2, GP.int(GP.Cloud.isAdmin ? GP.PAL.y : GP.Cloud.isAccount ? GP.PAL.g : GP.PAL.k)).setInteractive({ useHandCursor: true });
     this.add.image(6 - DX + 11, 6 + 7.5, 'ui_user').setOrigin(0.5);
-    if (GP.Cloud.isAccount) this.txt(6 - DX + 26, 10, GP.Cloud.pseudo + (GP.Cloud.isAdmin ? ' · ADMIN' : ''), GP.Cloud.isAdmin ? GP.PAL.y : GP.PAL.m, 8);
+    if (GP.Cloud.isAccount && !GP.Cloud.isAdmin) this.txt(6 - DX + 26, 10, GP.Cloud.pseudo, GP.PAL.m, 8);   // l'admin se reconnaît au contour jaune de l'icône
     ub.on('pointerover', function () { ub.setFillStyle(GP.int(GP.PAL.G), 0.95); });
     ub.on('pointerout', function () { ub.setFillStyle(GP.int(GP.PAL.d), 0.95); });
     ub.on('pointerdown', function () { self.openAccount(); });
@@ -81,6 +90,7 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
       if (self.mode !== 'main') { GP.Sfx.play('back'); self.buildMain(); }
     });
     kb.on('keydown-L', function () { if (!self.modal) self.toggleLang(); });
+    kb.on('keydown-E', function () { if (!self.modal && GP.Cloud.isAdmin) self.openEditor(); });
     this.events.once('shutdown', function () { kb.removeAllListeners(); });
     kb.on('keydown-M', function () { GP.Progression.muted = !GP.Progression.muted; });
   }
@@ -94,6 +104,12 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
       self.input.keyboard.removeAllListeners();
       self.scene.restart();
     } });
+  }
+
+  /** Éditeur de niveaux (réservé à l'admin, revérifié par l'éditeur). */
+  openEditor() {
+    GP.Sfx.play('select');
+    window.location.href = 'editor.html';
   }
 
   /** FR ↔ EN : on garde le choix et on refait l'écran (les textes déjà affichés restent dans l'ancienne langue sinon). */
@@ -173,7 +189,6 @@ GP.Scenes.Menu = class MenuScene extends Phaser.Scene {
     list.push({ label: "PERSONNALISER L'AVATAR", action: function () { self.openCreator('menu'); } });
     if (GP.Postcard.allDone()) list.push({ label: 'MA CARTE', action: function () { self.goTo('Postcard'); } });   // la carte postale de fin de partie
     if (has) list.push({ label: 'RÉINITIALISER', action: function () { self.buildConfirm(); } });
-    if (GP.Cloud.isAdmin) list.push({ label: 'ÉDITEUR DE NIVEAUX', action: function () { window.location.href = 'editor.html'; } });   // réservé à l'admin (revérifié par l'éditeur)
     list.push({ label: 'CLASSEMENT', action: function () { self.goTo('Score'); } });
     list.push({ label: 'OPTIONS', action: function () { self.goTo('Options'); } });
     list.push({ label: 'CRÉDITS', action: function () { self.buildCredits(); } });

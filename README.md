@@ -63,7 +63,7 @@ Projet noté ESD Nantes (B3), atelier PATRIMOINE.EXE / NANTES 001 — Florine RA
 - **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou l'un des 8 modèles.
 - **Pseudo, sauvegarde et classement** (facultatifs, sans e-mail) : voir [docs/confidentialite.md](docs/confidentialite.md). Le jeu fonctionne sans compte et hors ligne.
 - **Musique** : ambiance originale composée par code, activable ou non dans OPTIONS → MUSIQUE (et coupée avec SON).
-- **Admin** : un compte admin (bouton compte de l'accueil) débloque l'éditeur de niveaux et de textures (`editor.html`) et la **météo de test en niveau** (ligne MÉTÉO du menu pause, ou touche N ; touche W sur la carte).
+- **Admin** : un compte admin (bouton compte de l'accueil) débloque un bouton éditeur à côté du sélecteur de langue (ou touche E) : `editor.html` montre en lecture seule les niveaux réellement joués (12 + bonus) et garde l'éditeur de textures et la **météo de test en niveau** (ligne MÉTÉO du menu pause, ou touche N ; touche W sur la carte).
 
 ## Les 12 lieux
 L'ordre suit la séquence de la page [« Arpenter la ligne verte »](https://www.levoyageanantes.fr/les-parcours/arpenter-la-ligne-verte/) du Voyage à Nantes pour les lieux qui y figurent, complétée pour les autres. **L'ordre des 12 étapes est une sélection pour le jeu : ce n'est pas la numérotation officielle du Voyage à Nantes.**
