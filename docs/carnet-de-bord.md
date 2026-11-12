@@ -380,3 +380,9 @@ README réécrit pour donner envie de jouer (accroche, lien en premier, pourquoi
 ## Jeudi 12 novembre 2026 — PR 35 fusionnée, cadre de la carte sur trois lignes
 
 **PR 35** (Florine : arche d'arrivée, niveau secret « La Ligne Verte », Grand Éléphant plein, carte postale en planche d'autocollants) : conflits avec `main` résolus (bouton du niveau secret et flèche retour conservés), CI verte, fusionnée avec ses commits d'origine. **Cadre de la carte** : trois lignes, [flèche retour] GREEN PATH, puis les niveaux terminés, puis les étoiles. **Non réalisé** : contrôle visuel du cadre (navigateur de test indisponible) ; niveau secret non rejoué par moi.
+
+## Jeudi 12 novembre 2026 — Tour LU finissable, cadre de la carte d'origine
+
+**Tour LU** : le niveau n'était pas finissable. Le courant d'air (gravité allégée de `GP.Dangers`) était écrasé à chaque image par la demi-gravité d'apex ajoutée avec le « ressenti feel-1 » (`GameScene` réécrivait `setGravityY` après `Dangers.update`) : le saut dans le courant d'air plafonnait à 3,4 tuiles au lieu de 6,7, donc le belvédère (plateformes à 7 puis 12 tuiles) restait inatteignable. **Correction** : `Dangers` expose `inDraft` et `GameScene` applique la gravité du courant d'air en priorité. **Vérification** (jeu piloté dans le navigateur, vraie physique) : saut depuis le sol jusqu'à la plateforme haute, puis jusqu'au belvédère, descente par l'escalier de la tour, arche atteinte et niveau terminé avec les 32 pixels. **Non vérifié** : une traversée complète d'un seul trait, par un joueur humain.
+
+**Carte** : cadre « GREEN PATH / niveaux / étoiles » rétabli comme avant ; la flèche retour (sous le cadre) n'apparaît plus que sur écran tactile.
