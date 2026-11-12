@@ -8,7 +8,9 @@
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
 const root = path.join(__dirname, '..');
 const data = JSON.parse(fs.readFileSync(path.join(root, 'docs', 'credits.json'), 'utf8'));
-const sha1 = f => crypto.createHash('sha1').update(fs.readFileSync(path.join(root, f))).digest('hex');
+// les fichiers .js sont hachés avec des fins de ligne LF (même empreinte sous Windows et sous Linux)
+const CRLF = String.fromCharCode(13, 10), LF = String.fromCharCode(10);
+const sha1 = f => { let b = fs.readFileSync(path.join(root, f)); if (f.endsWith('.js')) b = Buffer.from(b.toString('latin1').split(CRLF).join(LF), 'latin1'); return crypto.createHash('sha1').update(b).digest('hex'); };
 let bad = 0, ok = 0;
 function check(label, good, detail) { if (good) ok++; else { bad++; console.log('✖ ' + label + (detail ? ' — ' + detail : '')); } }
 
