@@ -215,7 +215,6 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
       var st = P.status(i), n = self.nodes[i];
       n.img.setTexture('carte_piedestal_' + MapScene.PEDESTAL[st]);
       n.num.setColor(st === 'locked' || st === 'coming' ? GP.PAL.w : GP.PAL.k).setVisible(st !== 'locked');   // le piédestal verrouillé porte déjà un cadenas
-      n.badge.setVisible(st === 'completed');
       if (self.pers && self.pers[i]) { var vis = st !== 'coming' && st !== 'locked'; self.pers[i].setVisible(vis); self.pers[i].bulle.setVisible(vis && !!l.anecdote); }
       var got = P.stars(i);
       n.stars.forEach(function (s, k) { s.setVisible(st === 'completed').setTexture(k < got ? 'star_on' : 'star_off'); });
