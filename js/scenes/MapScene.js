@@ -87,6 +87,7 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     var sil = this.add.image(xb, M.vergeY(xb), 'lv_silhouette_nantes').setOrigin(0.5, 1).setDepth(5);   // la silhouette sombre de Nantes, comme un monument pas encore dévoilé
     var star = this.add.image(xb, yb - 3, 'star_on').setDepth(12);
     var rec = null; try { rec = JSON.parse(localStorage.getItem('gp_secret') || 'null'); } catch (e) { rec = null; }
+    if (rec) ped.setTexture('carte_piedestal_termine');   // même piédestal que les autres étapes : doré une fois le niveau bonus terminé
     var label = this.txt(xb, M.vergeY(xb) - 48, GP.t('NIVEAU BONUS') + (rec ? ' ' + Math.floor(rec.time / 60) + ':' + String(rec.time % 60).padStart(2, '0') : ''), GP.PAL.y, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 2 } }).setOrigin(0.5, 1).setDepth(13);
     this.bonus = { ped: ped, star: star, label: label, sil: sil };
     ped.on('pointerover', function () { self.hover = n; self.updateBar(); });

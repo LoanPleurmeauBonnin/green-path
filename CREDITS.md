@@ -94,8 +94,23 @@ Skills Phaser (`phaser-core`, `phaser-arcade-physics`) du dépôt gamedev-skills
 - **Obligations** : créditer l'auteur, donner le lien vers la licence, indiquer les modifications, et diffuser l'image pixélisée sous la même licence.
 - Téléchargée le 10 novembre 2026 après validation de l'équipe, image par image. Personnes éventuelles non identifiables à 48×32. Aucune œuvre d'artiste contemporain dans le cadre.
 
-### Lieux sans photo (6 Machines de l'île, 8 Anneaux de Buren, 10 Mémorial)
-Leur sujet est une œuvre d'artiste protégée (Grand Éléphant, anneaux de Buren, mémorial) : **aucune photo n'est utilisée**, le monument reste dessiné par code, pour ne prendre aucun risque de droit d'auteur. Décision de l'équipe du 10 novembre 2026.
+### Machines de l'île (Grand Éléphant) (lieu 6)
+- **Fichier** : « Grand éléphant, Nantes-21.jpg » — https://commons.wikimedia.org/wiki/File:Grand_%C3%A9l%C3%A9phant,_Nantes-21.jpg
+- **Auteur** : MHM55 · **Licence** : CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0) · **Original** : 3648x2432, SHA-1 `00e84ca4de517124240d125e5128a792255543f0`
+- **Modifications** : recadrage 3:2 sur l'éléphant (3080×2053 depuis 3648×2432), réduction à **48×32 cases**, léger renfort du contraste et de la saturation, **16 couleurs** — port de l'outil de pixélisation de l'équipe (même algorithme, historique git). Fichier produit : `assets/locations/machines.js`.
+- Téléchargée le 13 novembre 2026 après validation de l'équipe, image par image ; licence et empreinte relues sur la page `File:` (aucune mention de droits sur l'œuvre). **Point d'attention** : la licence de la photo ne couvre pas l'œuvre photographiée (œuvre d'artiste contemporain, sans liberté de panorama en France) ; décision de l'équipe du 13 novembre 2026, qui remplace celle du 10 novembre (monument dessiné). Les dessins par code restent la solution de secours (`GP.PixelCollection.fallbackKey`).
+
+### Anneaux de Buren (lieu 8)
+- **Fichier** : « Les anneaux (Buren).jpg » — https://commons.wikimedia.org/wiki/File:Les_anneaux_(Buren).jpg
+- **Auteur** : MiklGds · **Licence** : CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0) · **Original** : 7360x4140, SHA-1 `3f630dd429505f674641a5521cb269e481fa9554`
+- **Modifications** : recadrage 3:2 sur les anneaux et leur reflet (1400×933 depuis 7360×4140), réduction à **48×32 cases**, léger renfort du contraste et de la saturation, **16 couleurs** — port de l'outil de pixélisation de l'équipe (même algorithme, historique git). Fichier produit : `assets/locations/buren.js`.
+- Téléchargée le 13 novembre 2026 après validation de l'équipe, image par image ; licence et empreinte relues sur la page `File:` (aucune mention de droits sur l'œuvre). **Point d'attention** : la licence de la photo ne couvre pas l'œuvre photographiée (œuvre d'artiste contemporain, sans liberté de panorama en France) ; décision de l'équipe du 13 novembre 2026, qui remplace celle du 10 novembre (monument dessiné). Les dessins par code restent la solution de secours (`GP.PixelCollection.fallbackKey`).
+
+### Mémorial de l'abolition de l'esclavage (lieu 10)
+- **Fichier** : « Mémorial de l'abolition de l'esclavage.jpg » — https://commons.wikimedia.org/wiki/File:M%C3%A9morial_de_l'abolition_de_l'esclavage.jpg
+- **Auteur** : Jean-Marc Ayrault · **Licence** : CC BY 2.0 (https://creativecommons.org/licenses/by/2.0) · **Original** : 3872x2592, SHA-1 `72904cc813e07fa81e7f40a3af3d30b425e4de88`
+- **Modifications** : recadrage 3:2 sur le lettrage du mur (1979×1319 depuis 3872×2592), réduction à **48×32 cases**, léger renfort du contraste et de la saturation, **16 couleurs** — port de l'outil de pixélisation de l'équipe (même algorithme, historique git). Fichier produit : `assets/locations/memorial.js`.
+- Téléchargée le 13 novembre 2026 après validation de l'équipe, image par image ; licence et empreinte relues sur la page `File:` (aucune mention de droits sur l'œuvre). **Point d'attention** : la licence de la photo ne couvre pas l'œuvre photographiée (œuvre d'artiste contemporain, sans liberté de panorama en France) ; décision de l'équipe du 13 novembre 2026, qui remplace celle du 10 novembre (monument dessiné). Les dessins par code restent la solution de secours (`GP.PixelCollection.fallbackKey`).
 
 Point à confirmer : le décor sculpté de la Tour LU (1909) est supposé dans le domaine public (auteurs morts depuis plus de 70 ans) ; dates de décès non vérifiées.
 Les autres lieux utilisent encore le monument de la planche de sprites, ou le dessin par code en repli. Candidates : `docs/images-candidates.md`.
@@ -113,11 +128,11 @@ Contrôle automatique : `node tools/verify-credits.cjs` recalcule les empreintes
 | 3 | Château des ducs de Bretagne | [Château des Ducs de Bretagne façade.JPG](https://commons.wikimedia.org/wiki/File:Ch%C3%A2teau_des_Ducs_de_Bretagne_fa%C3%A7ade.JPG) | JoévinB | CC BY-SA 3.0 | `bf4957d7aed9…` | 5184x3888 | intégrée (version pixélisée) |
 | 4 | Île Feydeau | [Feydeau Nantes 2.JPG](https://commons.wikimedia.org/wiki/File:Feydeau_Nantes_2.JPG) | ? | CC BY-SA 3.0 | `2d0224794134…` | 2048x1536 | intégrée (version pixélisée) |
 | 5 | Place Graslin (théâtre) | [Nantes 2018 Façade du théâtre Graslin 02.jpg](https://commons.wikimedia.org/wiki/File:Nantes_2018_Fa%C3%A7ade_du_th%C3%A9%C3%A2tre_Graslin_02.jpg) | François de Dijon | CC BY-SA 4.0 | `7a3eeb663ea2…` | 5494x3668 | intégrée (version pixélisée) |
-| 6 | Machines de l'île (Grand Éléphant) | [Grand éléphant, Nantes-21.jpg](https://commons.wikimedia.org/wiki/File:Grand_%C3%A9l%C3%A9phant,_Nantes-21.jpg) | MHM55 | CC BY-SA 4.0 | `00e84ca4de51…` | 3648x2432 | non intégrée (référence) |
+| 6 | Machines de l'île (Grand Éléphant) | [Grand éléphant, Nantes-21.jpg](https://commons.wikimedia.org/wiki/File:Grand_%C3%A9l%C3%A9phant,_Nantes-21.jpg) | MHM55 | CC BY-SA 4.0 | `00e84ca4de51…` | 3648x2432 | intégrée (version pixélisée) |
 | 7 | Parc des Chantiers (Grue Titan) | [Grue Titan jaune, Nantes-5147.jpg](https://commons.wikimedia.org/wiki/File:Grue_Titan_jaune,_Nantes-5147.jpg) | Raimond Spekking | CC BY-SA 4.0 | `60e2eda0c9d5…` | 3997x3997 | intégrée (version pixélisée) |
-| 8 | Anneaux de Buren | [Les Anneaux @ Nantes (7936179092).jpg](https://commons.wikimedia.org/wiki/File:Les_Anneaux_@_Nantes_(7936179092).jpg) | Guilhem Vellut from Annecy, France | CC BY 2.0 | `d718d1aa8e5e…` | 3648x2736 | non intégrée (référence) |
+| 8 | Anneaux de Buren | [Les anneaux (Buren).jpg](https://commons.wikimedia.org/wiki/File:Les_anneaux_(Buren).jpg) | MiklGds | CC BY-SA 4.0 | `3f630dd42950…` | 7360x4140 | intégrée (version pixélisée) |
 | 9 | Hangar à Bananes | [W5618 Nantes HangarBanane 42780EOS.jpg](https://commons.wikimedia.org/wiki/File:W5618_Nantes_HangarBanane_42780EOS.jpg) | Llann Wé² | CC BY-SA 4.0 | `7318286166bc…` | 4752x3168 | intégrée (version pixélisée) |
-| 10 | Mémorial de l'abolition de l'esclavage | [Mémorial de l'abolition de l'esclavage.jpg](https://commons.wikimedia.org/wiki/File:M%C3%A9morial_de_l'abolition_de_l'esclavage.jpg) | Jean-Marc Ayrault | CC BY 2.0 | `72904cc813e0…` | 3872x2592 | non intégrée (référence) |
+| 10 | Mémorial de l'abolition de l'esclavage | [Mémorial de l'abolition de l'esclavage.jpg](https://commons.wikimedia.org/wiki/File:M%C3%A9morial_de_l'abolition_de_l'esclavage.jpg) | Jean-Marc Ayrault | CC BY 2.0 | `72904cc813e0…` | 3872x2592 | intégrée (version pixélisée) |
 | 11 | Passage Pommeraye | [Galerie Régnier du passage Pommeraye.jpg](https://commons.wikimedia.org/wiki/File:Galerie_R%C3%A9gnier_du_passage_Pommeraye.jpg) | Tgllyn | CC BY-SA 4.0 | `7556d4ed13cc…` | 3024x4032 | intégrée (version pixélisée) |
 | 12 | Tour LU (Lieu Unique) | [Nantes-TourLU.jpg](https://commons.wikimedia.org/wiki/File:Nantes-TourLU.jpg) | Selbymay | CC BY-SA 4.0 | `ea600cba0904…` | 3000x4361 | intégrée (version pixélisée) |
 
