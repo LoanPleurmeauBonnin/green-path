@@ -175,7 +175,8 @@ GP.Postcard = (function () {
   function drawGrid(c, grid, x, y, color) { grid.forEach(function (row, yy) { for (var xx = 0; xx < row.length; xx++) if (row[xx] === 'x') { c.fillStyle = color; c.fillRect(x + xx, y + yy, 1, 1); } }); }
 
   /** Dessine la carte (1800 × 1200 px). scene : pour lire les textures du jeu (ciel, monuments, météo). */
-  function render(scene, fin, character) {
+  function render(scene, fin, character, variant) {
+    var grand = (variant || GP.Postcard.style) === 'grand';   // « grand » : un grand personnage au centre et quatre grands monuments aux coins (planche de référence n° 2)
     var PA = GP.PixelArt, lo = PA.canvas(LW, LH), c = lo.ctx, rnd = PA.rng(20261112);
     var meteo = fin.meteo, lang = GP.I18n.lang;
     var st = meteo.disponible ? { isDay: !!meteo.estJour, cat: GP.Weather.categorize(meteo.code).cat } : { isDay: true, cat: 'clear' };
@@ -184,24 +185,37 @@ GP.Postcard = (function () {
     function put(key, x, y) { var im = tex(key); if (im) c.drawImage(im, Math.round(x), Math.round(y)); return im; }
 
     // fond sombre légèrement grenu
-    c.fillStyle = '#12141d'; c.fillRect(0, 0, LW, LH);
-    c.fillStyle = '#1b1e2b'; for (var g = 0; g < 900; g++) c.fillRect(Math.floor(rnd() * LW), Math.floor(rnd() * LH), 1, 1);
+    if (grand) {   // marine profond, semé de petits carrés
+      c.fillStyle = '#0c1830'; c.fillRect(0, 0, LW, LH);
+      for (var gx0 = 6; gx0 < LW; gx0 += 12) for (var gy0 = 6; gy0 < LH; gy0 += 12) if (rnd() < 0.55) { c.fillStyle = rnd() < 0.12 ? '#2c5a78' : '#13264a'; c.fillRect(gx0 + Math.floor(rnd() * 5) - 2, gy0 + Math.floor(rnd() * 5) - 2, 3, 3); }
+    } else {
+      c.fillStyle = '#12141d'; c.fillRect(0, 0, LW, LH);
+      c.fillStyle = '#1b1e2b'; for (var g = 0; g < 900; g++) c.fillRect(Math.floor(rnd() * LW), Math.floor(rnd() * LH), 1, 1);
+    }
 
     // couronne des monuments reconstruits, dans l'ordre du parcours, autour de l'avatar
     var CX = 300, CY = 176, RX = 205, RY = 98, done = GP.Progression.data.completed;
     var list = GP.LOCATIONS.filter(function (l) { return done[l.id]; }), spots = [], n = list.length;
-    list.forEach(function (l, i) {
+    var bigs = [];
+    if (grand) {   // quatre grands monuments aux coins (×2), les autres en petit autour
+      var wish = ['cathedrale', 'chateau', 'machines', 'graslin'], corners = [[104, 98], [496, 98], [104, 236], [496, 236]];
+      wish.forEach(function (id, i) { var l = list.filter(function (q) { return q.id === id; })[0]; if (l) bigs.push({ l: l, x: corners[i][0], y: corners[i][1], rad: 56, big: true }); });
+      var rest = list.filter(function (l) { return !bigs.some(function (q) { return q.l === l; }); });
+      bigs.forEach(function (q) { spots.push(q); });
+      rest.forEach(function (l) { spots.push({ l: l, x: -999, y: -999, rad: 30, pending: true }); });
+    } else list.forEach(function (l, i) {
       var a = -Math.PI / 2 + i * Math.PI * 2 / n;
-      spots.push({ l: l, x: Math.round(CX + RX * Math.cos(a)), y: Math.round(CY + RY * Math.sin(a)) });
+      spots.push({ l: l, x: Math.round(CX + RX * Math.cos(a)), y: Math.round(CY + RY * Math.sin(a)), rad: 30 });
     });
     // la ligne verte : un pointillé qui relie la couronne
-    for (var an = 0; an < 360; an += 1.2) if (Math.floor(an / 3.6) % 2) { c.fillStyle = '#2f8a52'; c.fillRect(Math.round(CX + RX * Math.cos(an * Math.PI / 180)), Math.round(CY + RY * Math.sin(an * Math.PI / 180)), 2, 2); }
+    for (var an = 0; an < 360 && !grand; an += 1.2) if (Math.floor(an / 3.6) % 2) { c.fillStyle = '#2f8a52'; c.fillRect(Math.round(CX + RX * Math.cos(an * Math.PI / 180)), Math.round(CY + RY * Math.sin(an * Math.PI / 180)), 2, 2); }
 
     // éclats de pixels et petits décors (soleil ou lune, nuages), posés sans recouvrir le reste
     function free(x, y, r) {
       if (y < 44 && (x < 340 || x > 420)) return false;             // titre et météo
-      if (y + r > 306 || Math.abs(x - CX) < 56 && Math.abs(y - CY) < 100) return false;   // bandeau de texte, avatar
-      return spots.every(function (q) { return Math.abs(q.x - x) > 30 + r || Math.abs(q.y - y) > 30 + r; });   // hors du carré de chaque monument
+      if (r > 20 && y - r < 42) return false;                         // un monument ne recouvre pas le titre
+      if (y + r > 306 || Math.abs(x - CX) < (grand ? 74 : 56) && Math.abs(y - CY) < (grand ? 112 : 100)) return false;   // bandeau de texte, avatar
+      return spots.every(function (q) { return q.pending || Math.abs(q.x - x) > q.rad + r || Math.abs(q.y - y) > q.rad + r; });   // hors du carré de chaque monument
     }
     var placed = [], tries, k;
     function spot(r) { for (tries = 0; tries < 60; tries++) { var x = 12 + r + rnd() * (LW - 24 - 2 * r), y = 14 + r + rnd() * (LH - 28 - 2 * r); if (free(x, y, r) && placed.every(function (q) { return Math.hypot(q.x - x, q.y - y) > r + q.r + 6; })) { placed.push({ x: x, y: y, r: r }); return { x: x, y: y }; } } return null; }
@@ -209,12 +223,14 @@ GP.Postcard = (function () {
     var clouds = { day: ['ciel_nuage_blanc_a', 'ciel_nuage_blanc_b'], cloudy: ['ciel_nuage_blanc_b', 'ciel_nuage_gris_c'], grey: ['ciel_nuage_gris_a', 'ciel_nuage_gris_b'], storm: ['ciel_nuage_orage_a', 'ciel_nuage_gris_b'], night: ['ciel_nuage_nuit_a', 'ciel_nuage_nuit_b'] }[kind] || [];
     deco = deco.concat(clouds).filter(Boolean);
     deco.forEach(function (key) { var im = tex(key), p = im && spot(Math.max(im.width, im.height) / 2); if (im && p) c.drawImage(im, Math.round(p.x - im.width / 2), Math.round(p.y - im.height / 2)); });
+    spots.forEach(function (q) { if (q.pending) { var pm = spot(28); if (pm) { q.x = Math.round(pm.x); q.y = Math.round(pm.y); q.pending = false; } } });
     var starGrid = STAR.map(function (row) { return row.replace(/y/g, 'x'); });                                 // une étoile autocollant par étoile gagnée
     for (k = 0; k < Math.min(36, fin.etoiles); k++) { var ps = spot(9); if (ps) { drawGrid(c, starGrid, Math.round(ps.x) - 1, Math.round(ps.y) - 1, '#2a1f0a'); drawGrid(c, starGrid, Math.round(ps.x), Math.round(ps.y), '#f4d35e'); } }
     for (k = 0; k < 90; k++) { var p = spot(5); if (p) drawGrid(c, SPARKS[SPARK_KEYS[k % SPARK_KEYS.length]], Math.round(p.x), Math.round(p.y), SPARK_COLORS[Math.floor(rnd() * SPARK_COLORS.length)]); }
 
     // les monuments en autocollants : contour crème, puis le dessin
     spots.forEach(function (q) {
+      if (q.big || q.pending) return;
       var im = tex(GP.MapArt.monument(q.l, false));
       if (!im) return;
       var x = Math.round(q.x - im.width / 2), y = Math.round(q.y - im.height / 2), o = PA.canvas(im.width, im.height);
@@ -231,8 +247,18 @@ GP.Postcard = (function () {
     ctx.textBaseline = 'top';
     function text(s, x, y, px, color, align) { ctx.font = px + 'px ' + font; ctx.fillStyle = color; ctx.textAlign = align || 'left'; ctx.fillText(s, x, y); }
 
+    // les quatre grands monuments (×2), autocollants à contour crème
+    bigs.forEach(function (q) {
+      var im = tex(GP.MapArt.monument(q.l, false));
+      if (!im) return;
+      var K = 6, bw = im.width * K, bh = im.height * K, bx = Math.round(q.x * S - bw / 2), by = Math.round(q.y * S - bh / 2), o = PA.canvas(im.width, im.height);
+      o.ctx.drawImage(im, 0, 0); o.ctx.globalCompositeOperation = 'source-in'; o.ctx.fillStyle = '#fff4d8'; o.ctx.fillRect(0, 0, im.width, im.height);
+      [[-K, 0], [K, 0], [0, -K], [0, K]].forEach(function (d) { ctx.drawImage(o.cv, bx + d[0], by + d[1], bw, bh); });
+      ctx.drawImage(im, bx, by, bw, bh);
+    });
+
     // l'avatar du joueur, grand, au centre : c'est le sujet de la carte
-    var cfg = GP.Character.sanitize(character || GP.Character.defaultConfig()), grid = GP.Character.compose(cfg, 'cheer0'), AS = 13;
+    var cfg = GP.Character.sanitize(character || GP.Character.defaultConfig()), grid = GP.Character.compose(cfg, 'cheer0'), AS = grand ? 22 : 13;
     var aw = GP.Character.W * AS, ah = GP.Character.H * AS, ax = Math.round(CX * S - aw / 2), ay = Math.round(CY * S - ah / 2);
     ctx.fillStyle = 'rgba(255,244,216,0.10)'; ctx.fillRect(ax - 18, ay + ah + 4, aw + 36, 14);   // ombre au sol
     // contour crème : même style d'autocollant
@@ -293,6 +319,6 @@ GP.Postcard = (function () {
   return {
     W: LW * S, H: LH * S, levels: levels, allDone: allDone, get: get, record: record, setPseudo: setPseudo, clear: clear,
     clean: clean, cleanPseudo: cleanPseudo, isoLocal: isoLocal, skyPhrase: skyPhrase, sentence: sentence, fileName: fileName,
-    render: render, preview: preview, download: download
+    render: render, preview: preview, download: download, style: 'planche'
   };
 })();
