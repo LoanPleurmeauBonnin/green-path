@@ -1,7 +1,7 @@
 {
   "projet": "Green Path",
   "genere_le": "2026-11-12",
-  "note": "sha1_original_commons : empreinte du fichier original donnée par l'API de Wikimedia Commons ; sha1_copie_locale : empreinte de la copie téléchargée (identique = fichier non modifié) ; sha1_fichier* : empreinte du fichier du dépôt. Contrôle : node tools/verify-credits.cjs [--online] licence_api : licence lue par l'API Commons (certaines pages en listent plusieurs : on retient la plus prudente, licence_retenue, avec attribution).",
+  "note": "sha1_original_commons : empreinte du fichier original donnée par l'API de Wikimedia Commons ; sha1_copie_locale : empreinte de la copie téléchargée (identique = fichier non modifié) ; sha1_fichier* : empreinte du fichier du dépôt. Contrôle : node tools/verify-credits.cjs [--online] licence_api : licence lue par l'API Commons (certaines pages en listent plusieurs : on retient la plus prudente, licence_retenue, avec attribution). Les fichiers .js sont hachés avec des fins de ligne LF (indépendant de Windows/Linux).",
   "elements": [
     {
       "type": "image-commons",
@@ -18,7 +18,7 @@
       "fichier_du_jeu": "assets/locations/jardin-des-plantes.js",
       "sha1_copie_locale": "3037cf5b2866f4b955560e536f52a3f77448ef2b",
       "copie_conforme": true,
-      "sha1_fichier_du_jeu": "91d60570b81e80a6c4610a9c96af063a194b2285",
+      "sha1_fichier_du_jeu": "b86f13f1cef22f02db0e0b6668cc2339933eb892",
       "licence_api": "Public domain",
       "licence_retenue": "CC BY-SA 3.0"
     },
@@ -37,7 +37,7 @@
       "fichier_du_jeu": "assets/locations/cathedrale.js",
       "sha1_copie_locale": "0e4c455e656863242708bf4ae24caddf7bdef10f",
       "copie_conforme": true,
-      "sha1_fichier_du_jeu": "97b2920f72d4c7e70b67eff8482d00a47527c440",
+      "sha1_fichier_du_jeu": "c415815a5649c185450ad1daeee86c56c8bf4d05",
       "licence_api": "Public domain",
       "licence_retenue": "CC BY 3.0"
     },
@@ -56,7 +56,7 @@
       "fichier_du_jeu": "assets/locations/chateau.js",
       "sha1_copie_locale": "bf4957d7aed9c3ae74cdfb782a394d587675706a",
       "copie_conforme": true,
-      "sha1_fichier_du_jeu": "fd724783a4b892ae1246b0421fb80bda7dd40ebc",
+      "sha1_fichier_du_jeu": "678da00f4f0a2acc58ccb591e786198b51d685d0",
       "licence_api": "CC BY-SA 3.0",
       "licence_retenue": "CC BY-SA 3.0"
     },
@@ -75,7 +75,7 @@
       "fichier_du_jeu": "assets/locations/feydeau.js",
       "sha1_copie_locale": "2d022479413439797a82df976c82064afc8b93be",
       "copie_conforme": true,
-      "sha1_fichier_du_jeu": "dc4aeefe0ad93b8798b2c4f8b73dead44cc54793",
+      "sha1_fichier_du_jeu": "094957c2d7fb0dbb2949d347bf341d6e528f6800",
       "licence_api": "CC BY-SA 3.0",
       "licence_retenue": "CC BY-SA 3.0"
     },
@@ -94,7 +94,7 @@
       "fichier_du_jeu": "assets/locations/graslin.js",
       "sha1_copie_locale": "7a3eeb663ea29c20ee851a93b6d9d98f2c47b431",
       "copie_conforme": true,
-      "sha1_fichier_du_jeu": "4804e1854e1bc581e4f252946088b6d808f68f98",
+      "sha1_fichier_du_jeu": "519566061be774f77793eea3c451d2a714c0b224",
       "licence_api": "CC BY-SA 4.0",
       "licence_retenue": "CC BY-SA 4.0"
     },
@@ -131,7 +131,7 @@
       "fichier_du_jeu": "assets/locations/chantiers.js",
       "sha1_copie_locale": "60e2eda0c9d5ef5759df078d250041c8e988a0be",
       "copie_conforme": true,
-      "sha1_fichier_du_jeu": "ae51c1ebe9ceb12f3465a94cfdd09cdf86e59327",
+      "sha1_fichier_du_jeu": "6c5537cc3b2ae6395a69a505fcf343911f35aad9",
       "licence_api": "CC BY-SA 4.0",
       "licence_retenue": "CC BY-SA 4.0"
     },
@@ -168,7 +168,7 @@
       "fichier_du_jeu": "assets/locations/hangar.js",
       "sha1_copie_locale": "7318286166bc38f32ba03e7e361abf961482b4fc",
       "copie_conforme": true,
-      "sha1_fichier_du_jeu": "9c04ddce0e966fed6ef2da2e057e139b154fc9d2",
+      "sha1_fichier_du_jeu": "d315556b7fdacf9119df129117714bb0fbf27751",
       "licence_api": "CC BY-SA 4.0",
       "licence_retenue": "CC BY-SA 4.0"
     },
@@ -187,7 +187,7 @@
       "fichier_du_jeu": "assets/locations/pommeraye.js",
       "sha1_copie_locale": "7556d4ed13cc0e94478867bcc132a2e5c718634b",
       "copie_conforme": true,
-      "sha1_fichier_du_jeu": "a032e333a6e60bb3d9c8bd1bf8ca0e674a4476a2",
+      "sha1_fichier_du_jeu": "669e9b8063bc5f5fae05943815489c7fa6c27071",
       "licence_api": "CC BY-SA 4.0",
       "licence_retenue": "CC BY-SA 4.0"
     },
@@ -222,7 +222,7 @@
       "verifie_le": "2026-11-12",
       "integre_au_jeu": true,
       "fichier_du_jeu": "assets/locations/tour-lu.js",
-      "sha1_fichier_du_jeu": "cb210f1dcc92d9b803cb5d026b5cfc62c9a48bf8",
+      "sha1_fichier_du_jeu": "60a6dec4658222eca3a52b0ed7869e96a9ff1417",
       "licence_api": "CC BY-SA 4.0",
       "licence_retenue": "CC BY-SA 4.0"
     },
