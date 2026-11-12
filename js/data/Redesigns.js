@@ -96,44 +96,44 @@ GP.Redesigns = {};
 
 /**
  * 5 · Théâtre Graslin — « monde 1-1 ». Un niveau écrit à la main comme un niveau de plateforme classique, avec les sprites de la planche
- * « mario » : un sol continu coupé de trous, des rangées de briques et de blocs à pixel à 3 tuiles du sol, des tuyaux de fonte de 2 et 3 tuiles,
- * des gobelins qui patrouillent au sol, des champignons-plateformes au-dessus des trous, un champignon rebondissant vers un étage de pixels,
- * un escalier-pyramide et un mât d'arrivée. Tout reste jouable avec les gestes actuels (courir, sauter, accroupi, accroche) : pas d'écrasement
+ * « patrimoine » (tuffeau, blason de l'hermine, colonnes cannelées, pigeons) et celles de Graslin (terrasses, parasol) : un sol continu coupé de trous, des rangées de pierres et de blasons à 3 tuiles du sol, des colonnes de 2 et 3 tuiles,
+ * des pigeons qui patrouillent au sol, des terrasses de café au-dessus des trous, un grand parasol rebondissant vers un étage de pixels,
+ * un escalier-pyramide et une bannière d'hermine d'arrivée. Tout reste jouable avec les gestes actuels (courir, sauter, accroupi, accroche) : pas d'écrasement
  * d'ennemi ni de bloc à frapper, les « blocs » sont des appuis pleins sur lesquels on monte, et leurs pixels flottent au-dessus.
  */
 GP.Redesigns[5] = (function () {
   var K = GP.Kit, b = new K.Builder({ sol_y: 16, hauteur: 22 }), G0 = 16, W = 212;
   var PAV = { top_sprite: 'graslin_sol_haut_1', fill_sprite: 'graslin_sol_plein' };
-  var BRI = { top_sprite: 'mario_brique', fill_sprite: 'mario_brique' }, BLP = { top_sprite: 'mario_bloc_pixel', fill_sprite: 'mario_bloc_pixel' }, MAR = { top_sprite: 'mario_marche', fill_sprite: 'mario_marche' };
-  var CHAMPI = ['mario_champi_g', 'mario_champi_m', 'mario_champi_d'];
+  var BRI = { top_sprite: 'patrimoine_tuffeau', fill_sprite: 'patrimoine_tuffeau' }, BLP = { top_sprite: 'patrimoine_blason', fill_sprite: 'patrimoine_blason' }, MAR = { top_sprite: 'patrimoine_tuffeau', fill_sprite: 'patrimoine_tuffeau' };
+  var CHAMPI = ['graslin_terrasse_cafe_g', 'graslin_terrasse_cafe_m', 'graslin_terrasse_cafe_d'];
   function ground(x0, x1) { b.mass(x0, G0, x1 - x0, PAV, { note: 'sol' }); }
   /** Un bloc d'une tuile qui flotte à y (appui plein : on monte dessus, on passe dessous). */
   function blk(x, y, m) { b.mass(x, y, 1, m, { fill_to: y + 1, grab: true, note: 'bloc' }); }
   /** Une rangée de blocs : 'b' brique, 'p' bloc à pixel, 'v' bloc vide ; les pixels flottent 2 tuiles au-dessus des blocs à pixel. */
-  function blocks(x, y, pattern, coins) { pattern.split('').forEach(function (c, i) { blk(x + i, y, c === 'p' ? BLP : c === 'v' ? { top_sprite: 'mario_bloc_vide', fill_sprite: 'mario_bloc_vide' } : BRI); if (c === 'p' && coins) b.px(x + i, y - 2); }); }
+  function blocks(x, y, pattern, coins) { pattern.split('').forEach(function (c, i) { blk(x + i, y, c === 'p' ? BLP : c === 'v' ? { top_sprite: 'patrimoine_tuffeau', fill_sprite: 'patrimoine_tuffeau' } : BRI); if (c === 'p' && coins) b.px(x + i, y - 2); }); }
   /** Tuyau de fonte : 2 tuiles de large, h tuiles de haut (2 ou 3 : on le franchit d'un saut). */
   function pipe(x, h) {
-    b.mass(x, G0 - h, 1, { top_sprite: 'mario_tuyau_hg', fill_sprite: 'mario_tuyau_cg' }, { note: 'tuyau' });
-    b.mass(x + 1, G0 - h, 1, { top_sprite: 'mario_tuyau_hd', fill_sprite: 'mario_tuyau_cd' }, { note: 'tuyau' });
+    b.mass(x, G0 - h, 1, { top_sprite: 'patrimoine_colonne_hg', fill_sprite: 'patrimoine_colonne_cg' }, { note: 'tuyau' });
+    b.mass(x + 1, G0 - h, 1, { top_sprite: 'patrimoine_colonne_hd', fill_sprite: 'patrimoine_colonne_cd' }, { note: 'tuyau' });
   }
   /** Escalier de marches de pierre : n marches d'1 tuile, montantes (dir 1) ou descendantes (dir −1) en partant de x. */
   function stairs(x, n, dir) { for (var i = 0; i < n; i++) b.mass(x + i, G0 - (dir > 0 ? i + 1 : n - i), 1, MAR, { note: 'marche' }); }
   function gap(x, w) { for (var yy = G0 + 1; yy < 22; yy++) b.water(x, w, yy); }
   /** Champignon-plateforme : chapeau à y, tige jusqu'au fond. */
-  function shroom(x, y, w) { b.row(x, y, w, CHAMPI); for (var yy = y + 1; yy <= 21; yy++) b.deco('mario_champi_tige', x + Math.floor(w / 2), yy, { layer: 'fond' }); }
-  function goblin(id, x1, x2) { b.enemy({ id: id, sprite: 'mario_gobelin', type: 'patrouille_horizontale', x1: x1, x2: x2, y: G0 - 1, vitesse: 2, touche: 'debout' }); }
+  function shroom(x, y, w) { b.row(x, y, w, CHAMPI); }
+  function goblin(id, x1, x2) { b.enemy({ id: id, sprite: 'patrimoine_pigeon', type: 'patrouille_horizontale', x1: x1, x2: x2, y: G0 - 1, vitesse: 2, touche: 'debout' }); }
   function arc(x, y, n, h) { for (var i = 0; i < n; i++) b.px(x + i, Math.round(y - Math.sin(Math.PI * (i + 0.5) / n) * h)); }
 
-  // ----- 1 · La place s'ouvre (0–46) : courir, un premier gobelin, des blocs, deux tuyaux
+  // ----- 1 · La place s'ouvre (0–46) : courir, un premier pigeon, des blocs, deux colonnes
   b.zone('La place s’ouvre', 0, 46);
   ground(0, 46);
-  b.deco('mario_colline', 9, 15, { layer: 'fond' }); b.deco('commun_buisson_a', 22, 15); b.deco('commun_buisson_a', 33, 15);
+  b.deco('commun_buisson_a', 22, 15); b.deco('commun_buisson_a', 33, 15);
   [[7, 4], [26, 3], [41, 5]].forEach(function (c) { b.deco('ciel_nuage_blanc_a', c[0], c[1], { layer: 'fond' }); });
   b.sign(4, 15, 'Cours vers la droite et saute : les pixels te montrent le chemin.', 'signes_panneau_fleches');
   blocks(15, 13, 'bpbpb', true);
-  b.sign(21, 15, 'Les gobelins patrouillent : saute par-dessus.');
+  b.sign(21, 15, 'Les pigeons de la place patrouillent : saute par-dessus.');
   goblin('gobelin1', 25, 31); b.px(27, 11); b.px(29, 11);
-  b.sign(33, 15, 'Les tuyaux de fonte : saute dessus ou par-dessus.');
+  b.sign(33, 15, 'Les colonnes de fonte : saute dessus ou par-dessus.');
   pipe(36, 2); b.px(37, 12); pipe(41, 3); b.px(41, 11);
   b.lantern(45, 15);
 
@@ -142,7 +142,7 @@ GP.Redesigns[5] = (function () {
   b.sign(44, 15, 'Un trou d’eau : prends de l’élan et maintiens le saut.');
   gap(46, 3); arc(46, 13, 3, 3);
   ground(49, 62); blocks(53, 13, 'bpbpbpb', true); goblin('gobelin2', 51, 58);
-  b.sign(60, 15, 'Les champignons te portent : saute de l’un à l’autre.');
+  b.sign(60, 15, 'Les terrasses de café te portent : saute de l’un à l’autre.');
   gap(62, 9); shroom(63, 15, 3); shroom(68, 15, 3); b.px(64, 13); b.px(69, 13);
   ground(71, 124);
   b.sign(72, 15, 'Une pyramide de pierre : monte marche après marche.');
@@ -150,15 +150,15 @@ GP.Redesigns[5] = (function () {
   b.px(77, 11); b.px(79, 9); b.px(81, 9); b.px(84, 11);
   goblin('gobelin3', 88, 93); b.lantern(90, 15);
 
-  // ----- 3 · Sous les arcades (96–146) : tuyaux et gobelins, étage de briques à deux niveaux
+  // ----- 3 · Sous les arcades (96–146) : colonnes et pigeons, étage de pierres à deux niveaux
   b.zone('Sous les arcades', 96, 146);
   pipe(98, 2); goblin('gobelin4', 101, 105); pipe(107, 3); b.px(98, 12); b.px(107, 11); b.px(108, 11);
   blocks(112, 13, 'bbpbb', true); blocks(118, 10, 'bpb', true); goblin('gobelin5', 112, 120);
   b.sign(121, 15, 'Un trou large : prends de l’élan.');
   gap(124, 4); arc(124, 13, 4, 3); ground(128, 146);
-  b.sign(129, 15, 'Un champignon rebondissant : saute dessus pour monter haut.');
-  (b.boosts = b.boosts || []).push({ sprite: 'mario_champi_rebond', x: 133, y: 15, w: 2, hauteur: 4.5, top: 14.5 });
-  b.deco('mario_champi_rebond', 133, 15);
+  b.sign(129, 15, 'Un parasol rebondissant : saute dessus pour monter haut.');
+  (b.boosts = b.boosts || []).push({ sprite: 'graslin_parasol_cafe', x: 133, y: 15, w: 2, hauteur: 4.5, top: 14.5 });
+  b.deco('graslin_parasol_cafe', 133, 15);
   b.row(136, 11, 6, CHAMPI); b.px(137, 9); b.px(139, 9, true); b.px(141, 9);
   b.lantern(130, 15);
 
@@ -174,13 +174,13 @@ GP.Redesigns[5] = (function () {
   ground(190, W);
   stairs(190, 6, 1); b.px(191, 11); b.px(193, 9); b.px(195, 8);
   b.sign(188, 15, 'Gravis l’escalier du fronton, puis saute vers l’arche.');
-  b.deco('mario_mat', 205, 15); b.lantern(198, 15);
+  b.deco('chateau_banniere_hermine', 205, 15); b.lantern(198, 15);
   // les motifs de l'éditeur sur ce niveau reprennent ses sprites
   GP.LevelGen.registerTheme(5, {
-    ground: PAV, block: BRI, rowSet: CHAMPI, spikes: 'commun_pointes_fer_1', bounceSprite: 'mario_champi_rebond', monument: 'graslin_monument_graslin', signSprite: 'signes_panneau_saut',
+    ground: PAV, block: BRI, rowSet: CHAMPI, spikes: 'commun_pointes_fer_1', bounceSprite: 'graslin_parasol_cafe', monument: 'graslin_monument_graslin', signSprite: 'signes_panneau_saut',
     decor: ['commun_buisson_a', 'commun_fleur_jaune', 'commun_fleur_rouge'], col: { chap: 'cathedrale_colonne_chapiteau', fut: 'cathedrale_colonne_fut', base: 'cathedrale_colonne_base' },
-    signs: { row: 'Les champignons te portent : saute dessus.', gap: 'Un trou d’eau : prends de l’élan et maintiens le saut.', block: 'Un bloc : saute par-dessus.', up: 'Des marches : saute de l’une à l’autre.', bounce: 'Saute sur un champignon : il te fait rebondir.',
-      spikes: 'Les pointes piquent : saute par-dessus.', bird: 'Les oiseaux volent bas : maintiens ↓ pour passer dessous.', stones: 'Les champignons te portent : saute de l’un à l’autre.', wall: 'Maintiens ↑ près d’un rebord pour t’y accrocher.' }
+    signs: { row: 'Les terrasses de café te portent : saute dessus.', gap: 'Un trou d’eau : prends de l’élan et maintiens le saut.', block: 'Un bloc : saute par-dessus.', up: 'Des marches : saute de l’une à l’autre.', bounce: 'Saute sur le parasol : il te fait rebondir.',
+      spikes: 'Les pointes piquent : saute par-dessus.', bird: 'Les oiseaux volent bas : maintiens ↓ pour passer dessous.', stones: 'Les terrasses de café te portent : saute de l’un à l’autre.', wall: 'Maintiens ↑ près d’un rebord pour t’y accrocher.' }
   });
   var d = b.out({
     largeur: W, hauteur: 22, sol_y: G0, spawn: { x: 1, y: G0 - 1 }, temps_ref_s: 100, boosts: b.boosts || [], anneaux: [], courants: [], eau: [], mobiles: [], rails: [],

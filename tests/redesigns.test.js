@@ -46,7 +46,7 @@ test('Niveaux redessinés : tous les niveaux sauf le Château, chaque sprite cit
   const has = (n, f) => assert.ok(f(G.GZONES[n - 1]), 'niveau ' + n);
   has(2, d => d.plateformes.some(p => p.type === 'colonne') && d.dangers.some(h => h.kind === 'cyclique'));    // accroche, colonnes, gargouilles
   has(4, d => d.plateformes.some(p => p.mecanique && p.mecanique.type === 'flotteur') && d.plateformes.some(p => p.glisse_tuiles_s));   // gabares, balcons penchés
-  has(5, d => d.boosts.length >= 1 && d.ennemis.some(e => e.sprite === 'mario_gobelin') && d.plateformes.some(p => p.top_sprite === 'mario_tuyau_hg') && d.plateformes.some(p => p.top_sprite === 'mario_bloc_pixel'));   // monde 1-1 : champignon rebondissant, gobelins, tuyaux, blocs
+  has(5, d => d.boosts.length >= 1 && d.ennemis.some(e => e.sprite === 'patrimoine_pigeon') && d.plateformes.some(p => p.top_sprite === 'patrimoine_colonne_hg') && d.plateformes.some(p => p.top_sprite === 'patrimoine_blason'));   // monde 1-1 : champignon rebondissant, gobelins, tuyaux, blocs
   has(6, d => d.boss && d.valves && d.valves.length >= 3);                                                    // Grand Éléphant
   has(8, d => d.anneaux.length >= 3);                                                                         // anneaux
   has(9, d => d.boss && d.lampes_uv && d.dangers.some(h => /porte/.test(h.sprite)));                          // moisissure, portes
