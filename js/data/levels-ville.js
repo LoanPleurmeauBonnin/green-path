@@ -671,7 +671,6 @@ GP.LEVELS['chateau'] = (function () {
   L.thornKey = 'commun_pointes_fer_1'; L.thornText = 'AÏE, LES POINTES !';
   L.sky = { farKey: 'lv_fond_chateau', farBottom: 236 };
   L.rooms = [{ x: 55, key: 'lv_salle_herses' }, { x: 77, key: 'lv_salle_gardes' }];   // le châtelet aux herses, puis la salle des gardes (intérieur)
-  L.backdrop = { x: 112, key: 'chateau_grand_logis', scale: 1, tint: false };
   L.wxm = { rain: { enemy: 0.8 }, sun: { enemy: 1.2 } };
   L.weatherText = { wind: 'LE VENT FAIT ROULER LES TONNEAUX', rain: 'LA PLUIE RALENTIT LES ESPRITS DE LA GARDE', sun: 'LE SOLEIL AGITE LES ESPRITS DE LA GARDE' };
   return L;
@@ -745,8 +744,13 @@ GP.LEVELS['cathedrale'] = (function () {
   L.sky = { farKey: 'lv_fond_nef', farBottom: 236 };           // l'intérieur : piliers, vitraux et rosace
   L.gargoyleKey = 'lv_fuite';                                  // plus de statues : des fissures de la voûte laissent tomber des gouttes
   L.supports = true;                                           // les corniches reposent sur des piliers de pierre
-  L.backdrop = { x: 108, key: 'cathedrale_tour_facade', scale: 1, tint: false };
   L.rainGargoyle = true;
   L.weatherText = { rain: 'LES GARGOUILLES COULENT PLUS SOUVENT' };
   return L;
 })();
+
+// ---------- Arche d'arrivée (comme dans les niveaux de main) : à la fin de chaque niveau, on termine en rejoignant l'arche une fois tous les pixels pris ----------
+['cathedrale', 'chateau', 'feydeau', 'graslin', 'machines', 'chantiers', 'buren', 'hangar', 'pommeraye', 'memorial', 'tour-lu'].forEach(function (id) {
+  var L = GP.LEVELS[id], x = L.width - 5;
+  L.exit = { x: x, y: L.top(x), key: 'signes_arche_arrivee' };
+});
