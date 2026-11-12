@@ -131,14 +131,14 @@ test('Import : aucun code exécuté ; traversée de chemin, dimensions et expres
   assert.throws(() => input.sheet({ sheet: 'valid', sprites: [{ id: 'x', w: 1e9, h: 2 }] }), /Sprite/);
   assert.throws(() => input.sheet({ sheet: 'valid', sprites: [{ w: 1, h: 2 }] }), /Sprite/);
 });
-test('Assets : scripts syntaxiquement valides, liens locaux présents, 447 sprites et photo 48×32/16 valides', () => {
+test('Assets : scripts syntaxiquement valides, liens locaux présents, 463 sprites et photo 48×32/16 valides', () => {
   const c = context();
   const walk = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]);
   walk(path.join(ROOT, 'js')).filter(f => f.endsWith('.js')).forEach(f => new vm.Script(fs.readFileSync(f, 'utf8'), { filename: f }));
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
   for (const m of html.matchAll(/(?:src|href)="([^"#]+)"/g)) assert.ok(fs.existsSync(path.join(ROOT, m[1])), m[1]);
   fs.readdirSync(path.join(ROOT, 'js/data/sprites')).forEach(f => c.load('js/data/sprites/' + f));
-  const sprites = Object.values(c.GP.SPRITES).flat(); assert.equal(new Set(sprites.map(s => s.id)).size, 447);   // les « retouches » redessinent des sprites existants (même identifiant)
+  const sprites = Object.values(c.GP.SPRITES).flat(); assert.equal(new Set(sprites.map(s => s.id)).size, 463);   // les « retouches » redessinent des sprites existants (même identifiant)
   sprites.forEach(s => (s.frames_rows || [s.rows]).forEach(rows => {
     assert.equal(rows.length, s.h, s.id); rows.forEach(row => {
       assert.equal(row.length, s.w, s.id); for (const ch of row) assert.ok(ch === '.' || c.GP.SPRITE_PAL[ch], s.id + ':' + ch);

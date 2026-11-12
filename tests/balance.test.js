@@ -24,9 +24,9 @@ test('Équilibrage : début plus doux, pic du niveau 6 écrêté, niveau 7 renfo
   // niveaux 2 et 4 à 12 : construits par GP.LevelGen (« intensité » croissante, voir js/data/Redesigns.js). La courbe est mesurée en
   // événements de danger par 100 tuiles : début doux, montée jusqu'au niveau 8, Mémorial le plus calme.
   const ev = n => after.GZONES[n - 1].__events * 100 / after.GZONES[n - 1].largeur;
-  assert.ok(ev(2) < ev(5) && ev(5) < ev(8), [ev(2), ev(5), ev(8)].join(' '));
+  assert.ok(ev(2) < ev(8), [ev(2), ev(8)].join(' '));   // le niveau 5 est écrit à la main (monde 1-1) : hors de cette mesure
   assert.ok(ev(4) < ev(7) && ev(11) < ev(2), 'le Mémorial reste contemplatif');
-  [2, 4, 5, 6, 7, 8, 9, 10, 11, 12].forEach(n => assert.ok(ev(n) >= 3 && ev(n) <= 9, 'niveau ' + n + ' : ' + ev(n).toFixed(1)));
+  [2, 4, 6, 7, 8, 9, 10, 11, 12].forEach(n => assert.ok(ev(n) >= 3 && ev(n) <= 9, 'niveau ' + n + ' : ' + ev(n).toFixed(1)));
 });
 
 test('Équilibrage : retraits ciblés, rien d’autre ne disparaît', () => {

@@ -14,7 +14,7 @@ GP.Lint = (function () {
     return sizes[id] || { w: T, h: T };
   }
   // objets qui ne reposent pas sur le sol : ciel, suspendus, incrustés, ambiance
-  var FLOATING_OK = /ciel_|lustre|banderole|drapeau|suspen|guirlande|fenetre|vitrail|rosace|papillon|oiseau|mouette|anneau|courant|vapeur|fumee|nuage|pixel|lune|soleil|etoile|enseigne|horloge|cloche|lanterne_haute|arche|cable|chaine|grue_fleche|bateau|gabare|contrefort|pinacle|clocheton/i;
+  var FLOATING_OK = /ciel_|lustre|banderole|drapeau|suspen|guirlande|fenetre|vitrail|rosace|papillon|oiseau|mouette|anneau|courant|vapeur|fumee|nuage|pixel|lune|soleil|etoile|enseigne|horloge|cloche|lanterne_haute|arche|cable|chaine|grue_fleche|bateau|gabare|champi|mat_|contrefort|pinacle|clocheton/i;
 
   /** Les surfaces portantes (haut des blocs, ponts, appuis, colonnes, rampes) : { x0, x1, y } en tuiles. */
   function surfaces(d) {

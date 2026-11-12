@@ -261,5 +261,7 @@ GP.LevelGen = (function () {
     if (!T || !m) return null;
     return generate({ num: num, largeur: 'auto', hauteur: hauteur, groundY: groundY, seed: 1, theme: T, pixels: 99, raw: true, plan: [['rest', 3], [m[2]].concat(m[3]), ['rest', 3]] });
   }
-  return { generate: generate, rng: rng, stamp: stamp, MOTIFS: MOTIFS, hasTheme: function (n) { return !!(generate.themes || {})[n]; }, notes: function (n) { return n ? ((generate.byNum || {})[n] || []) : (generate.notes || []); } };
+  /** Un thème pour les motifs de l'éditeur sur un niveau écrit à la main. */
+  function registerTheme(num, theme) { (generate.themes = generate.themes || {})[num] = theme; }
+  return { generate: generate, rng: rng, stamp: stamp, registerTheme: registerTheme, MOTIFS: MOTIFS, hasTheme: function (n) { return !!(generate.themes || {})[n]; }, notes: function (n) { return n ? ((generate.byNum || {})[n] || []) : (generate.notes || []); } };
 })();
