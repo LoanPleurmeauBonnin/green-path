@@ -78,8 +78,11 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     var xa = this.nx(n - 1), xb = this.nx(n), yb = this.ny(n);
     var seen = false; try { seen = localStorage.getItem('gp_bonus_vu') === '1'; } catch (e) { seen = false; }
     var animate = !seen || /[?&]demo36=1/.test(location.search);
-    var dots = [], N = 8;   // le tracé reste linéaire : des points posés sur le chemin, entre le dernier monument et l'étape bonus
-    for (var k = 1; k <= N; k++) { var px = xa + (xb - xa) * k / (N + 1); dots.push(this.add.rectangle(px, M.pathY(px) - 2, 4, 4, GP.int(GP.PAL.g)).setDepth(11)); }
+    var lg = this.add.graphics().setDepth(6);   // la ligne verte du bonus : même tracé plein que les étapes terminées
+    function ligneJusqua(xe) {
+      lg.clear();
+      for (var x = xa; x <= xe; x += 1) { var y = M.pathY(x); lg.fillStyle(GP.int(GP.PAL.h), 1); lg.fillRect(x, y - 2, 1, 4); lg.fillStyle(GP.int(GP.PAL.g), 1); lg.fillRect(x, y - 1, 1, 2); }
+    }
     var ped = this.add.image(xb, yb + 6, 'carte_piedestal_disponible').setOrigin(0.5, 1).setDepth(10).setInteractive({ useHandCursor: true });
     var star = this.add.image(xb, yb - 3, 'star_on').setDepth(12);
     var rec = null; try { rec = JSON.parse(localStorage.getItem('gp_secret') || 'null'); } catch (e) { rec = null; }
@@ -89,17 +92,14 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     ped.on('pointerout', function () { if (self.hover === n) { self.hover = -1; self.updateBar(); } });
     ped.on('pointerdown', function () { if (!self.panel) self.goTo(n, true); });
     if (!GP.reducedMotion) this.tweens.add({ targets: star, y: yb - 6, duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-    if (!animate) return;
-    // apparition, comme sur une carte de Mario : les points s'allument un à un (son), puis l'étape bonus rebondit avec des éclats
-    dots.forEach(function (d) { d.setAlpha(0); });
+    if (!animate) { ligneJusqua(xb); return; }
+    // apparition, comme sur une carte de Mario : la ligne verte se trace petit à petit (son), puis l'étape rebondit avec des éclats
     [ped, star, label].forEach(function (o) { o.setAlpha(0).setScale(0); });
-    dots.forEach(function (d, i) {
-      self.time.delayedCall(900 + i * 190, function () {
-        GP.Sfx.play('step'); d.setAlpha(1);
-        if (!GP.reducedMotion) self.tweens.add({ targets: d, scale: 1.8, duration: 140, yoyo: true });
-      });
-    });
-    this.time.delayedCall(900 + dots.length * 190 + 150, function () {
+    var prog = { v: xa }, ticks = 0;
+    this.tweens.add({ targets: prog, v: xb, duration: GP.reducedMotion ? 1 : 1900, delay: 900, ease: 'Linear',
+      onUpdate: function () { ligneJusqua(Math.floor(prog.v)); if (Math.floor((prog.v - xa) / 28) > ticks) { ticks++; GP.Sfx.play('step'); } },
+      onComplete: function () { ligneJusqua(xb); } });
+    this.time.delayedCall(900 + (GP.reducedMotion ? 1 : 1900) + 200, function () {
       GP.Sfx.play('unlock');
       self.tweens.add({ targets: [ped, star], alpha: 1, scale: 1, duration: GP.reducedMotion ? 1 : 500, ease: 'Back.easeOut' });
       self.tweens.add({ targets: label, alpha: 1, scale: 1, duration: 300, delay: 300 });
