@@ -396,3 +396,5 @@ README réécrit pour donner envie de jouer (accroche, lien en premier, pourquoi
 ## Jeudi 12 novembre 2026 — accueil : OPTIONS et CRÉDITS sur une ligne, captures du README
 
 **Accueil** : au-delà de 6 boutons, OPTIONS et CRÉDITS partagent une ligne (50/50) ; haut et bas passent d'une ligne à l'autre, gauche et droite basculent entre les deux boutons ; les lignes restantes sont replacées pour tenir dans l'écran (aussi avec le bouton de l'éditeur). **README** : toutes les captures refaites depuis le jeu actuel (menu, carte, rencontre, niveaux 1, 2, 3 sous la pluie, 5, 6 et 12, options, à propos, écran et carte postale) ; texte sur la carte postale en planche d'autocollants, l'arrivée directe et le niveau secret (sans le détailler). **Non réalisé** : le menu à 9 boutons (compte admin) n'a pas été vu à l'écran.
+
+**Cadre du niveau (PIXELS / TEMPS / MORTS)** : marges de 6 px partout (vignette, trois lignes de texte centrées sur la vignette, bords droit et bas), cadre 174 × 52 au lieu de 186 × 48 ; l'étiquette d'abri est descendue d'autant. Vérifié sur le niveau du Château.
