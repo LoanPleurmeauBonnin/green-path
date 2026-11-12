@@ -3,7 +3,7 @@
  * dont la définition de niveau est GP.LEVELS[loc.level] (js/data/levels.js).
  *
  * Commandes : < > ou Q/A et D courir · Espace, W ou Z sauter (maintenir = plus haut) · ↑ grimper / se hisser
- *             · ↓ ou S s'accroupir / descendre · Échap pause. Tactile : boutons à l'écran (GP.UI.touchPad).
+ *             · ↓ ou S s'accroupir / descendre · Échap pause. Tactile : joystick et bouton de saut à l'écran (GP.UI.touchPad).
  * Mode test (?dev=1) : N météo simulée (W sert au saut), K tout ramasser.
  *
  * Règles : ramasser tous les pixels reconstruit l'image ; si L.exit existe, rejoindre aussi l'arche. Ronce, pointes, flèche, goutte,
@@ -527,7 +527,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   makeInput() {
     var self = this, kb = this.input.keyboard;
     this.ctl = GP.Controls.attach(this);   // clavier (touches réaffectables), tactile et manette
-    this.touch = { left: false, right: false, down: false, jump: false };
+    this.touch = { left: false, right: false, up: false, down: false, jump: false };
     this.jumpWasDown = false; this.upWasDown = false;
     kb.on('keydown-ESC', function () { self.onEsc(); });
     kb.on('keydown-H', function () {
@@ -538,12 +538,9 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     kb.on('keydown-UP', function () { if (self.pauseMenu) self.pauseMove(-1); });
     kb.on('keydown-DOWN', function () { if (self.pauseMenu) self.pauseMove(1); });
     kb.on('keydown-ENTER', function () { if (self.pauseMenu) self.pauseItems[self.pauseSel].cb(); });
+    // météo de test : mode ?dev=1, ou compte admin connecté (touche N, ou ligne MÉTÉO du menu pause)
+    if (GP.Config.DEV_TOOLS || GP.Cloud.isAdmin) kb.on('keydown-N', function () { if (!self.pauseMenu && !self.finished) self.cycleWeather(); });
     if (GP.Config.DEV_TOOLS) {
-      kb.on('keydown-N', function () {
-        var s = GP.Weather.nextSim();
-        if (s) { self.applyWeather(s); self.toast('MÉTÉO TEST : ' + s.simName); }
-        else { self.toast('MÉTÉO RÉELLE'); GP.Weather.load(function (st) { if (self.alive) self.applyWeather(st); }); }
-      });
       kb.on('keydown-K', function () { if (!self.paused && !self.finished) self.pixels.forEach(function (p) { if (!p.taken) self.collect(p, true); }); });
       if (GP.Config.DEV_LEVEL) {
         kb.on('keydown-R', function () {
@@ -1059,6 +1056,18 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     if (this.pauseMenu) this.resume(); else this.pause();
   }
 
+  /** Outil de test (admin ou ?dev=1) : météo simulée suivante, puis retour à la vraie météo. */
+  cycleWeather() {
+    var self = this, s = GP.Weather.nextSim();
+    if (s) { this.applyWeather(s); this.toast('MÉTÉO TEST : ' + s.simName); return; }
+    this.toast('MÉTÉO RÉELLE');
+    GP.Weather.load(function (st) { if (self.alive) self.applyWeather(st); });
+  }
+  weatherLabel() {
+    var sim = GP.Weather.simIndex >= 0 && GP.Weather.state && GP.Weather.state.simName;
+    return GP.t('MÉTÉO') + ' : ' + (sim ? GP.t(sim) : GP.t('RÉELLE'));
+  }
+
   pause() {
     var self = this;
     if (this.pauseMenu) return;
@@ -1066,7 +1075,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.paused = true;
     this.physics.pause();
     this.player.anims.pause();
-    var m = this.pauseMenu = GP.UI.modal(this, 'PAUSE', '', { x: 100, y: 44, w: 280, h: 160 });
+    var admin = GP.Cloud.isAdmin || GP.Config.DEV_TOOLS;   // ligne de plus pour tester la météo
+    var m = this.pauseMenu = GP.UI.modal(this, 'PAUSE', '', admin ? { x: 100, y: 34, w: 280, h: 186 } : { x: 100, y: 44, w: 280, h: 160 });
     var unwatch = GP.Prompts.watch(this, function () { m.titleRight.setText(GP.Prompts.format('{back} : REPRENDRE')); });
     m.titleRight.setText(GP.Prompts.format('{back} : REPRENDRE'));
     var destroy = m.destroy;
@@ -1078,8 +1088,9 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       { label: 'COMMENT JOUER ?', cb: function () { self.openHelp(); } },
       { label: 'QUITTER VERS LA CARTE', cb: function () { self.quit(); } }
     ];
+    if (admin) this.pauseItems.splice(4, 0, { label: this.weatherLabel(), weather: true, cb: function () { self.cycleWeather(); self.pauseBtns[4].label.setText(self.weatherLabel()); } });
     this.pauseBtns = this.pauseItems.map(function (it, i) {
-      var b = GP.UI.button(self, 130, 76 + i * 24, 220, it.label, it.cb, { primary: i === 0 });
+      var b = GP.UI.button(self, 130, (admin ? 66 : 76) + i * 24, 220, it.label, it.cb, { primary: i === 0 });
       m.add(b.objs);
       b.box.on('pointerover', function () { self.pauseSel = i; self.pauseHover(); });
       return b;

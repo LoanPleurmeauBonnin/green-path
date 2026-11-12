@@ -58,6 +58,8 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
         act: function () { self.lang(); }, left: function () { self.lang(); }, right: function () { self.lang(); } },
       { label: 'SON', value: function () { return GP.Progression.muted ? 'DÉSACTIVÉ' : 'ACTIVÉ'; }, arrows: true,
         act: function () { self.toggleSound(); }, left: function () { self.toggleSound(); }, right: function () { self.toggleSound(); } },
+      { label: 'MUSIQUE', value: function () { return GP.Settings.music ? 'ACTIVÉE' : 'DÉSACTIVÉE'; }, arrows: true,
+        act: function () { self.toggleMusic(); }, left: function () { self.toggleMusic(); }, right: function () { self.toggleMusic(); } },
       { label: 'PLEIN ÉCRAN', value: function () { return fsOk ? (isFs ? 'DÉSACTIVER' : 'ACTIVER') : 'NON DISPONIBLE ICI'; },
         act: function () { self.fullscreen(); } },
       { label: 'COMPTE', value: function () { return GP.Cloud.isAccount ? GP.Cloud.pseudo : 'INVITÉ'; },
@@ -71,7 +73,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
       { label: 'CONFIDENTIALITÉ', value: function () { return '>'; }, act: function () { self.privacy(); } },
       { label: 'EFFACER MES DONNÉES', value: function () { return ''; }, act: function () { self.confirm = true; self.sel = 1; self.build(); } }
     ];
-    return this.group === 0 ? rows.slice(0, 6) : rows.slice(6);
+    return this.group === 0 ? rows.slice(0, 7) : rows.slice(7);
   }
 
   /** Écran des touches : une ligne par action, 3 emplacements, puis « par défaut » et retour. */
@@ -80,12 +82,12 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     if (GP.Prompts.device === 'gamepad') {
       var padRows = GP.Settings.ACTIONS.map(function (a) { return { label: names[a], value: function () { return GP.Prompts.format('{' + a + '}'); } }; });
       padRows.push({ label: 'CLAVIER', value: function () { return 'APPUYER SUR UNE TOUCHE'; } });
-      padRows.push({ label: 'RETOUR', act: function () { self.mode = 'main'; self.sel = 4; self.build(); } });
+      padRows.push({ label: 'RETOUR', act: function () { self.mode = 'main'; self.sel = 5; self.build(); } });
       return padRows;
     }
     var rows = GP.Settings.ACTIONS.map(function (a) { return { action: a, label: names[a], keys: true }; });
     rows.push({ label: 'TOUCHES PAR DÉFAUT', act: function () { GP.Settings.resetKeys(); self.toast('TOUCHES PAR DÉFAUT'); self.build(); } });
-    rows.push({ label: 'RETOUR', act: function () { self.mode = 'main'; self.sel = 4; self.build(); } });
+    rows.push({ label: 'RETOUR', act: function () { self.mode = 'main'; self.sel = 5; self.build(); } });
     return rows;
   }
 
@@ -95,7 +97,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     this.rowsList = this.rows();
     this.sel = Math.max(0, Math.min(this.sel, this.rowsList.length - 1));
     this.title.setText(this.confirm ? 'EFFACER LES DONNÉES DE CE NAVIGATEUR ?' : (this.mode === 'keys' ? (GP.Prompts.device === 'gamepad' ? 'COMMANDES MANETTE' : 'TOUCHES') : 'OPTIONS'));
-    var top = this.mode === 'keys' && !this.confirm ? 56 : (this.confirm ? 100 : 66), step = this.confirm ? 28 : 26;   // 6 lignes dans « jeu et commandes »
+    var top = this.mode === 'keys' && !this.confirm ? 56 : (this.confirm ? 100 : 66), step = this.confirm ? 28 : (this.mode === 'main' && this.group === 0 ? 23 : 26);   // 7 lignes dans « jeu et commandes »
     if (this.mode === 'main' && !this.confirm) {
       ['JEU ET COMMANDES', 'DONNÉES ET AIDE'].forEach(function (label, i) {
         var tab = GP.UI.button(self, 60 + i * 184 + GP.Config.DX, 32, 176, label, function () { self.group = i; self.sel = 0; self.build(); }, { height: 20 });
@@ -173,7 +175,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     if (this.modal) { this.modal.close(); return; }
     if (this.capturing) { this.endCapture(); return; }
     if (this.confirm) { this.confirm = false; this.build(); return; }
-    if (this.mode === 'keys') { this.mode = 'main'; this.sel = 4; this.build(); return; }
+    if (this.mode === 'keys') { this.mode = 'main'; this.sel = 5; this.build(); return; }
     this.leave();
   }
   leave() {
@@ -205,6 +207,7 @@ GP.Scenes.Options = class OptionsScene extends Phaser.Scene {
     this.scene.restart({ sel: this.sel, group: this.group });
   }
   /** (Pas « sound » : Phaser range son gestionnaire de sons dans scene.sound, qui masquait cette méthode et faisait planter.) */
+  toggleMusic() { GP.Settings.set({ music: !GP.Settings.music }); GP.Sfx.play('select'); this.refresh(); }
   toggleSound() { GP.Progression.muted = !GP.Progression.muted; GP.Sfx.play('select'); this.refresh(); }
   /** ANIMATIONS : auto (système) → activées → réduites. Pris en compte à l'ouverture de l'écran suivant. */
   motion(dir) {

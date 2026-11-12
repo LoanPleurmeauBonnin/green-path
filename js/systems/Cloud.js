@@ -112,6 +112,8 @@ GP.Cloud = (function () {
     d.introSeen = true;
     GP.Progression.data = GP.Save.sanitize(d);   // recalcule les étapes débloquées
     GP.Progression.persist();
+    // l'avatar du compte peut différer de celui déjà dessiné au démarrage : on refait les images du héros (sinon il garde l'ancien jusqu'au rechargement)
+    try { var sc = GP.game && GP.game.scene.getScenes(false)[0]; if (sc) GP.Character.build(sc, GP.Progression.data.character || GP.Character.defaultConfig()); } catch (e) { /* sans effet : le héros se redessine au prochain démarrage */ }
   }
 
   var api = {

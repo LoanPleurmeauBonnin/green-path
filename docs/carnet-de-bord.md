@@ -85,7 +85,7 @@
 
 **Causes et corrections** : le libellé du menu était centré avec sa flèche de sélection (le mot se décalait de 8 px) → flèche séparée ; les boutons de hauteur 20 plaçaient le texte 2 px trop haut → centrage vertical dans `GP.UI.button` ; l'avatar de l'accueil ne marchait pas parce que le système demandait moins d'animations (`prefers-reduced-motion`) → option **OPTIONS → ANIMATIONS** (Auto, Activées, Réduites), et en mouvement réduit l'avatar attend au milieu de la ligne au lieu de marcher sur place ; sur la carte les pieds descendent au centre du disque (chiffre derrière l'avatar), progressivement près de chaque étape ; le bouton PAUSE n'existe plus que sur écran tactile (la météo se cale alors sur le bord droit) ; les blocs de terrain étaient peints en coupe franche → rebords (sprites d'herbe et de terre dédiés au Jardin, liseré, reflet, ombre et coins arrondis ailleurs, dessous des blocs suspendus), tuiles variées.
 
-**Équilibrage** : voir [equilibrage.md](equilibrage.md). Début plus doux, pic du niveau 6 écrêté, ennemis +10 % aux niveaux 7 à 12, Mémorial durci sans ennemi ni pointe (leurres de plus en plus lisibles à retenir, marée plus lourde). `tools/balance.cjs` et `tests/balance.test.js`.
+**Équilibrage** : voir equilibrage.md (document retiré du dépôt, voir l\'historique git). Début plus doux, pic du niveau 6 écrêté, ennemis +10 % aux niveaux 7 à 12, Mémorial durci sans ennemi ni pointe (leurres de plus en plus lisibles à retenir, marée plus lourde). `tools/balance.cjs` et `tests/balance.test.js`.
 
 **Recette exécutée** : 57 tests Node ; contrôles dans le navigateur local (menu, onglets, Options, carte, Jardin, Chantiers). **Non réalisé** : aucun playtest humain, pas de test sur téléphone physique ; les neuf diagnostics géométriques n'ont pas été relancés (Playwright absent) ; les douze niveaux n'ont pas tous été revus à l'écran.
 
@@ -95,7 +95,7 @@
 
 **Causes et corrections** : le service worker servait son cache d'abord et son nom ne changeait pas → réseau d'abord (copie locale hors ligne ou après 4 s), nom de cache changé à chaque publication (`tools/bump-sw.cjs`), rechargement unique à la mise à jour ; chargement et compte étaient en pixels fixes → échelle `--u` (un pixel de jeu en pixels d'écran) pour avoir la taille de texte du reste du jeu ; les tuiles d'herbe ont leur première rangée presque vide, donc le trait du sol était 1 px sous la collision (vérifié pixel par pixel : un pixel vide entre les pieds et l'herbe) → tuile remontée d'un pixel ; sur la carte, un arbre recouvrait le monument (tronqué) → distance minimale aux monuments.
 
-**Ressenti** : réglage `feel-1`, voir [ressenti.md](ressenti.md) : demi-gravité à l'apex, correction de coin de plafond, rebord frôlé, saut depuis l'accroupi, hisser en poussant vers le mur ; conservation de la vitesse des plateformes essayée et écartée.
+**Ressenti** : réglage `feel-1`, voir ressenti.md (document retiré du dépôt, voir l\'historique git) : demi-gravité à l'apex, correction de coin de plafond, rebord frôlé, saut depuis l'accroupi, hisser en poussant vers le mur ; conservation de la vitesse des plateformes essayée et écartée.
 
 **Recette exécutée** : 60 tests Node ; essais scriptés dans le navigateur (saut, coin de plafond, rebord, accroupi, marche de la Cathédrale). **Non réalisé** : aucun playtest humain ; niveaux 7 à 12 non rejoués ; la « troncature » exacte vue sur les captures n'a pas pu être identifiée au-delà du décor sur la carte.
 
@@ -103,7 +103,7 @@
 
 **Demandes** : plus d'icône check sur les niveaux finis (le piédestal doré suffit) ; plantage en coupant le son ; niveau 2 infinissable ; une méthode (skills) pour des niveaux cohérents à la Mario.
 
-**Corrections** : la méthode `sound()` de l'écran Options était masquée par `scene.sound` de Phaser (« self.sound is not a function ») → `toggleSound()` ; icône check retirée de la carte. Skills `level-design` et `platformer` installés (non versionnés). Nouveau **contrôleur de faisabilité** (`tools/solvability.cjs`, [methode-niveaux.md](methode-niveaux.md)) : il simule le joueur au pixel contre la géométrie. Il a retrouvé exactement le blocage du niveau 2 (x=95 : les montants de la porte des toits étaient des murs de 4 tuiles sur le chemin) et un second, au niveau 4 (x=132 : une colonne de balcon barrait l'accès depuis les bateaux). Corrigés par des retouches (`REPAIRS` dans `GZoneLevels.js`). Les 11 niveaux du moteur actuel passent (arrivée, pixels, lanternes).
+**Corrections** : la méthode `sound()` de l'écran Options était masquée par `scene.sound` de Phaser (« self.sound is not a function ») → `toggleSound()` ; icône check retirée de la carte. Skills `level-design` et `platformer` installés (non versionnés). Nouveau **contrôleur de faisabilité** (`tools/solvability.cjs`, methode-niveaux.md (document retiré du dépôt, voir l\'historique git)) : il simule le joueur au pixel contre la géométrie. Il a retrouvé exactement le blocage du niveau 2 (x=95 : les montants de la porte des toits étaient des murs de 4 tuiles sur le chemin) et un second, au niveau 4 (x=132 : une colonne de balcon barrait l'accès depuis les bateaux). Corrigés par des retouches (`REPAIRS` dans `GZoneLevels.js`). Les 11 niveaux du moteur actuel passent (arrivée, pixels, lanternes).
 
 **Recette exécutée** : 72 tests Node (dont un test de faisabilité par niveau). **Non réalisé** : refonte « à la Mario » des 12 niveaux (rythme, mécaniques une à une, textures et décor du niveau 2) ; le Château (ancien moteur), les timings de pièges, les ennemis et les courants d'air du niveau 12 ne sont pas contrôlés ; aucun playtest humain.
 
@@ -169,7 +169,7 @@
 
 ## Mercredi 11 novembre 2026 (suite 8) — carte postale de fin de partie
 
-**Demande** : le butin de fin de partie décrit dans [spec-carte-postale.md](spec-carte-postale.md) : une carte postale de Nantes reconstruite, unique car elle garde l'avatar, les étoiles, la date et la **météo réelle de Nantes au moment de la fin**.
+**Demande** : le butin de fin de partie décrit dans spec-carte-postale.md (document retiré du dépôt, voir l\'historique git) : une carte postale de Nantes reconstruite, unique car elle garde l'avatar, les étoiles, la date et la **météo réelle de Nantes au moment de la fin**.
 
 **Réalisé** : `js/systems/Postcard.js` (enregistrement de la fin de partie, phrase, rendu 1800 × 1200, téléchargement), `js/scenes/PostcardScene.js` (aperçu, phrase en texte normal, champ du pseudo, TÉLÉCHARGER MA CARTE, REJOUER), bouton MA CARTE du menu, suite de l'écran de fin après le dernier niveau. Rendu net : illustration dessinée en 600 × 400 puis agrandie ×3 sans lissage ; texte dessiné directement en grand, par multiples de 8 px ; ciel, nuages, soleil et lune du jeu ; fond de texte clair sous un ciel clair, sombre sous un ciel sombre.
 
@@ -297,3 +297,81 @@
 - 12 novembre 2026 — REFONTE : niveau secret habillé : un sol propre à chaque monument (le sol des Machines n'est plus partout), 2 ou 3 décors par monument et un seuil vert (`lv_seuil`) à chaque changement de monument ; les mécaniques ne changent pas. Vérifié sur captures (Jardin, Château, Graslin, Mémorial).
 - 12 novembre 2026 — REFONTE : silhouettes des monuments au fond (`L.silhouettes = [{ x, loc, scale }]`, `makeSilhouettes()` dans `GameScene.js`, posées sur le sol réel de la colonne) : niveau secret (une silhouette par section) et Jardin des Plantes (Palmarium au fond, Cathédrale et Château au loin, comme vu ensemble). Cadre « IL MANQUE N PIXELS » de l'arche rendu lisible : lignes alignées à gauche dans un cadre plus aéré (avant : alignées à droite, texte en escalier).
 - 12 novembre 2026 — REFONTE : correction : les « silhouettes » demandées sont les sculptures du Jardin des Plantes (marcheur orange, duo jaune, personnage à ruban, oiseau : `lv_sil_orange`, `lv_sil_jaune`, `lv_sil_ruban`, `lv_sil_oiseau`, inspirées des personnages de Jean Jullien au Jardin des Plantes, dessins originaux), pas des silhouettes de monuments ; elles sont remises dans le niveau Jardin et dans la section Jardin du niveau secret (`L.silhouettes = [{ x, key }]`, posées sur le sol réel par `makeSilhouettes()`). Les silhouettes de monuments sont retirées.
+
+## Jeudi 12 novembre 2026 — chargement, avatar, personnages de la carte
+
+**Chargement** : l'écran n'affiche plus que la barre de progression (titre, sous-titre et texte retirés ; `prefers-reduced-motion` : barre immobile).
+
+**Avatar** : l'avatar d'un compte récupéré à la connexion n'était pas redessiné pour le héros (il gardait l'ancien jusqu'au rechargement, alors que l'écran de personnalisation montrait le nouveau). Le héros est maintenant refait après la synchronisation (`Cloud.js`) et à l'ouverture de l'écran de personnalisation (`CharacterScene`). Les images du héros et de l'aperçu sont identiques pour une même configuration (vérifié).
+
+**Personnages de la carte** : posés sur le chemin à la hauteur des pieds du héros (ils étaient au bord du talus, 3 px plus haut) et immobiles (plus de flottement). Quand le héros passe devant un personnage dont le niveau est terminé, une bulle affiche son anecdote ; elle se ferme quand il s'éloigne. La fiche RENCONTRE reste disponible.
+
+**Non réalisé** : les anecdotes gardent leur formulation à la première personne (pas de « Savais-tu que… ») ; aucun playtest humain.
+
+## Jeudi 12 novembre 2026 — étoiles, anecdotes « Savais-tu que », écran À propos
+
+**Étoiles** : rapprochées du piédestal (4 px plus haut).
+
+**Anecdotes** : les onze textes sont réécrits en « Savais-tu que… », deux ou trois phrases courtes, avec les mêmes faits et les mêmes sources (traductions anglaises mises à jour). Le panneau du Mémorial reste sobre, inchangé. Sur la carte, le héros s'arrête devant le personnage d'un niveau terminé (une fois par visite) et l'anecdote s'affiche ; il repart ensuite à gauche ou à droite (`MapScene.stopAtPerson`).
+
+**À propos** : texte des crédits fourni par l'équipe (faute « hénergement » corrigée en « hébergement ») ; mise en page par groupes séparés par un filet, libellés verts à gauche et texte à droite (crédits, sources), intitulés verts au-dessus de chaque paragraphe (confidentialité). Contenu des trois rubriques dans `AboutScene.content()`, traductions dans `en.js`.
+
+**Non réalisé** : la mention « GPT-6.1 Sol via OpenCode » n'apparaît plus dans les crédits du jeu (texte fourni) ; à rapprocher de la déclaration d'usage de l'IA. Aucun playtest humain.
+
+## Jeudi 12 novembre 2026 — étoiles en arc, météo de test admin, livrables et nettoyage du dépôt
+
+**Étoiles** : les trois étoiles de chaque niveau forment un arc sous le piédestal (milieu plus bas), plus proche de lui.
+
+**Météo de test (admin)** : avec un compte admin connecté, le menu pause d'un niveau a une ligne MÉTÉO qui fait défiler les météos simulées (soleil, nuit, pluie, nuages, vent, brume, neige, nuit pluie, orage) puis revient à la vraie météo ; touche N en niveau, W sur la carte. Pour les autres joueurs rien ne change.
+
+**Livrables** : README réécrit (tableau des livrables, mapping data, fallback, architecture du code) ; manifest et cartel mis à jour (12 niveaux, version 0.6, URL du jeu) ; sketch p5.js ajouté (`sketch/`, assise → centre → côtés, météo d'Open-Meteo avec secours) ; fiche de test croisé à remplir (`docs/test-croise.md`).
+
+**Nettoyage** : le dépôt ne garde que le jeu, l'éditeur, la base Supabase et les documents de mission ; tests, outils (sauf `tools/bump-sw.cjs`), rapports internes et captures non citées sont retirés (toujours consultables dans l'historique git).
+
+**Non réalisé** : test croisé, captation et soutenance (à faire par l'équipe) ; lien « Webapp » du formulaire à corriger (`green-path-sepia.vercel.app` répond 404, le jeu est sur `green-path-game.vercel.app`).
+
+## Jeudi 12 novembre 2026 — personnages face à face, fiche sans « source → règle », crédits
+
+**Personnages de la carte** : le héros s'arrête en face du personnage, du côté d'où il arrive (à gauche en allant vers la droite, à droite en revenant), et le regarde ; le personnage se tourne toujours vers le héros. L'anecdote s'affiche, puis le héros repart d'un côté ou de l'autre.
+
+**Fiches des lieux** : la page « SOURCE → RÈGLE » est retirée (le joueur n'a pas besoin de la règle de grammaire ; elle reste dans `docs/grammaire.md`).
+
+**Crédits** : README, manifest et CREDITS suivent la version de l'équipe : avatar créé de toutes pièces sur Figma, variantes réalisées avec Claude ; assistance de l'IA limitée à Claude Code, Claude Design et Claude. Anciens textes de crédits inutilisés retirés des fichiers de langue.
+
+## Jeudi 12 novembre 2026 — étoiles d'après la maquette, arrêt à chaque passage
+
+Étoiles : espacées de 14 px, les deux extérieures un peu plus haut que celle du milieu, juste sous le piédestal (d'après la maquette de l'équipe). Personnages de la carte : le héros s'arrête face à eux à chaque passage, plus seulement la première fois. **Non réalisé** : aucun playtest humain.
+
+## Jeudi 12 novembre 2026 — musique d'ambiance, bulle d'anecdote fermable
+
+**Musique** : ambiance originale composée par code (WebAudio, `js/systems/Music.js`) : pad lent sur quatre accords et rares notes de pentatonique avec écho, très discrète ; aucun fichier audio, donc aucun droit à vérifier. Elle démarre au premier geste, se coupe avec SON (menu, touche M) ou avec **OPTIONS → MUSIQUE** (réglage mémorisé), et s'arrête quand l'onglet est masqué.
+
+**Bulle d'anecdote** : Entrée, Espace, Échap ou un toucher sur la bulle la ferment, après un délai de lecture (1,2 s au clavier, 2,5 s au toucher) ; elle se rouvre au passage suivant. **Étoiles** : espacées de 12 px, arc léger, au plus près de la maquette. **Non réalisé** : aucun réglage du volume de la musique ; écoute sur appareil mobile non testée.
+
+## Jeudi 12 novembre 2026 — README et captures, vidéo de présentation
+
+README réécrit pour donner envie de jouer (accroche, lien en premier, pourquoi on y revient, captures récentes : menu, carte, rencontre, niveaux 1, 2, 3 sous la pluie, 5, 6 et 12, options, à propos, carte postale 1800 × 1200). Les captures sont refaites depuis le jeu en cours (1920 × 1080, pixels agrandis sans lissage) ; la règle « refaire les captures à chaque évolution visible » est inscrite dans `CLAUDE.md`. Vidéo de présentation enregistrée depuis le jeu (menu, carte et rencontres, niveau sous la pluie simulée, carte postale) : fichier `.webm`, sans son, gardée hors du dépôt. **Non réalisé** : la vidéo montre un parcours automatisé (pas un joueur), sans commentaire ni musique.
+
+## Jeudi 12 novembre 2026 — joystick mobile, retour accueil, chargement 0 → 100 %, musique
+
+**Joystick** : sur écran tactile, les trois flèches sont remplacées par un joystick flottant (il apparaît sous le doigt dans la moitié gauche : gauche, droite, haut pour grimper, bas pour s'accroupir) ; le saut reste à droite. **Accueil sur mobile** : une flèche retour sous le cadre en haut à gauche de la carte ramène au menu (il n'y avait pas d'Échap sur téléphone ; le menu pause d'un niveau garde « Quitter vers la carte »).
+
+**Chargement** : la barre avance de 0 à 90 % pendant au moins 1,7 s, se complète à 100 % dès que le jeu est prêt, puis l'écran disparaît ; valable à chaque actualisation de la page (`GP.finishLoading`, appelée par `BootScene`).
+
+**Musique** : OPTIONS → MUSIQUE et SON appliquent leur effet tout de suite (fondu de 0,35 s jusqu'au silence exact, au lieu d'attendre le minuteur). **Non réalisé** : joystick non essayé sur un vrai téléphone (simulé dans le navigateur) ; aucun playtest humain.
+
+## Jeudi 12 novembre 2026 — livrables sur les 12 patrimoines, captation
+
+**Constat** (relecture du cours, sections 08, 10, 11, 12) : les livrables parlaient surtout du Château. **Corrections** : la fiche-source devient une fiche du corpus (12 lieux : contexte, références consultées le 10/11, trois propriétés observables, une propriété écartée) ; la grammaire détaille la règle de chaque lieu ; la problématique, le cartel (105 mots), le manifest (`heritage_source` et `heritage_sources` par lieu), HERITAGE_GRAMMAR et le README parlent des douze patrimoines. **Décision** : la source déclarée est « la ligne verte et ses 12 patrimoines », alors que le cours demande « une seule source principale » ; risque assumé sur la note de provenance, le Château restant le lieu le plus documenté.
+
+**Captation** (§11) : `captation/` contient `hero.jpg`, `detail-01.jpg`, `process.jpg`, `thumb.jpg` (captures du jeu) et `demo.mp4` (23 s, parcours automatisé, sans son). **Non réalisé** : test croisé, fiche individuelle, soutenance (à faire par l'équipe).
+
+## Jeudi 12 novembre 2026 — licence, crédits vérifiables, contrôles et CI
+
+**LICENSE** (MIT pour le code, les sprites et le logo de l'équipe ; éléments tiers sous leur licence). **Crédits vérifiables** : `docs/credits.json` (auteur, licence, lien, SHA-1 de l'original donné par l'API Commons, SHA-1 de la copie téléchargée et du fichier du jeu) et tableau dans `CREDITS.md` ; `node tools/verify-credits.cjs [--online]` recalcule les empreintes et redemande Commons. **Constat** : pour le Palmarium et la cathédrale, l'API Commons indique « Public domain » ; la licence prudente déjà retenue (CC BY-SA 3.0, CC BY 3.0) est conservée. **Améliorations du dépôt** (inspirées du projet « Nantes en régulation ») : `tools/smoke.cjs` (scripts, JSON, liens, secrets, parité éditeur/jeu), CI GitHub (`.github/workflows/smoke.yml`), `CONTRIBUTING.md`, image de partage et métadonnées Open Graph (aperçu LinkedIn), icônes maskables de l'application installable.
+
+**Non réalisé** : la photo de la Tour LU n'est pas encore dans le dossier des originaux (limitation de débit de Wikimedia) ; aucune vérification sur iOS/Android de l'icône maskable.
+
+## Jeudi 12 novembre 2026 — retour dans le cadre, personnages qui parlent en leur nom, images
+
+**Carte** : la flèche retour est maintenant dans le cadre « GREEN PATH », à gauche du titre (cadre élargi de 26 px). **Personnages** : les figures historiques parlent en leur nom (Michel Colombe, Anne de Bretagne, Jules Verne, J.-J.-L. Graslin, Louis Pommeraye, Louis Lefèvre-Utile) ; les personnages génériques (apothicaire, machiniste, ouvrier, promeneuse, docker) restent à la troisième personne ; textes anglais mis à jour. **Images originales** : les 12 photos sont dans le dossier du Bureau, numérotées dans l'ordre du jeu (10 Mémorial, 11 Pommeraye) ; empreintes des 12 copies identiques à celles de Commons (`docs/credits.json`). **Non réalisé** : contrôle visuel du nouveau cadre (navigateur de test indisponible à ce moment).

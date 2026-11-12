@@ -37,7 +37,7 @@ GP.LOCATIONS = [
       "Premier pas de la ligne verte, le jardin est une respiration en plein centre-ville."
     ],
     element: { label: 'Palmarium (serre)', verify: true }, verify: true,
-    anecdote: { who: "L'APOTHICAIRE", text: "Ici, tout a commencé en 1688 par un petit jardin de plantes médicinales. Aujourd'hui, le jardin compte l'une des plus grandes collections de camélias de France : environ 600 variétés.", source: "Ville de Nantes ; Wikipédia, Jardin des plantes de Nantes", look: {"hair": "courts", "hairColor": "gris", "eyes": "petits", "eyeColor": "marron", "skin": "clair", "top": "chemise", "topColor": "blanc", "bottom": "pantalon", "bottomColor": "marron", "shoes": "sombres", "acc": "toque"} }
+    anecdote: { who: "L'APOTHICAIRE", text: "Savais-tu que ce jardin est né en 1688 ? Il comptait alors quelques plantes médicinales. Aujourd'hui, il abrite environ 600 variétés de camélias !", source: "Ville de Nantes ; Wikipédia, Jardin des plantes de Nantes", look: {"hair": "courts", "hairColor": "gris", "eyes": "petits", "eyeColor": "marron", "skin": "clair", "top": "chemise", "topColor": "blanc", "bottom": "pantalon", "bottomColor": "marron", "shoes": "sombres", "acc": "toque"} }
   },
   {
     id: 'cathedrale', name: 'Cathédrale Saint-Pierre-et-Saint-Paul',
@@ -46,7 +46,7 @@ GP.LOCATIONS = [
     grammar: "VARIATION VERTICALE : les colonnes répétées deviennent des zones d'escalade et les corniches des appuis. L'image remonte ligne par ligne. Les gargouilles évoquent l'évacuation de l'eau : sous la pluie, les gouttes tombent plus souvent.",
     notice: "Édifice gothique dont la construction débute en 1434 et s'achève au XIXe siècle. Elle abrite le tombeau de François II. Sa nef de pierre blanche est très haute.",
     element: { label: 'Façade et deux tours', verify: false }, verify: false,
-    anecdote: { who: "MICHEL COLOMBE, SCULPTEUR", text: "J'ai mis cinq ans, de 1502 à 1507, à sculpter le tombeau de François II, le dernier duc de Bretagne. Il a été sauvé de la destruction et installé dans la cathédrale en 1817.", source: "Ville de Nantes (histoire de la cathédrale) ; ministère de la Culture", look: {"hair": "courts", "hairColor": "chatain", "eyes": "ronds", "eyeColor": "marron", "skin": "clair", "top": "chemise", "topColor": "orange", "bottom": "pantalon", "bottomColor": "marron", "shoes": "sombres", "acc": "beret"} }
+    anecdote: { who: "MICHEL COLOMBE, SCULPTEUR", text: "Savais-tu que j'ai mis cinq ans, de 1502 à 1507, à sculpter le tombeau de François II ? Il a été sauvé de la destruction et installé ici en 1817.", source: "Ville de Nantes (histoire de la cathédrale) ; ministère de la Culture", look: {"hair": "courts", "hairColor": "chatain", "eyes": "ronds", "eyeColor": "marron", "skin": "clair", "top": "chemise", "topColor": "orange", "bottom": "pantalon", "bottomColor": "marron", "shoes": "sombres", "acc": "beret"} }
   },
   {
     id: 'chateau', name: 'Château des ducs de Bretagne',
@@ -55,7 +55,7 @@ GP.LOCATIONS = [
     grammar: "SOURCE PRINCIPALE : les murs, les tours et les portes du Château deviennent masse, élévation et seuils à franchir. La reconstruction révèle l'assise, la courtine centrale puis les tours latérales. Les herses imposent une alternance passage / attente. C'est une traduction ludique, pas une reconstitution historique.",
     notice: "Forteresse des ducs de Bretagne, reconstruite à la fin du XVe siècle par François II puis Anne de Bretagne. Ses remparts entourent un palais résidentiel. Le site abrite aujourd'hui le musée d'histoire de Nantes.",
     element: { label: 'Remparts et tours', verify: false }, verify: false,
-    anecdote: { who: "ANNE DE BRETAGNE", text: "Je suis née ici, au château, en janvier 1477. Duchesse de Bretagne, je suis devenue deux fois reine de France.", source: "Ville de Nantes, « Anne, duchesse de Bretagne et reine de France »", look: {"hair": "milong", "hairColor": "brun", "eyes": "ronds", "eyeColor": "marron", "skin": "pale", "top": "veste", "topColor": "noir", "bottom": "jupe", "bottomColor": "noir", "shoes": "sombres", "acc": "coiffe"} }
+    anecdote: { who: "ANNE DE BRETAGNE", text: "Savais-tu que je suis née dans ce château, en janvier 1477 ? Duchesse de Bretagne, je suis devenue deux fois reine de France !", source: "Ville de Nantes, « Anne, duchesse de Bretagne et reine de France »", look: {"hair": "milong", "hairColor": "brun", "eyes": "ronds", "eyeColor": "marron", "skin": "pale", "top": "veste", "topColor": "noir", "bottom": "jupe", "bottomColor": "noir", "shoes": "sombres", "acc": "coiffe"} }
 
   },
   {
@@ -64,7 +64,7 @@ GP.LOCATIONS = [
     playable: true, level: 'feydeau', parTime: 120,
     notice: "Ancienne île de la Loire, rattachée à la ville au XXe siècle. Ses hôtels d'armateurs du XVIIIe siècle, aux façades ornées de mascarons, se penchent légèrement.",
     element: { label: 'Façades des hôtels d\'armateurs', verify: false }, verify: false,
-    anecdote: { who: "JULES VERNE", text: "Enfant, je regardais passer les navires sur la Loire. Je me rêvais en Robinson, naufragé sur l'île Feydeau, au milieu du fleuve.", source: "Jules Verne, Souvenirs d'enfance et de jeunesse (1890)", look: {"hair": "courts", "hairColor": "gris", "eyes": "petits", "eyeColor": "bleu", "skin": "pale", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "gris", "shoes": "sombres", "acc": "barbe"} }
+    anecdote: { who: "JULES VERNE", text: "Savais-tu que, enfant, je regardais passer les navires sur la Loire ? Je me rêvais en Robinson, naufragé sur l'île Feydeau !", source: "Jules Verne, Souvenirs d'enfance et de jeunesse (1890)", look: {"hair": "courts", "hairColor": "gris", "eyes": "petits", "eyeColor": "bleu", "skin": "pale", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "gris", "shoes": "sombres", "acc": "barbe"} }
   },
   {
     id: 'graslin', name: 'Place Graslin',
@@ -72,7 +72,7 @@ GP.LOCATIONS = [
     playable: true, level: 'graslin', parTime: 120,
     notice: "Place dominée par le Grand Théâtre, de style néoclassique, achevé en 1788. Sa façade à colonnes corinthiennes est couronnée de statues de muses.",
     element: { label: 'Façade du Grand Théâtre', verify: false }, verify: false,
-    anecdote: { who: "J.-J.-L. GRASLIN", text: "Receveur des fermes du roi, j'ai lancé la construction de ce théâtre, inauguré en 1788. La place en demi-cercle rappelle l'intérieur de la salle.", source: "Presses universitaires de Rennes, J.-J.-L. Graslin et la place du théâtre (OpenEdition)", look: {"hair": "boucles", "hairColor": "gris", "eyes": "petits", "eyeColor": "gris", "skin": "pale", "top": "veste", "topColor": "violet", "bottom": "pantalon", "bottomColor": "blanc", "shoes": "sombres", "acc": "boutons"} }
+    anecdote: { who: "J.-J.-L. GRASLIN", text: "Savais-tu que j'ai lancé la construction de ce théâtre, inauguré en 1788 ? Sa place en demi-cercle rappelle l'intérieur de la salle.", source: "Presses universitaires de Rennes, J.-J.-L. Graslin et la place du théâtre (OpenEdition)", look: {"hair": "boucles", "hairColor": "gris", "eyes": "petits", "eyeColor": "gris", "skin": "pale", "top": "veste", "topColor": "violet", "bottom": "pantalon", "bottomColor": "blanc", "shoes": "sombres", "acc": "boutons"} }
   },
   {
     id: 'machines', name: "Machines de l'île",
@@ -80,7 +80,7 @@ GP.LOCATIONS = [
     playable: true, level: 'machines', parTime: 120,
     notice: "Atelier-spectacle installé dans les anciens chantiers navals. Le Grand Éléphant, géant mécanique de bois et d'acier, promène les visiteurs sur l'île.",
     element: { label: 'Grand Éléphant', verify: false }, verify: false,
-    anecdote: { who: "LE MACHINISTE", text: "Le Grand Éléphant mesure 12 mètres de haut et 21 de long, pour environ 48 tonnes d'acier et de bois. Il a fait ses premiers pas sur l'île le 30 juin 2007.", source: "Les Machines de l'île, dossier de presse 2019", look: {"hair": "courts", "hairColor": "noir", "eyes": "ronds", "eyeColor": "noir", "skin": "hale", "top": "tshirt", "topColor": "orange", "bottom": "pantalon", "bottomColor": "bleu", "shoes": "sombres", "acc": "lunettes"} }
+    anecdote: { who: "LE MACHINISTE", text: "Savais-tu que le Grand Éléphant mesure 12 mètres de haut et pèse environ 48 tonnes ? Il a fait ses premiers pas sur l'île le 30 juin 2007 !", source: "Les Machines de l'île, dossier de presse 2019", look: {"hair": "courts", "hairColor": "noir", "eyes": "ronds", "eyeColor": "noir", "skin": "hale", "top": "tshirt", "topColor": "orange", "bottom": "pantalon", "bottomColor": "bleu", "shoes": "sombres", "acc": "lunettes"} }
   },
   {
     id: 'chantiers', name: 'Parc des Chantiers',
@@ -88,7 +88,7 @@ GP.LOCATIONS = [
     playable: true, level: 'chantiers', parTime: 130,
     notice: "Parc aménagé sur l'ancien site des chantiers navals, au cœur de l'île de Nantes. Grues et vestiges industriels dialoguent avec les jardins.",
     element: { label: 'Grue jaune des chantiers', verify: true }, verify: true,
-    anecdote: { who: "UN OUVRIER DE DUBIGEON", text: "Le 3 juillet 1987, le Bougainville a quitté le dernier grand chantier naval de Nantes. Des salariés ont occupé le navire pour retarder son départ. La grue jaune date de 1954 et mesure 43 mètres.", source: "Ministère de la Culture (grues Titan) ; INA, Dernier jour des chantiers Dubigeon", look: {"hair": "courts", "hairColor": "noir", "eyes": "ronds", "eyeColor": "noir", "skin": "clair", "top": "veste", "topColor": "ciel", "bottom": "pantalon", "bottomColor": "bleu", "shoes": "sombres", "acc": "casque"} }
+    anecdote: { who: "UN OUVRIER DE DUBIGEON", text: "Savais-tu que le Bougainville a quitté le dernier grand chantier naval de Nantes le 3 juillet 1987 ? La grue jaune, elle, date de 1954 et mesure 43 mètres.", source: "Ministère de la Culture (grues Titan) ; INA, Dernier jour des chantiers Dubigeon", look: {"hair": "courts", "hairColor": "noir", "eyes": "ronds", "eyeColor": "noir", "skin": "clair", "top": "veste", "topColor": "ciel", "bottom": "pantalon", "bottomColor": "bleu", "shoes": "sombres", "acc": "casque"} }
   },
   {
     id: 'buren', name: 'Anneaux de Buren',
@@ -96,7 +96,7 @@ GP.LOCATIONS = [
     playable: true, level: 'buren', parTime: 110,
     notice: "Installation d'art public de Daniel Buren sur le quai des Antilles, composée d'anneaux lumineux qui scandent la rive de la Loire.",
     element: { label: 'Les anneaux', verify: true }, verify: true,
-    anecdote: { who: "UNE PROMENEUSE", text: "Ces anneaux sont une œuvre de Daniel Buren et Patrick Bouchain, installée en 2007 pour Estuaire. La nuit, ils s'éclairent en rouge, en bleu et en vert.", source: "Estuaire ; Le Voyage à Nantes, fiche « Les Anneaux »", look: {"hair": "milong", "hairColor": "roux", "eyes": "ronds", "eyeColor": "vert", "skin": "pale", "top": "sweat", "topColor": "turquoise", "bottom": "pantalon", "bottomColor": "blanc", "shoes": "blanches", "acc": ""} }
+    anecdote: { who: "UNE PROMENEUSE", text: "Savais-tu que ces anneaux ont été installés en 2007 pour Estuaire ? La nuit, ils s'éclairent en rouge, en bleu et en vert !", source: "Estuaire ; Le Voyage à Nantes, fiche « Les Anneaux »", look: {"hair": "milong", "hairColor": "roux", "eyes": "ronds", "eyeColor": "vert", "skin": "pale", "top": "sweat", "topColor": "turquoise", "bottom": "pantalon", "bottomColor": "blanc", "shoes": "blanches", "acc": ""} }
   },
   {
     id: 'hangar', name: 'Hangar à Bananes',
@@ -104,7 +104,7 @@ GP.LOCATIONS = [
     playable: true, level: 'hangar', parTime: 140,
     notice: "Ancien entrepôt portuaire où transitaient les bananes venues des Antilles, reconverti en lieu de restaurants, de culture et de loisirs au bord de la Loire.",
     element: { label: 'Le hangar du quai', verify: true }, verify: true,
-    anecdote: { who: "UN DOCKER", text: "Jusqu'aux années 1970, ce hangar servait à stocker et à faire mûrir les bananes venues des Antilles. Réaménagé vers 2007, il accueille aujourd'hui bars, restaurants et expositions.", source: "Base Mérimée / pss-archi (notice du hangar) ; Le Voyage à Nantes", look: {"hair": "courts", "hairColor": "noir", "eyes": "petits", "eyeColor": "noir", "skin": "brun", "top": "debardeur", "topColor": "blanc", "bottom": "pantalon", "bottomColor": "marron", "shoes": "sombres", "acc": "casquette"} }
+    anecdote: { who: "UN DOCKER", text: "Savais-tu que ce hangar servait à faire mûrir des bananes venues des Antilles ? Il accueille aujourd'hui bars, restaurants et expositions !", source: "Base Mérimée / pss-archi (notice du hangar) ; Le Voyage à Nantes", look: {"hair": "courts", "hairColor": "noir", "eyes": "petits", "eyeColor": "noir", "skin": "brun", "top": "debardeur", "topColor": "blanc", "bottom": "pantalon", "bottomColor": "marron", "shoes": "sombres", "acc": "casquette"} }
   },
   {
     id: 'memorial', name: "Mémorial de l'abolition de l'esclavage",
@@ -120,7 +120,7 @@ GP.LOCATIONS = [
     playable: true, level: 'pommeraye', parTime: 150,
     notice: "Galerie commerçante ouverte en 1843, sur trois niveaux reliés par un escalier monumental. Verrière, statues et décors en font un passage couvert célèbre.",
     element: { label: 'Verrière et escalier', verify: false }, verify: false,
-    anecdote: { who: "LOUIS POMMERAYE", text: "Notaire devenu promoteur, j'ai ouvert ce passage en 1843. Il m'a ruiné, mais il est classé monument historique depuis 1976.", source: "Wikipédia, Passage Pommeraye ; Routard", look: {"hair": "courts", "hairColor": "chatain", "eyes": "ronds", "eyeColor": "noir", "skin": "clair", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "gris", "shoes": "sombres", "acc": "hautdeforme+favoris"} }
+    anecdote: { who: "LOUIS POMMERAYE", text: "Savais-tu que j'ai ouvert ce passage en 1843 ? Notaire devenu promoteur, je m'y suis ruiné, mais il est classé monument historique depuis 1976.", source: "Wikipédia, Passage Pommeraye ; Routard", look: {"hair": "courts", "hairColor": "chatain", "eyes": "ronds", "eyeColor": "noir", "skin": "clair", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "gris", "shoes": "sombres", "acc": "hautdeforme+favoris"} }
   },
   {
     id: 'tour-lu', name: 'Tour LU',
@@ -128,7 +128,7 @@ GP.LOCATIONS = [
     playable: true, level: 'tour-lu', parTime: 200,
     notice: "Tour de l'ancienne biscuiterie LU, face au château. Avec sa coupole, elle signalait l'usine au bord de l'eau ; le bâtiment accueille aujourd'hui une scène culturelle, le Lieu Unique.",
     element: { label: 'La tour et sa coupole', verify: true }, verify: true,
-    anecdote: { who: "LOUIS LEFÈVRE-UTILE", text: "J'ai imaginé le Petit-Beurre en 1886. Pour l'Exposition universelle de 1900, j'ai fait élever une tour de 36 mètres.", source: "Hérodote ; Ville de Nantes (Tour LU)", look: {"hair": "courts", "hairColor": "noir", "eyes": "ronds", "eyeColor": "noir", "skin": "clair", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "noir", "shoes": "sombres", "acc": "moustache"} }
+    anecdote: { who: "LOUIS LEFÈVRE-UTILE", text: "Savais-tu que j'ai imaginé le Petit-Beurre en 1886 ? Pour l'Exposition universelle de 1900, j'ai fait élever une tour de 36 mètres !", source: "Hérodote ; Ville de Nantes (Tour LU)", look: {"hair": "courts", "hairColor": "noir", "eyes": "ronds", "eyeColor": "noir", "skin": "clair", "top": "veste", "topColor": "noir", "bottom": "pantalon", "bottomColor": "noir", "shoes": "sombres", "acc": "moustache"} }
   }
 ];
 

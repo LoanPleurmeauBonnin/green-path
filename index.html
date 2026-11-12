@@ -12,6 +12,13 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Green Path">
   <title>Green Path — Nantes</title>
+  <meta name="description" content="Jeu de plateforme pixel art qui reconstruit le patrimoine de Nantes sur la ligne verte, sous la vraie météo de la ville.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Green Path — Nantes en mille pixels">
+  <meta property="og:description" content="Cours, saute et ramasse les pixels qui reconstruisent 12 patrimoines nantais. La météo réelle de Nantes change le jeu.">
+  <meta property="og:image" content="https://green-path-game.vercel.app/assets/brand/og-image.jpg">
+  <meta property="og:url" content="https://green-path-game.vercel.app/">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/brand/favicon.ico" sizes="32x32">
   <link rel="icon" type="image/png" href="assets/brand/favicon-32.png" sizes="32x32">
   <link rel="icon" type="image/png" href="assets/brand/icon-192.png" sizes="192x192">
@@ -23,10 +30,7 @@
   <div id="game" role="region" aria-label="Green Path — jeu de plateforme" aria-describedby="instructions"></div>
   <p id="instructions" class="sr-only">Flèches pour naviguer, Entrée pour valider. En jeu : gauche et droite pour courir, Espace pour sauter, haut pour grimper, bas pour s'accroupir. Échap : pause. H sur la carte : aide. Le jeu reste visuel et n'est pas entièrement accessible aux lecteurs d'écran.</p>
   <div id="loading" role="status" aria-label="Chargement">
-    <span class="ld-title">GREEN PATH</span>
-    <span class="ld-sub">NANTES</span>
-    <span class="ld-line" aria-hidden="true"></span>
-    <span class="ld-text">CHARGEMENT…</span>
+    <span class="ld-bar" aria-hidden="true"><span class="ld-fill"></span></span>
   </div>
   <!-- Téléphone tenu en portrait : on demande de le tourner (le jeu est en pause). -->
   <div id="rotate" role="alertdialog" aria-live="assertive" aria-label="Veuillez tourner votre téléphone">
@@ -74,6 +78,7 @@
   <script src="js/systems/ProgressionManager.js"></script>
   <script src="js/systems/Stars.js"></script>
   <script src="js/systems/Sfx.js"></script>
+  <script src="js/systems/Music.js"></script>
   <script src="js/systems/PixelArt.js"></script>
   <script src="js/systems/Sprites.js"></script>
   <script src="js/systems/MapArt.js"></script>

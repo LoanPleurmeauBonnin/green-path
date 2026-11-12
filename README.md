@@ -1,198 +1,171 @@
-# Green Path — Nantes en mille pixels
-
-**Les 12 niveaux sont implémentés à partir des GZones**, avec les boss des niveaux 6, 9 et 12. Version **0.5-gzones** : travail à tester et retoucher, pas douze validations humaines. **Sélecteur local : http://127.0.0.1:8130/tools/levels.html** (outil de développement non publié). En production, utiliser la carte et le déverrouillage normal. Suivi actuel : [docs/LEVEL_REDESIGN.md](docs/LEVEL_REDESIGN.md). Les documents d'audit du 10 novembre décrivent le socle antérieur : [AUDIT.md](AUDIT.md), [GAME_DESIGN.md](GAME_DESIGN.md), [HERITAGE_GRAMMAR.md](HERITAGE_GRAMMAR.md), [ROADMAP.md](ROADMAP.md).
-
-**Finition UX/UI et corrections** : commandes adaptatives, remapping, carte réversible avec montée sur les piédestaux, terminaisons ciblées, trois rubriques À propos, Options aéré, fiche et transition centrées. Détail : [docs/UX_POLISH.md](docs/UX_POLISH.md). **Météo abritée livrée localement** : [docs/WEATHER_SHELTERS.md](docs/WEATHER_SHELTERS.md). Protocole silencieux, relevé volontaire et configuration d'équilibrage : [docs/PLAYTEST_REPORT.md](docs/PLAYTEST_REPORT.md) ; aucun playtest humain revendiqué. Les autres évolutions de [docs/GAMEPLAY_UPGRADES.md](docs/GAMEPLAY_UPGRADES.md) restent des propositions.
-
-**Refonte des douze niveaux** : Jardin/Cathédrale suivent désormais leurs JSON ; le Château conserve son adaptation. Les autres niveaux intègrent balcons, flotteurs, rebonds, mécanismes industriels, anneaux, conteneurs, dalles, séquences et courants ascendants. Réussite = image complète **puis arche** ; pour 6/9/12, le boss doit également être neutralisé. La publication sur l'adresse officielle est autorisée par l'utilisateur ; les captures ci-dessous restent celles de la version antérieure. Les nouveaux exports sont dans `docs/screenshots/level-*.png`.
+# 🟢 Green Path — Nantes en mille pixels
 
 > *« Psst… par ici ! Je suis le gardien de la ligne verte. Cette nuit, un grand coup de vent a soufflé sur Nantes. Ses monuments se sont envolés en mille pixels ! »*
 
-Un jeu de plateforme pixel art qui suit la **ligne verte** de Nantes. De lieu en lieu, tu cours, tu sautes, tu grimpes et tu ramasses les pixels qui reconstruisent, case après case, chaque monument. **La vraie météo de Nantes change le jeu** : précipitations et vent agissent sur les espaces exposés ; l'architecture couverte protège le parcours.
+**Un jeu de plateforme pixel art qui reconstruit le patrimoine de Nantes, pixel par pixel, sous la vraie météo de la ville.**
+Suis la ligne verte, du Jardin des Plantes à la Tour LU : cours, saute, grimpe, ramasse les pixels et regarde chaque monument retrouver ses couleurs.
 
-**▶ Jouer : https://green-path-game.vercel.app** (ordinateur, ou téléphone tenu en paysage)
+### ▶ [Jouer maintenant : green-path-game.vercel.app](https://green-path-game.vercel.app)
+Ordinateur, ou téléphone tenu en paysage · clavier, tactile ou manette · français et anglais · sans compte, même hors ligne
 
 ![Écran d'accueil](docs/screenshots/menu.png)
 
-| La carte du monde | 1 · Jardin des Plantes |
-|---|---|
-| ![Carte du monde](docs/screenshots/carte.png) | ![Niveau du Jardin des Plantes](docs/screenshots/niveau-jardin.png) |
-| **3 · Château** : s'accroupir sous les flèches (ici sous la pluie) | **2 · Cathédrale** : grimper aux colonnes, s'accrocher aux rebords |
-| ![Château sous la pluie](docs/screenshots/niveau-chateau-pluie.png) | ![Cathédrale](docs/screenshots/niveau-cathedrale.png) |
-| **Prototype Bouffay (hors parcours)** : les étals bougent | **Sur téléphone, en paysage** |
-| ![Bouffay](docs/screenshots/niveau-bouffay.png) | ![Contrôles tactiles](docs/screenshots/mobile-paysage.png) |
+## Pourquoi on y revient
+- 🌦️ **La météo de Nantes entre dans le jeu.** Il pleut à Nantes ? Le sol glisse et la pluie tombe dans ton niveau. Du vent ? Il pousse tes sauts. Nuit ou brume ? Les pixels se voient moins loin.
+- 🏰 **12 lieux, 12 manières de jouer** : tonneaux et herses au Château, colonnes à escalader à la Cathédrale, parasols qui font rebondir à Graslin, le Grand Éléphant des Machines de l'île… et 3 boss.
+- 🗣️ **Des rencontres.** Anne de Bretagne, Jules Verne, un docker… s'arrêtent pour te dire « Savais-tu que… » quand tu passes devant eux sur la carte.
+- ⭐ **Trois étoiles par niveau** : image complète, sans mourir, sous le temps cible.
+- 🎵 **Une ambiance musicale douce** (originale, désactivable) et un avatar à personnaliser.
+- 💌 **Une carte postale de Nantes reconstruite** à la fin, avec ton avatar et la météo du jour.
 
-| **4 · Île Feydeau** : la marée monte, les bateaux s'enfoncent, les visages des façades mentent | **5 · Place Graslin** : les Muses lancent des notes, parasols qui font rebondir, projecteurs, rideau à ouvrir |
+| La carte du monde | Une rencontre |
 |---|---|
-| ![Île Feydeau](docs/screenshots/niveau-feydeau.png) | ![Place Graslin](docs/screenshots/niveau-graslin.png) |
-| **6 · Machines de l'île** : rails qui entraînent, jets de vapeur, araignées (au sol ou suspendues à un fil) qui se figent quand on les regarde, et le **Grand Éléphant** sur lequel on monte pour traverser le canal | **7 · Parc des Chantiers** : conteneurs qui tombent de la grue (l'ombre prévient) et **grue jaune qui porte des conteneurs** à franchir, |
-| ![Machines de l'île](docs/screenshots/niveau-machines.png) | ![Parc des Chantiers](docs/screenshots/niveau-chantiers.png) |
-| **8 · Anneaux de Buren** : des **bornes de couleur** allument les passerelles néon de leur couleur au-dessus de la Loire | **9 · Hangar à Bananes** : les pixels pourrissent, la moisissure gagne du terrain |
-| ![Anneaux de Buren](docs/screenshots/niveau-buren.png) | ![Hangar à Bananes](docs/screenshots/niveau-hangar.png) |
-| **10 · Mémorial** : sobre, sans ennemi : une stèle à lire, une porte de lumière, du verre qui se fissure | **11 · Passage Pommeraye** : l'escalier monumental, la verrière, les ponts de verre |
-| ![Mémorial](docs/screenshots/niveau-memorial.png) | ![Passage Pommeraye](docs/screenshots/niveau-pommeraye.png) |
-| **12 · Tour LU** : tout ce qu'on a appris, puis le courant d'air ascendant de la coupole | |
-| ![Tour LU](docs/screenshots/niveau-tourlu.png) | |
+| ![Carte du monde](docs/screenshots/carte.png) | ![Rencontre avec un personnage](docs/screenshots/rencontre.png) |
+| **Jardin des Plantes** (niveau 1) | **Château** sous la pluie (niveau 3) |
+| ![Jardin des Plantes](docs/screenshots/niveau-jardin.png) | ![Château sous la pluie](docs/screenshots/niveau-chateau-pluie.png) |
+| **Cathédrale** (niveau 2) | **Place Graslin** (niveau 5) |
+| ![Cathédrale](docs/screenshots/niveau-cathedrale.png) | ![Place Graslin](docs/screenshots/niveau-graslin.png) |
+| **Machines de l'île** (niveau 6) | **Tour LU** (niveau 12) |
+| ![Machines de l'île](docs/screenshots/niveau-machines.png) | ![Tour LU](docs/screenshots/niveau-tourlu.png) |
+
+La carte postale de fin, fabriquée dans ton navigateur (1800 × 1200 px) :
+
+![Carte postale de fin](docs/screenshots/carte-postale.png)
+
+Projet noté ESD Nantes (B3), atelier PATRIMOINE.EXE / NANTES 001 — Florine RACINE (UX/UI, game design) et Loan PLEURMEAU (développement web, IA Ops). Version **0.6**, gel fonctionnel le jeudi 12 novembre 2026 à midi. Dépôt : https://github.com/LoanPleurmeauBonnin/green-path
+
+## Livrables PATRIMOINE.EXE
+| Livrable | Où |
+|---|---|
+| Webapp (principal) | https://green-path-game.vercel.app |
+| Fiche-source patrimoniale (12 lieux) | [docs/fiche-source.md](docs/fiche-source.md) |
+| Grammaire extraite et 3 paramètres opératoires | [docs/grammaire.md](docs/grammaire.md), [HERITAGE_GRAMMAR.md](HERITAGE_GRAMMAR.md) |
+| Problématique et direction créative | [docs/problematique-direction.md](docs/problematique-direction.md) |
+| Sketch minimal p5.js | [sketch/](sketch/) |
+| Architecture du code | section « Architecture du code » ci-dessous |
+| Mapping data / API | section « Source, grammaire et mapping » |
+| Fallback local (hors ligne) | section « Fallback et limites connues » |
+| Test croisé silencieux | [docs/test-croise.md](docs/test-croise.md) |
+| Manifest, cartel (12 patrimoines) | [manifest.json](manifest.json), [CARTEL.md](CARTEL.md) |
+| Captation (hero, détail, process, démo 23 s, vignette) | [captation/](captation/) |
+| Droits, crédits, sources | [CREDITS.md](CREDITS.md), [docs/sources.md](docs/sources.md), [docs/images-candidates.md](docs/images-candidates.md) |
+| Carnet de bord (décisions, itérations) | [docs/carnet-de-bord.md](docs/carnet-de-bord.md) |
 
 ## Le concept
-- **Une archive qui se reconstruit** : chaque niveau cache des pixels. Chacun ramassé révèle un morceau de la photo du lieu (48×32 cases, 16 couleurs), dans un ordre propre au lieu : le Jardin des Plantes pousse **du bas vers le haut**, comme une plante.
+- **Une archive qui se reconstruit** : chaque niveau cache des pixels. Chacun ramassé révèle un morceau de l'image du lieu (48×32 cases, 16 couleurs), dans un ordre propre au lieu : le Jardin des Plantes pousse **du bas vers le haut**, comme une plante ; le Château se bâtit assise, centre, puis côtés.
 - **Une ligne verte à suivre** : sur la carte, le chemin s'allume en vert à chaque lieu terminé, et le monument passe du gris à la couleur.
-- **Des rencontres** : une fois un niveau terminé, un petit personnage apparaît près du monument sur la carte (Anne de Bretagne, Jules Verne enfant, Louis Pommeraye, un docker…) ; la fiche du lieu a une page **RENCONTRE** avec son anecdote et sa source (un simple panneau au Mémorial). Sources dans [docs/sources.md](docs/sources.md).
+- **Des rencontres** : une fois un niveau terminé, un petit personnage se tient sur le chemin près du monument. Quand le héros passe devant, une bulle raconte une anecdote « Savais-tu que… » (sources dans [docs/sources.md](docs/sources.md)). Au Mémorial, un simple panneau.
 - **Trois étoiles par niveau** : image complète, sans mourir, sous le temps cible.
-- **La vraie météo de Nantes** (Open-Meteo, mise à jour toutes les 5 min) change l'environnement et les niveaux réagissent, avec une annonce à l'entrée de chaque niveau :
-
-  | Météo à Nantes | Dans Green Path |
-  |---|---|
-  | Pluie, bruine, orage | sol exposé plus glissant ; balcons à entraînement ; parasols alourdis ; précipitations masquées sous les couvertures |
-  | Neige | inertie accrue dehors, jets du Jardin gelés en appuis, flotteurs moins enfoncés, premier rebond des parasols plus faible |
-  | Vent fort | le vent pousse les sauts dans sa direction ; Château et Bouffay : les tonneaux roulent plus vite |
-  | Brume | voile clair, les pixels ne se voient que de près |
-  | Nuit | ciel étoilé, lanternes allumées, pixels visibles un peu moins loin |
-  | Grand soleil | parasols plus élastiques à Graslin ; variation bornée des mécanismes mobiles |
-
-  Les **275 fragments** font l'objet de diagnostics physiques dont les limites sont documentées : téléportations à des surfaces candidates, morts neutralisées et interactions d'anneaux prises en compte. Cela ne prouve pas une traversée complète et connectée avec dangers par un humain. Le Château dispose en plus de traversées scriptées ; ne pas étendre leur résultat aux onze autres parcours.
-- **Abris** : passages du Château, nef de la Cathédrale, atelier, hangar, verrière de Pommeraye et galerie du Mémorial. Protections et géométrie visibles partagées avec le masque de précipitations ; pas de bulle sèche autour du joueur. Le nouveau Jardin n'importe pas les auvents de son ancien prototype.
-- **Éditeur de niveaux et de textures (admin)** : le bouton compte (en haut à gauche du menu) permet de se connecter en joueur ou en admin. Un compte admin débloque **ÉDITEUR DE NIVEAUX** (`editor.html`) : une page d'accueil avec un contrôle segmenté Niveaux / Textures et les 12 niveaux en cartes (aperçu dessiné, statut original / brouillon / publié) ; un clic ouvre l'atelier (outils à icônes, déplacement façon Figma : deux doigts ou molette pour déplacer, pincer ou Ctrl + molette pour zoomer, mini-carte, Espace + glisser ; sélection multiple au rectangle, copier-coller ; panneau des calques ; bibliothèque de motifs de conception qui se posent sur le sol et le coupent si besoin) : les 12 niveaux se modifient directement (blocs, décors, dangers, ennemis, pixels, lanternes, panneaux ; déplacer, dupliquer, annuler/rétablir, grille, zoom), s'essaient dans un onglet (▶ Tester, sans rien enregistrer), puis se **publient** pour tous les joueurs (historique des versions, retour à l'original, import/export JSON). Un éditeur de textures dessine des tuiles 16×16 (ou jusqu'à 64×64) pixel par pixel avec la palette du jeu, à partir d'un sprite existant ou de zéro. Le rôle admin est vérifié par le serveur à chaque publication ; **le bouton Vérifier** simule un joueur du départ à l'arrivée (pixels et lanternes atteignables, dans un Web Worker) et contrôle la cohérence du niveau (objets qui flottent, dans la matière, qui se chevauchent, danger sans panneau, lanternes trop espacées) ; **une publication est bloquée** tant que des erreurs de faisabilité subsistent ; `?sans-edits=1` joue le jeu d'origine. Code : `js/systems/Content.js`, `js/editor/`, `supabase/migrations/20261111_editor.sql`.
-- **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou un des 8 modèles.
-- **La carte postale de fin** : une fois les 12 lieux terminés, le jeu offre une carte postale PNG (1800 × 1200 px) de Nantes reconstruite : les monuments le long de la ligne verte, ton avatar, le ciel et la météo réelle de Nantes **au moment où tu as fini**, ta phrase (« Nantes reconstruite le 12 novembre, sous un ciel couvert, 34 étoiles sur 36. »), ton pseudo facultatif. Elle se fabrique dans le navigateur, rien n'est envoyé ; elle se revoit depuis le menu (MA CARTE) avec la météo du jour de la fin. Spécification : [docs/spec-carte-postale.md](docs/spec-carte-postale.md) ; code : `js/systems/Postcard.js`, `js/scenes/PostcardScene.js`.
+- **La carte postale de fin** : une fois les 12 lieux terminés, une carte postale PNG de Nantes reconstruite (monuments, avatar, ciel et météo du moment).
+- **Ton avatar** : coiffure, yeux, peau, tenue, chaussures, ou l'un des 8 modèles.
+- **Pseudo, sauvegarde et classement** (facultatifs, sans e-mail) : voir [docs/confidentialite.md](docs/confidentialite.md). Le jeu fonctionne sans compte et hors ligne.
+- **Musique** : ambiance originale composée par code, activable ou non dans OPTIONS → MUSIQUE (et coupée avec SON).
+- **Admin** : un compte admin (bouton compte de l'accueil) débloque l'éditeur de niveaux et de textures (`editor.html`) et la **météo de test en niveau** (ligne MÉTÉO du menu pause, ou touche N ; touche W sur la carte).
 
 ## Les 12 lieux
-L'ordre suit la séquence de la page [« Arpenter la ligne verte »](https://www.levoyageanantes.fr/les-parcours/arpenter-la-ligne-verte/) du Voyage à Nantes pour les lieux qui y figurent (Jardin des Plantes, Cathédrale, Château, Machines, Chantiers, Buren, Mémorial, Pommeraye), complétée pour les autres. Cette page ne donne aucune numérotation : **l'ordre des 12 étapes est une sélection pour le jeu, ce n'est pas la numérotation officielle de la ligne verte.**
+L'ordre suit la séquence de la page [« Arpenter la ligne verte »](https://www.levoyageanantes.fr/les-parcours/arpenter-la-ligne-verte/) du Voyage à Nantes pour les lieux qui y figurent, complétée pour les autres. **L'ordre des 12 étapes est une sélection pour le jeu : ce n'est pas la numérotation officielle du Voyage à Nantes.**
 
-| # | Lieu | Statut | Ce qu'on y apprend |
-|---|---|---|---|
-| 1 | Jardin des Plantes | à tester localement | allées, bassins, jets et topiaires |
-| 2 | Cathédrale Saint-Pierre-et-Saint-Paul | à tester localement | colonnes, accroche, nef couverte, galeries et toits |
-| 3 | Château des ducs de Bretagne | ✅ jouable | **s'accroupir** sous les flèches, tonneaux, herses, douves |
-| 4 | Île Feydeau | à tester localement | balcons inclinés et bateaux flotteurs |
-| 5 | Place Graslin | à tester localement | parasols rebondissants et lustres |
-| 6 | Machines de l'île (Grand Éléphant) | à tester localement | engrenages, bielles, vapeur et boss à valves |
-| 7 | Parc des Chantiers (Grue Titan) | à tester localement | chariots au poids et ascenseur |
-| 8 | Anneaux de Buren | à tester localement | impulsions et chaînes d'anneaux |
-| 9 | Hangar à Bananes | à tester localement | conteneurs, portes basses, boss à lampes UV |
-| 10 | Passage Pommeraye | à tester localement | trois strates, dalles fragiles et lustres |
-| 11 | Mémorial de l'abolition de l'esclavage | à tester localement | séquences de dalles et eau lente |
-| 12 | Tour LU (Lieu Unique) | à tester localement | courants ascendants et boss à quatre lanternes |
+| # | Lieu | Ce qu'on y apprend |
+|---|---|---|
+| 1 | Jardin des Plantes | allées, bassins, jets et topiaires |
+| 2 | Cathédrale Saint-Pierre-et-Saint-Paul | colonnes, accroche, nef couverte, galeries |
+| 3 | Château des ducs de Bretagne | s'accroupir sous les flèches, tonneaux, herses, douves |
+| 4 | Île Feydeau | balcons inclinés et bateaux flotteurs |
+| 5 | Place Graslin | parasols rebondissants et lustres |
+| 6 | Machines de l'île (Grand Éléphant) | engrenages, vapeur, boss à valves |
+| 7 | Parc des Chantiers (Grue Titan) | chariots au poids, ascenseur |
+| 8 | Anneaux de Buren | impulsions et chaînes d'anneaux |
+| 9 | Hangar à Bananes | conteneurs, portes basses, boss à lampes UV |
+| 10 | Mémorial de l'abolition de l'esclavage | séquences de dalles, eau lente |
+| 11 | Passage Pommeraye | trois strates, dalles fragiles |
+| 12 | Tour LU (Lieu Unique) | courants ascendants, boss à quatre lanternes |
 
-*Un niveau « Bouffay » (étals mobiles) existe dans `js/data/levels.js` mais n'est rattaché à aucun lieu pour l'instant.*
-
-L'ordre local suit les GZones : **Pommeraye 10, Mémorial 11**. Les sauvegardes restent liées aux identifiants de lieux ; seule l'ancienne sélection d'indice 9/10 est permutée une fois. Les reprises des parcours remplacés sont invalidées par révision, pas les résultats déjà terminés.
+Chaque niveau a un temps limité (3 min par défaut, plus pour les niveaux longs).
 
 ## Commandes
 | Carte | Niveau |
 |---|---|
 | ← → ou A D : lieu précédent / suivant | ← → ou Q/A D : courir |
 | Entrée / Espace : fiche du lieu, JOUER | Espace, W ou Z : sauter (maintenir = plus haut) |
-| Clic sur un piédestal : y aller | ↓ ou S : s'accroupir · ↑ : grimper, se hisser sur un rebord |
-| H ou **COMMENT JOUER ?** : aide en 4 pages | Échap : pause (reprendre, retour au point de contrôle, rejouer le niveau, aide, quitter) |
-| Échap : menu · M : son | Téléphone : ← → ↓ et saut à l'écran (le saut sert aussi à grimper), PAUSE |
-| **Manette** : croix ou stick, A valider | **Manette** : croix ou stick = bouger, A = sauter, ↓ = s'accroupir, ↑ = grimper, Start = pause |
+| Clic sur un piédestal : y aller | ↓ ou S : s'accroupir · ↑ : grimper, se hisser |
+| H : aide en 4 pages | Échap : pause (reprendre, point de contrôle, rejouer, aide, quitter) |
+| Échap : menu · M : son | Téléphone : ← → ↓ et saut à l'écran, bouton PAUSE |
+| Manette : croix ou stick, A valider | Manette : stick = bouger, A = sauter, Start = pause |
 
-**Ressenti du saut** (réglage `feel-1`, inspiré de Celeste, voir `docs/ressenti.md`) : le sommet du saut flotte un peu tant que la touche est maintenue, un coin de plafond ne bloque plus net (la tête glisse de 1 à 4 px), un rebord frôlé de moins de 8 px est gravi tout seul, on peut sauter depuis l'accroupi (le personnage se relève d'abord), et accroché à un rebord on se hisse aussi en poussant de nouveau vers le mur.
+Ronces, pointes, flèches, gouttes, tonneaux ou chute = une mort : retour à la dernière lanterne allumée, pixels conservés. Le niveau en cours est sauvegardé (reprise après fermeture).
 
-Ronces, pointes, flèches, gouttes, tonneaux ou chute = une mort : retour à la dernière lanterne allumée, les pixels ramassés sont gardés.
-
-**Reprise locale** : les fragments d'un niveau en cours et la dernière lanterne sont maintenant sauvegardés. Après fermeture ou rafraîchissement, le niveau reprend à ce point sûr, image partiellement reconstruite, temps et morts conservés. Une partie terminée se rejoue depuis le début. Les reprises intra-niveau restent sur cet appareil, contrairement aux résultats terminés qui peuvent être synchronisés avec un compte facultatif.
-
-Le bouton **PAUSE** à l'écran n'existe que sur écran tactile : au clavier c'est Échap, à la manette Start.
-
-Sur téléphone, le jeu se joue **en paysage** : tenu en portrait, un écran demande de le tourner et le jeu se met en pause.
-
-## Options, langues, manette, plein écran
-- **Langues** : français (source) et anglais. Bouton **FR/EN** en haut à droite de l'accueil (touche L), ou **OPTIONS → LANGUE**. Un navigateur non français démarre en anglais.
-- **OPTIONS** : langue, son, plein écran, **animations** (Auto = suit le système, Activées ou Réduites ; en mouvement réduit l'avatar de l'accueil attend au milieu de la ligne), **touches réaffectables** (3 emplacements par action : gauche, droite, sauter, grimper, s'accroupir ; Échap, Entrée, H et M restent réservées), état de la manette, confidentialité, effacement de ses données.
-- **Deux groupes Options** : JEU ET COMMANDES / DONNÉES ET AIDE, clic ou Tab (LB/RB à la manette). **À propos** propose trois rubriques distinctes : Crédits, Confidentialité, Sources et licences, avec pages de lecture et retour à l'écran d'origine.
-- **Manette** (API Gamepad, aucune installation) : branche-la et appuie sur un bouton. Croix ou stick = bouger ; A = sauter / valider ; B = retour ; Start = pause. Elle pilote aussi les menus.
-- **Dernier périphérique utilisé** : une vraie touche ou un clic réaffiche le clavier ; une nouvelle pression manette ou un stick engagé réaffiche ses boutons, sans fermer l'écran ouvert. Connexion seule et dérive du stick ne basculent pas l'interface. Y = aide, LB/RB = pages ; X = son sur la carte/en jeu, aperçu dans l'avatar, rejouer au résultat. Les libellés Sony sont adaptés si le modèle est reconnu. Le livre affiche les touches de jeu réellement configurées ; les menus gardent leur navigation propre.
-- **OPTIONS → COMMANDES** : vue clavier avec les 3 emplacements configurables ou vue manette des correspondances fixes. Les dialogues de compte se parcourent à la manette (invité compris) ; taper pseudo/code requiert toujours un clavier ou le clavier système.
-- **Carte** : gauche/droite inverse le trajet dès la frame suivante, même entre deux étapes. Un clic peut changer la destination sans saut de position.
-- **Téléphone, plein écran** : la zone de jeu s'élargit pour remplir tout l'écran (de 16:9 jusqu'à 21:9, sans bandes noires). Android et iPad : plein écran au premier toucher (ou OPTIONS → PLEIN ÉCRAN). **iPhone** : Safari n'a pas de plein écran ; touche Partager puis « Sur l'écran d'accueil » (le jeu est installable, `manifest.webmanifest`).
-- **Pseudo, sauvegarde en ligne et classement** (facultatifs, **sans e-mail**) : après le premier niveau terminé, le jeu propose **créer un pseudo**, **retrouver une sauvegarde avec son code** ou **jouer en invité** (mode par défaut, tout reste sur l'appareil). Avec un pseudo, tu reçois un **code secret de 20 caractères** (à noter : seul moyen de retrouver ta sauvegarde sur un autre appareil) ; ta progression et ton avatar sont enregistrés après chaque niveau, et le **CLASSEMENT** (menu) affiche pseudo, étoiles et temps. Gestion dans **OPTIONS → COMPTE** (synchroniser, se déconnecter, supprimer son compte). Hors ligne ou serveur indisponible : le jeu continue, le classement affiche la dernière version vue. Détails techniques : [supabase/README.md](supabase/README.md).
-- **Confidentialité (RGPD)** : aucune donnée personnelle sans pseudo ; avec pseudo, seulement pseudo, avatar, progression et haché du code, avec accord explicite, serveurs dans l'UE (Paris). Page dans le jeu (CRÉDITS ou OPTIONS) et détail dans [docs/confidentialite.md](docs/confidentialite.md).
+## Options, langues, accessibilité
+- **Français et anglais** (FR/EN en haut à droite de l'accueil, touche L). Un navigateur non français démarre en anglais.
+- **Options** : langue, son, plein écran, animations (Auto suit le système, Activées ou Réduites), touches réaffectables, manette, confidentialité, effacement des données.
+- **Accessibilité** : pas de flash, `prefers-reduced-motion` respecté, clavier + tactile + manette, jouable sans son, réinitialisation possible. Le canvas n'est pas lisible par les lecteurs d'écran.
+- **À propos** : Crédits, Confidentialité, Sources et licences.
 
 ![Options](docs/screenshots/options.png)
 
+![À propos](docs/screenshots/a-propos.png)
+
 ## Lancer en local
-Aucun gestionnaire de paquets ni build à installer. Phaser 3.90 et la police sont déjà inclus. Ouvrir `index.html` directement (compatibilité `file://` prévue par les scripts classiques ; non retestée lors de cet audit), ou, de préférence, servir le dossier avec Python 3 :
+Aucun gestionnaire de paquets ni build. Phaser 3.90 et la police sont inclus. Ouvrir `index.html` directement (scripts classiques, compatible `file://`) ou servir le dossier :
 ```bash
 python3 -m http.server 8123
 ```
-puis http://localhost:8123. **Mode test** : ajouter `?dev=1` à l'adresse (W : météos simulées sur la carte, N dans un niveau ; K : ramasser tous les pixels) ; **tous les niveaux sont ouverts** sur la carte.
+puis http://localhost:8123. **Mode test** : ajouter `?dev=1` (tous les niveaux ouverts ; W météo simulée sur la carte, N en niveau, K ramasse tous les pixels ; `?dev=1&level=chateau` lance un niveau, sur localhost seulement).
 
-### Tester directement les douze niveaux
-
-```bash
-python3 -m http.server 8130 --bind 127.0.0.1
-```
-
-Ouvrir **http://127.0.0.1:8130/tools/levels.html**, puis choisir un niveau. Exemple : **http://127.0.0.1:8130/?dev=1&level=chateau**. Ces lancements sont réservés à localhost : sauvegarde `greenpath.dev.<lieu>`, compte cloud non chargé, progression normale non débloquée par l'essai.
-
-- Contrôles de jeu habituels ; **N** : neuf météos simulées dont orage, puis météo réelle ; **V** : inverser le vent courant ; **R** : recommencer le parcours de test.
-- **K** sert seulement à vérifier l'arche avec tous les fragments : ce n'est pas un test de collecte. Même après K, rejoindre l'arche reste nécessaire.
-- Parcourir les cinq zones, essayer un retour vers un fragment manquant, la reprise aux lanternes et les passages couverts sous pluie/neige.
-- Les JSON de Jardin/Cathédrale étaient les seules références disponibles et sont maintenant interprétés par le moteur ; aucune autre version jouable externe n'a été fournie.
-
-Recette automatisée reproductible et limites : [tests/README.md](tests/README.md). Les boss approuvés se neutralisent par valves, lampes UV ou lanternes, pas en les frappant. K ne permet pas de contourner leur victoire. Les retouches se feront sur les retours de l'utilisateur, conformément à sa nouvelle demande de réaliser l'ensemble avant validation.
-
-## Fallback et limites connues
-- **Hors ligne** : le dossier complet lancé avec un serveur local ne dépend pas d'Internet. Sur le site hébergé en HTTPS, une **première visite complète** prépare une copie locale (service worker, `sw.js`) qui permet ensuite le rechargement sans réseau. Il est impossible de charger un site jamais visité sans réseau. **Chaque publication change le nom du cache** (`node tools/bump-sw.cjs` avant `npx vercel --prod`) : sans cela, un navigateur déjà venu garde l'ancienne copie du jeu ; avec, la page se recharge d'elle-même une fois (sauf en plein niveau). Le cache ne contient que les fichiers publics, jamais les échanges météo/compte. Attendre la fin de l'installation avant de passer en mode avion ; vérifier avec `await GP.offlineReady` dans la console. `?dev=1` ne lance pas cette installation.
-- Si l'API coupe, le jeu garde **la dernière météo reçue** (widget « HORS LIGNE ») ; sinon météo **NEUTRE** sans effet ([data/fallback.json](data/fallback.json), copie documentaire des valeurs JS, non chargée par le moteur). Le widget affiche deux lignes ; le mode test indique « TEST · SIMULATION ». Les réponses incomplètes ou non numériques sont rejetées. Progression dans `localStorage`, ou en mémoire jusqu'à fermeture si le stockage est bloqué.
-- La météo est redemandée toutes les 5 min, et dès que le réseau revient.
-- **Carte postale** : sans Internet (ou avec la météo de secours), la carte se télécharge quand même, sans mention de la météo. Une partie terminée avant la mise en ligne de la carte reçoit sa carte à la première ouverture de MA CARTE, avec la météo de ce moment-là. Rendu net contrôlé à l'écran (neuf météos, clair/sombre), pas encore sur iOS/Android.
-- **Éditeur** : la migration Supabase `supabase/migrations/20261111_editor.sql` doit être appliquée une fois, puis le rôle donné à un compte (`update public.profiles set is_admin = true where lower(pseudo) = lower('…')`). Sans elle, le jeu est inchangé et l'éditeur reste fermé. Le Château joué (`levels.js`) est une version à part : le publier depuis l'éditeur le remplace par sa version « GZone ». Pas de vérification automatique de faisabilité dans l'éditeur (essayer le niveau avec ▶ Tester). Non testé sur mobile : l'éditeur est conçu pour un ordinateur.
-- **Niveaux redessinés** : le niveau 1 (refonte du 11 novembre) puis, par lots, les niveaux 2 à 12 (`js/data/Redesigns.js`, boîte à outils `GP.Kit` : les plateformes sont de vrais objets du lieu, leur dessus praticable est mesuré sur les pixels du sprite). Niveaux 2 et 4 à 12 construits par tronçons de conception (`js/data/LevelGen.js`) ; le Château (3) garde son moteur d'origine ; les arènes des boss (6, 9, 12) sont conservées. Chaque niveau redessiné est contrôlé par `tests/redesigns.test.js` (finissable, aucun avertissement de cohérence).
-- Images à reconstruire : photo pixélisée validée pour le Jardin des Plantes ; pour les autres lieux, le monument de la planche de sprites en attendant des photos Commons validées.
-- **Difficulté** : courbe d'obstacles rééquilibrée le 11 novembre ([docs/equilibrage.md](docs/equilibrage.md), `node tools/balance.cjs`), mesurée sur les données et **jamais validée par des joueurs**.
-- Douze versions de travail et trois boss ; Bouffay reste détaché. Aucun nouvel atlas ni illustration-récompense finale ajouté. Les outils de test et le sélecteur de développement restent exclus de la publication Vercel.
-- La provenance/licence de la référence de l'avatar reste à clarifier avant diffusion large. Les notices secondaires demandent encore une vérification documentaire.
-- Le mode tactile est conçu pour le paysage ; le canvas n'est pas entièrement accessible aux lecteurs d'écran. Les tests de fenêtre responsive ne remplacent pas un vrai essai iOS/Android.
+Contrôles : `node tools/smoke.cjs` (scripts, JSON, liens, secrets) et `node tools/verify-credits.cjs` (empreintes des crédits), aussi lancés en CI à chaque pull request.
+Publication : `node tools/bump-sw.cjs` (change le nom du cache hors ligne) puis `npx vercel --prod`.
 
 ## Source, grammaire et mapping
-Le **Château des ducs de Bretagne** est la source patrimoniale principale, les onze autres lieux un corpus de variations. Masse → murs, seuil → herse, élévation → tours ; reconstruction géométrique assise → centre → côtés. Ce masque stylisé ne constitue pas un relevé architectural. Les fiches des trois lieux expliquent désormais la relation **SOURCE → RÈGLE** (clavier ou boutons de pagination).
+La source est **la ligne verte de Nantes et ses 12 patrimoines** (fiche par lieu : [docs/fiche-source.md](docs/fiche-source.md)). Chaque lieu est observé (trois propriétés patrimoniales retenues, une écartée) puis traduit en règle de jeu : croissance au Jardin des Plantes, verticalité à la Cathédrale, masse, tours et seuils au Château, façades penchées et eau à Feydeau, colonnes et muses à Graslin, mécanique aux Machines de l'île, grue et industrie aux Chantiers, anneaux de Buren, mémoire portuaire au Hangar, sobriété au Mémorial, strates et verrière à Pommeraye, coupole à la Tour LU (tableau complet : [docs/grammaire.md](docs/grammaire.md)). Ces règles sont des traductions ludiques, pas des relevés architecturaux. Chaîne : SOURCE → OBSERVATION → GRAMMAIRE → ALGORITHME → DATA / INTERACTION → ŒUVRE.
 
-Au moins trois paramètres ont un effet réel : collecte → groupes de cellules révélés ; pluie/neige → accélération et réactions locales ; vent normalisé → poussée aérienne ; brume/nuit → visibilité. Valeurs, limites, références et droits : [HERITAGE_GRAMMAR.md](HERITAGE_GRAMMAR.md). La température est affichée, pas utilisée pour teinter le jeu.
+**Mapping data → jeu** (Open-Meteo, Nantes, toutes les 5 min, délai 4 s) — au moins trois paramètres ont un effet réel :
 
-## Tester
-Node.js 18+ pour les tests seulement (aucune installation npm) :
-```bash
-node --test tests/*.test.js
-node tools/compare-figma.js
-node tools/solvability.cjs   # chaque niveau est-il finissable ? (docs/methode-niveaux.md)
+| Donnée | Effet dans Green Path |
+|---|---|
+| Précipitations (pluie, bruine, orage, neige) | sol exposé plus glissant, inertie accrue, mécanismes qui réagissent ; masqué sous les couvertures |
+| Vent (vitesse, direction) | poussée des sauts dans la direction du vent ; tonneaux plus rapides |
+| Brume, couverture nuageuse | voile clair, pixels visibles de près seulement |
+| Jour / nuit | ciel étoilé, lanternes allumées, pixels visibles moins loin |
+| Température | affichée seulement, ne teinte pas le jeu |
+
+Abris : passages du Château, nef de la Cathédrale, verrière de Pommeraye, galerie du Mémorial, atelier et hangar protègent de la pluie, de la neige et du vent. Valeurs, limites, références et droits : [HERITAGE_GRAMMAR.md](HERITAGE_GRAMMAR.md) et [docs/grammaire.md](docs/grammaire.md).
+
+## Fallback et limites connues
+- **Hors ligne** : le dossier lancé avec un serveur local ne dépend pas d'Internet. Sur le site hébergé, une première visite complète prépare une copie locale (`sw.js`) qui permet de recharger sans réseau. Un site jamais visité ne se charge pas sans réseau.
+- **Météo** : si l'API coupe, le jeu garde la dernière météo reçue (widget « HORS LIGNE ») ; sinon météo neutre sans effet ([data/fallback.json](data/fallback.json)). Réponses incomplètes ou non numériques rejetées. Le mode test indique « TEST · SIMULATION ».
+- **Compte** : tout appel réseau passe par `GP.Cloud` (délai 4 s, échec silencieux) ; le mode invité est local.
+- **Carte postale** : se télécharge sans Internet, sans mention de la météo.
+- **Difficulté** : réglée sur les données (contrôle de faisabilité du joueur simulé), jamais validée par des joueurs.
+- **Droits** : les notices secondaires demandent encore une vérification documentaire.
+- **Tactile** : pensé pour le paysage ; pas testé sur un vrai iOS/Android ; l'éditeur est conçu pour ordinateur.
+
+## Architecture du code
+Scripts classiques sans modules ni build, tout dans l'espace de noms global `GP` ; l'ordre des `<script>` de `index.html` compte, les scènes sont listées dans `js/main.js`. Résolution 270 px de haut, agrandie sans lissage.
 ```
-Tests Phaser reproductibles et procédures offline/responsive : [tests/README.md](tests/README.md). Il n'existe pas de commande de build : le livrable est le dossier statique. Aucun déploiement ni changement de base distant n'a été exécuté pendant l'audit. Pour Vercel : conserver `vercel.json`, publier uniquement avec l'accord de l'équipe ; augmenter la version de cache de `sw.js` lors d'une nouvelle livraison de fichiers. Un ancien onglet doit être fermé pour laisser la nouvelle copie s'activer.
-
-Dernière recette locale : 57 tests Node (dont l'équilibrage) ; par format 1920×1080, 1366×768 et 844×390, 73 contrôles de régression + 97 de polish + 24 du socle, tous réussis. Neuf diagnostics géométriques réussis. Les simulations DOM/Gamepad et fenêtres CSS ne remplacent ni un test humain ni un appareil réel. `js/data/tuning.js` centralise les valeurs existantes sans changer arbitrairement la difficulté.
-
-## Stack
-Phaser 3.90 (inclus en local), JavaScript natif en scripts classiques (pas de build, compatible `file://`), police Press Start 2P, résolution 480×270 agrandie sans lissage. Le décor vient de planches de sprites en texte (une lettre = une couleur d'une palette de 35) transformées en textures au démarrage ; les fonds du Jardin et du Château, les silhouettes, les plantes et les salles intérieures sont dessinés par code (`GP.PixelArt`, `js/systems/LevelArt.js`). Déploiement statique sur Vercel.
-
-```
-index.html               page, icônes, écran « tournez votre téléphone »
+index.html, editor.html  pages (jeu, éditeur admin)
+sw.js, manifest*.json    copie hors ligne, installation, manifeste du projet
+css/                     styles de la page (chargement, compte)
 js/config.js             réglages, palette, mode test (?dev=1)
-js/data/                 locations.js (12 lieux), levels.js (niveaux), sprites/ (planches importées), lang/ (fr.js, en.js)
-js/systems/              I18n (FR/EN), Settings (langue, touches), Controls (entrées), Prompts (périphérique et commandes affichées), MapTravel (trajet réversible), Cloud + Account (pseudo, sauvegarde, classement Supabase), Sprites, MapArt (carte), LevelArt (ciel, décor), WeatherManager / WeatherFX / WeatherRules (météo en direct → règles de jeu),
-                         PixelCollection (photo à reconstruire), Save / Progression / Stars, Ui (fenêtres, aide, tactile)
-js/scenes/               Boot, Menu, Character (avatar), Options, Score (classement), Map, Game (moteur de plateforme), Result
-assets/                  police, logo et icônes, photos pixélisées (assets/locations/*.js)
-supabase/                schema.sql et README (base du pseudo, de la sauvegarde et du classement)
-tools/                   import-sprites.js, pixelize.swift, favicon.swift, compare-figma.js, bot.js (tests)
+js/data/                 locations.js (12 lieux), levels*.js / gzones.js / Redesigns.js (niveaux), sprites/ (planches), lang/ (fr.js, en.js)
+js/systems/              météo (WeatherManager / FX / Rules / Shelters), Cloud + Account (Supabase), Controls, I18n, Sprites, MapArt,
+                         LevelArt, Solvability, Progression / Save, Ui, CharacterSprite, Postcard…
+js/scenes/               Boot, Menu, Character, Options, About, Score, Map, Game, Result, Postcard
+js/editor/               éditeur de niveaux et de textures (admin)
+assets/                  police, logo, images pixélisées des lieux
+supabase/                schema.sql et migrations (pseudo, sauvegarde, classement, éditeur)
+sketch/                  sketch p5.js (livrable J1)
+tools/                   bump-sw.cjs (cache hors ligne), smoke.cjs et verify-credits.cjs (contrôles)
+.github/workflows/       CI : smoke à chaque push et pull request
+captation/               hero, détail, process, démo, vignette (livrable J3)
 ```
 
 ## Contributions
-- **Florine RACINE** — UX/UI Designer, Game Design · **Loan PLEURMEAU** — Développeur web, IA Ops (ESD Nantes, atelier PATRIMOINE.EXE).
+**Florine RACINE** — UX/UI Designer, Game Design · **Loan PLEURMEAU** — Développeur web, IA Ops (ESD Nantes, atelier PATRIMOINE.EXE).
 
 ## AI usage
-Le code initial a été assisté par Claude Code sous la direction de l'équipe ; les planches de décor ont été générées avec Claude Design, l'avatar provient du fichier Figma fourni.
-GPT-6.1 Sol via OpenCode a réalisé l'audit puis le polish UX/UI, écrit les correctifs, les tests et la documentation ; les skills Phaser ont servi de référence sans migration vers Phaser 4.
-Les vérifications réellement exécutées et leurs limites figurent dans `AUDIT.md` ; aucune contribution individuelle ni observation d'utilisateur n'a été inventée.
-L'équipe doit relire, comprendre et pouvoir défendre le code livré ; les informations historiques et les droits restant incertains sont explicitement signalés.
+L'avatar a été créé de toutes pièces sur Figma par l'équipe ; ses variantes ont été réalisées avec Claude. Le code a été assisté par Claude Code sous la direction de l'équipe ; les planches de décor ont été générées avec Claude Design. L'équipe relit, comprend et doit pouvoir défendre le code livré ; aucune contribution individuelle ni observation d'utilisateur n'a été inventée.
+
+## Licence
+Code, sprites et logo de l'équipe : **MIT** ([LICENSE](LICENSE)). Éléments tiers (Phaser, police Press Start 2P, photographies Wikimedia Commons pixélisées, données Open-Meteo) : leur propre licence, avec auteur, lien et empreinte SHA-1 dans [CREDITS.md](CREDITS.md) et [docs/credits.json](docs/credits.json) ; contrôle : `node tools/verify-credits.cjs [--online]`. Contribuer : [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Sources et droits
-- Photo du Palmarium : Pymouss44, CC BY-SA 3.0, via Wikimedia Commons, recadrée et pixélisée. Données météo : Open-Meteo (CC BY 4.0). Police Press Start 2P (OFL). Phaser (MIT).
-- Silhouettes du Jardin : dessins originaux de l'équipe, **inspirés** des sculptures colorées de l'été au Jardin des Plantes (personnages de Jean Jullien, oiseau en topiaire) ; aucune photo ni image des œuvres n'est reprise.
-- Détails, licences et obligations : [CREDITS.md](CREDITS.md).
-
-![Médiation de la grammaire du Château, dans un cadre de test 1920×1080](docs/screenshots/audit-grammaire.png)
-
-## Niveaux construits à deux (branche `feat/niveaux-fusion`)
-Les niveaux 2 à 12 (Cathédrale, Château, Feydeau, Graslin, Machines de l'île, Chantiers, Buren, Hangar, Pommeraye, Mémorial, Tour LU) sont ceux de `js/data/levels-ville.js` (mécaniques dans `js/systems/Dangers.js`) : ce fichier est chargé **après** les niveaux générés (`GZoneLevels`) et les remplace. Le niveau 1 (Jardin des Plantes) reste celui de `main`. La **limite de temps** (3 min par défaut, plus pour les niveaux longs : `L.maxTime`) est conservée : à la fin, l'écran TEMPS ÉCOULÉ efface la reprise sauvegardée et propose de rejouer. Décisions : `docs/carnet-de-bord.md`, `docs/niveaux.md`.
+Photo du Palmarium : Pymouss44, CC BY-SA 3.0, via Wikimedia Commons, recadrée et pixélisée. Données météo : Open-Meteo (CC BY 4.0). Police Press Start 2P (OFL). Phaser (MIT). Détails, licences et obligations : [CREDITS.md](CREDITS.md).
