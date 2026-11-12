@@ -31,7 +31,7 @@ GP.Scenes.Result = class ResultScene extends Phaser.Scene {
     this.add.rectangle(22, 33, 436, 1, GP.int(P.G)).setOrigin(0);
     UI.txt(this, 32, 20, 'NIVEAU TERMINÉ', P.g);
     var campaignDone = res.allDone && GP.Progression.completedCount() === GP.LOCATIONS.filter(function (l) { return l.playable; }).length;
-    var nextScene = campaignDone ? 'Postcard' : 'Map';   // fin du parcours : la carte postale ; sinon la carte du jeu
+    var nextScene = 'Map';   // la carte postale s'ouvre toute seule à la première fin du parcours (voir plus haut) ; ensuite on revient à la carte (niveau bonus, rejeu) et la carte postale reste dans l'accueil (MA CARTE)
     if (campaignDone) GP.Postcard.record();               // garde la date et la météo du moment exact de la fin
     UI.txt(this, 450, 20, campaignDone ? 'PARCOURS COMPLÉTÉ !' : res.unlockedNew ? 'ÉTAPE SUIVANTE DÉBLOQUÉE !' : 'ÉTAPE ' + String(r.index + 1).padStart(2, '0'), res.unlockedNew || campaignDone ? P.y : P.m).setOrigin(1, 0);
 
@@ -73,7 +73,7 @@ GP.Scenes.Result = class ResultScene extends Phaser.Scene {
     // boutons
     var bCarte = UI.button(this, 30 + GP.Config.DX, 234, 140, '', function () { self.leave(nextScene); }, { primary: true });
     var bRe = UI.button(this, 310 + GP.Config.DX, 234, 140, '', function () { self.leave('Game'); });
-    GP.Prompts.bind(this, bCarte.label, campaignDone ? 'MA CARTE {confirm}' : 'CARTE {confirm}');
+    GP.Prompts.bind(this, bCarte.label, 'CARTE {confirm}');
     GP.Prompts.bind(this, bRe.label, 'REJOUER {replay}');
     [bCarte, bRe].forEach(function (b) { b.objs.forEach(function (o) { o.setDepth(10); }); });
 

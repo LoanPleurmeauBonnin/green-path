@@ -2,7 +2,7 @@
 'use strict';
 // Le réseau passe d'abord (voir « fetch » plus bas) : en ligne, c'est toujours la dernière version. Changer ce nom à chaque
 // publication (node tools/bump-sw.cjs) purge en plus l'ancienne copie hors ligne et remplace le service worker installé.
-var CACHE = 'greenpath-offline-v6-gzones-20261112-1233';
+var CACHE = 'greenpath-offline-v6-gzones-20261112-1415';
 self.addEventListener('install', function (event) {
   event.waitUntil((async function () {
     var base = self.registration.scope, index = new URL('index.html', base).href;
