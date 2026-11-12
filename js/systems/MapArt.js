@@ -14,7 +14,7 @@ GP.MapArt = (function () {
   var PA = GP.PixelArt, T = 16;
   var GAP = 190, X0 = 120, H = 270, WATER = 216;
   /** Haut de la tuile de chemin à chaque étape (pas de 8 px : une tuile de pente par pas). */
-  var TOPS = [184, 176, 168, 176, 176, 184, 184, 176, 176, 184, 192, 184];
+  var TOPS = [184, 176, 168, 176, 176, 184, 184, 176, 176, 184, 192, 184, 184];   // le dernier relief est celui de l'étape bonus (niveau secret), au bout du chemin
   /** Bras d'eau franchis par un pont de 3 tuiles (entre deux étapes de même hauteur) : Château → Feydeau, Machines → Graslin. */
   var BRIDGES = [3, 7];
   var WIDTH = X0 * 2 + GAP * (TOPS.length - 1), COLS = Math.ceil(WIDTH / T);

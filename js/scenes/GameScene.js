@@ -59,12 +59,13 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     this.makeStructures();
     this.makeSilhouettes();   // après les structures : les niveaux générés (GZone) n'ont leur sol qu'à ce moment
     this.makeHud();
+    GP.UI.soundIcon(this, GP.Config.WIDTH - 26, 46, 60);   // pictogramme du son, sous la météo
     this.makeWeather();
     this.makeInput();
     this.makeTouch();
     this.restoreRun();
     this.updateShelter(0, true);   // recalcul à partir du point sûr, jamais un état ancien sérialisé
-    GP.Progression.setCurrent(this.index);
+    if (!this.secret) GP.Progression.setCurrent(this.index);   // le niveau secret ne change pas la position du héros sur la carte
     var saveRun = function () { if (!self.finished) self.saveRun(); };
     window.addEventListener('pagehide', saveRun);
     window.addEventListener('blur', saveRun);
@@ -191,7 +192,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var signKey = this.key('commun_panneau', 'lv_sign');
     this.signs = L.hints.map(function (h) {
       self.add.image(h.x * 16 + 8, (h.y + 1) * 16, signKey).setOrigin(0.5, 1).setDepth(7);
-      var t = GP.UI.txt(self, h.x * 16 + 8, h.y * 16 - 4, '', GP.PAL.w, { backgroundColor: GP.PAL.d, padding: { x: 3, y: 4 }, align: 'center', wordWrap: { width: Math.min(360, GP.Config.WIDTH - 24) } })
+      var t = GP.UI.txt(self, h.x * 16 + 8, h.y * 16 - 4, '', GP.PAL.w, { backgroundColor: GP.PAL.d, padding: { x: 6, y: 5 }, lineSpacing: 5, align: 'center', wordWrap: { width: Math.min(300, GP.Config.WIDTH - 24) } })   // lignes aérées : les panneaux longs restent lisibles
         .setOrigin(0.5, 1).setDepth(40).setAlpha(0);
       GP.Prompts.bind(self, t, ' ' + h.text + ' ');
       return { x: h.x * 16 + 8, top: h.y * 16 - 4, low: (h.y + 1) * 16 + 4, text: t, shown: false };
@@ -408,7 +409,7 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
   /** Bandeau d'entrée : l'étape, puis ce que la météo de Nantes change aujourd'hui. */
   showIntro() {
     var self = this, P = GP.PAL, UI = GP.UI, lines = GP.WeatherRules.announce(this.env, this.L);
-    var head = this.secret ? 'NIVEAU SECRET' : 'ÉTAPE ' + String(this.index + 1).padStart(2, '0') + ' / 12';
+    var head = this.secret ? 'NIVEAU BONUS' : 'ÉTAPE ' + String(this.index + 1).padStart(2, '0') + ' / 12';
     this.introMs = lines.length > 1 ? 2600 : 1900;
     var maxW = Math.min(400, GP.Config.WIDTH - 32);
     var title = UI.txt(this, 0, 0, head, P.g, { fontSize: '12px' }).setOrigin(0.5, 0);
@@ -600,6 +601,10 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
     var X = this.phy;
     this.updateMechanics(dt);
     this.dangers.update(dt);
+    if (GP.Config.DEV_TOOLS) {   // mode test : la tuile du joueur s'affiche sous la météo, pour dire « le problème est à la tuile 64 »
+      if (!this.devTile) this.devTile = GP.UI.txt(this, GP.Config.WIDTH - 6, 66, '', GP.PAL.y, { backgroundColor: GP.PAL.k, padding: { x: 3, y: 2 } }).setOrigin(1, 0).setScrollFactor(0).setDepth(60);
+      this.devTile.setText('TUILE ' + Math.floor(this.player.x / 16) + ' / ' + Math.floor(this.player.y / 16));
+    }
     if (this.dying) return;
     if (this.introMs > 0) { this.introMs -= dt; b.setVelocityX(0); return; }
     this.time_ms += dt;
@@ -999,11 +1004,8 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
       .setOrigin(0.5).setScrollFactor(0).setDepth(80);
     if (this.secret) {   // niveau secret : on garde le meilleur temps à part (jamais dans les étoiles) et on retourne à la carte
       try { var old = JSON.parse(localStorage.getItem('gp_secret') || 'null'); var tps = Math.round(this.time_ms / 1000); if (!old || tps < old.time) localStorage.setItem('gp_secret', JSON.stringify({ time: tps, deaths: this.deaths })); } catch (e) { /* sans stockage : pas de record */ }
-      t.setText('MAÎTRE DE LA LIGNE VERTE !');
-      this.time.delayedCall(2600, function () {
-        self.cameras.main.fadeOut(350, 20, 24, 46);
-        self.cameras.main.once('camerafadeoutcomplete', function () { self.scene.start('Map'); });
-      });
+      t.setText('NIVEAU BONUS TERMINÉ !');
+      this.time.delayedCall(1700, function () { t.destroy(); self.showBravo(); });   // puis l'écran de fin du jeu
       return;
     }
     this.time.delayedCall(1700, function () {
@@ -1012,6 +1014,44 @@ GP.Scenes.Game = class GameScene extends Phaser.Scene {
         self.scene.start('Result', { index: self.index, pixels: self.pc.count, total: self.pc.total, deaths: self.deaths, time: self.time_ms / 1000 });
       });
     });
+  }
+
+  /**
+   * Fin du jeu (niveau bonus terminé) : « BRAVO !! », une pluie de confettis lente (sans flash, coupée en mouvement réduit),
+   * le message de fin et deux choix : la carte postale ou retourner à la carte pour rejouer.
+   */
+  showBravo() {
+    var self = this, W = GP.Config.WIDTH, H = GP.Config.HEIGHT, P = GP.PAL, UI = GP.UI, DX = GP.Config.DX;
+    this.bravo = true;
+    var veil = this.add.rectangle(0, 0, W, H, 0x05060c, 1).setOrigin(0).setScrollFactor(0).setDepth(90).setAlpha(0);   // fond noir uni qui apparaît en fondu : le texte se lit parfaitement
+    this.tweens.add({ targets: veil, alpha: 1, duration: 700 });
+    if (!GP.reducedMotion) for (var i = 0; i < 46; i++) {   // confettis : petits carrés colorés qui tombent doucement
+      var col = [0xf4d35e, 0x7ddc8a, 0x6fb7ff, 0xff7eb6, 0xffa94d, 0xffffff][i % 6];
+      var c = this.add.rectangle(Phaser.Math.Between(0, W), Phaser.Math.Between(-H, 0), 3, 3, col).setScrollFactor(0).setDepth(91);
+      this.tweens.add({ targets: c, y: H + 10, x: c.x + Phaser.Math.Between(-30, 30), duration: Phaser.Math.Between(3500, 6500), delay: Phaser.Math.Between(0, 2500), repeat: -1, onRepeat: function (tw, o) { o.y = -6; } });
+    }
+    var title = UI.txt(this, W / 2, 40, 'BRAVO !!', P.y, { fontSize: '24px' }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(92).setAlpha(0);
+    this.tweens.add({ targets: title, alpha: 1, y: 52, duration: GP.reducedMotion ? 1 : 900, ease: 'Back.easeOut' });
+    var lines = UI.txt(this, W / 2, 98, GP.t('VOUS AVEZ TERMINÉ LE JEU !') + '\n\n' + GP.t('VOUS POUVEZ REJOUER QUAND VOUS VOULEZ :') + '\n' + GP.t('REFAIRE LES NIVEAUX OU LE NIVEAU BONUS.'), P.w, { align: 'center', lineSpacing: 6, wordWrap: { width: Math.min(420, W - 24) } }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(92).setAlpha(0);
+    this.tweens.add({ targets: lines, alpha: 1, duration: 900, delay: 700 });
+    var bCard = UI.button(this, W / 2 - 100 + DX * 0, 188, 200, 'MA CARTE POSTALE', function () { self.leaveBravo('Postcard'); }, { primary: true });
+    var bMap = UI.button(this, W / 2 - 100, 214, 200, 'REJOUER (CARTE)', function () { self.leaveBravo('Map'); });
+    [bCard, bMap].forEach(function (b) { b.objs.forEach(function (o) { o.setScrollFactor(0).setDepth(93).setAlpha(0); self.tweens.add({ targets: o, alpha: 1, duration: 600, delay: 1500 }); }); });
+    var kb = this.input.keyboard; kb.removeAllListeners();
+    kb.on('keydown-ENTER', function () { self.leaveBravo('Postcard'); });
+    kb.on('keydown-SPACE', function () { self.leaveBravo('Postcard'); });
+    kb.on('keydown-ESC', function () { self.leaveBravo('Map'); });
+    GP.Sfx.play('unlock');
+  }
+
+  leaveBravo(key) {
+    var self = this;
+    if (this.leaving) return;
+    this.leaving = true;
+    GP.Sfx.play('confirm');
+    this.input.keyboard.removeAllListeners();
+    this.cameras.main.fadeOut(350, 20, 24, 46);
+    this.cameras.main.once('camerafadeoutcomplete', function () { self.scene.start(key); });
   }
 
   /**

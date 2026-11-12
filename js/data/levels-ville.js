@@ -228,7 +228,7 @@ GP.LEVELS['chantiers'] = (function () {
     L.pix(21, 13);
     L.check(26);
     // 2. La cale de lancement : la pente t'entraîne en arrière, les conteneurs tombent
-    L.hint(37, "LA CALE T'ENTRAÎNE EN ARRIÈRE : AVANCE QUAND MÊME");
+    L.hint(37, "LA CALE EMPORTE LES CONTENEURS : SAUTE PAR-DESSUS");
     L.belt(36, 58, -1, 55);
     L.faller(42, 1, 3800, 0); L.faller(50, 1, 3800, 1900); L.faller(56, 1, 3800, 900);
     L.deco(46, 'chantiers_coque_navire', { depth: 3 });
@@ -330,16 +330,15 @@ GP.LEVELS['buren'] = (function () {
 /** NIVEAU 9 — HANGAR À BANANES : la pourriture. Chaque pixel mûrit (vert, jaune récoltable, brun, effacé) et la moisissure gagne du terrain sur le sol. */
 GP.LEVELS['hangar'] = (function () {
   var L = GP.LevelBuilder.create(140, function (L) {
-    L.rotting(true);
     // décor du quai des Antilles : rails dans le pavage, garde-corps en acier corten, bollards, flèche de la grue grise
     [[1, 31], [64, 99], [101, 139]].forEach(function (seg) { for (var rx = seg[0]; rx <= seg[1]; rx++) L.deco(rx, 'lv_rails', { depth: 5, dy: 1 }); });
     [8, 17, 66, 90, 103, 121, 135].forEach(function (cx) { L.deco(cx, 'lv_corten', { depth: 3 }); });
     [12, 28, 70, 96, 110, 130].forEach(function (bx) { L.deco(bx, 'feydeau_bollard', { depth: 4 }); });
     [22, 107, 112, 125].forEach(function (fx) { L.deco(fx, 'lv_fleche_grue', { depth: 8, dy: -209 }); });
-    // 1. La terrasse de bois : apprendre à récolter au bon moment
+    // 1. La terrasse de bois : des pixels à ramasser, comme dans tous les niveaux
     L.ground(0, 32, 3);
     L.start(2);
-    L.hint(3, 'RÉCOLTE LES PIXELS QUAND ILS SONT JAUNES !');
+    L.hint(3, 'LE HANGAR À BANANES : RAMASSE LES PIXELS');
     L.deco(6, 'hangar_palettes_caisses', { depth: 4 }); L.deco(14, 'hangar_grue_quai', { depth: 1 }); L.deco(24, 'hangar_conteneur_bleu', { depth: 3 });
     L.deco(14, 'hangar_guirlande_lumineuse', { depth: 2, dy: -38 });   // accrochée au sommet de la grue de quai
     L.pix(7, 13); L.pix(10, 13); L.pix(13, 13); L.pix(16, 13);
@@ -355,10 +354,12 @@ GP.LEVELS['hangar'] = (function () {
     L.ground(55, 8, 6);
     L.check(56);
     L.pix(58, 10); L.pix(61, 10);
-    // 3. La halle : de la tôle coupante pourrie, des pixels à cueillir entre deux
+    // 3. La halle de manutention : deux tapis roulants, des caisses de bananes y tombent et glissent avec eux : il faut sauter par-dessus
     L.ground(63, 37, 3);
     L.deco(70, 'hangar_hangar_facade', { depth: 1 }); L.deco(88, 'hangar_conteneur_rouge', { depth: 3 });
-    L.mold(66, 5, 8000, 0); L.mold(76, 4, 8000, 2500); L.mold(86, 5, 8000, 5000); L.mold(94, 4, 8000, 1200);   // la moisissure gagne du terrain, puis recule
+    L.hint(64, "LES CAISSES GLISSENT SUR LE TAPIS : SAUTE PAR-DESSUS");
+    L.belt(66, 84, -1, 45); L.faller(72, 1, 4400, 0, 'lv_caisse_bananes', "UNE CAISSE DE BANANES T'A ÉCRASÉ !"); L.faller(79, 1, 4400, 2200, 'lv_caisse_bananes', "UNE CAISSE DE BANANES T'A ÉCRASÉ !");   // le premier tapis tire en arrière
+    L.belt(88, 99, 1, 50); L.faller(92, 1, 4000, 1000, 'lv_caisse_bananes', "UNE CAISSE DE BANANES T'A ÉCRASÉ !");                  // le second pousse en avant
     L.pix(69, 11); L.pix(76, 11); L.pix(85, 11); L.pix(92, 11);
     L.pix(72, 13); L.pix(80, 13); L.pix(88, 13); L.pix(96, 13);
     L.check(78);
@@ -381,7 +382,7 @@ GP.LEVELS['hangar'] = (function () {
     L.pix(124, 13); L.pix(127, 13); L.pix(129, 13); L.pix(124, 11); L.pix(128, 11);
   });
   L.id = 'hangar';
-  L.maxTime = 240;                // il faut parfois attendre qu'un pixel jaunisse
+  L.maxTime = 240;
   L.reveal = 'topDown';
   L.abilities = { crouch: true, grab: true };
   L.skin = {
@@ -390,8 +391,8 @@ GP.LEVELS['hangar'] = (function () {
   };
   L.thornKey = 'hangar_obstacle_tole_coupante'; L.thornText = 'AÏE, DE LA TÔLE COUPANTE !';
   L.sky = { farKey: 'lv_fond_hangar_quai', farBottom: 236 };       // le quai des Antilles : long hangar blanc, grue Titan grise, anneaux, Loire
-  L.wxm = { sun: { rot: 1.3, mold: 0.8 }, rain: { rot: 0.8, mold: 1.3 } };
-  L.weatherText = { sun: 'LA CHALEUR FAIT POURRIR LES PIXELS PLUS VITE', rain: "L'HUMIDITÉ FAIT POUSSER LA MOISISSURE" };
+  L.wxm = { sun: { belt: 1.25 }, rain: { belt: 0.8 }, wind: { fall: 0.8 } };
+  L.weatherText = { sun: 'LA CHALEUR ACCÉLÈRE LES TAPIS ROULANTS', rain: 'LA PLUIE RALENTIT LES TAPIS ROULANTS', wind: 'LE VENT BALANCE LA GRUE : LES CAISSES TOMBENT PLUS VITE' };
   return L;
 })();
 
@@ -747,7 +748,7 @@ GP.LEVELS['cathedrale'] = (function () {
 
 // ---------- NIVEAU SECRET « LA LIGNE VERTE » (débloqué à 36 étoiles) : les 12 monuments à la suite, sans panneaux d'aide, un point de contrôle tous les trois monuments ----------
 GP.SECRET_LOCATION = {
-  id: 'ligne-verte', name: 'La Ligne Verte', playable: true, secret: true, level: 'ligne-verte', parTime: 300,
+  id: 'ligne-verte', name: 'Niveau bonus', playable: true, secret: true, level: 'ligne-verte', parTime: 300,
   notice: "Le parcours de l'examen : les douze monuments de la ligne verte à la suite, sans aide. Chaque mécanique que tu as apprise revient une fois.",
   element: { label: 'La ligne verte', verify: false }, verify: false
 };

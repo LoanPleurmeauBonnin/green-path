@@ -355,5 +355,22 @@ GP.UI = (function () {
     return h;
   }
 
-  return { backdrop: backdrop, paginate: paginate, pagedText: pagedText, isTouch: isTouch, touchPad: touchPad, backdropKey: backdropKey, txt: txt, button: button, backIcon: backIcon, modal: modal, help: help, key: key, makeTextures: makeTextures, PAGES: PAGES };
+  /** Pictogramme du son (haut-parleur, barré quand le son est coupé) : un bouton cliquable ou touchable, qui suit aussi la touche M. Renvoie { objs }. */
+  function soundIcon(scene, x, y, depth) {
+    var D = depth || 60;
+    GP.PixelArt.sprite(scene, 'ui_son_on', ['....w......', '...ww..w...', 'wwwww...w..', 'wwwww.w.w..', 'wwwww.w.w..', 'wwwww.w.w..', 'wwwww...w..', '...ww..w...', '....w......']);
+    GP.PixelArt.sprite(scene, 'ui_son_off', ['....w......', '...ww......', 'wwwww.o...o', 'wwwww..o.o.', 'wwwww...o..', 'wwwww..o.o.', 'wwwww.o...o', '...ww......', '....w......']);
+    var bg = scene.add.rectangle(x, y, 22, 15, GP.int(GP.PAL.d), 0.95).setOrigin(0).setStrokeStyle(2, GP.int(GP.PAL.k)).setScrollFactor(0).setDepth(D).setInteractive({ useHandCursor: true });
+    var img = scene.add.image(x + 11, y + 7.5, 'ui_son_on').setOrigin(0.5).setScrollFactor(0).setDepth(D + 1);
+    function refresh() { img.setTexture(GP.Progression.muted ? 'ui_son_off' : 'ui_son_on'); }
+    bg.on('pointerover', function () { bg.setFillStyle(GP.int(GP.PAL.G), 0.95); });
+    bg.on('pointerout', function () { bg.setFillStyle(GP.int(GP.PAL.d), 0.95); });
+    bg.on('pointerdown', function () { GP.Progression.muted = !GP.Progression.muted; refresh(); if (!GP.Progression.muted) GP.Sfx.play('select'); });
+    refresh();
+    scene.events.on('update', refresh);   // la touche M ou les options peuvent aussi changer l'état
+    scene.events.once('shutdown', function () { scene.events.off('update', refresh); });
+    return { objs: [bg, img] };
+  }
+
+  return { soundIcon: soundIcon, backdrop: backdrop, paginate: paginate, pagedText: pagedText, isTouch: isTouch, touchPad: touchPad, backdropKey: backdropKey, txt: txt, button: button, backIcon: backIcon, modal: modal, help: help, key: key, makeTextures: makeTextures, PAGES: PAGES };
 })();

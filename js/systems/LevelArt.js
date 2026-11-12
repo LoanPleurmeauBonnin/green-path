@@ -1027,6 +1027,15 @@ GP.LevelArt = (function () {
     for (x = 4; x < 44; x += 8) R(ctx, x, 7, 4, 2, '#fff4d8');                                  // pointillé de la ligne verte
     return finir(o.cv);
   }
+  /** Le N de Nantes en grosse silhouette sombre (40×44, transparente) : l'étape « niveau bonus » sur la carte, comme un monument pas encore dévoilé. */
+  function drawSilhouetteNantes() {
+    var o = PA.canvas(40, 44), ctx = o.ctx, S1 = '#1b2338', S2 = '#2b3a55', y, xc;
+    R(ctx, 2, 0, 8, 44, S1); R(ctx, 30, 0, 8, 44, S1);                                                               // les deux montants
+    for (y = 0; y < 44; y++) { xc = 2 + Math.round(y / 43 * 28); R(ctx, xc, y, 8, 1, S1); }                          // la diagonale
+    R(ctx, 2, 0, 1, 44, S2); R(ctx, 30, 0, 1, 44, S2); R(ctx, 2, 0, 8, 1, S2); R(ctx, 30, 0, 8, 1, S2);             // liserés de lumière
+    for (y = 0; y < 44; y++) { xc = 2 + Math.round(y / 43 * 28); R(ctx, xc, y, 1, 1, S2); }
+    return o.cv;
+  }
   /** Héron mécanique en vol (30×20, tourné vers la droite) : corps d'acier gris-bleu, longues ailes, cou tendu et long bec jaune, pattes qui pendent. */
   function drawHeronVol() {
     var o = PA.canvas(30, 20), c = o.ctx;
@@ -1301,7 +1310,7 @@ GP.LevelArt = (function () {
     PA.toTexture(scene, 'lv_fond_nef', drawFondNef());
     PA.toTexture(scene, 'lv_fond_hangar', drawFondHangar());
     [3, 5].forEach(function (n) { PA.toTexture(scene, 'lv_balcon_' + n, drawBalcon(n)); }); PA.toTexture(scene, 'lv_sol_foyer', drawSolFoyer()); PA.toTexture(scene, 'lv_sol_salle', drawSolSalle()); PA.toTexture(scene, 'lv_sol_scene', drawSolScene()); PA.toTexture(scene, 'lv_rampe', drawRampe());
-    PA.toTexture(scene, 'lv_fond_chantiers', drawFondChantiers()); PA.toTexture(scene, 'lv_garde', drawGarde()); PA.toTexture(scene, 'lv_seuil', drawSeuil());
+    PA.toTexture(scene, 'lv_fond_chantiers', drawFondChantiers()); PA.toTexture(scene, 'lv_garde', drawGarde()); PA.toTexture(scene, 'lv_silhouette_nantes', drawSilhouetteNantes()); PA.toTexture(scene, 'lv_seuil', drawSeuil());
     Object.keys(GP.SOL_NEEDS || {}).forEach(function (k) { var n = GP.SOL_NEEDS[k]; PA.toTexture(scene, k, drawSolSection(n.kind, n.w * 16, n.h * 16)); });   // sols du niveau secret
     [[10, 13], [5, 11], [5, 9], [5, 7], [5, 5], [6, 3], [8, 2]].forEach(function (d) { PA.toTexture(scene, 'lv_tcorps_' + d[0] + '_' + d[1], drawTourCorps(d[0], d[1])); });
     PA.toTexture(scene, 'lv_fond_foyer', drawFondFoyer()); PA.toTexture(scene, 'lv_fond_salle', drawFondSalle()); PA.toTexture(scene, 'lv_fond_scene', drawFondScene());
