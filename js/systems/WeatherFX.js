@@ -192,11 +192,11 @@ GP.WeatherFX = (function () {
   /** Deux lignes, largeur mesurée après traduction, ancrage droit optionnel. */
   function widget(scene, x, y, depth, opts) {
     opts = opts || {};
-    var w = 0, h = 26, D = depth || 50;
+    var w = 0, h = 36, D = depth || 50;   // marges de 6 px à l'intérieur du cadre (bord de 2 px), comme le cadre de la carte
     var bg = scene.add.graphics().setDepth(D);
-    var icon = scene.add.image(0, y + 9, 'wx_part').setDepth(D + 1);
+    var icon = scene.add.image(0, y + 12, 'wx_part').setDepth(D + 1);
     function t(yy, c) { return scene.add.text(0, y + yy, '', { fontFamily: GP.Config.FONT, fontSize: '8px', color: c }).setDepth(D + 1); }
-    var t1 = t(4, GP.PAL.w), t2 = t(15, GP.PAL.m);
+    var t1 = t(8, GP.PAL.w), t2 = t(20, GP.PAL.m);
     t1.setText('…');
     var all = [bg, icon, t1, t2];
     all.forEach(function (o) { o.setScrollFactor(0); });
@@ -210,11 +210,11 @@ GP.WeatherFX = (function () {
         var source = st.source === 'live' ? 'EN DIRECT' : st.source === 'sim' ? 'TEST · SIMULATION' : 'HORS LIGNE';
         api.source = st.source;
         t2.setText(source).setColor((SOURCE[st.source] || SOURCE.fallback).color);
-        w = Math.ceil(Math.max(22 + t1.width, 6 + t2.width) + 6);
+        w = Math.ceil(Math.max(26 + t1.width, 8 + t2.width) + 8);
         var left = opts.right ? x - w : x;
         bg.clear(); bg.fillStyle(GP.int(GP.PAL.k), 1); bg.fillRect(left, y, w, h);
         bg.fillStyle(GP.int(GP.PAL.d), 1); bg.fillRect(left + 2, y + 2, w - 4, h - 4);
-        icon.x = left + 10; t1.x = left + 22; t2.x = left + 6;
+        icon.x = left + 14; t1.x = left + 26; t2.x = left + 8;
         api.left = left;
       }
     };

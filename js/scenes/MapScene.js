@@ -429,17 +429,17 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
 
     // barre du bas : nom de l'étape + état, bouton d'aide à droite
     var bar = fix(this.add.graphics(), 50);
-    bar.fillStyle(GP.int(GP.PAL.k), 1); bar.fillRect(0, H - 22, W, 22);
-    bar.fillStyle(GP.int(GP.PAL.d), 1); bar.fillRect(0, H - 20, W, 20);
-    this.barName = fix(this.txt(6, H - 15, '', GP.PAL.w));
-    this.barState = fix(this.txt(6, H - 15, '', GP.PAL.y));
-    GP.UI.button(this, W - 4 - 128, H - 19, 128, 'COMMENT JOUER ?', function () { if (!self.panel && !self.moving) self.openHelp(); })
+    bar.fillStyle(GP.int(GP.PAL.k), 1); bar.fillRect(0, H - 26, W, 26);
+    bar.fillStyle(GP.int(GP.PAL.d), 1); bar.fillRect(0, H - 24, W, 24);
+    this.barName = fix(this.txt(8, H - 16, '', GP.PAL.w));   // marges de 8 px à gauche, à droite, et centré dans la barre
+    this.barState = fix(this.txt(8, H - 16, '', GP.PAL.y));
+    GP.UI.button(this, W - 8 - 128, H - 20, 128, 'COMMENT JOUER ?', function () { if (!self.panel && !self.moving) self.openHelp(); })
       .objs.forEach(function (o) { o.setDepth(52); });
-    GP.UI.soundIcon(this, 4, 48, 52);   // pictogramme du son, sous le compteur
+    GP.UI.soundIcon(this, 4, 56, 52);   // pictogramme du son, sous le cadre (4 px d'écart)
     // retour à l'accueil pour le joueur sur téléphone (pas d'Échap) : flèche sous le cadre ; au clavier et à la manette, Échap suffit
-    if (GP.UI.isTouch()) GP.UI.backIcon(this, function () { self.onEsc(); }, 56, 6).objs.forEach(function (o) { o.setScrollFactor(0); });
+    if (GP.UI.isTouch()) GP.UI.backIcon(this, function () { self.onEsc(); }, 56, 32).objs.forEach(function (o) { o.setScrollFactor(0); });
     this.hud = true;
-    this.navHint = fix(this.txt(W / 2, H - 35, '', GP.PAL.m, { backgroundColor: GP.PAL.k, padding: { x: 4, y: 3 } })).setOrigin(0.5);
+    this.navHint = fix(this.txt(W / 2, H - 39, '', GP.PAL.m, { backgroundColor: GP.PAL.k, padding: { x: 4, y: 3 } })).setOrigin(0.5);
     GP.Prompts.bind(this, this.navHint, '{navX} ÉTAPES  {confirm} FICHE  {help} AIDE');
   }
 
@@ -448,12 +448,12 @@ GP.Scenes.Map = class MapScene extends Phaser.Scene {
     if (i >= this.locs.length) { this.barName.setText(GP.t('NIVEAU BONUS')); this.barState.setText(''); return; }
     var l = this.locs[i], st = this.P.status(i);
     var label = MapScene.LABELS[st];
-    // 41 caractères tiennent à gauche du bouton d'aide ; le nom est tronqué pour laisser la place à l'état
-    var room = 41 - (label ? label.length + 2 : 0);
+    // 40 caractères tiennent à gauche du bouton d'aide ; le nom est tronqué pour laisser la place à l'état
+    var room = 40 - (label ? label.length + 2 : 0);
     var name = String(i + 1).padStart(2, '0') + ' ' + GP.t(l.name.toUpperCase());   // traduit avant de couper
     if (name.length > room) name = name.slice(0, room - 1) + '.';
     this.barName.setText(name);
-    this.barState.setText(label).setX(6 + (name.length + 2) * 8)
+    this.barState.setText(label).setX(8 + (name.length + 2) * 8)
       .setColor({ completed: GP.PAL.y, available: GP.PAL.g, locked: GP.PAL.m, coming: GP.PAL.l }[st]);
   }
 
